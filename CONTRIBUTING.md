@@ -1,5 +1,7 @@
 # Contribuer
 
+Contributeur initial du projet : [KadenHD](https://github.com/KadenHD).
+
 Python 3.12 ou plus récent. Le code de l'application est sous licence MIT.
 
 ```powershell
