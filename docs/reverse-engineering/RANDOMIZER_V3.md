@@ -81,7 +81,7 @@ Poliwrath remains accessible by Water Stone and Slowbro at level 37.
 ## Stones in store
 
 The Sun, Moon, Fire, Lightning, Water and Plant stones are added to the purchase catalogues 3 and 5,
-corresponding to Phenac City and Pyrite Town. Their price is **2 100** each. Only the original price
+corresponding to Phenac City and Pyrite Town. Their price is **2,100** each. Only the original price
 zero of the Moon Stone requires a change in `main.dol`. The other five prices are already 2,100.
 
 The five archives `pocket_menu.fsys`, `pocket_menu_fr.fsys`, `pocket_menu_ge.fsys`,
@@ -115,7 +115,7 @@ old copies remain in ISO. All bytes outside the allowed ranges are compared to t
 | `main.dol` v3 | `381add7c69294f0ebd54d7019c195cc6bc9717db2f51f49cb6dee5a76ac33363` |
 | REL of shops, common to the five languages | `322c09fe916c3dc5ac3f1c5e87c019639a09761bda6b92d6cb2df7ab3d346986` |
 
-ISO size: 1 459 978 240 bytes. DolphinTool: successful verification, no problems reported, CRC32
+ISO size: 1,459,978,240 bytes. DolphinTool: successful verification, no problems reported, CRC32
 `4540a9cd`, SHA-1 `37496b7c3607b871713fce6e52081ffbb44d1a44`.
 
 ## Verifications and limitations
@@ -127,7 +127,7 @@ families, the 15 rules, the payloads and the absence of modification outside the
 
 The test under **Dolphin 2609a** normally started the final ISO, loaded the memory card copied with
 "Continue", then joined the store of Pyrite Town. The six stones are visible to 2,100. The purchase
-of one Moon Stone was made: quantity 0 → 1 and balance 8 015 → 5,915. The original bag being full,
+of one Moon Stone was made: quantity 0 → 1 and balance 8,015 → 5,915. The original bag being full,
 the two Super Potions of the copy were first sold to release a location. No change was made to the
 original backup.
 

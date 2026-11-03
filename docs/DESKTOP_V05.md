@@ -85,7 +85,7 @@ The local test report records the validation seed.
 | All changes disabled | 7.97 s. ISO strictly identical to the original |
 | RVZ → RVZ, boss legendary status preserved, near power, minimum 450 and basic starters | 24.12 s. ISO return verified `e3bf0206a25701bd17a04d8f51fb1b96b6560bbab373a82949a94566dad21adc` |
 
-The expected recommended duo is Seadra level 26, TSB 440, EXP 17 576, and Electabuzz level 25, TSB
+The expected recommended duo is Seadra level 26, TSB 440, EXP 17,576, and Electabuzz level 25, TSB
 490, EXP 15 625. Types do not overlap. Deviation 50 is less than tolerance 88. These values are
 derived from the final data.
 

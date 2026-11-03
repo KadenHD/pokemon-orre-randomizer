@@ -39,7 +39,7 @@ references of each slot in `boss_inventory`.
 | HELGONZA / GONZAP | 23 / 4266 | 425→4047, 426→5209, 427→5216, 811→5328 | 21 | 2 |
 | JAKYLLA / NASCOUR | 5 / 4167 | 437→4110, 438→4117 | 12 | 1 |
 | NOSFRAT / EVICE | 6 / 4326 | 439→4124, 440→4131 | 12 | 1 |
-| **Total** | | **7 personnages, 32 enregistrements** | **161** | **16** |
+| **Total** | | **7 characters, 32 records** | **161** | **16** |
 
 The six fixed locations per team give 192 locations, 31 of which are empty. The 161 populated
 locations each have a single reference since the original 820 erecting lines. The 145 non-Shadow Pokémon
@@ -63,16 +63,16 @@ independent and disabled by default.
 
 ### `boss_stronger`
 
-For eligible non-obscuous slots only.
+Applies to eligible non-Shadow slots.
 
 - Current level multiplied by 1.1, rounded to the nearest integer and capped at 100. It is therefore
   composed with the global multiplier already applied. It is not calculated a second time since the
   original level.
 - IV literals between 0 and 31 raised to a minimum of 20. Each upper IV remains superior. The
   sentinels and other off-range bytes remain intact.
-- If the proposed total is not more than 510, then all the EVs in the slot remain as they are and
-  the report explains the refusal. No existing value is reduced. The original data inventoried give
-  a total of 384 after this rule.
+- Raise each stat’s EVs to at least 64 if the resulting total is at most 510. Otherwise, keep all
+  EVs in the slot and record the reason in the report. Existing EVs can only increase. This rule
+  yields a total of 384 for the original data examined.
 
 These are explicit difficulty parameters, not a pretension to rebuild an original intent of the
 game. Dark ones keep their current levels and IV/EV: strengthening a leader does not reinforce the
@@ -81,7 +81,7 @@ Pokémon that the player must capture.
 ### `boss_team_variety`
 
 The engine retains the separate families already present. It replaces only a family duplicate in a
-modified non-obscurable slot. The families of the dark and other protected slots are reserved first.
+modified non-Shadow slot. The families of Shadow Pokémon and other protected slots are reserved first.
 The families of the slots remaining on the team never serve as a rerun.
 
 The pool retains the generations and legendary authorized ones, as well as the potential BST balance

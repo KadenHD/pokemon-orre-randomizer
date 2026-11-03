@@ -71,6 +71,6 @@ The generated ISO has been reprinted independently:
 for the same seed and the same rules. The source remains intact and all output bytes are checked by
 the engine. Therefore, the language of the interface does not change this reference result.
 
-The audit after this trial finds the source images, the 2 011 files of the game, the 2 691 files of
+The audit after this trial finds the source images, the 2,011 files of the game, the 2,691 files of
 the Dolphin installation and the 46 files of the personal Dolphin profile unchanged. Reports,
 captures and test images remain private under `build/`, out of distribution.

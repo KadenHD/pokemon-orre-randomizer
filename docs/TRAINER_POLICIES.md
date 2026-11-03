@@ -48,15 +48,15 @@ identifiers.
 
 | ID | Type | ID | Type |
 | --- | --- | --- | --- |
-| 0 | Normal | 10 | Feu |
-| 1 | Combat | 11 | Eau |
-| 2 | Vol | 12 | Plante |
+| 0 | Normal | 10 | Fire |
+| 1 | Fighting | 11 | Water |
+| 2 | Flying | 12 | Grass |
 | 3 | Poison | 13 | Electric |
-| 4 | Sol | 14 | Psy |
-| 5 | Roche | 15 | Glace |
-| 6 | Insecte | 16 | Dragon |
-| 7 | Spectre | 17 | Darkness |
-| 8 | Acier | 9 | Invalid, refused |
+| 4 | Ground | 14 | Psychic |
+| 5 | Rock | 15 | Ice |
+| 6 | Bug | 16 | Dragon |
+| 7 | Ghost | 17 | Dark |
+| 8 | Steel | 9 | Invalid, refused |
 
 Local validation: tests of binary masks and stress on fixtures, composition on PAL data, matrix of
 reproducible seeds, comparison of data produced with archived sources 0.8 and Qt controls in six

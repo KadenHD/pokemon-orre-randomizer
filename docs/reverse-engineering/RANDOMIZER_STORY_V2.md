@@ -1,6 +1,6 @@
 # Story randomizer v2: trainers, starters and gifts identified
 
-This version of the **30 octobre 2026** extends the randomizer to the six starter and gift routines
+This version of the **October 30, 2026** extends the randomizer to the six starter and gift routines
 identified in the PAL program **GC6P01, revision 0**. At the same time, it reproduces the drawings
 of trainers of the v1.
 
@@ -9,7 +9,7 @@ launcher explicitly opens the new ISO with its isolated profile, without using t
 card.
 
 - ISO : `build/randomizer-story-v2/colosseum-pal-randomizer-story.iso`
-- Taille : **1 459 978 240 octets**.
+- Size is **1,459,978,240 bytes**.
 - SHA-256 : `1e1dea04cb1bac4e4c82abf4301843934d11430782927d97342e92bfb86d0686`
 - Script : `scripts/randomize_story.py`
 - Journals: `randomizer-manifest.json` for trainers, `specials-manifest.json` for
@@ -52,7 +52,7 @@ then replaces only the immediate species and the two immediate starter EXPs.
 
 The starters rewrite their EXP after creation. At `base + 0x92`, this EXP is recalculated at
 **threshold of the retained level**, depending on the growth group of the new species: Smeargle
-receives **14 060 EXP** at level 26. Slowbro **15 625 EXP** at level 25. The partial progression to
+receives **14,060 EXP** at level 26. Slowbro **15,625 EXP** at level 25. The partial progression to
 the next level is reset to zero. The other four routines allow the manufacturer to calculate the
 EXP.
 
@@ -60,12 +60,12 @@ The manufacturer initializes the name from the new species. The calls and instru
 abilities/objects/nature remain unchanged. The capabilities imposed by routines can therefore remain
 those of the replaced species, as for the Pokémon of trainers.
 
-For this seed, **11 octets de main.dol** change. Its SHA-256 becomes
+For this seed, **11 bytes of main.dol** change. Its SHA-256 becomes
 `6330e041a5f13fb63a65d308a3a8d45e47c99b462d4e396be8eba3869b93b485`. The original DOL is never opened
 in writing. Its modified version is also kept in the construction directory.
 
 The ISO check allows only the actually different DOL bytes, the eight FST bytes of `common.fsys` and
-the new archive. **1 459 018 413 other bytes** remain identical to the ISO source. The entire DOL
+the new archive. **1,459,018,413 other bytes** remain identical to the ISO source. The entire DOL
 must also be equal to the result recalculated since the seed. No mask can hide other code changes.
 
 ## Reproducibility and controls
@@ -93,16 +93,16 @@ on the new card, and then started a new part named **MICHAEL**.
 After the introduction, the Pokémon menu of the scenario actually shows the two replacements. The
 cards display their animated models and the following information.
 
-| Starter obtenu | Level | PV | Type | Talent | EXP | EXP jusqu'au level suivant |
+| Starter received | Level | HP | Type | Ability | EXP | EXP to next level |
 |---|---:|---:|---|---|---:|---:|
-| Smeargle | 26 | 71/71 | Normal | Tempo Perso | **14 060** | **1 686** |
-| Slowbro | 25 | 86/86 | Eau / Psy | Tempo Perso | **15 625** | **1 951** |
+| Smeargle | 26 | 71/71 | Normal | Own Tempo | **14,060** | **1,686** |
+| Slowbro | 25 | 86/86 | Water / Psychic | Own Tempo | **15,625** | **1,951** |
 
 These values confirm that the levels and curves of EXP remain consistent after replacement. The
 emulator was closed properly with the output code **0**. No fight of this new part nor actual
 obtaining of a late gift was used as evidence.
 
-| Preuve | Capture in evidence/ |
+| Evidence | Screenshot in evidence/ |
 |---|---|
 | Empty test card, no imported file | `01-fresh-memory-card.png` |
 | Two starters received in the scenario team | `02-new-story-starter-team.png` |

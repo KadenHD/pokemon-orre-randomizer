@@ -144,7 +144,7 @@ Copy mode does not add any patch. The new neutral settings exactly reproduce the
 v0.14 A real RVZ decompression is reused and then removed. A native cancellation during compression
 is observed in 0.094 s. Originals and Personal Dolphin profile remain unchanged. Dolphin Europe
 confirms EXP ×2: native gain 673 became 1,346, actually added to the reserve of Blastoise, and
-retained refusal for Lanturn still too obscure. Jauge ×3 confirms decreases 6 650 → 6 500 and 800 →
+retained refusal for Lanturn still too obscure. Jauge ×3 confirms decreases 6,650 → 6,500 and 800 →
 575 in combat. Both tests close normally, without changing the originals or personal profile. These
 new courses QOL USA/Japan remain qualified by the contracts and matrix, without any observation in
 this trial. No level rise, final purification, decrease by the step or branch of the floor to zero

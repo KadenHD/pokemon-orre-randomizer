@@ -124,13 +124,13 @@ not change the production patch, nor ISO, nor the distributed executables.
 The maps, captures, logs and identities of the Pokémon remain under
 `build/purification-followup-2026-11-02/` and are not distributed with the tool.
 
-| Preuve | What it establishes |
+| Evidence | What it establishes |
 | --- | --- |
 | `STORY_RUNTIME_FOLLOWUP.md` and checkpoints of `persist-fr/` | Progression played, preparation declared, real homecoming and presence at the sanctuary |
 | `native-research/closed-current-validation.json` | Card after native backup: counter 15, checksums, receipts and unique gifts |
 | `persist-fr/monitor.json` | End of first process and preservation of protected files |
 | `persist-fr/monitor-reload.json` and `after-real-reload.json` | New process, normal loading, zero code closure and unchanged protected files |
-| `persist-fr/live-gifts-after-reload.json` | Search for the two exact CK 3s among the 96 locations after loading |
+| `persist-fr/live-gifts-after-reload.json` | Search for the two exact CK3 records among the 96 locations after loading |
 | `persist-fr/bridge-reload.jsonl`, including the observation of the message `0xF0004` | Conversation after reloading and no new call 217 |
 | Captures 17 to 21 of `persist-fr/evidence/` | Backup confirmations, return to play after loading and refusal of second release |
 | `persist-fr/translation-cases/` and catches `evidence/locale-<langue>-<0..4>.jpg` | 25 actually displayed messages, active language and visual substitution declared |

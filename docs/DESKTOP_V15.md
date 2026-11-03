@@ -138,7 +138,7 @@ Change the source or tool, encounter an error, or close the window releases the 
 calculation keeps its reading until it stops, then the cleaning takes place. No persistent game
 cache is installed. Provide about 1.5 Gio on the temporary volume of the system for an RVZ preview.
 
-The Rust codec checks the block cancellation of about 16 Kio. The Python reference also has its
+The Rust codec checks the block cancellation of about 16 KiB. The Python reference also has its
 breakpoints. An interrupted compression does not return a partial result. The context is specific to
 the task, the old ABI is kept and an old DLL can use the cancelable Python fold. DolphinTool
 conversions already monitored remain stopped by their owner in case of cancellation.
@@ -146,7 +146,7 @@ conversions already monitored remain stopped by their owner in case of cancellat
 The real test of an RVZ USA is 4,328 s for the first preparation and 2,250 s for the next reading,
 with only one conversion, the same ISO bytes and removal of the cache at the closing. These times do
 not cover the complete calculation of the preview. A cancellation sent during the native compression
-of 8 Mio returns in 0.094 s since the beginning of the call. The following recompression remains
+of 8 MiB returns in 0.094 s since the beginning of the call. The following recompression remains
 identical to Python. These are local measures, without duration engagement on another PC.
 
 ## Profiles and validation of actual data
@@ -164,7 +164,7 @@ The controls reread the final bytes and verify, in each region.
 
 - 386 cards, 184 edges of evolution and 3,947 apprenticeships;
 - 3,355 records of trainers, 48 dark groups and their 108 variants;
-- the 398 first-tier meetings, 2 185 second, 772 third and 145 boss bonuses in the combined case;
+- the 398 first-tier meetings, 2,185 second, 772 third and 145 boss bonuses in the combined case;
 - the two manual starters, their derogation from the stage filter, and the refusal of an explicitly
   excluded manual species;
 - the composition of the new EXP/jauge blocks with the other patches, and the identity of the entire

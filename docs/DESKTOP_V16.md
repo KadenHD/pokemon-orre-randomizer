@@ -114,10 +114,10 @@ concordance with the current engine. The seed is `feature-v15-validation-1`, wit
 | Observation native | USA | Japan | Europe |
 | --- | --- | --- | --- |
 | March with gauge 1 → 0, zero floor and counter 256 → 0 | Observed | Observed | Observed |
-| Relic release with reserve 499 → 0, EXP 57 820 → 58 319 and level 35 retained | Observed | Observed | Observed |
+| Relic release with reserve 499 → 0, EXP 57,820 → 58,319 and level 35 retained | Observed | Observed | Observed |
 | Final purification with national ribbon, native flag 0 → 1 and total 25 → 26 | Observed | Observed | Observed |
-| Normal EXP ×2 in combat and level 35 → 36 | Gain 673 → 1 346, total 58 319 → 59 665 | Gain 448 → 896, total 58 319 → 59 215 | Gain 448 → 896, total 58 319 → 59 215 |
-| EXP ×2 actually added to the dark partner's reserve | 12 313 → 13 659 (+1 346) | 12 313 → 13 209 (+896) | 12 313 → 13 209 (+896) |
+| Normal EXP ×2 in combat and level 35 → 36 | Gain 673 → 1,346, total 58,319 → 59,665 | Gain 448 → 896, total 58,319 → 59,215 | Gain 448 → 896, total 58,319 → 59,215 |
+| EXP ×2 actually added to the dark partner's reserve | 12,313 → 13,659 (+1,346) | 12,313 → 13,209 (+896) | 12,313 → 13,209 (+896) |
 
 The Relic transfers **499 points once only**, to the exact value of the reserve. The walk observes
 the native delta -0.5, multiplied in -1.5. The game then applies the floor to zero and resets the
@@ -132,7 +132,7 @@ Dolphin Profile Files**, including backups.
 ### Preparation and scope of comments
 
 The tests shall be repeated on **new maps prepared offline**The first Pokémon is Lanturn level 35,
-with EXP 57 820, Reserve 499, Gauge 1 and Power Meter 255. The initial total purifications is 25.
+with EXP 57,820, Reserve 499, Gauge 1 and Power Meter 255. The initial total purifications is 25.
 Blastoise Level 33 begins with a reserve of 12,313 and a gauge of 800. The restored VP comes from
 the native healing observed in the previous Europe trial.
 

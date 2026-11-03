@@ -13,7 +13,7 @@ observation under Dolphin.
 - Call Umbreon to the DOL file offset `0x131E1C`. Call Espeon to `0x131CF4`. Species: immediate `li
   r4` to `+2`. Level: entire instruction `li r5` to `+4`, retained. EXP: immediate `li r7` to
   `+0x92`.
-- Internal initials 197 and 196, levels 26 and 25, EXPnatives 1955 and 16372. Instruction signatures
+- Original internal species IDs 197 and 196, levels 26 and 25, and native EXP values 19,055 and 16,372. Instruction signatures
   are checked before writing. The wrapper validates the exact original hashes. The explicit table
   core allows synthetic tests.
 - Species properties come from the same parser `species_catalog` as global rules. Families and roots
@@ -77,7 +77,7 @@ control over local PAL files. Tests check seed, write mask, EXP and levels, fixe
 shapes and babies, generation/legendary filters/Shedinja, final types and statistics, composition
 with the individual BST window, errors without solution, data forms and invalid signatures.
 
-Direct helper test with the test history, recommended rules and original properties: **21 259
+Direct helper test with the test history, recommended rules and original properties: **21,259
 couples admissibles**. Seadra (internal and national 117), level 26, TSB 440, EXP 17576. Electabuzz
 (125), level 25, TSB 490, EXP 15625. Difference 50, tolerance 88, types Water and Electric. This
 test does not prejudge any other engine version or different rules.

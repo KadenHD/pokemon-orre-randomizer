@@ -7,7 +7,7 @@ local findings, not REA evidence.
 ## Audited result
 
 **The 2,011 files of `game/` are identical byte per byte to the corresponding ranges of the local
-ISO provided.** The control covers 712 453 188 bytes: the 2,006 files of the disk file system and
+ISO provided.** The control covers 712,453,188 bytes: the 2,006 files of the disk file system and
 the five files of `sys/`. It does not compare unused areas of the disk with another copy and does
 not establish any external authenticity of ISO.
 
@@ -22,7 +22,7 @@ following identities to reproduce this analysis.
 
 | Source | SHA-256 |
 |---|---|
-| ISO local, 1 459 978 240 bytes | `1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9` |
+| ISO local, 1,459,978,240 bytes | `1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9` |
 | `game/sys/boot.bin` | `466709a5575548e3f6abe74d21f89e2fa9e4ed119df75b91bc49fc546116e192` |
 | `game/sys/fst.bin` | `6da386f1db41c37489bf7fb959a2c7009ea87edf7c9606d19c1f1fb9e8e418be` |
 | `game/files/opening.bnr` | `e673c2fae370f3586f367f1d9b38a5719b06fef152ddb1c43cb9019fa8d2f1b4` |
@@ -39,9 +39,9 @@ The big-endian words of the header give.
 
 | Position in `boot.bin` | Value | Interpretation used by the control |
 |---|---:|---|
-| `0x420` | 125 952 (`0x1EC00`) | Position of DOL in ISO |
-| `0x424` | 4 222 720 (`0x406F00`) | Position of the FST in ISO |
-| `0x428` | 69 251 | FST size |
+| `0x420` | 125,952 (`0x1EC00`) | Position of DOL in ISO |
+| `0x424` | 4,222,720 (`0x406F00`) | Position of the FST in ISO |
+| `0x428` | 69,251 | FST size |
 
 The word to `0x18` in `bi2.bin` is `2`. The identifier containing `P`, the resource variants and the
 ISO name are consistent with a European edition. This qualification is an interpretation of these
@@ -57,25 +57,25 @@ The independent control reads directly the ISO header and FST, then compares eac
 range, in blocks of not more than 1 Mio. `sys/` are also compared: `boot.bin` to `0`, `bi2.bin` to
 `0x440`, `apploader.img` to `0x2440`, then `main.dol` and `fst.bin` The expected sizes are
 calculated from ISO: fixed sizes for boot and bi2, apploader size fields, last end of section for
-DOL and FST size field. They are not repeated from the extracted files. Result: **2 011 exact
+DOL and FST size field. They are not repeated from the extracted files. Result: **2,011 exact
 matches, zero divergence**. The complete output is kept in `analysis/generated/assets-survey.json`.
 
 A small synthetic ISO check confirms the detection of a modified payload byte and of truncated DOL,
 apploader or FST files.
 
-The first file range of the FST starts on byte 751 816 640. The last one ends at 1 459 978 240. This
+The first file range of the FST starts on byte 751 816 640. The last one ends at 1,459,978 240. This
 important shift is a property of the disk positions. The extracted files represent about 712 MB,
 compared to 1.46 GB for the disk image.
 
 ### ASSET-003 — Distribution of files
 
-| Directory | Files | Octets |
+| Directory | Files | Bytes |
 |---|---:|---:|
-| `game/files/`, directement | 1 994 | 415 723 917 |
-| `game/files/movie/` | 5 | 283 026 032 |
-| `game/files/sound/` | 7 | 9 411 648 |
-| `game/sys/` | 5 | 4 291 591 |
-| **Total** | **2 011** | **712 453 188** |
+| `game/files/`, direct children | 1,994 | 415,723,917 |
+| `game/files/movie/` | 5 | 283,026,032 |
+| `game/files/sound/` | 7 | 9,411,648 |
+| `game/sys/` | 5 | 4,291,591 |
+| **Total** | **2,011** | **712,453,188** |
 
 The observed extensions are: 1,981 `.fsys`, 14 `.bin`, 7 `.samp`, 5 `.thp`, then one `.bnr`, one
 `.dol`, one `.img` and one `.toc`.
@@ -85,8 +85,8 @@ prefix `wzx_` and 527 the prefix `pkx_`. The other 269 cover families `D1_`, `D2
 `M4_`, `S1_`, `S2_`, menus and archives such as `common.fsys`, `people_archive.fsys`, `prog.fsys`]
 or `world_map.fsys`. These names guide the searches but do not show the role of content alone.
 
-Exemples de ressources importantes par taille : `people_archive.fsys` contient 18 069 472 octets,
-`chara_big.fsys` 5 802 944 and `poke_face.fsys` 4,824,000. None of these containers is decompressed
+Large archives include `people_archive.fsys` at 18,069,472 bytes,
+`chara_big.fsys` 5,802,944 and `poke_face.fsys` 4,824,000. None of these containers is decompressed
 by this script. The detailed FSYS analysis is conducted separately.
 
 ### ASSET-004 — Variantes de langue
@@ -111,13 +111,13 @@ The five video files start with `54 48 50 00`] (`THP\0`) and carry the word vers
 The big-endian floating at `0x10` is about 29.97. The word to `0x14` gives the number of images
 below.
 
-| File in `files/movie/` | Octets | Images declared |
+| File in `files/movie/` | Bytes | Images declared |
 |---|---:|---:|
-| `autodemo01.thp` | 101 534 896 | 2 700 |
-| `gs_logo.thp` | 2 375 888 | 130 |
-| `openingdemo.thp` | 64 046 624 | 1 926 |
-| `staffroll.thp` | 113 114 768 | 5 250 |
-| `tpc.thp` | 1 953 856 | 75 |
+| `autodemo01.thp` | 101,534,896 | 2,700 |
+| `gs_logo.thp` | 2,375,888 | 130 |
+| `openingdemo.thp` | 64,046,624 | 1,926 |
+| `staffroll.thp` | 113,114,768 | 5,250 |
+| `tpc.thp` | 1,953,856 | 75 |
 
 These are header values. No decoding or viewing checks the actual duration or audiovisual content.
 

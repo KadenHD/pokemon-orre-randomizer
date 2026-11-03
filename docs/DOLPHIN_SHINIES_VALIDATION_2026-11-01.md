@@ -24,7 +24,7 @@ separately. Complete identifiers, maps, RAM captures and detailed logs remain pr
 | Cas | Established result | Main private evidence |
 |---|---|---|
 | 100 % starters | New part on empty map. Portraits and 3D models of [Horsea] and Abra observed in their summaries. | `starter-100-visual.json`, `starter-100-horsea-summary.jpg`, `starter-100-abra-summary.jpg` |
-| Starter limits | At the cold start, the two native starters have a XOR of 2 and 3 to 100%, and 60 615 and 60 243 to 0%. The other locations are empty. The case 0% is a RAM readout, without visual validation. | `build/shinies-2026-11-01/runtime/starter-runtime-validation.json` |
+| Starter limits | At the cold start, the two native starters have a XOR of 2 and 3 to 100%, and 60,615 and 60,243 to 0%. The other locations are empty. The case 0% is a RAM readout, without visual validation. | `build/shinies-2026-11-01/runtime/starter-runtime-validation.json` |
 | Meeting and capture | Arcanine Dark level 40, Group 21, built for Dakim's fight. Gold model and visible input effect. Native capture at Master Ball, then automatic reception at PC: 14 → 15 Pokémon. The fourteen old CK3 remain identical byte per byte. | `target-snag-identity.json`, `existing-pc-after-snag.json`, `shadow-100-arcanine-entry.jpg`, `shadow-100-arcanine-pc.jpg` |
 | Withdrawal of the PC | Removal by the interface to the first location of the team. The complete CK3 of 312 bytes remains the same as the one received after capture. | `target-capture-pc-purification-identity.json`, `target-after-pc-withdrawal.bin` |
 | Purification | After preparation of the gauge described below, native interaction with the Relic. The message of opening of consciousness is visible. Gauge -100, national ribbon 1 and native purification flag 1282 to 1. PID and OT identifiers retained, XOR 6. | `acquisition-rsp.jsonl`, `target-capture-pc-purification-identity.json`, `shadow-100-arcanine-purification.jpg` |
@@ -86,11 +86,11 @@ the real Dolphin CPU of native production wrappers, PID generator and PAL RNG. T
 synthetic CK3s, a private RAM PowerPC loop and controlled calls. It does not simulate any meetings
 played or gift events.
 
-| Rate requested | Mode cadeau | Forming mode | Dark Mode |
+| Requested rate | Gift mode | Trainer mode | Shadow mode |
 |---|---:|---:|---:|
-| 1 % — 50 000 appels par mode | 508 / 50 000 | 520 / 50 000 | 499 / 50 000 |
-| 0 % — 1 000 appels par mode | 0 / 1 000 | 0 / 1 000 | 0 / 1 000 |
-| 100 % — 1 000 appels par mode | 1 000 / 1 000 | 1 000 / 1 000 | 1 000 / 1 000 |
+| 1 % — 50,000 appels par mode | 508 / 50,000 | 520 / 50,000 | 499 / 50,000 |
+| 0 % — 1,000 appels par mode | 0 / 1,000 | 0 / 1,000 | 0 / 1,000 |
+| 100 % — 1,000 appels par mode | 1,000 / 1,000 | 1,000 / 1,000 | 1,000 / 1,000 |
 
 At 1%, the total is 1,527 shinies out of 150,000 PIDs, i.e. **1,018 %**. The 95% rated Wilson
 interval is `[0,9684 % ; 1,0701 %]`. This benchmark does not demonstrate that deterministic PRNG is

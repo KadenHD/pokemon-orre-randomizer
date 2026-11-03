@@ -15,12 +15,12 @@ recognized by REA with an RAM input point `0x80003154`.
 
 | Artefact | Size | SHA-256 |
 |---|---:|---|
-| Local ISO | 1 459 978 240 | `1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9` |
-| `game/sys/main.dol` | 4 096 576 | `a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5` |
-| `common_rel`, decompressed | 2 210 420 | `ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b` |
+| Local ISO | 1,459,978,240 | `1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9` |
+| `game/sys/main.dol` | 4,096,576 | `a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5` |
+| `common_rel`, decompressed | 2,210,420 | `ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b` |
 
 The 2,006 files of the FST and the five system files were compared byte byte byte with the
-corresponding ISO ranges: **2,011 matches, 712 453 188 bytes controlled, no divergence**. This
+corresponding ISO ranges: **2,011 matches, 712,453,188 bytes controlled, no divergence**. This
 result establishes equality with this local ISO. It does not certify an external origin. Evidence:
 `ASSET-002`, detailed in [assets.md](assets.md).
 
@@ -55,10 +55,10 @@ location was obtained from the relocations of the module and the index conventio
 community tool, then controlled locally. The parser does not search for these tables by a hardcoded
 PAL offset.
 
-| Table | Offset file | Enregistrements | Size per entry | Export local |
+| Table | Offset file | Records | Size per entry | Local export |
 |---|---:|---:|---:|---|
 | Trainers | `0x15DEEC` | 820 | `0x34` | `tables/trainers.json` |
-| Pokémon of the trainers | `0x16AE44` | 5 510 | `0x50` | `tables/trainer_pokemon.json` |
+| Pokémon of the trainers | `0x16AE44` | 5,510 | `0x50` | `tables/trainer_pokemon.json` |
 | Moves | `0x1EB38C` | 358 | `0x38` | `tables/moves.json` |
 | Species | `0x1F05CC` | 413 | `0x11C` | `tables/species.json` |
 | Shadow Pokémon | `0x2125A0` | 97 | `0x38` | `tables/shadow.json` |

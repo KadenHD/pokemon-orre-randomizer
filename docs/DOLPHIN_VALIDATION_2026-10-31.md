@@ -23,12 +23,12 @@ distribution.
 
 | Fonction | Observed action and outcome | Control retained |
 | --- | --- | --- |
-| Starters d'histoire | A new part creates Seadra level 26, EXP 17 576, and Electabuzz level 25, EXP 15 625. | The two species, levels, EXP and four capacities are consistent with the final DOL/REL of the recommended image. The other four locations are empty. No Pokémon is injected into the execution. |
-| Purification | At the Sacred Sanctuary, the prepared Onix level 39 passes 0/national ruban 0 to gauge -100/riban 1. | Species 95, EXP 59 319, abilities and dark identifier 19 remain preserved. The native purification flag is 1 after the action. The animation has not been retained. The transition is proven by the states before/after and the absence of writing in the Pokémon. |
+| Story starters | A new game creates a level 26 Seadra with 17,576 EXP and a level 25 Electabuzz with 15,625 EXP. | The two species, levels, EXP and four capacities are consistent with the final DOL/REL of the recommended image. The other four locations are empty. No Pokémon is injected into the execution. |
+| Purification | At the Sacred Sanctuary, the prepared Onix level 39 passes 0/national ruban 0 to gauge -100/riban 1. | Species 95, EXP 59,319, abilities and dark identifier 19 remain preserved. The native purification flag is 1 after the action. The animation has not been retained. The transition is proven by the states before/after and the absence of writing in the Pokémon. |
 | CT05 | The pocket TM displays Tunnel. Onix is indicated "Apt". The player replaces Charge with Tunnel and the TM is consumed. | The capture after learning contains `[91,20,106,88]`, against `[33,20,106,88]` before. Species 95, level 39 and EXP 59,319 are unchanged. The final image actually associates CT05 with Tunnel 91. |
 | Accessible development | A Super Bonbon makes Onix grow from 39 to 40. The native evolution scene displays Onix, then the Steelix confirmation. | Species 208, level 40, EXP 64,000. The four capabilities `[91,20,106,88]` are retained. Super Bonbon is consumed. No exchange or object held is required for this rule of evolution at level 40. |
 | Randomized shop | At Pyrite Town, Accuracy+ costs 950. A purchase increases the amount owned from 0 to 1 and money from 99,999 to 99,049. | The visible stock matches the shop 5 of the final ISO. Only one ordinary location changes. The other common bytes of the bag are identical. No inventory or silver writing is done by the RAM tool. |
-| Randomized box | The box 1 of Phenac City announces and then gives three Defense+. | Object 76, quantity 0→3, flag 152: 0→1. Silver 99 149 unchanged, other objects unchanged. Room 3 and coordinates of the chest approximately `(-153.04,32.99,84.22)` match with the final REL. No object or safe flag is injected. |
+| Randomized box | The box 1 of Phenac City announces and then gives three Defense+. | Object 76, quantity 0→3, flag 152: 0→1. Silver 99,149 unchanged, other objects unchanged. Room 3 and coordinates of the chest approximately `(-153.04,32.99,84.22)` match with the final REL. No object or safe flag is injected. |
 | Shadow Pokémon capture | level 35 Shadow Piloswine of Miror B. appears with its violet aura, is captured with the Master Ball, then the fight ends with a victory and the return to Billy's dialogue. | The PC goes from 14 to 15 Pokémon: an empty box receives Piloswine 221, dark group 19, gauge 10,000, Ball 1 and capabilities `[8,173,133,124]`. The fourteen Pokémon already stored remain identical byte per byte. Master Ball 1→0 and capture flag 2144: 0→1. No Pokémon is injected into the team or PC. |
 
 For CT05 and Super Bonbon, the consumptions were confirmed during the interface interaction. The
@@ -44,7 +44,7 @@ purified. No change of quest was necessary.
 
 Miror B.'s 164 combat, trainer 162, was built by the native engine. The five Pokémon present match
 the final image, including their levels, four capacities stored and obscure identifiers: Heracross
-30, Arcanine 31, Torkoal 29, Magneton 28 and Piloswine The sixth position is empty. The comparison
+30, Arcanine 31, Torkoal 29, Magneton 28 and Shadow Piloswine 35. The sixth position is empty. The comparison
 accepts the actual order of the engine and requires a complete and unique match for each Pokémon.
 The first turn was actually played and captured on the screen. Two rounds of attacks, then the
 capture turn, the victory and the return to history were observed for this fight.

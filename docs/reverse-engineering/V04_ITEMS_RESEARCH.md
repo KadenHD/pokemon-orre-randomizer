@@ -1,6 +1,6 @@
 # Found objects and shops: PAL perimeter v0.4
 
-Search for **31 octobre 2026**, read-only on originals. No engine, option, screen, disk or Dolphin
+Research on **October 31, 2026**, read-only on originals. No engine, option, screen, disk or Dolphin
 profile modified. The only files produced are this note and references under
 `analysis/generated/v04-item-references/`.
 
@@ -17,7 +17,7 @@ scripts.
 | Decompressed member `common_rel` | `ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b` |
 | Decompressed member `pocket_menu` of the five languages | `524ad778c3618d0c675e69f6a6bd6fab2e4e929d5a2e6981c1a8c25a555f9f20` |
 
-`analysis/generated/v04-item-references/local-inventory.json` maintains **397 fiches d'objet**, **74
+`analysis/generated/v04-item-references/local-inventory.json` lists **397 item records**, **74
 placements**, **14 catalogues**, the five FSYS/REL identities and capacity tests. SHA-256:
 `2ff796026fdd369ddc832065d14641e13358466c24c56fc6d5086338d9e19224`.
 
@@ -64,7 +64,7 @@ same. Indices are preserved: they can be referenced by scripts and backups.
 
 ### Gross identifier and object index are not always equal
 
-The table of objects is in the DOL to `0x3ADDA0`, **397 fiches de `0x28` octets**. Pocket fields
+The table of objects is in the DOL to `0x3ADDA0`, **397 records of `0x28` bytes each**. Pocket fields
 `+0`, prix u16 `+6`, name u32 `+0x10` and description u32 `+0x14` viennent de
 [CMItem.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMItem.swift),
 already retained in `v03-references/`.
@@ -83,7 +83,7 @@ observed prison is 349. Do not deduce a universal reverse conversion at this bor
 
 ### Inventory and protections directly verified
 
-The 74 placements include **61 identifiers non nuls** and **13 emplacements vides**: indices `0,
+The 74 placements include **61 nonzero identifiers** and **13 empty slots**: indices `0,
 62..73`. Active entries are divided into 35 pocket objects 2, 16 pocket items 5, five lots of Balls
 and five TM.
 
@@ -92,7 +92,7 @@ and five TM.
 | Key objects, pocket 5 | `2,3,8,19,26,27,28,29,30,40,41,44,45,46,47,54` |
 | Flutes of Time, no price | `4,61` |
 | Lots de Balls | `6,11,36,37,43` |
-| Emplacements vides | `0,62..73` |
+| Empty slots | `0,62..73` |
 
 Investments 2 and 3 share **the flag 153 and the Key of the crude prison 500**. It is the only
 active shared flag observed. Do not treat these lines as two independent rewards.
@@ -127,7 +127,7 @@ attribution. An isolated hexadecimal occurrence of an ID is not proof of attribu
 ## Shops: five archives, one table
 
 All variants have **12 membres**. The member **0**, named `pocket_menu`, has the identifier FSYS
-`0x03711C00`. Its REL is **module 2, version 3, imports `[2,0]`**, size **1 672 octets**, SHA-256
+`0x03711C00`. Its REL is **module 2, version 3, imports `[2,0]`**, size **1,672 bytes**, SHA-256
 identical in all five languages. The other eleven members must be preserved after decompression.
 
 | File in `game/files/` | Groupe FSYS |
@@ -154,7 +154,7 @@ their counter, according to
 calls the types of dialogue `0 pokemart, 1 vendingMachine, 2 shop, 3 herbShop`. Subtypes are `0
 shop, 1 vendingMachine, 2 bonusDiscCoupons, 3 brokenCoupons, 4 pokeCoupons`.
 
-**These fields alone do not explicitly code "purchase" or "sale".** The lists 0.2 are therefore
+**These fields alone do not explicitly code "purchase" or "sale".** The lists 0–2 are therefore
 referred to below by their gross values. Their exclusion from the reprint remains a perimeter rule.
 The purchases of menus 3 and 5 have been the subject of previous tests, recorded in
 `RANDOMIZER_V3.md`.
@@ -178,7 +178,7 @@ The purchases of menus 3 and 5 have been the subject of previous tests, recorded
 | 12 | 1/3 | 103 | Same list as 11 |
 | 13 | 0/4 | 103 | Same list as 11 |
 
-The intended drawing perimeter is **3,4,5,6,7,9**. Preserving 0.2, herbalist 8, distributor 10 and
+The intended drawing perimeter is **3,4,5,6,7,9**. Preserving 0–2, herbalist 8, distributor 10 and
 coupon catalogues 11..13 in the state received by the new pass. Protecting in particular the raw
 perfumes **543..545** pocket 6, even if their price is positive. The three coupon catalogues
 physically share the beginning 103: a blind substitution in the physical list would change all their
@@ -202,7 +202,7 @@ of objects to inject into the game.
 The actual variants and the classification of the objects must always be checked before publication.
 This measure does not replace the final check `used <= 122` for each option and seed.
 
-If a future contract also requires the lists 0.2 in their order **strictement original**: add the
+If a future contract also requires the lists 0–2 in **their original order**: add the
 stones at the end of the two menus 3/5 takes 124 entries and exceeds the allocation. **Prefix** the
 stones on menu 5, and prefix or suffix them to 3, restores the shared suffix of the list 0 and keeps
 in **118 entries**, without reordering any original stock. No expansion or shift of REL section is

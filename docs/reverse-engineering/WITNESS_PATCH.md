@@ -7,7 +7,7 @@ name ID is also replaced to display "PIKACHU".
 ## Product files
 
 - ISO : `build/witness-pikachu/colosseum-pal-witness-pikachu.iso`
-- Taille : **1 459 978 240 octets**.
+- Size is **1,459,978,240 bytes**.
 - SHA-256 : `b4f2f70830b2139264f7a7d9d1f872fb4a4df081cfdfd75c6daaa85db844f2b9`
 - Plan of the patch: `build/witness-pikachu/witness-patch.json`
 - Data and Original Control: `build/witness-pikachu/witness-verification.json`
@@ -39,8 +39,8 @@ The SHA-256 of `common.rel` decompressed goes from
 `common.fsys` are identical after decompression.
 
 The reconstruction uses [the validated method without changing data](ROUNDTRIP.md). The recompressed
-archive of 959 200 bytes is placed at `0x418000`. Only its new disk range and the eight bytes of its
-offset and its size in the FST may differ from the source ISO. **1 459 019 032 other bytes** are
+archive of 959,200 bytes is placed at `0x418000`. Only its new disk range and the eight bytes of its
+offset and its size in the FST may differ from the source ISO. **1,459,019,032 other bytes** are
 compared in full.
 
 Control `DolphinTool verify` ends with code 0 and `Problems Found: No`: CRC32 `dd31d889`, SHA-1

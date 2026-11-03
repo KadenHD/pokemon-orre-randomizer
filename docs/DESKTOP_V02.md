@@ -17,7 +17,7 @@ The 16 are enabled by default. Both presets restore the recommendations or disab
 option of single families is turned off if the dark ones are not randomized. Each starter/gift
 routine has its own derived seed. Deactivating a Pokémon does not change the draws of others.
 
-The evolution categories modify 4, 6, 2, 2 and 1 roads respectively, keeping the targets and the
+The evolution categories modify 4, 6, 2, 2 and 1 evolution routes, respectively, keeping the targets and the
 graph of the families. A setting that activates the new changes by stone without offering a shop is
 refused before beginning, to preserve their accessibility. The original stock is kept and each shop
 can be activated independently. The price of the Moon Stone is adjusted to 2,100 when stones are
@@ -64,12 +64,12 @@ appear in each report.
 ## Validation
 
 72 Python tests and 3 Rust tests pass. The tests cross the Python and Rust codes, including
-overlapping references, 4Kio buffer towers, random data and misformed flows. Rules tests separately
+overlapping references, 4 KiB ring-buffer wraparounds, random data, and malformed streams. Rules tests separately
 check the six starters/gifts, the five evolution categories, trainers/Shadow Pokémon and both stores.
 The empty preset keeps exactly the original data. The recommended preset reproduces the v3.
 
 Additional complete tests: ISO copy with all the deactivated rules identical to the original. Custom
-RVZ creation with verification of its return to ISO, only 108 obscure appearances changed, 11 roads
+RVZ creation with verification of its return to ISO, only 108 obscure appearances changed, 11 evolution routes
 adapted and stones to Pyrite Town alone. Since the EXE, uncheck Umbreon while keeping Espeon
 activated has produced an ISO in 6.97 s. Reading the output DOL: Umbreon original (197), second
 starter Slowbro (80). The report keeps the sixteen booleans well and confirms the Rust codec and the

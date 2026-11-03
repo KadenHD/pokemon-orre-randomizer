@@ -14,9 +14,9 @@ content checks. A mixture of components from different regions is refused.
 
 | Version | Identifier | Size of the original DOL | Languages of the game |
 | --- | --- | ---: | --- |
-| Europe | `GC6P01` | 4 096 576 octets | English, French, German, Italian, Spanish |
-| USA | `GC6E01` | 3 779 808 octets | English |
-| Japan | `GC6J01` | 3 699 680 octets | Japanese |
+| Europe | `GC6P01` | 4,096,576 bytes | English, French, German, Italian, Spanish |
+| USA | `GC6E01` | 3,779,808 bytes | English |
+| Japan | `GC6J01` | 3,699,680 bytes | Japanese |
 
 The tables share the same diagrams and accounts: 820 trainers, 5,510 records of Pokémon of trainer,
 413 lines of species including the 386 real species, 358 capacities and 97 lines of obscure

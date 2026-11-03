@@ -128,7 +128,7 @@ checks confirm the integrity of the original ROMs and personal backups.
 Engine: `details-and-progression-v15`. The real data checks cover 18 configurations and 36 repeated
 constructions. In Dolphin Europe, EXP ×2 produces a real gain of 1,346 instead of 673 in the reserve
 of an obscure. The native refusal of another obscure still too closed is preserved. Jauge ×3
-confirms 6 650 → 6 500 and 800 → 575 on two reductions of combat. Originals and personal Dolphin
+confirms 6,650 → 6,500 and 800 → 575 on two reductions of combat. Originals and personal Dolphin
 profile remain unchanged after normal closing. These new QOL routes were not played on USA/Japan.
 Level rise, final purification, step and gauge floor at zero remain unobserved here. These controls
 do not certify a complete game.

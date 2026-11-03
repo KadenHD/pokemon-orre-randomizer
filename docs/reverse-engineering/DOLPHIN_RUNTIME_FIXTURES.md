@@ -19,11 +19,11 @@ The official sources of tag 2609a, commit `409881c34357d0f105fd473167d15ab0bd9c1
   excluded under Windows. The CPU starts suspended.
 - The server accepts a connection for the boot. It listens on all interfaces. This configuration
   must be reserved for the temporary QA profile.
-- `m`/`M` read/write memory; `p`/`P` read/write a registry. Client does not use bundled commands
-  `g`/`G` : `g` only exposes the 32 RPM and `G` reads the buffer from its command character.
-- Records 0.31 are RPM, 32..63 are RPF PS0 values, 64 are PC, 65 are MSR, 66 are CR, 67 are LR, 68
-  are RTC, 69 are RTC, and 70 are RPCF. A capture of these records is not a complete state of the
-  emulator: PS1, memory, MMU, and scheduler are not covered.
+- `m`/`M` read/write memory; `p`/`P` read/write a register. Client does not use bundled commands
+  `g`/`G` : `g` only exposes the 32 GPRs and `G` reads the buffer from its command character.
+- Registers 0–31 are GPRs and 32–63 are FPR PS0 values. Registers 64–70 are PC, MSR, CR,
+  LR, CTR, XER, and FPSCR, respectively. A register capture excludes PS1, memory, the MMU, and the
+  scheduler.
 
 The local binary contains the strings `GDBPort`, `Waiting for gdb to connect` and `GDBStubUpdate`.
 This static finding indicates that the support is compiled. The connection and RAM readings must

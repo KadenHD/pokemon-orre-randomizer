@@ -94,9 +94,9 @@ randomizations. Temporary conversion profiles have their own error and cancellat
 | Same RVZ test after correction of the conversion profile | Even ISO, roundtrip checked, 21,72 s, no blocking window |
 | Runable Windows final, RVZ → RVZ, preset recommended | Even recommended ISO, roundtrip checked, 100% success, 15.56 s, no blocking window |
 
-Each ISO is compared on its 1 459 978 240 bytes at the source and only the exact replacements
+Each ISO is compared on its 1,459,978,240 bytes at the source and only the exact replacements
 expected. The source is ground again at the end of the processing. The RVZ produced are recompressed
-and compared before publication. The 2 011 files of `game/` and the 20 files inventoried in the
+and compared before publication. The 2,011 files of `game/` and the 20 files inventoried in the
 original Dolphin profile keep their fingerprints, verified after the test has been closed.
 
 ### Observation Dolphin

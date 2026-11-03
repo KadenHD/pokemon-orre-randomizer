@@ -82,7 +82,7 @@ Coque, 179 Poudreclaire, 180 Herbe Blanche, 185 Herbe Mental, 187 King’s Rock,
 
 Berries 133..142 and 168..172 have maintained effects. A useful generic subpool can combine them
 with these objects. The Choosing Band deserves a filtering according to physical attacks if a
-systematic utility is promised. Items 110 and 254.258 have a zero-acting effect (Pepite and
+systematic utility is promised. Items 110 and 254–258 have a zero-acting effect (Pepite and
 scarves). Generally avoid 181 (Macho Brace), 191 (Soul Dew), 192/193 (objects Clamperl) and 202
 (Balle Lumière), whose interest is training or limited to certain species.
 

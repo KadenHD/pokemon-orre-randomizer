@@ -9,7 +9,7 @@ observed.
 ## Available outcome
 
 - ISO : `build/roundtrip/colosseum-pal-roundtrip.iso`
-- Taille : **1 459 978 240 octets**, comme l'image source.
+- Size matches the source image at **1,459,978,240 bytes**.
 - SHA-256 : `3b4edc03c00f56f029d8cf47b9acbfda32f5f329a9cc9e7d3f8e603af9fc41a7`
 - Build report `build/roundtrip/rebuild-report.json`
 - Post-test verification: `build/roundtrip/final-integrity.json`
@@ -31,7 +31,7 @@ limit cases. Each recoded stream is redecorated and compared to the original byt
 incorporated into the archive. Unknown headers, FSYS identifiers and names are kept. Positions and
 sizes are updated, with 32 byte member alignment and 32 byte FSYS footer.
 
-The archive changes from **944 672 to 959 200 bytes** to the disk offset `0x418000`, aligned with 32
+The archive changes from **944,672 to 959,200 bytes** to the disk offset `0x418000`, aligned with 32
 Kio, in the space preceding the FST files and after all system areas. Its old copy remains intact in
 ISO. The order of the files, the names and indices of the FST are kept. Only the eight bytes
 containing the offset and the size of `common.fsys` change.
@@ -40,13 +40,13 @@ The source image serves as a template to keep the unreferenced areas of the disk
 files are then written from the extraction, replacing only `common.fsys` with the recoded archive. A
 validation of all payloads and system files precedes the publication of the final `.iso` file.
 
-An independent check confirms that **1 459 019 032 octets**, outside the only two ranges allowed
+An independent check confirms that **1,459,019,032 bytes**, outside the only two ranges allowed
 below, are strictly identical to the source image.
 
 | Plage | Start included | Fin exclue | Size |
 |---|---:|---:|---:|
-| Offset and Common Size in FST | 4 222 988 | 4 222 996 | 8 |
-| New archive common.fsys | 4 292 608 | 5 251 808 | 959 200 |
+| Offset and Common Size in FST | 4,222,988 | 4,222,996 | 8 |
+| New archive common.fsys | 4,292,608 | 5,251,808 | 959,200 |
 
 The official auditor was executed.
 

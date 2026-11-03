@@ -68,10 +68,10 @@ after the added blocks, then after the play entries in the Pokémon records.
 
 | Witness | Native value and observed result |
 | --- | --- |
-| Combat gauge reduction, Lanturn | Change -0.5 to -1.5. Whole gauge **6 650 → 6 500** |
+| Combat gauge reduction, Lanturn | Change -0.5 to -1.5. Whole gauge **6,650 → 6,500** |
 | Combat gauge reduction, Blastoise | Change -0,75 become -2,25. Whole gauge **800 → 575** |
-| EXP, Lanturn still too dark | Gain **673 → 1 346** in the block. The native threshold then refuses to reserve, which remains at **0** |
-| EXP, Blastoise ready to receive its reserve | Gain **673 → 1 346**. Reservation actually written by the game **12 313 → 13 659**, that is **+1 346** |
+| EXP, Lanturn still too dark | Gain **673 → 1,346** in the block. The native threshold then refuses to reserve, which remains at **0** |
+| EXP, Blastoise ready to receive its reserve | Gain **673 → 1,346**. Reservation actually written by the game **12,313 → 13,659**, that is **+1,346** |
 
 The rejected Lanturn witness therefore does not count as an applied gain. The one of Blastoise
 proves the actual addition of the EXP in reserve. The catches control the registers still used and
@@ -99,7 +99,7 @@ files, original ROMs and the Dolphin Personal Profile are identical. The guards 
 also refused out-of-contract applications. These refusals and reading errors are kept separately
 from successful captures.
 
-### Limites restantes
+### Remaining limitations
 
 **The new QOL USA and Japan races were not played in this essay.** Their native contracts, the data
 matrix and the PowerPC instructions are qualified separately. This does not replace a real regional

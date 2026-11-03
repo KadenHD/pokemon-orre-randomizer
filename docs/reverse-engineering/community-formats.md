@@ -10,9 +10,8 @@ Direct Header Reading: `game/sys/boot.bin` contient `GC6P01`, revision 0. `main.
 point of entry `0x80003154` and its SHA-256 is
 `a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5`.
 
-`common.fsys` bears the FSYS signature, 28 members and a declared size equal to its actual size, 944
-672 bytes. The first member header is to `0x290`, its contents to `0xB60`, with LZSS signature,
-stored size 813 413 bytes and decompressed size declared 2,210 420 bytes. These values are local
+`common.fsys` bears the FSYS signature, 28 members and a declared size equal to its actual size, 944,672 bytes. The first member header is to `0x290`, its contents to `0xB60`, with LZSS signature,
+stored size 813,413 bytes and decompressed size declared 2,210,420 bytes. These values are local
 observations. The semantics of internal tables require further analysis.
 
 ## DOL and REL
@@ -33,7 +32,7 @@ Apache-2.0 project. Exact version not fixed here.
 ## FSYS and LZSS
 
 The StarsMmd code displays the following fields: FSYS `+0x08` groupe, `+0x0C` nombre de membres,
-`+0x20` taille, `+0x40` pointer to the list of headers. In each member header: `+0x00` identifier,
+`+0x20` size, `+0x40` pointer to the list of headers. In each member header: `+0x00` identifier,
 `+0x04` position of data, `+0x08` decompressed size, `+0x14` size stored, `+0x1C` full name, if any,
 `+0x24` short name. The prefix LZSS measures `0x10` bytes, with sizes to `+4` and `+8`. Fixed
 primary source:
