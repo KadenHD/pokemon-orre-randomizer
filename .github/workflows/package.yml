@@ -36,6 +36,9 @@ jobs:
       - run: python scripts/fetch_qt_notices.py
       - run: python scripts/build_desktop.py --edition public
       - run: python scripts/smoke_desktop.py --edition public --report build/public-windows-smoke.json
+      - name: Build and test the Windows installer
+        shell: pwsh
+        run: ./scripts/build_installer.ps1 -SmokeTest
       - uses: actions/upload-artifact@v7
         with:
           name: orre-randomizer-windows
@@ -43,6 +46,7 @@ jobs:
           compression-level: 0
           path: |
             dist/public/*.zip
+            dist/public/*-setup.exe
             dist/public/SHA256SUMS.json
       - uses: actions/upload-artifact@v7
         with:
@@ -62,10 +66,10 @@ jobs:
         with:
           name: orre-randomizer-windows
           path: release-assets
-      - name: Publish Windows and source archives
+      - name: Publish Windows installer and archives
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "$GITHUB_REF_NAME" release-assets/*.zip release-assets/SHA256SUMS.json \
+          gh release create "$GITHUB_REF_NAME" release-assets/*-setup.exe release-assets/*.zip release-assets/SHA256SUMS.json \
             --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes \
             --title "Pokémon Orre Randomizer $GITHUB_REF_NAME"

@@ -1,102 +1,87 @@
-# Règles des Pokémon obscurs des boss — v0.5
+# Rules of Shadow Pokémon bosses — v0.5
 
-Contrôles statiques locaux du 31 octobre 2026 sur le `common_rel` PAL GC6P01
-original, SHA-256 `ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b`.
-Cette passe réutilise les parseurs, schémas et identités vérifiés de
-[l’enquête v0.4 sur les boss](V04_BOSS_RESEARCH.md). Aucun fichier original,
-script de scénario ou état Dolphin n’est modifié par ce moteur.
+Local static checks of October 31, 2026 on the original `common_rel` PAL GC6P01, SHA-256
+`ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b`. This pass reuses the parsers,
+schematics and verified identities of [The v0.4 boss investigation](V04_BOSS_RESEARCH.md). No
+original file, scenario script or Dolphin status ns is modified by this engine.
 
-## Inventaire observé
+## Inventory observed
 
-Les 32 variantes des sept chefs identifiés contiennent 16 apparitions obscures,
-regroupées sous seulement sept identifiants globaux. Le moteur recalcule ces
-groupes depuis `boss_inventory` et les octets originaux, sans heuristique de
-niveau ou de puissance.
+The 32 variants of the seven leaders identified contain 16 obscure appearances, grouped under only
+seven global identifiers. The engine recalculates these groups from `boss_inventory` and the
+original bytes, without heuristic level or power.
 
-| Chef | ID obscur | Espèce originale | Apparitions dans l’inventaire des boss |
+| Chef | Dark ID | Original species | Appearances in the boss inventory |
 | --- | ---: | --- | ---: |
-| Bouledisco | 19 | Simularbre, national 185 | 3 |
+| Bouledisco | 19 | Sudowoodo, national 185 | 3 |
 | Dakim | 21 | Entei, national 244 | 3 |
-| Vénus | 23 | Suicune, national 245 | 3 |
+| Venus | 23 | Suicune, national 245 | 3 |
 | Teck | 34 | Raikou, national 243 | 3 |
-| Helgonza | 38 | Airmure, national 227 | 2 |
-| Jakylla | 43 | Métalosse, national 376 | 1 |
-| Nosfrat | 44 | Tyranocif, national 248 | 1 |
+| Helgonza | 38 | Skarmory, national 227 | 2 |
+| Jakylla | 43 | Metagross, national 376 | 1 |
+| Nosfrat | 44 | Tyranitar, national 248 | 1 |
 
-Une apparition figurant en table ne prouve pas qu’une variante soit accessible
-à un moment donné du scénario. Les règles suivent le groupe obscur dans toutes
-ses apparitions, y compris hors de cette liste de boss. Aucun nouveau groupe
-obscur ni combat n’est créé.
+A table appearance does not prove that a variant is available at a given time in the scenario. Rules
+follow the dark group in all its appearances, including out of this boss list. No new obscure group
+or fight is created.
 
-## Choix de conception et contrat
+## Design choice and contract
 
-`apply_shadow_boss_rules(original, current, seed, options, tables=None)` valide
-l’empreinte de l’original et les sept identités de boss, puis appelle le cœur
-pur `apply_shadow_boss_tables`. Il doit s’exécuter avant les changements de
-types, talents, statistiques et capacités, à la place du tirage ordinaire des
-espèces obscures lorsque ses règles spécifiques sont actives. Les Pokémon
-ordinaires des dresseurs restent entièrement tels que fournis dans `current`.
+`apply_shadow_boss_rules(original, current, seed, options, tables=None)` validates the original
+footprint and the seven boss identities, then calls the pure heart `apply_shadow_boss_tables`. It
+must execute before the changes of types, talents, statistics and abilities, instead of the ordinary
+drawing of dark species when its specific rules are active. The ordinary Pokémon of the trainers
+remain entirely as provided in `current`.
 
-- `boss_shadow_legendary_mode`: `any` suit les autorisations générales ;
-  `preserve` conserve le statut légendaire ou non légendaire du groupe original ;
-  `exclude` interdit les légendaires et fabuleux chez ces sept groupes seulement.
-- `boss_shadow_power_mode`: `global` suit `balance_species` ; `similar` impose
-  strictement un écart au total original d’au plus `max(50, 20 % du total)` ;
-  `free` désactive seulement la préférence de puissance chez les sept groupes.
-- `boss_shadow_min_bst`: total natif minimal des espèces des sept groupes,
-  entre 0 et 780 ; 0 ajoute aucune limite. Les espèces originales des trois
-  premières générations culminent sous cette borne de saisie. Une valeur trop
-  haute produit une erreur claire, elle n’est pas réduite implicitement.
+- `boss_shadow_legendary_mode`: `any` follows the general authorizations. `preserve` retains the
+  legendary or non-gendary status of the original group. `exclude` prohibits legendary and fabulous
+  in these seven groups only.
+- `boss_shadow_power_mode`: `global` follows `balance_species`. `similar` strictly imposes a
+  deviation from the original total at the most `max(50, 20 % du total)`. `free` disables only the
+  power preference in the seven groups.
+- `boss_shadow_min_bst`: minimum native total of the species of the seven groups, between 0 and 780.
+  0 adds no limit. The original species of the first three generations culminate under this entry
+  terminal. Too high a value produces a clear error, it is not reduced implicitly.
 
-Les totaux utilisés sont les statistiques **natives**, avant leur éventuelle
-redistribution. Si un autre réglage change les totaux eux-mêmes, ce minimum ne
-promet pas un minimum des statistiques finales. Cette portée figure dans le
-rapport `bst_scope` et doit être annoncée dans l’interface.
+The totals used are the statistics **natives**, before their possible redistribution. If another
+setting changes the totals themselves, this minimum does not promise a minimum of the final
+statistics. This scope appears in the report `bst_scope` and must be announced in the interface.
 
-Les exclusions générales de générations et de légendaires restent strictes.
-Ainsi, conserver les boss légendaires tout en interdisant globalement tous les
-légendaires est une configuration impossible, signalée par une erreur. Munja
-est exclu des nouveaux tirages, et l’espèce originale de chaque groupe n’est
-pas son propre remplacement.
+The general exclusions of generations and legends remain strict. Thus, keeping legendary bosses
+while banning all legendary globally is an impossible configuration, signalled by an error. Shedinja
+is excluded from new draws, and the original species of each group is not its own replacement.
 
-Avec `unique_shadows`, le moteur résout simultanément les 48 groupes par
-appariement biparti entre groupes et familles d’évolution. Il cherche d’abord
-un appariement complet respectant les préférences de puissance. Si nécessaire,
-il reprend sur les ensembles de candidats satisfaisant toutes les exclusions
-strictes ; seuls les préférences du mode `global` peuvent alors sortir de leur
-fenêtre ou de leur choix le plus proche. Chaque repli est inscrit dans
-`power_preference_fallback_ids` et dans la ligne du groupe concerné.
+With `unique_shadows`, the engine simultaneously resolves the 48 groups by bipartial pairing between
+groups and families of evolution. It first seeks a complete pairing according to the power
+preferences. If necessary, it resumes on the sets of candidates satisfying all the strict
+exclusions. Only the preferences of the mode `global` can then come out of their nearest window or
+choice. Each fold is entered in `power_preference_fallback_ids` and in the line of the group
+concerned.
 
-Le mode `similar`, le minimum natif, les générations et le statut légendaire
-ne sont jamais assouplis pour obtenir 48 familles. Si aucun appariement complet
-n’existe, la génération échoue avec un message qui décrit les contraintes à
-modifier. Aucune ISO partiellement validée n’est produite par ce moteur.
+The `similar` mode, the native minimum, the generations and the legendary status are never relaxed
+to get 48 families. If no complete match exists, the generation fails with a message that describes
+the constraints to be modified. No partially validated ISO is produced by this engine.
 
-L’ordre des familles, des groupes et le choix de l’espèce d’une famille suivent
-la seed UTF-8 exacte et des domaines SHA-256 versionnés, indépendamment de
-l’ordre des dictionnaires ou de la liste d’inventaire. Une espèce est choisie
-dans chaque famille attribuée, puis écrite dans la métadonnée obscur et tous
-les enregistrements de dresseur qui partagent cet identifiant.
+The order of families, groups and the choice of species of a family follows the exact UTF-8 and
+SHA-256 domains, regardless of the order of dictionaries or inventory list. A species is chosen from
+each assigned family, then written in the dark metadata and all the records of the trainer that
+share this identifier.
 
-Les seules modifications autorisées sont l’espèce u16 de la métadonnée, et
-l’espèce u16, l’identifiant de nom u32 et le sélecteur de talent du Pokémon de
-dresseur. Le niveau, taux de capture, identifiant obscur, capacités, objets,
-IV/EV, drapeaux et tous les autres octets fournis restent intacts.
+The only permitted modifications are the species u16 of the metadata, and the species u16, the name
+identifier u32 and the talent selector of the Pokémon trainer. The level, catch rate, obscure
+identifier, abilities, objects, IV/EV, flags and all other bytes provided remain intact.
 
-Les valeurs spécifiques par défaut (`any`, `global`, 0) conservent exactement
-le tirage v0.4. Désactiver `randomize_shadows` rend ces règles inactives.
-Le renforcement et la diversité non obscure des boss s’exécutent ensuite,
-comme auparavant, sans retoucher les obscurs sélectionnés ici.
+The default specific values (`any`, `global`,0) keep exactly the draw v0.4. Disable
+`randomize_shadows` The reinforcement and the unobscured diversity of the bosses then execute, as
+before, without retouching the Shadow Pokémon selected here.
 
 ## Validation de cette passe
 
-`python -m unittest tests.test_shadow_boss_rules -v` : **14 tests réussis**,
-dont trois utilisant le dump PAL local. Ils couvrent les sept groupes et
-48 familles distinctes, légendaires, générations, seuils natifs, puissance
-stricte, replis globaux déclarés, appariement complet, impossibilité expliquée,
-reproductibilité, synchronisation de tous les alias et whitelist des octets.
+`python -m unittest tests.test_shadow_boss_rules -v`: **14 successful tests**, three of which use
+the local PAL dump. They cover the seven distinct groups and 48 families, legendary, generations,
+native thresholds, strict power, declared global folds, complete pairing, explained impossibility,
+reproducibility, synchronization of all aliases and whitelist bytes.
 
-Ces résultats valident les données produites et les invariants. Ils ne sont
-pas des combats observés sous Dolphin et ne garantissent pas l’équilibrage
-ressenti. La validation de l’intégration et de l’ISO appartient à la passe
-principale v0.5, pas à ce sous-module isolé.
+These results validate the data produced and the invariants. They are not combats observed under
+Dolphin and do not guarantee the balance felt. The validation of integration and ISO belongs to the
+main pass v0.5, not to this isolated submodule.

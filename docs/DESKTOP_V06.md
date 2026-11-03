@@ -1,87 +1,76 @@
-# Interface multilingue — v0.6
+# Multilingual interface — v0.6
 
-La v0.6.1 reprend les textes français et anglais : libellés plus courts,
-vocabulaire commun aux rubriques, aides centrées sur l’effet des options et
-messages d’erreur orientés vers l’action suivante. Les 59 réglages et leurs
-valeurs restent inchangés. Les profils v0.5, v0.6 et v0.6.1 restent acceptés.
-Les [conventions de rédaction](INTERFACE_COPY.md) décrivent le vocabulaire retenu.
+The v0.6.1 reproduces the French and English texts: shorter wording, common vocabulary in the
+headings, aids focused on the effect of options and error messages oriented towards the following
+action. The 59 settings and their values remain unchanged. The profiles v0.5, v0.6 and v0.6.1 remain
+accepted. The [Drafting Conventions](INTERFACE_COPY.md) describe the vocabulary chosen.
 
-L'interface suit la langue du système au premier lancement : français ou anglais,
-avec repli sur l'anglais si aucune langue système proposée n'est prise en charge.
-Le sélecteur de l'en-tête propose **Système**, **Français** et **English** ; les
-noms des langues restent reconnaissables dans leur propre langue.
+The interface follows the language of the system at the first launch: French or English, with a
+back-up on English if no proposed system language is supported. **System**, **French** and
+**English** The names of the languages remain recognizable in their own language.
 
-Le changement s'applique immédiatement aux 59 paramètres, quatorze catégories,
-descriptions, aides accessibles, choix, actions, titres et filtres des dialogues,
-erreurs récupérables et messages de progression. Les nombres des champs suivent
-la locale choisie. Les contrôles natifs des sélecteurs de fichiers restent ceux
-du système ; leurs boutons peuvent donc suivre la langue de Windows.
+The change immediately applies to the 59 parameters, fourteen categories, descriptions, accessible
+aids, choices, actions, titles and filters of dialogs, recoverable errors and progress messages. The
+number of fields follows the chosen locale. The native controls of file selectors remain those of
+the system. Their buttons can therefore follow the language of Windows.
 
-Le formulaire reste intact : seed, chemins, format, paramètres, catégorie active,
-volet RVZ et progression. Le choix est aussi disponible pendant une création.
-L'état et les étapes déjà affichées sont retraduits depuis leurs messages source.
+The form remains intact: seed, paths, format, parameters, active category, RVZ pane and progression.
+The choice is also available during a creation. The status and steps already displayed are
+retranslated from their source messages.
 
-## Préférence locale et reproduction
+## Local preference and reproduction
 
-Seule la clé `interface/language` est mémorisée dans un fichier INI utilisateur
-QSettings, organisation et application `ColosseumRandomizer`. La valeur est
-`system`, `fr` ou `en`. Aucun chemin de ROM ni seed n'est enregistré dans cette
-préférence. Un choix illisible ou inconnu revient au système ; une écriture
-impossible est signalée dans l'interface sans empêcher le choix pour la session.
+Only the `interface/language` key is stored in a QSettings user INI file, organization and
+application `ColosseumRandomizer`. The value is `system`, `fr`, or `en`. No ROM path nor seed is
+saved in this preference. An illegible or unknown choice comes back to the system. An impossible
+write is reported in the interface without preventing the choice for the session.
 
-La langue ne fait pas partie des 59 règles, des profils partagés ou des arguments
-du moteur. Elle ne change pas la langue de la ROM ni ses tirages. Le moteur reste
-`starter-shadow-boss-rules-v7`. La v0.6 accepte les profils v0.5 et v0.6, avec
-contrôle de version du moteur, schéma, valeurs et empreinte d'origine. Une v0.5
-ne sait pas importer un profil exporté par une version plus récente.
+The language is not part of the 59 rules, shared profiles or arguments of the engine. It does not
+change the language of the ROM or its hashes. The engine remains `starter-shadow-boss-rules-v7`. The
+v0.6 accepts the profiles v0.5 and v0.6, with engine version control, schema, values and original
+footprint. A v0.5 cannot import a profile exported by a newer version.
 
-## Implémentation et contrôles
+## Implementation and control
 
-Le catalogue anglais est un module Python inclus hors ligne dans les sources et
-l'exécutable. Le français est la langue source. Les messages paramétrés gardent
-leurs paramètres séparés : les chemins et seeds ne sont jamais traduits. Les
-détails techniques bruts d'une erreur système ou de format restent des diagnostics
-dans leur langue d'origine, précédés d'un message d'interface traduit.
+The English catalogue is a Python module included offline in the sources and executable. French is
+the source language. The set messages keep their parameters separate: paths and seeds are never
+translated. The raw technical details of a system error or format remain diagnostics in their
+original language, preceded by a translated interface message.
 
-La détection utilise les langues UI ordonnées de
+The detection uses the ordered IU languages of
 [QLocale](https://doc.qt.io/qtforpython-6/PySide6/QtCore/QLocale.html#PySide6.QtCore.QLocale.uiLanguages),
-et la préférence utilise
-[QSettings](https://doc.qt.io/qtforpython-6/PySide6/QtCore/QSettings.html).
-La suite passe **211 tests Python et trois tests Rust**. Elle couvre notamment :
+and preference uses [QSettings](https://doc.qt.io/qtforpython-6/PySide6/QtCore/QSettings.html). The
+suite passes **211 tests Python et trois tests Rust**. It includes.
 
-- langues système avec régions et variantes, priorité et repli ;
-- couverture des libellés, descriptions, choix et paramètres de formatage ;
-- choix manuel mémorisé, puis retour au système ;
-- maintien des règles, seeds Unicode, chemins contenant des accolades et profils ;
-- changement pendant un vrai worker Qt en arrière-plan, sans le redémarrer ;
-- erreurs, annulation, succès et titres/filtres des sélecteurs ;
-- actions accessibles dans une fenêtre de 680 × 540 en français et en anglais ;
-- compatibilité et détection de falsification des profils v0.5.
+- system languages with regions and variants, priority and withdrawal;
+- cover of wordings, descriptions, choices and formatting parameters;
+- manual choice stored, then back to the system;
+- maintenance of rules, Unicode seeds, paths containing braces and profiles;
+- change during a real Qt worker in the background, without restarting it;
+- errors, cancellation, success and titles/filters of the selectors;
+- actions accessible in a window of 680 × 540 in French and English;
+- compatibility and detection of falsification of profiles v0.5.
 
-Une course de fin de worker observée pendant ces vérifications a aussi été
-corrigée : le thread natif termine son nettoyage avant que l'interface ne libère
-sa référence et ne réactive les réglages. Les fenêtres de test sont détruites
-explicitement sur le thread UI pour isoler leurs objets Qt.
+An end-of-work race observed during these checks has also been corrected: the native thread
+completes its cleaning before the interface releases its reference and reactivates the settings. The
+test windows are explicitly destroyed on the thread UI to isolate their Qt objects.
 
-Les limites de validation du jeu restent celles du
-[rapport Dolphin](DOLPHIN_VALIDATION_2026-10-31.md). Cette évolution de l'interface
-n'ajoute aucun nouveau réglage de randomisation.
+The validation limits of the game remain those of [report
+Dolphin](DOLPHIN_VALIDATION_2026-10-31.md). This evolution of the interface does not add any new
+randomization settings.
 
-## Essai de l'exécutable Windows
+## Windows executable test
 
-La version reconstruite a été ouverte sous Windows en mode système français,
-changée en anglais, fermée puis relancée : le choix anglais est retrouvé.
-L'import du profil v0.5 de référence réussit dans cette interface anglaise.
-Une création complète prend **11,30 s**. Le résultat, les chemins et la seed
-restent affichés lors du retour au français.
+The reconstructed version was opened under Windows in French system mode, changed to English, closed
+and re-launched: the English choice is found. The import of the reference profile v0.5 succeeds in
+this English interface. A complete creation takes **11,30 s**. The result, the paths and the seed
+remain displayed when returning to French.
 
-L'ISO générée a été réempreintée indépendamment :
-`648cc8c0744c87fce40a7d4dbdd3f6f95f8df29bc48415ee33507cb5d1894b35`,
-identique à la référence v0.5 pour la même seed et les mêmes règles. La source
-reste intacte et tous les octets de sortie sont vérifiés par le moteur. La langue
-de l'interface ne change donc pas ce résultat de référence.
+The generated ISO has been reprinted independently:
+`648cc8c0744c87fce40a7d4dbdd3f6f95f8df29bc48415ee33507cb5d1894b35`, identical to the reference v0.5
+for the same seed and the same rules. The source remains intact and all output bytes are checked by
+the engine. Therefore, the language of the interface does not change this reference result.
 
-L'audit après cet essai retrouve les images sources, les 2 011 fichiers du jeu,
-les 2 691 fichiers de l'installation Dolphin et les 46 fichiers du profil
-Dolphin personnel inchangés. Les rapports, captures et images d'essai restent
-privés sous `build/`, hors distribution.
+The audit after this trial finds the source images, the 2 011 files of the game, the 2 691 files of
+the Dolphin installation and the 46 files of the personal Dolphin profile unchanged. Reports,
+captures and test images remain private under `build/`, out of distribution.

@@ -1,125 +1,112 @@
-# CT et compatibilités — PAL GC6P01, 31 octobre 2026
+# TM and compatibility — PAL GC6P01, 31 October 2026
 
-Cette enquête et le module `colosseum_randomizer/engine/tm_rules.py` concernent le
-DOL original SHA-256
-`a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5` et le
-`common_rel` original SHA-256
-`ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b`.
-Les originaux sont lus, jamais écrits. Les observations ci-dessous sont statiques.
+This survey and the module `colosseum_randomizer/engine/tm_rules.py` concerning the original DOL
+SHA-256 `a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5` and `common_rel` original
+SHA-256 `ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b`. The originals are read,
+never written. The observations below are static.
 
-## Structure corroborée et mesures locales
+## Substantiated structure and local measures
 
-Le schéma primaire [CMTMs.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/enums/CMTMs.swift)
-situe la table PAL dans le DOL à `0x3B20D0`, avec huit octets par entrée et un
-indice de capacité u16 big endian à `+6`. Il définit 50 CT et 58 CT/CS ensemble :
-il y a donc **8 CS**, et non 89 compatibilités. Les CT correspondent aux objets
-`0x121..0x152`. Le remplacement d'une capacité y met aussi à jour sa description
-d'objet ; recopier un identifiant de description de capacité directement vers
-un objet ne suffit pas, car les ressources de texte sont différentes.
+The primary diagram
+[CMTMs.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/enums/CMTMs.swift)
+places the PAL table in the DOL at `0x3B20D0`, with eight bytes per input and a capacity index u16
+big endian at `+6`. It defines 50 TM and 58 TM/HM together: there is therefore **8 HM**, and not 89
+compatibilitys. TM correspond to objects `0x121..0x152`. The replacement of a capacity also updates
+its object description there. Copying a capacity description identifier directly to an object is not
+enough, because text resources are different.
 
-La lecture locale confirme 50 capacités CT distinctes. Les six premiers octets
-des entrées CT valent `00 00 00 00 00 00`, ceux des CS
-`01 00 00 00 00 00`. Les huit capacités CS sont, dans l'ordre,
-`15, 19, 57, 70, 148, 249, 127, 291`. Les entrées CT/CS occupent
-`[0x3B20D0, 0x3B22A0)`. Les tuples exacts sont vérifiés par le moteur avant édition.
-L'observation complète et l'empreinte du DOL sont conservées dans
+Local reading confirms 50 capabilities TM The first six bytes of the entries TM valent `00 00 00 00
+00 00`, HM `01 00 00 00 00 00`The eight capacities HM are, in order, `15, 19, 57, 70, 148, 249, 127,
+291`. Entries TM/HM occupent `[0x3B20D0, 0x3B22A0)`. The exact tuples are checked by the engine
+before editing. The complete observation and fingerprint of the DOL are kept in
 `analysis/generated/v03-references/pal-tm-original-observations.json`.
 
-Le schéma [CMPokemonStats.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMPokemonStats.swift)
-indique un enregistrement d'espèce de `0x11C` octets, les types à `+0x30/+0x31`
-et les compatibilités commençant à `+0x34`, à raison d'un octet booléen par CT/CS.
-Les 50 CT occupent donc `+0x34..+0x65`, puis les huit CS `+0x66..+0x6D`.
-Les champs d'objets tenus commencent à `+0x70` et ne doivent pas être atteints.
+The scheme
+[CMPokemonStats.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMPokemonStats.swift)
+indicates a registration of species of `0x11C` bytes, types to `+0x30/+0x31` and compatibilitys
+starting from `+0x34`, at one Boolean byte per TM/HM. The 50 TM occupent donc `+0x34..+0x65`, then
+the eight HM `+0x66..+0x6D`. The fields of objects held start at `+0x70` and should not be affected.
 
-Dans le REL local, la table d'espèces est à `2033100`, contient 413 entrées,
-dont 386 espèces avec un numéro national entre 1 et 386. Les 58 octets de chacune
-de ces espèces valent exclusivement 0 ou 1. Les 27 entrées supplémentaires sont
-préservées. Les octets de CS et les deux octets suivants ne sont pas modifiés.
+In the local ADR, the table of species is at `2033100`, contains 413 entries, of which 386 species
+with a national number between 1 and 386. The 58 bytes of each of these species are exclusively 0 or
+1. The 27 additional entries are preserved. The bytes of HM and the following two bytes are not
+modified.
 
-Le schéma [CMItem.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMItem.swift)
-situe les 397 objets PAL à `0x3ADDA0`, par enregistrements de `0x28` octets.
-La description est un u32 big endian à `+0x14`, distinct du nom à `+0x10`.
-Les 50 identifiants de description CT lus localement sont `10195..10244`.
+The diagram
+[CMItem.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMItem.swift)
+places the 397 PAL objects at `0x3ADDA0`, by recording `0x28` bytes. The description is a u32 big
+endian at `+0x14`, distinct from the name at `+0x10`. The 50 description identifiers TM read locally
+are `10195..10244`.
 
-## Texte dans les cinq langues
+## Text in the five languages
 
-Les ressources originales `pocket_menu.fsys`, `pocket_menu_ge.fsys`,
-`pocket_menu_fr.fsys`, `pocket_menu_it.fsys`, `pocket_menu_sp.fsys` contiennent
-chacune une table de 631 entrées avec le tag correspondant UK/GE/FR/IT/SP.
-Les **50 identifiants CT sont présents dans chacune des cinq tables**. Le contrôle
-vérifie leurs bornes et leurs données non vides ; les séquences de contrôle du
-texte sont laissées en place. Les empreintes des archives, des membres et des
-250 intervalles de texte sont conservées dans
+The original resources `pocket_menu.fsys`, `pocket_menu_ge.fsys`, `pocket_menu_fr.fsys`,
+`pocket_menu_it.fsys`, `pocket_menu_sp.fsys` each contain a table of 631 entries with the
+corresponding tag UK/GE/FR/IT/SP. The **50 identifiers TM are present in each of the five tables**.
+The control checks their terminals and their non-empty data. The text control sequences are left in
+place. The hashes of the archives, members and 250 text intervals are kept in
 `analysis/generated/v03-references/pal-tm-description-locales.json`.
 
-Le module permute uniquement les 50 capacités CT natives. Chaque capacité emporte
-l'identifiant de description de son ancienne CT. Les textes eux-mêmes, leurs
-retours à la ligne, leurs traductions et les noms CT01..CT50 restent inchangés.
-Cette méthode évite de fabriquer ou de tronquer des traductions. Elle limite
-volontairement le choix aux **50 capacités déjà proposées en CT**, sans ajouter
-d'autres capacités au catalogue des CT.
+The module switches only the 50 capabilities TM natives. Each ability carries the description
+identifier of its former TM. Texts themselves, their return to the line, their translations and
+names CT01..CT50 This method avoids the manufacture or truncation of translations. **50 capacities
+already proposed in TM**, without adding any additional capacity to the catalogue of TM.
 
-Cette vérification porte sur les ressources originales locales. Le moteur reçoit
-REL/DOL, pas les archives de texte ; il ne revérifie donc pas ces cinq archives
-pour chaque ROM utilisateur. Il ne répare pas une archive déjà modifiée.
+This check covers the original local resources. The engine receives REL/DOL, not the text archive.
+Therefore, it does not recheck these five archives for each user ROM. It does not repair an already
+modified archive.
 
-## Règles implémentées
+## Rules implemented
 
-Contrat : `apply_tm_rules(original_rel, current_rel, original_dol, current_dol,
-seed, options, tables=None) -> (rel, dol, report)`. Le wrapper contrôle les deux
-empreintes d'origine et le schéma fourni. Il accepte un DOL courant déjà agrandi,
-avec une nouvelle section `text2` et son en-tête, sans les réécrire.
+Contract: `apply_tm_rules(original_rel, current_rel, original_dol, current_dol, seed, options,
+tables=None) -> (rel, dol, report)`. The wrapper controls both original hashes and the schema
+provided. It accepts an already enlarged current DOL, with a new section `text2` and its header,
+without rewriting them.
 
-- `randomize_tm_moves` : permutation reproductible des 50 couples
-  capacité/description. Un cycle de Sattolo garantit qu'aucune CT ne garde sa
-  capacité d'origine. Les 50 capacités natives restent présentes une fois chacune.
-- `tm_compatibility_mode="original"` : aucun octet de compatibilité ne change,
-  même si les CT sont mélangées ou si la garantie offensive est cochée.
-- `"type"` : une CT est compatible si le type de sa capacité finale figure parmi
-  les types **finaux** de l'espèce, après une éventuelle randomisation des types.
-- `"universal"` : les 386 espèces réelles peuvent apprendre les 50 CT. Cela inclut
-  les espèces normalement incapables d'apprendre des CT.
-- `"random"` : chaque couple espèce/numéro de CT a une probabilité de 50 %, avec
-  un tirage déterministe indépendant des autres couples.
-- `tm_ensure_offensive=True` : dans les trois modes de réécriture seulement,
-  ajoute au besoin une compatibilité avec une CT offensive. Il préfère le type
-  de l'espèce ; faute de candidat, il autorise explicitement une CT d'un autre
-  type et le signale. Il ne modifie jamais les capacités elles-mêmes.
+- `randomize_tm_moves`: Reproducible permutation of 50 capacity/description pairs. A Sattolo cycle
+  ensures that none TM retains its original capacity. The 50 native capabilities remain present once
+  each.
+- `tm_compatibility_mode="original"`: no compatibility byte changes, even if the TM are mixed or the
+  offensive warranty is checked.
+- `"type"`: a TM is compatible if the type of its final capacity is among the **finaux** types of
+  the species, after a possible randomization of the types.
+- `"universal"`: the 386 real species can learn the 50 TM. This includes species that are normally
+  unable to learn from TM.
+- `"random"`: each species/number couple of TM has a 50 per cent probability, with a deterministic
+  draw independent of other couples.
+- `tm_ensure_offensive=True`: in the three modes of rewriting only, adds if necessary compatibility
+  with an offensive TM. He prefers the type of the species. For lack of a candidate, he explicitly
+  authorizes a TM of another type and reports it. He never alters the abilities themselves.
 
-Les tirages ont un domaine SHA-256 propre, avec des clés séparées pour permutation,
-compatibilité et garantie. Activer une compatibilité ou sa garantie ne change pas
-la permutation des CT. La garantie retient les dégâts ordinaires à puissance
-supérieure à 1 et les dégâts fondés sur le niveau déjà reconnus par le moteur ;
-elle écarte les K.O. en un coup, les suicides et Lutte. Les 50 CT natives ne
-contiennent aucune de ces capacités écartées. Le pool local fournit 28 capacités
-offensives selon cette définition, réparties sur 16 types. Le type Insecte n'y
-dispose pas de CT offensive, d'où le repli explicite possible.
+The drawings have a clean SHA-256 domain, with separate keys for permutation, compatibility and
+warranty. Activated compatibility or its warranty does not change the permutation of TM. The
+warranty retains the ordinary damage at power greater than 1 and the damage based on the level
+already recognized by the engine. It removes the K.O. in one stroke, suicides and Wrestling. The 50
+TM natives do not contain any of these excluded capabilities. The local pool provides 28 offensive
+capabilities according to this definition, spread over 16 types. The Insect type does not have
+offensive TM there, hence the possible explicit withdrawal.
 
-Cette garantie signifie « au moins une CT offensive compatible dans le catalogue ».
-Elle ne donne pas l'objet au joueur, ne modifie pas sa disponibilité dans le
-scénario, ne promet pas une CT du bon type pour chaque espèce et ne remplace pas
-les quatre capacités apprises par le Pokémon.
+This guarantee means "at least one TM offensive compatible in the catalogue." It does not give the
+object to the player, does not change its availability in the scenario, does not promise a TM of the
+right type for each species and does not replace the four abilities learned by the Pokémon.
 
-## Bornes d'édition et validation
+## Editing points and validation
 
-Le DOL n'autorise que les deux octets de capacité de chacune des 50 CT et les
-quatre octets de description de chacun des 50 objets CT, soit au plus 300 octets.
-Les autres champs d'objet, notamment prix, nom, effets et fonctions, sont protégés.
-Le REL n'autorise que les 50 octets CT des 386 espèces réelles en mode de
-réécriture, soit 19 300 octets. Les rapports contiennent les offsets permis,
-le nombre de changements et une vérification intégrale des octets extérieurs.
-Les tailles d'entrée sont conservées et les 8 CS restent strictement intactes.
+The DOL only authorizes the two capacity bytes of each of the 50 TM and the four bytes of
+description of each of the 50 objects TM, or not more than 300 bytes. Other object fields, including
+prices, names, effects and functions, are protected. The REL only authorizes the 50 bytes TM of the
+386 real species in rewriting mode, or 19,300 bytes. The reports contain the permitted offsets, the
+number of changes and a full verification of the external bytes. The input sizes are retained and
+the 8 HM remain strictly intact.
 
-`python -m unittest tests.test_tm_rules -v` : **10 tests passent**, dont une
-vérification du PAL original. Ils couvrent la permutation sans point fixe,
-l'appariement capacité/description, la reproductibilité, l'indépendance des
-tirages, les types courants, le repli offensif, le mode original strict,
-les signatures invalides, la liste d'octets autorisés et un DOL courant agrandi.
-L'essai du menu d'apprentissage dans Dolphin reste une validation d'intégration
-distincte ; cette sous-enquête n'a lancé ni Dolphin ni reçu de CT en jeu.
+`python -m unittest tests.test_tm_rules -v`: **10 tests passent**, including a verification of the
+original PAL. They cover the non-fixed point permutation, the capacity/description matching,
+reproducibility, the independence of the hashes, the current types, the offensive fold, the strict
+original mode, invalid signatures, the list of authorized bytes and an enlarged current DOL. The
+learning menu test in Dolphin remains a separate integration validation. This sub-survey did not
+launch Dolphin or receive TM in play.
 
-Les trois sources primaires sont épinglées au commit
-`f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0`. Leurs copies, liens et SHA-256 sont
-répertoriés dans `analysis/generated/v03-references/tm-research-manifest.json`.
-L'implémentation Python est originale ; aucun code Swift tiers n'est intégré
-dans l'application.
+The three primary sources are pinned to commit `f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0`. Their
+copies, links and SHA-256 are listed in
+`analysis/generated/v03-references/tm-research-manifest.json`. The Python implementation is
+original. No third-party Swift code is integrated into the application.

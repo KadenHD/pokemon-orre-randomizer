@@ -1,12 +1,12 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-11-02T11:20:08.987313Z",
-  "title": "Design System: Colosseum Randomizer",
+  "title": "Design System: Pokémon Orre Randomizer",
   "extensions": {
     "colorMeta": {
       "forest-panel": {
         "role": "neutral",
-        "displayName": "Vert forêt",
+        "displayName": "Forest green",
         "tonalRamp": [
           "oklch(15% 0.04170 176.91)",
           "oklch(26% 0.04170 176.91)",
@@ -20,7 +20,7 @@
       },
       "indigo-background": {
         "role": "neutral",
-        "displayName": "Indigo de fond",
+        "displayName": "Background indigo",
         "tonalRamp": [
           "oklch(15% 0.06068 276.73)",
           "oklch(26% 0.06068 276.73)",
@@ -34,7 +34,7 @@
       },
       "field-ink": {
         "role": "neutral",
-        "displayName": "Encre des champs",
+        "displayName": "Field ink",
         "tonalRamp": [
           "oklch(15% 0.02403 214.72)",
           "oklch(26% 0.02403 214.72)",
@@ -48,7 +48,7 @@
       },
       "text-ivory": {
         "role": "neutral",
-        "displayName": "Ivoire de texte",
+        "displayName": "Ivory text",
         "tonalRamp": [
           "oklch(15% 0.00783 139.44)",
           "oklch(26% 0.00783 139.44)",
@@ -62,7 +62,7 @@
       },
       "text-mint": {
         "role": "neutral",
-        "displayName": "Menthe de texte",
+        "displayName": "Mint text",
         "tonalRamp": [
           "oklch(15% 0.02752 170.18)",
           "oklch(26% 0.02752 170.18)",
@@ -76,7 +76,7 @@
       },
       "silver-frame": {
         "role": "neutral",
-        "displayName": "Argent de cadre",
+        "displayName": "Silver frame",
         "tonalRamp": [
           "oklch(15% 0.02624 171.80)",
           "oklch(26% 0.02624 171.80)",
@@ -90,7 +90,7 @@
       },
       "cyan-state": {
         "role": "primary",
-        "displayName": "Cyan d’état",
+        "displayName": "Status cyan",
         "tonalRamp": [
           "oklch(15% 0.10324 198.48)",
           "oklch(26% 0.10324 198.48)",
@@ -104,7 +104,7 @@
       },
       "teal-selected": {
         "role": "primary",
-        "displayName": "Sarcelle de sélection",
+        "displayName": "Selection teal",
         "tonalRamp": [
           "oklch(15% 0.06259 204.26)",
           "oklch(26% 0.06259 204.26)",
@@ -118,7 +118,7 @@
       },
       "button-face": {
         "role": "neutral",
-        "displayName": "Face des boutons",
+        "displayName": "Button face",
         "tonalRamp": [
           "oklch(15% 0.02981 221.35)",
           "oklch(26% 0.02981 221.35)",
@@ -132,7 +132,7 @@
       },
       "field-edge": {
         "role": "neutral",
-        "displayName": "Bord des champs",
+        "displayName": "Field border",
         "tonalRamp": [
           "oklch(15% 0.03248 180.83)",
           "oklch(26% 0.03248 180.83)",
@@ -146,7 +146,7 @@
       },
       "action-gold": {
         "role": "secondary",
-        "displayName": "Or d’action",
+        "displayName": "Action gold",
         "tonalRamp": [
           "oklch(15% 0.12082 94.71)",
           "oklch(26% 0.12082 94.71)",
@@ -160,7 +160,7 @@
       },
       "action-face": {
         "role": "neutral",
-        "displayName": "Face de l’action",
+        "displayName": "Action face",
         "tonalRamp": [
           "oklch(15% 0.04542 181.90)",
           "oklch(26% 0.04542 181.90)",
@@ -174,7 +174,7 @@
       },
       "action-hover": {
         "role": "neutral",
-        "displayName": "Survol de l’action",
+        "displayName": "Action hover",
         "tonalRamp": [
           "oklch(15% 0.06428 174.44)",
           "oklch(26% 0.06428 174.44)",
@@ -189,19 +189,19 @@
     },
     "typographyMeta": {
       "display": {
-        "displayName": "Nom de l’outil",
+        "displayName": "App name",
         "purpose": "En-tête ; retour à la ligne autorisé."
       },
       "headline": {
-        "displayName": "Titre de zone",
+        "displayName": "Section title",
         "purpose": "Titre du panneau de travail."
       },
       "body": {
-        "displayName": "Contrôles",
+        "displayName": "Controls",
         "purpose": "Champs, commandes, catégories et cases."
       },
       "note": {
-        "displayName": "Aides",
+        "displayName": "Help text",
         "purpose": "Sous-libellés, descriptions et légendes."
       }
     },
@@ -219,23 +219,23 @@
       "name": "Bouton",
       "kind": "button",
       "refersTo": "button",
-      "description": "Commande secondaire native au repos, au survol et au focus.",
-      "html": "<button class=\"ds-button\">Importer un profil…</button>",
+      "description": "Native secondary button in its default, hover, and keyboard focus states.",
+      "html": "<button class=\"ds-button\">Import profile…</button>",
       "css": ".ds-button{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif;}.ds-button:hover{background:#24483f;border-color:#bce9de}.ds-button:focus-visible{outline:none;border:2px solid #71e2e6;padding:3px 11px}.ds-button:active{background:#0a3935}.ds-button:disabled{color:#9dafa9;background:#1b292c;border-color:#40534f}"
     },
     {
       "name": "Action principale",
       "kind": "button",
       "refersTo": "button-primary",
-      "description": "Contour or au repos, cyan au focus clavier.",
-      "html": "<button class=\"ds-primary\">Créer la ROM</button>",
+      "description": "Gold border by default, cyan on keyboard focus.",
+      "html": "<button class=\"ds-primary\">Create ROM</button>",
       "css": ".ds-primary{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif;background:#173e38;border:2px solid #efd574;font-weight:600;padding:3px 17px}.ds-primary:hover{background:#245d4f}.ds-primary:focus-visible{outline:none;border-color:#71e2e6}.ds-primary:active{background:#0a3935}.ds-primary:disabled{color:#9dafa9;border-color:#53615a;background:#1b292c}"
     },
     {
       "name": "Champ de saisie",
       "kind": "input",
       "refersTo": "input",
-      "description": "Fond encre et contour cyan au focus, sans modifier la largeur utile.",
+      "description": "Ink background and cyan focus border with a consistent field width.",
       "html": "<label class=\"ds-field-label\">Seed <input class=\"ds-input\" value=\"exemple-2026\" /></label>",
       "css": ".ds-field-label{color:#f2f6f1;font:14px \"Segoe UI\",sans-serif;display:flex;align-items:center;gap:12px;background:#082b24;padding:12px}.ds-input{background:#0b1c20;color:#f2f6f1;border:1px solid #829e98;border-radius:4px;min-height:24px;padding:5px 8px;font:14px \"Segoe UI\",sans-serif;}.ds-input:focus-visible{outline:none;border:2px solid #71e2e6;padding:4px 7px}.ds-input:hover:not(:focus-visible){border-color:#bce9de}.ds-input:disabled{color:#9dafa9;border-color:#40534f}"
     },
@@ -243,53 +243,53 @@
       "name": "Étapes",
       "kind": "nav",
       "refersTo": "selection",
-      "description": "Trois zones jointives ; la sélection associe un curseur à un fond et un contour distincts.",
-      "html": "<nav class=\"ds-steps\"><button>1. ROM</button><button aria-current=\"step\"><svg aria-hidden=\"true\" viewBox=\"0 0 16 16\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"#fff\" stroke=\"#111\"/><path d=\"M1 8a7 7 0 0 1 14 0Z\" fill=\"#d83a35\" stroke=\"#111\"/><circle cx=\"8\" cy=\"8\" r=\"2.4\" fill=\"#fff\" stroke=\"#111\"/></svg>2. Réglages</button><button>3. Créer</button></nav>",
+      "description": "Three adjoining steps. The active step uses the cursor, a distinct fill, and a contrasting border.",
+      "html": "<nav class=\"ds-steps\"><button>1. ROM</button><button aria-current=\"step\"><svg aria-hidden=\"true\" viewBox=\"0 0 16 16\"><circle cx=\"8\" cy=\"8\" r=\"7\" fill=\"#fff\" stroke=\"#111\"/><path d=\"M1 8a7 7 0 0 1 14 0Z\" fill=\"#d83a35\" stroke=\"#111\"/><circle cx=\"8\" cy=\"8\" r=\"2.4\" fill=\"#fff\" stroke=\"#111\"/></svg>2. Settings</button><button>3. Create</button></nav>",
       "css": ".ds-steps{display:flex;gap:0}.ds-steps button{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif;border-radius:0;flex:1;min-height:30px;white-space:nowrap}.ds-steps button[aria-current]{background:#125359;border:2px solid #71e2e6;padding:3px 11px}.ds-steps button:hover{background:#24483f}.ds-steps button:focus-visible{outline:none;border:2px solid #71e2e6;padding:3px 11px}.ds-steps button:active{background:#0a3935}.ds-steps svg{height:15px;width:15px;vertical-align:-2px;margin-right:6px}"
     },
     {
       "name": "Commande audio cochée",
       "kind": "button",
       "refersTo": "selection",
-      "description": "Même langage d’état pour les deux commandes audio indépendantes.",
-      "html": "<button class=\"ds-toggle\" aria-pressed=\"true\">Sons</button>",
+      "description": "Both independent audio controls use the same visual states.",
+      "html": "<button class=\"ds-toggle\" aria-pressed=\"true\">Sounds</button>",
       "css": ".ds-toggle{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif;}.ds-toggle[aria-pressed=true]{background:#125359;border:2px solid #71e2e6;padding:3px 11px}.ds-toggle:hover{background:#24483f}.ds-toggle:focus-visible{outline:none;border:2px solid #71e2e6;padding:3px 11px}.ds-toggle:active{background:#0a3935}.ds-toggle:disabled{color:#9dafa9;background:#1b292c;border-color:#40534f}"
     },
     {
       "name": "Case à cocher",
       "kind": "input",
-      "description": "Coche sombre visible sur fond cyan, avec libellé indépendant.",
-      "html": "<label class=\"ds-check\"><input type=\"checkbox\" checked /><span>Remplacer Mentali</span></label>",
+      "description": "A dark check mark on cyan, with a separate text label.",
+      "html": "<label class=\"ds-check\"><input type=\"checkbox\" checked /><span>Replace Espeon</span></label>",
       "css": ".ds-check{display:flex;align-items:center;gap:9px;background:#082b24;color:#f2f6f1;padding:6px;font:14px \"Segoe UI\",sans-serif;}.ds-check input{appearance:none;width:17px;height:17px;margin:0;border:1px solid #a3bdb1;border-radius:2px;background:#0b1c20;position:relative}.ds-check input:checked{background:#60d4d9;border:2px solid #d6faf1}.ds-check input:checked:after{content:\"\";position:absolute;left:3px;top:1px;width:5px;height:9px;border:solid #082b24;border-width:0 2px 2px 0;transform:rotate(45deg)}.ds-check input:focus-visible{outline:2px solid #71e2e6;outline-offset:2px}.ds-check:hover{color:#8be8e7}.ds-check input:disabled{background:#40564d;border-color:#50665b}"
     },
     {
       "name": "Panneau de menu",
       "kind": "card",
       "refersTo": "menu-panel",
-      "description": "Deux contours anguleux dessinés en vecteur ; le contenu demeure du texte.",
-      "html": "<section class=\"ds-panel\"><svg aria-hidden=\"true\" viewBox=\"0 0 340 150\" preserveAspectRatio=\"none\"><path d=\"M12 1H328L339 12V138L328 149H12L1 138V12Z\" fill=\"#082b24\" stroke=\"#b6ccc4\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\"/><path d=\"M13 5H327L335 13V137L327 145H13L5 137V13Z\" fill=\"none\" stroke=\"#54726c\" vector-effect=\"non-scaling-stroke\"/></svg><div><h3>Choisissez vos réglages</h3><p>Les contrôles restent natifs et traduisibles.</p></div></section>",
+      "description": "Two angular vector outlines frame a text panel.",
+      "html": "<section class=\"ds-panel\"><svg aria-hidden=\"true\" viewBox=\"0 0 340 150\" preserveAspectRatio=\"none\"><path d=\"M12 1H328L339 12V138L328 149H12L1 138V12Z\" fill=\"#082b24\" stroke=\"#b6ccc4\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\"/><path d=\"M13 5H327L335 13V137L327 145H13L5 137V13Z\" fill=\"none\" stroke=\"#54726c\" vector-effect=\"non-scaling-stroke\"/></svg><div><h3>Choose your settings</h3><p>The controls use native widgets and localized labels.</p></div></section>",
       "css": ".ds-panel{position:relative;width:340px;max-width:100%;min-height:150px;color:#f2f6f1;font:14px \"Segoe UI\",sans-serif;}.ds-panel>svg{position:absolute;inset:0;width:100%;height:100%}.ds-panel>div{position:relative;padding:20px 24px}.ds-panel h3{font-size:23px;font-weight:650;margin:0 0 12px}.ds-panel p{font-size:13px;color:#c1d8cf;margin:0}"
     },
     {
       "name": "Liste d’exclusions",
       "kind": "custom",
-      "description": "Recherche et cases natives : coché signifie exclu. Le compteur et OK / Annuler restent sous la liste ; seules les confirmations appliquent la sélection.",
-      "html": "<section class=\"ds-exclusions\"><label class=\"ds-exclusion-search\">Pokémon exclus<input placeholder=\"Rechercher un nom ou un numéro…\" /></label><div class=\"ds-exclusion-results\"><label><input type=\"checkbox\" checked /><span>#133  Évoli</span></label><label><input type=\"checkbox\" /><span>#134  Aquali</span></label></div><div class=\"ds-exclusion-actions\"><button>Exclure les résultats</button><button>Autoriser les résultats</button></div><footer><span>Sélection : 1</span><button>OK</button><button>Annuler</button></footer></section>",
+      "description": "Checked rows are excluded. The count and confirmation buttons sit below the list.",
+      "html": "<section class=\"ds-exclusions\"><label class=\"ds-exclusion-search\">Excluded Pokémon<input placeholder=\"Search by name or number…\" /></label><div class=\"ds-exclusion-results\"><label><input type=\"checkbox\" checked /><span>#133  Eevee</span></label><label><input type=\"checkbox\" /><span>#134  Vaporeon</span></label></div><div class=\"ds-exclusion-actions\"><button>Exclude results</button><button>Allow results</button></div><footer><span>Selected (1)</span><button>OK</button><button>Cancel</button></footer></section>",
       "css": ".ds-exclusions{color:#f2f6f1;font:14px \"Segoe UI\",sans-serif;padding:16px 20px;display:grid;gap:12px}.ds-exclusion-search{display:grid;gap:12px}.ds-exclusion-search>input{background:#0b1c20;color:#f2f6f1;border:1px solid #829e98;border-radius:4px;padding:5px 8px;min-height:24px;font:inherit}.ds-exclusion-search>input:focus-visible{outline:none;border:2px solid #71e2e6;padding:4px 7px}.ds-exclusion-results{background:#09271f;overflow:auto}.ds-exclusion-results>label{display:flex;align-items:center;gap:6px;padding:8px 6px;border-bottom:1px solid #294f41}.ds-exclusion-results>label:hover{background:#173f32}.ds-exclusion-results input{appearance:none;width:14px;height:14px;margin:0;border:1px solid #b6ccc4;background:#0b1c20;position:relative}.ds-exclusion-results input:checked{background:#71e2e6;border-color:#d9f4eb}.ds-exclusion-results input:checked:after{content:\"\";position:absolute;left:3px;top:1px;width:4px;height:7px;border:solid #082b24;border-width:0 2px 2px 0;transform:rotate(45deg)}.ds-exclusion-results input:focus-visible{outline:2px solid #71e2e6;outline-offset:2px}.ds-exclusion-actions,.ds-exclusions footer{display:flex;gap:12px;align-items:center}.ds-exclusion-actions>button{flex:1}.ds-exclusions footer>span{flex:1;color:#c1d8cf;font-size:13px}.ds-exclusions button{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:inherit}.ds-exclusions button:hover{background:#24483f;border-color:#bce9de}.ds-exclusions button:focus-visible{outline:none;border:2px solid #71e2e6;padding:3px 11px}.ds-exclusions button:active{background:#0a3935}.ds-exclusions button:disabled{color:#9dafa9;background:#1b292c;border-color:#40534f}"
     },
     {
       "name": "Réglage dépendant",
       "kind": "custom",
-      "description": "Une case active le champ numérique suivant. Sa valeur reste visible mais atténuée lorsque le champ est désactivé ; l’aide demeure sous les contrôles.",
-      "html": "<section class=\"ds-dependent\"><label class=\"ds-dependent-toggle\"><input type=\"checkbox\" checked /><span>Personnaliser les shinies</span></label><label class=\"ds-dependent-rate\">Taux de shinies (%)<input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" value=\"1.0000\" aria-label=\"Taux de shinies (%)\" /></label><p>0 % : aucun ; 100 % : tous. Les Pokémon déjà générés gardent leur tirage.</p></section>",
+      "description": "The checkbox enables the next numeric field. Disabled values stay visible with reduced emphasis.",
+      "html": "<section class=\"ds-dependent\"><label class=\"ds-dependent-toggle\"><input type=\"checkbox\" checked /><span>Customize Shiny odds</span></label><label class=\"ds-dependent-rate\">Shiny chance (%)<input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" value=\"1.0000\" aria-label=\"Shiny chance (%)\" /></label><p>At 0% none are Shiny. At 100% all are Shiny. Existing Pokémon keep their status.</p></section>",
       "css": ".ds-dependent{background:#082b24;color:#f2f6f1;font:14px \"Segoe UI\",sans-serif;display:grid;gap:12px;padding:16px}.ds-dependent-toggle{display:flex;align-items:center;gap:9px;padding:6px 0}.ds-dependent-toggle>input{appearance:none;width:17px;height:17px;margin:0;border:1px solid #a3bdb1;border-radius:2px;background:#0b1c20;position:relative}.ds-dependent-toggle>input:checked{background:#60d4d9;border:2px solid #d6faf1}.ds-dependent-toggle>input:checked:after{content:\"\";position:absolute;left:3px;top:1px;width:5px;height:9px;border:solid #082b24;border-width:0 2px 2px 0;transform:rotate(45deg)}.ds-dependent-toggle>input:focus-visible{outline:2px solid #71e2e6;outline-offset:2px}.ds-dependent-toggle:hover{color:#8be8e7}.ds-dependent-rate{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ds-dependent-rate>input{flex:1;min-width:100px;background:#0b1c20;color:#f2f6f1;border:1px solid #829e98;border-radius:4px;padding:5px 8px;min-height:24px;font:inherit}.ds-dependent-rate>input:focus-visible{outline:none;border:2px solid #71e2e6;padding:4px 7px}.ds-dependent-rate>input:disabled{color:#9dafa9;border-color:#40534f}.ds-dependent>p{margin:0;color:#c1d8cf;font-size:13px}"
     },
     {
       "name": "Onglets de travail",
       "kind": "nav",
       "refersTo": "selection",
-      "description": "Vues ou groupes de contenu ; fond sarcelle et trait cyan marquent la sélection.",
-      "html": "<nav class=\"ds-tabs\" aria-label=\"Vues des réglages\"><button aria-selected=\"true\">Configuration</button><button>Aperçu des Pokémon</button></nav>",
+      "description": "The selected view uses a teal fill and cyan border.",
+      "html": "<nav class=\"ds-tabs\" aria-label=\"Settings views\"><button aria-selected=\"true\">Configuration</button><button>Pokémon preview</button></nav>",
       "css": ".ds-tabs{display:flex;gap:0}.ds-tabs button{flex:1;background:#172c33;color:#f2f6f1;border:1px solid #69877a;border-radius:0;padding:6px 13px;font:14px \"Segoe UI\",sans-serif}.ds-tabs button[aria-selected=true]{background:#125359;border-bottom:2px solid #71e2e6}.ds-tabs button:hover{background:#24483f}.ds-tabs button:focus-visible{outline:1px solid #71e2e6;outline-offset:0}"
     }
   ],

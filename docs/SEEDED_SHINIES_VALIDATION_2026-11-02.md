@@ -1,58 +1,48 @@
-# Statuts chromatiques liés à la seed — 2 novembre 2026
+# Seed-related Shiny status — November 2, 2026
 
-La v0.11.0 utilise le moteur `seeded-shiny-status-v12`. Le test à 25 % et seed
-`seeded-preview-1` prévoit Galekid chromatique et Héricendre ordinaire pour les
-deux starters. Les 54 lignes d’aperçu reprennent les décisions du patch et leurs
-portraits natifs, sans recalcul indépendant. Cette seed donne 17 chromatiques
-sur ces 54 lignes ; le taux est une probabilité par clé, pas un quota.
+The v0.11.0 uses the engine `seeded-shiny-status-v12`. The 25% and seed test `seeded-preview-1`
+predicts Aron Shiny and Cyndaquil ordinary for both starters. The 54 lines of preview resume the
+decisions of the patch and their native portraits, without independent recalculation. This seed
+gives 17 Shiny on these 54 lines. The rate is a probability per key, not a quota.
 
-L’ISO privée de test porte le SHA-256
-`e8696b3c7fbb235ed8535e32e8bd9ea0e1309a33dfd69bf5e563f99859031372`.
-La lecture complète de l’image reconstruite est vérifiée. L’ISO vierge reste
-au SHA-256 `1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9`.
+The private ISO test carries the SHA-256
+`e8696b3c7fbb235ed8535e32e8bd9ea0e1309a33dfd69bf5e563f99859031372`. The complete reading of the
+reconstructed image is verified. The blank ISO remains at SHA-256
+`1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9`.
 
-## Contrôles automatisés
+## Automated controls
 
-La suite locale exécute 342 tests : 340 réussis et deux ignorés. Les tests du
-patch exécutent ses instructions PowerPC avec un générateur natif simulé pour
-vérifier les arguments, les propriétaires, les registres préservés, les bornes
-de tables et les branches. Ils ne sont pas présentés comme une exécution Dolphin.
-La compatibilité du mode natif avec le code conservé de la v0.10.1 est vérifiée
-octet par octet pour 0 %, 25 % et 100 %, avec et sans correctif de capacités de
-cadeau. Le profil signé conservé de la v0.10 est importé avec la liaison à la seed
-désactivée.
+The local suite executes 342 tests: 340 successful and two ignored. The patch tests run its PowerPC
+instructions with a simulated native generator to check arguments, owners, preserved records, table
+terminals and branches. They are not presented as a Dolphin execution. The compatibility of the
+native mode with the retained code of the [v0.10.1] is verified byte byte per byte for 0%, 25% and
+100%, with and without gift capability fix. The retained signed profile of the v0.10 is imported
+with the link to the set disabled.
 
-## Exécution native contrôlée sous Dolphin
+## Controlled native execution under Dolphin
 
-Deux démarrages indépendants utilisent l’ISO exacte et des profils privés sans
-carte personnelle ni savestate. Les tables REL et la section DOL chargées sont
-comparées aux données de l’ISO avant les appels. Le joueur, ses caches et les
-groupes de flags sont des fixtures dans une zone RAM distincte ; aucun fichier de
-sauvegarde personnel n’est utilisé.
+Two independent startups use the exact ISO and private profiles without a personal card or
+savestate. The loaded REL and DOL tables are compared to ISO data before calls. The player, his
+caches and flag groups are fixtures in a separate RAM area. No personal backup files are used.
 
-À chaque démarrage, le vrai constructeur `0x801FE824` traite 81 enregistrements
-sélectionnés : les 48 groupes d’obscurs et 33 emplacements ordinaires, dont deux
-de même espèce avec des statuts opposés. Il traverse le trampoline de sauvegarde
-d’index et le wrapper de production. Les 81 statuts correspondent aux décisions
-encodées. Les six véritables routines de génération de starters et cadeaux
-correspondent également à l’aperçu. Le point d’observation suit le stockage du
-PID et le checksum, avant les callbacks d’acquisition ; le propriétaire fourni
-au générateur est relevé pour calculer le critère canonique.
+At each start, the real builder `0x801FE824` processes 81 selected records: the 48 groups of Shadow Pokémon
+and 33 ordinary locations, two of which are of the same kind with opposite status. It crosses the
+backup trampoline of the index and the production wrapper. The 81 statutes correspond to the encoded
+decisions. The six real starters and gifts generation routines also correspond to the preview. The
+observation point follows the storage of the PID and the checksum, before the acquisition callbacks.
+The owner supplied to the generator is raised to calculate the canonical criterion.
 
-Le deuxième démarrage ajoute 17 appels au RNG natif avant ces essais. Les statuts
-restent identiques alors que les PID peuvent varier. Pour le groupe obscur 21,
-le test prépare uniquement son flag de rencontre dans le registre RAM isolé :
-la branche native `0x801FEC68` restitue le PID mémorisé et contourne le wrapper de
-génération. Ce contrôle ne remplace pas une capture jouée ni une sauvegarde/relecture.
+The second boot adds 17 calls to the native RNG before these tests. The statuses remain the same
+while the PIDs may vary. For the dark group 21, the test only prepares its encounter flag in the
+isolated RAM register: the native branch `0x801FEC68` restores the stored PID and bypasses the
+generation wrapper. This control does not replace a played capture or backup/reread.
 
-Les essais complets de 5 510 constructeurs ont dépassé la limite du harnais :
-le rejet natif doit aussi respecter nature et genre. Il est exclu des résultats
-réussis ; les deux lots ciblés donnent une couverture bornée et vérifiable. Ces
-échantillons choisis ne mesurent pas statistiquement un taux d’apparition.
+The complete tests of 5,510 manufacturers have exceeded the harness limit: native rejection must
+also respect nature and gender. It is excluded from the successful results. The two targeted batches
+give a limited and verifiable coverage. These selected samples do not statistically measure a rate
+of occurrence.
 
-Les processus CPU sont arrêtés volontairement après les appels synthétiques
-(code de diagnostic `0xEE01`). Aucune fermeture normale ni partie jouée n’est
-revendiquée pour ces sessions. Les moniteurs confirment la conservation des
-originaux protégés et du profil Dolphin personnel ; le débogage des profils QA
-est désactivé après chaque essai. Les preuves détaillées restent privées dans
-`build/seeded-shinies-2026-11-02/`.
+CPU processes are voluntarily stopped after synthetic calls (diagnostic code `0xEE01`). No normal
+closing or played part is claimed for these sessions. Monitors confirm the retention of the
+protected originals and personal Dolphin profile. Debugging of QA profiles is disabled after each
+trial. Detailed evidence remains private in `build/seeded-shinies-2026-11-02/`.

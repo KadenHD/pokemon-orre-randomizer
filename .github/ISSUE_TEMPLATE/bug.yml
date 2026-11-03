@@ -1,24 +1,24 @@
-name: Signaler un problème
-description: Une erreur dans l’application ou une partie générée.
+name: Report a bug
+description: A problem with the app or a generated game.
 body:
   - type: markdown
     attributes:
-      value: "Ne joignez aucune ROM ni sauvegarde. Retirez les chemins et informations personnelles des rapports."
+      value: "Leave ROMs and save files out of the report. Remove local paths and personal information from any excerpts you share."
   - type: input
     id: version
     attributes:
-      label: Version de l’application et Windows
+      label: App version and Windows version
     validations:
       required: true
   - type: textarea
     id: steps
     attributes:
-      label: Étapes pour reproduire
-      description: "Indiquez la seed, les réglages ou le profil JSON, puis le résultat attendu et le résultat observé."
+      label: Steps to reproduce
+      description: "Include the seed, settings or JSON profile. Describe what you expected and what happened."
     validations:
       required: true
   - type: textarea
     id: report
     attributes:
-      label: Message d’erreur ou extraits du rapport
-      description: "Version du moteur et empreintes utiles. Relisez le contenu avant de l’envoyer."
+      label: Error message or report excerpts
+      description: "Include the engine version and relevant hashes. Review the content before sharing it."

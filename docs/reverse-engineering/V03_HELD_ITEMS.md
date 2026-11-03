@@ -1,26 +1,29 @@
-# Objets tenus : liste de combat PAL vérifiée
+# Items held: PAL combat list verified
 
-Analyse statique du 31 octobre 2026, sans écriture dans le jeu ni exécution Dolphin.
-Les ID et noms ci-dessous ont été lus dans les données originales, sans reprendre
-de mémoire une numérotation d'une autre version.
+Static analysis of October 31, 2026, without writing in the game or running Dolphin. The IDs and
+names below were read in the original data, without resuming from memory a numbering of another
+version.
 
-## Provenance et vérification
+## Source and verification
 
 - DOL PAL : SHA-256 `a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5`.
 - `common.rel` : SHA-256 `ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b`.
-- Schéma primaire épinglé : [CMItem.swift, commit f2d6c4a](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMItem.swift).
-  La table PAL est dans le DOL à `0x3ADDA0`, avec un pas de `0x28` et 397 entrées.
-  Champs utilisés : poche `+0x00`, indicateur empêchant de tenir `+0x01`, effet
-  d'objet tenu `+0x0B`, ID du nom `+0x10`, paramètre `+0x1B`.
-- Résolution des noms corroborée par [CMItems.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/enums/CMItems.swift) : l'ID lu dans le DOL référence les textes de `common.rel`.
-- Les ID candidats proviennent seulement d'emplacements peuplés effectivement
-  référencés par les équipes d'origine. Chaque objet retenu a un nom UK/FR valide,
-  un effet de tenue non nul, un indicateur de tenue à zéro et une poche 2 ou 3.
-- Détail local reproductible : `analysis/generated/v03-references/held-items-local.json`.
+- Primary schema: [CMItem.swift, commit
+  f2d6c4a](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMItem.swift).
+  The PAL table is in the DOL at `0x3ADDA0`, with a step of `0x28` and 397 entries. Fields used:
+  pocket `+0x00`, indicator preventing holding `+0x01`, object effect held `+0x0B`, name ID `+0x10`,
+  parameter `+0x1B`.
+- Resolution of names corroborated by
+  [CMItems.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/enums/CMItems.swift):
+  the ID read in the DOL refers to the texts of `common.rel`.
+- Candidate IDs only come from populated locations actually referenced by the original teams. Each
+  selected item has a valid UK/FR name, a non-zero holding effect, a zero holding indicator and a 2
+  or 3 pocket.
+- Reproducible local detail: `analysis/generated/v03-references/held-items-local.json`.
 
-## Liste recommandée pour des objets de combat génériques
+## Recommended list for generic combat objects
 
-44 ID :
+44 ID .
 
 ```python
 (133, 134, 135, 136, 137, 138, 139, 140, 141, 142,
@@ -29,7 +32,7 @@ de mémoire une numérotation d'une autre version.
  211, 212, 213, 214, 215, 216, 217, 219, 220, 221)
 ```
 
-| ID | Nom UK observé | Nom FR observé | Effet brut |
+| ID | UK name observed | Observed FR name | Effect brut |
 | --- | --- | --- | ---: |
 | 133 | CHERI BERRY | BAIE CERIZ | 2 |
 | 134 | CHESTO BERRY | BAIE MARON | 3 |
@@ -50,7 +53,7 @@ de mémoire une numérotation d'une autre version.
 | 180 | WHITE HERB | HERBEBLANCHE | 23 |
 | 183 | QUICK CLAW | VIVE GRIFFE | 26 |
 | 185 | MENTAL HERB | HERBE MENTAL | 28 |
-| 186 | CHOICE BAND | BAND. CHOIX | 29 |
+| 186 | CHOICE BAND | BAND. CHOICE | 29 |
 | 187 | KING'S ROCK | ROCHE ROYALE | 30 |
 | 188 | SILVERPOWDER | POUDRE ARG. | 31 |
 | 196 | FOCUS BAND | BANDEAU | 39 |
@@ -76,25 +79,23 @@ de mémoire une numérotation d'une autre version.
 | 220 | SEA INCENSE | ENCENS MER | 52 |
 | 221 | LAX INCENSE | ENCENS DOUX | 22 |
 
-Peau Métal et Roche Royale ont un effet de combat non nul : leur autre usage
-dans une évolution ne justifie pas de les classer comme objets d'évolution seuls.
-À l'inverse, ne pas inclure automatiquement un ID simplement parce qu'il est
-acceptable dans le champ de tenue.
+Metal Coat and King’s Rock have a non-zero combat effect: their other use in an evolution does not
+justify classifying them as objects of evolution alone. Conversely, do not automatically include an
+ID simply because it is acceptable in the field of operation.
 
-## Exclusions et limites
+## Exclusions and limitations
 
-- `0` et `0xFFFF` ne sont pas des objets à tirer ; préserver le marqueur spécial
-  `0xFFFF` tant que sa sémantique n'est pas établie pour chaque contexte.
-- `110` Pépite et `254..258` foulards ont un effet de tenue nul : exclus.
-- `181` Bracelet Macho n'est pas un bonus de combat générique : exclu du preset utile.
-- `191` Rosée Âme, `192` Dent Océan, `193` Écailleocéan et `202` Ballelumière sont
-  liés à des espèces précises : exclus d'un tirage sans compatibilité par espèce.
-- `143..147` baies à goût/nature peuvent apporter de la confusion : exclues du
-  preset sans vérification de nature.
+- `0` and `0xFFFF` are not objects to be pulled. Preserve the special marker `0xFFFF` until its
+  semantics are established for each context.
+- `110` Pepite and `254..258` scarves have a zero holding effect: excluded.
+- `181` Macho Bracelet is not a generic combat bonus: excluded from the useful preset.
+- `191` Soul Dew, `192` Deep Sea Tooth, `193` Deep Sea Scale and `202` Light Ball are linked to
+  specific species: excluded from a circulation without compatibility by species.
+- `143..147` taste/nature berries may cause confusion: excluded from the preset without verification
+  of nature.
 
-Cette liste est une sélection de conception à partir de champs et noms observés.
-Un effet non nul ne démontre ni que chaque objet est optimal pour chaque Pokémon,
-ni l'exécution de chaque effet. Pour promettre une compatibilité tactique, filtrer
-aussi les bonus de type selon les attaques et le Bandeau Choix selon les capacités
-offensives. Les essais de combat restent nécessaires ; aucune table d'objet n'est
-modifiée par cette recherche.
+This list is a design selection from observed fields and names. A non-zero effect shows neither that
+each object is optimal for each Pokémon, nor the execution of each effect. To promise tactical
+compatibility, also filter the type bonuses according to the attacks and the Choice Strip according
+to the offensive capabilities. Combat testing remains necessary. No object table is modified by this
+search.

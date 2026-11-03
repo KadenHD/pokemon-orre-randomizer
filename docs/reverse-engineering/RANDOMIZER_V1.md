@@ -1,91 +1,151 @@
-# Premier randomizer des Pokémon de dresseurs
+# First randomizer of Pokémon trainers
 
-Version réalisée le **30 octobre 2026** pour le dump **GC6P01 PAL, révision 0**. Le moteur construit une nouvelle ISO à partir des données originales et de la seed choisie.
+The **30 octobre 2026** version for the dump **GC6P01 PAL, Revision 0**. The engine builds a new ISO
+from the original data and the selected seed.
 
 - ISO : `build/randomizer-v1/colosseum-pal-randomized.iso`
 - Taille : **1 459 978 240 octets**.
 - SHA-256 : `576e362ed037d8c1889683f6a72b5a83eee815d9346c07c3dad4e7a836ba0440`
 - Script : `scripts/randomize_trainers.py`
 - Journal exhaustif : `build/randomizer-v1/randomizer-manifest.json`
-- Vérification de l'ISO : `build/randomizer-v1/randomizer-verification.json`
-- Preuves du test : `build/randomizer-v1/evidence/`
-- Résumé durable : [randomizer-validation.json](randomizer-validation.json)
+- ISO verification: `build/randomizer-v1/randomizer-verification.json`
+- Evidence of the test: `build/randomizer-v1/evidence/`
+- Sustainable Summary: [randomizer-validation.json](randomizer-validation.json)
 
-## Règles de cette version
+## Rules of this version
 
-Le randomizer remplace l'espèce de **3 355 emplacements peuplés référencés par la table des dresseurs**, chez **817 des 820 dresseurs**. Chaque emplacement sélectionné reçoit une espèce différente de son espèce initiale, tirée uniformément parmi les **386 espèces réelles**. Les indices internes valides sont `1..251` et `277..411` ; les entrées réservées, nulles et l'œuf sont exclus.
+The randomizer replaces the species of **3,355 populated sites referenced by the trainer table** in
+**817 of the 820 trainers**. Each selected location receives a different species from its original
+species, drawn evenly among **386 real species**. The valid internal indices are `1..251` and
+`277..411`. Reserved entries, zero and egg are excluded.
 
-Les emplacements partagés par plusieurs dresseurs sont traités une seule fois. Les **108 emplacements de Pokémon obscurs** sont regroupés par leurs **48 identifiants obscurs** : un seul tirage par identifiant, propagé à tous les combats et à l'espèce de la table obscure associée. Les identifiants, compteurs, références de dresseurs et autres champs de cette table sont conservés. Plusieurs identifiants obscurs peuvent recevoir la même espèce : il n'y a pas de contrainte d'unicité.
+The locations shared by several trainers are treated once. **108 emplacements de Shadow Pokémon**
+are grouped by their **48 dark identifiers**: one single draw per ID, propagated to all battles and
+to the species of the associated dark table. The identifiers, counters, trainer references and other
+fields of this table are kept. Several obscure identifiers can receive the same species: there is no
+single constraint.
 
-Le nom affiché est actualisé avec le nom par défaut de la nouvelle espèce. Le script refuse un nom personnalisé ou une version inconnue du REL. Les niveaux, capacités, objets, nature, sexe, EV et IV sont conservés. Le sélecteur de talent est conservé, sauf **410 replis `1 → 0`** lorsque la nouvelle espèce ne possède pas de deuxième talent. Le marqueur de talent aléatoire `FF` reste intact.
+The displayed name is updated with the default name of the new species. The script rejects a custom
+name or an unknown version of the REL. Levels, abilities, objects, nature, sex, EV and IV are
+retained. The talent selector is retained, except **410 replis `1 → 0`** when the new species does
+not possess a second talent. The random talent marker `FF` remains intact.
 
-La version conserve les **2 122 emplacements vides**, les **33 emplacements peuplés non référencés par les dresseurs**, les starters et cadeaux du DOL, les textes et les scripts de scénario. Les capacités restent celles des Pokémon remplacés : elles peuvent être étrangères au répertoire habituel de la nouvelle espèce. Les équipes ne sont pas équilibrées par puissance, type ou stade d'évolution.
+The version retains the **2 122 emplacements vides**, **33 populated pitches not referenced by
+trainers**, DOL starters and gifts, script texts and scripts. The capabilities remain those of the
+replaced Pokémon: they may be alien to the usual repertoire of the new species. The teams are not
+balanced by power, type or stage of evolution.
 
-## Reproductibilité
+## Reproducibility
 
-L'algorithme est identifié par **`trainer-species-sha256-v1`**. Il utilise SHA-256 avec rejet du surplus avant réduction modulo, sans dépendre du générateur aléatoire de Python, de l'heure ou de l'ordre d'itération des dictionnaires.
+The algorithm is identified by **`trainer-species-sha256-v1`**. It uses SHA-256 with surplus
+rejection before modulo reduction, without depending on the random Python generator, the hour or the
+iteration order of the dictionaries.
 
-L'entrée du hash est la concaténation suivante : identifiant de version ASCII, octet nul, longueur de seed sur deux octets big endian, seed UTF-8 exacte, octet nul, clé ASCII, octet nul, compteur sur quatre octets big endian. La clé est `slot:INDEX` pour un Pokémon ordinaire ou `shadow:ID` pour un groupe obscur. Le compteur commence à zéro. Le pool est trié par indice interne et l'espèce d'origine est exclue. Les seeds contiennent de 1 à 256 octets UTF-8 ; espaces, casse et accents font partie de la seed.
+The hash input is the following concatenation: ASCII version ID, zero byte, two bytes bit endian
+length, exact UTF-8 seed, zero byte, ASCII key, zero byte, four bytes big endian counter. The key is
+`slot:INDEX` for an ordinary Pokémon or `shadow:ID` for an obscure group. The meter starts at zero.
+The pool is sorted by internal index and the original species is excluded. Seeds contain 1 to 256
+bytes UTF-8. Spaces, breaks and accents are part of the seed.
 
-La même seed, le même dump et la même version reproduisent les mêmes données. La seed ne fixe pas le tirage des adversaires, l'IA ou les dégâts du jeu lors des parties : elle fixe le contenu de l'ISO.
+The same seed, the same dump and the same version reproduce the same data. The seed does not fix the
+draw of opponents, the AI or the damage of the game during the games: it fixes the content of ISO.
 
-Le build calcule deux fois le REL à partir de l'original. Le vérificateur recalcule ensuite le REL et l'archive FSYS depuis la seed, et les compare octet par octet aux données relues dans l'ISO finale. Toutes les autres plages de l'ISO sont comparées intégralement à l'image source.
+The build calculates the REL twice from the original. The verifier then recalculates the REL and the
+FSYS archive from the seed, and compares them byte by byte with the data reread in the final ISO.
+All other ISO ranges are fully compared to the source image.
 
-## Contrôles statiques
+## Static checks
 
-Le REL de sortie a le SHA-256 `de232598f23440f9be97d71fce14e7cbe8998c1b26474eef2034d66ba3b13bcc`. **10 568 octets** changent, exclusivement dans les champs d'espèce, de nom, les replis de talent nécessaires et les 48 champs d'espèce des métadonnées obscures. Les **27 autres membres** de `common.fsys` sont identiques après décompression.
+The exit REL has SHA-256 `de232598f23440f9be97d71fce14e7cbe8998c1b26474eef2034d66ba3b13bcc`. **10
+568 octets** change, exclusively in the fields of species, name, the necessary talent folds and the
+48 species fields of obscure metadata. **27 other members** de `common.fsys` are identical after
+decompression.
 
-L'archive reconstruite mesure **959 808 octets** et est placée à `0x418000`. L'image ne diffère de l'originale que dans sa plage `[4 292 608, 5 252 416)` et les huit octets FST `[4 222 988, 4 222 996)`. Les **1 459 018 424 autres octets** sont identiques.
+The reconstructed archive measures **959 808 octets** and is placed at `0x418000`. The image differs
+from the original only in its range `[4 292 608, 5 252 416)` and the eight bytes FST `[4 222 988, 4
+222 996)`. The **1 459 018 424 other bytes** are identical.
 
-`DolphinTool verify` termine avec le code **0**, `Problems Found: No`, CRC32 `5b328d93` et SHA-1 `7bdc606df9a91aa8cfba2c39fa25362efe3a0017`. Il émet aussi `Error creating key`, comme lors des essais précédents.
+`DolphinTool verify` ends with the code **0**, `Problems Found: No`, CRC32 `5b328d93` and SHA-1
+`7bdc606df9a91aa8cfba2c39fa25362efe3a0017` and also emits `Error creating key`, as in previous
+tests.
 
-Les **25 tests** couvrent les lecteurs, l'encodeur, le patch témoin et le randomizer : vecteurs de seed figés, même seed/même résultat, seeds différentes, alias obscurs, emplacements partagés, cases vides et non référencées, talents et rejet de modifications supplémentaires.
+**25 tests** cover readers, encoder, control patch and randomizer: frozen seed vectors, even
+seed/same result, different seeds, obscure aliases, shared locations, empty and unreferenced boxes,
+talents and rejection of additional modifications.
 
-Les formats reposent sur [l'analyse locale et ses sources primaires](community-formats.md), notamment [CMTrainerPokemon.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMTrainerPokemon.swift), [CMPokemonStats.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMPokemonStats.swift) et [le générateur de Pokémon de la décompilation US](https://github.com/wastelandgunner/pkmn-colosseum/blob/20fb9460b2259bf17631a5777fc080d918291d65/src/game/pokemon_range_8011F5FC.c). Les offsets utilisés sont vérifiés sur notre REL PAL ; les adresses de la version US ne sont pas transposées.
+The formats are based on [local analysis and its primary sources](community-formats.md), including
+[CMTrainerPokemon.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMTrainerPokemon.swift),
+[CMPokemonStats.swift](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMPokemonStats.swift)
+and [the Pokémon generator of the US
+decompilation](https://github.com/wastelandgunner/pkmn-colosseum/blob/20fb9460b2259bf17631a5777fc080d918291d65/src/game/pokemon_range_8011F5FC.c).
+The offsets used are checked on our PAL REL. The addresses of the US version are not transposed.
 
 ## Test sous Dolphin
 
-La nouvelle ISO a été lancée explicitement avec **Dolphin 2609a, JIT64 SC, Direct3D 12, DSP HLE**, cheats désactivés, dans le profil `build/randomizer-v1/dolphin-user`. La carte mémoire EUR et le SRAM y sont copiés. Aucun état provenant d'une ancienne ISO n'a été chargé. Les entrées interactives passent par la manette TAS de Dolphin, via le contrôle de l'interface Windows.
+The new ISO has been explicitly launched with **Dolphin 2609a, JIT64 SC, Direct3D 12, DSP HLE**,
+cheats deactivated, in the profile `build/randomizer-v1/dolphin-user`. The EUR memory card and SRAM
+are copied to it. No condition from an old ISO has been loaded. Interactive inputs pass through
+Dolphin's TAS controller, via Windows interface control.
 
-Le scénario est **Combat rapide → Double → Très fort**, au Colisée de Phénacit. Le jeu a attribué l'équipe de **Simone (766)** au joueur **MICHAEL**, face à **Basile (771)**. Les douze espèces affichées correspondent exactement au manifeste de cette seed :
+The scenario is **Quick fight → Double → Very strong**, to the Colosseum of Phenac City. The game
+attributed the team of **Simone (766)** to the player **MICHAEL**, facing **Basile (771)**. The
+twelve species displayed correspond exactly to the manifest of this seed.
 
-| Équipe | Espèces d'origine, dans l'ordre | Espèces randomisées observées |
+| Team | Species of origin, in sequence | Randomized species observed |
 |---|---|---|
-| Simone, prêtée au joueur | Méganium, Typhlosion, Aligatueur, Mentali, Noctali, Ursaring | Tarinor, Mystherbe, Foretress, Hoothoot, Airmure, Delcatty |
-| Basile, ordinateur | Suicune, Raikou, Entei, Galeking, Donphan, Drattak | Électrode, Séviper, Férosinge, Kadabra, Saquedeneu, Roigada |
+| Simone, loaned to the player | Meganium, Typhlosion, Feraligatr, Espeon, Umbreon, Ursaring | Nosepass, Oddish, Forretress, Hoothoot, Skarmory, Delcatty |
+| Basile, ordinateur | Suicune, Raikou, Entei, Aggron, Donphan, Salamence | Electrode, Seviper, Mankey, Kadabra, Tangela, Slowking |
 
-Foretress, Tarinor, Mystherbe et Airmure ont été sélectionnés. Le combat charge les modèles de Foretress et Tarinor face à Saquedeneu et Électrode. Les quatre Pokémon sont niveau 50 ; leurs PV initiaux affichés sont respectivement **135, 90, 125 et 120**. Le menu de Foretress affiche bien Pouv.Antique, Séisme, Casse-Brique et Retour, conservés depuis l'enregistrement d'Aligatueur.
+Forretress, Nosepass, Oddish and Skarmory have been selected. The combat loads the models of
+Forretress and Nosepass against Tangela and Electrode. The four Pokémon are level 50. Their initial
+PVs displayed are respectively **135, 90, 125 and 120**. The menu of Forretress displays
+Pov.Antique, Earth, Brick and Back, preserved since the record ofFeraligatr.
 
-| Preuve | Capture dans evidence/ |
+| Preuve | Capture in evidence/ |
 |---|---|
-| Écran titre français | `01-french-title.png` |
-| Carte mémoire copiée chargée | `02-copied-memory-card-loaded.png` |
-| Six espèces de l'équipe de Simone | `03-randomized-player-team.png` |
-| Douze espèces des deux équipes | `04-randomized-both-teams.png` |
-| Quatre modèles chargés et PV initiaux | `05-randomized-battle-models.png` |
-| Capacités héritées de Foretress | `06-preserved-moves.png` |
-| Retour au menu du tour suivant et PV modifiés | `07-turn-resolution.png` |
-| Pouv.Antique passé de 5 à 4 PP | `08-post-turn-pp-consumed.png` |
+| English title screen | `01-french-title.png` |
+| Copyed memory card loaded | `02-copied-memory-card-loaded.png` |
+| Six species of Simone's team | `03-randomized-player-team.png` |
+| Twelve species of both teams | `04-randomized-both-teams.png` |
+| Four loaded models and initial PV | `05-randomized-battle-models.png` |
+| Capabilities inherited from Forretress | `06-preserved-moves.png` |
+| Return to next round menu and modified PV | `07-turn-resolution.png` |
+| Pov.Antique increased from 5 to 4 PP | `08-post-turn-pp-consumed.png` |
 
-Un tour a été joué en commandant **Pouv.Antique de Foretress sur Saquedeneu** et **Plaquage de Tarinor sur Électrode**. Le jeu est revenu au menu d'attaque, sans blocage. Les PV constatés après ce tour sont Foretress **117/135**, Tarinor **51/90**, Saquedeneu **104/125**, Électrode **30/120**. Pouv.Antique affiche ensuite **4/5 PP**. Les variations de PV sont celles du tour complet ; elles ne sont pas attribuées isolément à une seule capacité.
+A turn was played by commanding **Antiquity of Forretress on Tangela** and **Placing Nosepass on
+Electrode**. The game returned to the attack menu, without blocking. The PVs observed after this
+turn are Forretress **117/135**, Nosepass **51/90**, Tangela **104/125**, Electrode **30/120**.
+Pouv.Antique then displays **4/5 PP**. The variations of PV are those of the complete round. They
+are not assigned in isolation to a single ability.
 
-Dolphin a ensuite été fermé proprement avec le code de sortie **0**. Le test couvre ce tour interactif, sans combat complet ni parcours du scénario.
+Dolphin was then closed properly with the output code **0**. The test covers this interactive tour,
+without full combat or scenario path.
 
-## Préservation après le test
+## Preservation after testing
 
-La vérification complète exécutée après fermeture de Dolphin confirme que **l'ISO source, les 2 011 fichiers de `game/` et les 20 fichiers existants du profil Dolphin habituel contrôlés par le manifeste sont inchangés**. Les cartes mémoire originales restent dans le profil habituel ; les écritures de session et caches appartiennent au nouveau profil sous `build/`.
+The complete check performed after Dolphin's closure confirms that **the ISO source, the 2,011 files
+of `game/` and the 20 existing files of the usual Dolphin profile controlled by the manifest are
+unchanged**. Original memory cards remain in the usual profile. Session writings and caches belong
+to the new profile under `build/`.
 
-Le REL et l'archive FSYS recalculés depuis la seed sont identiques à ceux relus dans l'ISO. Les hashes des deux résultats précédents, ISO sans changement et patch témoin Pikachu, ont aussi été revérifiés et sont inchangés. Le détail de ces contrôles et les hashes des huit captures sont enregistrés dans le résumé durable.
+The REL and the FSYS archive recalculated since the seed are identical to those found in ISO. The
+hashs of the two previous results, ISO without change and Pikachu control patch, have also been
+rechecked and are unchanged. The details of these controls and the hashs of the eight catches are
+recorded in the durable summary.
 
 ## Limites de validation
 
-La cohérence des 48 groupes obscurs est contrôlée statiquement dans l'ISO. Leur capture, réapparition après échec, purification et évolution ne sont pas validées par cet essai de Combat rapide. Les anciennes captures ne sont pas migrées, les dialogues nommant l'espèce d'origine ne sont pas réécrits et tous les éventuels cas particuliers des scripts/DOL n'ont pas été exclus. Une progression complète du scénario reste nécessaire avant de considérer cette version comme validée pour une partie entière.
+The consistency of the 48 dark groups is statically controlled in ISO. Their capture, reappearance
+after failure, purification and evolution are not validated by this rapid combat test. The old
+captures are not migrated, the dialogs naming the original species are not rewritten and all
+possible particular cases of scripts/DOL have not been excluded. A complete progression of the
+scenario remains necessary before considering this version as validated for an entire part.
 
-Pas de test sur console physique, d'écriture de sauvegarde en jeu, d'évaluation audio ou de mesure de performances.
+No physical console testing, backup writing in play, audio evaluation or performance measurement.
 
-## Construire une autre seed
+## Build another seed
 
-Depuis la racine du projet, choisir un répertoire de sortie inexistant :
+From the root of the project, choose a non-existent output directory.
 
 ```powershell
 python scripts/randomize_trainers.py --source-iso 'Pokemon Colosseum (Europe) (En,Fr,De,Es,It).iso' --seed 'ma-seed' --output-dir build/randomizer-ma-seed
@@ -94,10 +154,13 @@ python scripts/prepare_dolphin_test.py --output build/randomizer-ma-seed/dolphin
 python scripts/randomize_trainers.py --verify-only --output-dir build/randomizer-ma-seed
 ```
 
-Pour lancer l'ISO déjà produite :
+To launch the ISO already produced.
 
 ```powershell
 .\scripts\start_dolphin_test.ps1 -Iso build/randomizer-v1/colosseum-pal-randomized.iso -UserDirectory build/randomizer-v1/dolphin-user
 ```
 
-La préparation copie la carte mémoire et le SRAM dans le profil isolé. Les captures déjà présentes dans une ancienne sauvegarde ne sont pas converties : commencer une nouvelle partie dans ce profil pour jouer le scénario randomisé. Ne pas charger un état Dolphin provenant d'une autre ISO, qui pourrait restaurer les anciennes tables en mémoire.
+The preparation copies the memory card and the SRAM in the isolated profile. The captures already
+present in an old backup are not converted: start a new part in this profile to play the randomized
+scenario. Do not load a Dolphin state from another ISO, which could restore the old tables to
+memory.

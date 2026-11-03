@@ -1,66 +1,60 @@
-# Textes de l’interface
+# Interface text
 
-L’outil s’adresse à des joueurs qui choisissent leur ROM et leurs réglages.
-Les textes doivent expliquer l’effet d’une option ou l’action suivante.
+The tool is intended for players who choose their ROM and settings. Texts should explain the effect
+of an option or the next action.
 
-Les trois choix du mode Simple sont des points de départ, pas des réglages
-personnalisés :
+The three choices of Simple mode are starting points, not custom settings.
 
-| Français | Anglais | Japonais | Portée |
+| French | English | Japanese | Scope |
 | --- | --- | --- | --- |
-| Pokémon + capacités | Pokémon + moves | ポケモン＋わざ | Pokémon de puissance proche, capacités et apprentissages, CT, coffres et boutiques |
-| Pokémon seuls | Pokémon only | ポケモンのみ | Pokémon remplacés sans équilibrage ; capacités, apprentissages et CT conservés |
-| Copie à l’identique | Unchanged copy | そのままコピー | Données du jeu inchangées, conversion ISO/RVZ possible |
+| Pokémon + moves | Pokémon + moves | ポケモン＋わざ | Pokémon of near power, abilities and learnings, TM, chests and shops |
+| Pokémon only | Pokémon only | ポケモンのみ | Pokémon replaced without balancing. Capabilities, learnings and TM preserved |
+| Unchanged copy | Unchanged copy | そのままコピー | Game data unchanged, ISO/RVZ conversion possible |
 
-Les descriptions précisent les Pokémon concernés et les aides communes aux deux
-modes randomisés : évolutions, vente de pierres et familles d’obscurs différentes.
-Le texte « réglages personnalisés » apparaît quand les options diffèrent des trois
-choix prédéfinis. Il indique comment les consulter en Avancé et que sélectionner
-un choix prédéfini les remplace. Les valeurs des trois jeux d’options sont inchangées.
+The descriptions specify the Pokémon involved and the aids common to the two randomized modes:
+evolutions, sale of stones and different families of Shadow Pokémon. The text "Custom settings" appears
+when the options differ from the three predefined choices. It indicates how to view them in Advanced
+and select a predefined choice replaces them. The values of the three sets of options are unchanged.
 
-« Voir les starters » est une action explicite pour révéler le tirage. Avant le
-calcul, la légende nomme les portraits d’origine. Après le calcul, elle confirme
-la correspondance avec la seed et les réglages. Une modification remplace le
-résultat par les originaux avec une invitation à recalculer ; un changement de
-langue traduit le résultat déjà calculé sans relancer le tirage. Les noms japonais
-des 386 espèces viennent du jeu de données PokéAPI, sous sa licence conservée
-dans `licenses/pokeapi.txt` ; la sélection et l’empreinte sont dans
-`licenses/pokeapi-names.json`. Les noms français et anglais et les portraits sont
-lus dans la ROM choisie. Aucun service externe n’est appelé pendant l’aperçu.
+"View the starters" is an explicit action to reveal the print. Before the calculation, the legend
+names the original portraits. After the calculation, it confirms the correspondence with the seed
+and the settings. An amendment replaces the result with the originals with an invitation to
+recalculate. A change of language translates the result already calculated without restarting the
+print. The Japanese names of the 386 species come from the PokéAPI data set, under its license held
+in `licenses/pokeapi.txt`. The selection and the print are in `licenses/pokeapi-names.json`. The
+French and English names and the portraits are read in the selected ROM. No external service is
+called during the preview.
 
-| Français | Anglais | Usage |
+| French | English | Usage |
 | --- | --- | --- |
-| ROM d’origine | Original ROM | Fichier sélectionné par le joueur, toujours conservé |
-| Nouvelle ROM | New ROM | Fichier créé par l’outil |
-| Réglages | Settings | Choix qui déterminent la partie |
-| Profil | Profile | Fichier contenant la seed et les réglages |
-| Capacités | Moves | Employer le terme Pokémon, y compris pour une capacité offensive |
-| Talents | Abilities | Ne pas confondre avec les capacités |
-| Pokémon offerts | Gift Pokémon | Pokémon reçus en cadeau ou en récompense |
-| Famille d’évolution | Evolution family | Espèces reliées par une évolution |
+| Original ROM | Original ROM | File selected by the player, always kept |
+| New ROM | New ROM | File created by tool |
+| Settings | Settings | Choices that determine the party |
+| Profil | Profile | File containing the seed and settings |
+| Moves | Moves | Use the term Pokémon, including for offensive capability |
+| Abilities | Abilities | Not to be confused with capabilities |
+| Pokémon offered | Gift Pokémon | Pokémon received as a gift or reward |
+| Family of evolution | Evolution family | Species linked by evolution |
 
-- Les boutons nomment l’action : « Créer la ROM », « Ouvrir le rapport ».
-- Les cases décrivent leur effet : « Remplacer Noctali », « Garder les soins en boutique ».
-- Les aides expliquent le comportement au présent. Elles gardent les limites
-  utiles : niveau 40, prix des pierres, seuil de statistiques, etc.
-- Les introductions de rubrique tiennent en une ou deux phrases. Elles ne
-  répètent pas la liste des options.
-- Une erreur indique ce qui bloque et comment reprendre. Les détails internes
-  ne remplacent pas cette explication.
-- Éviter les slogans, les répétitions et les termes internes comme « routine
-  identifiée », « octets natifs » ou « marqueurs » dans le parcours courant.
-- Les noms de réglages, les paramètres de traduction, les valeurs du profil et
-  la seed sont distincts. Une reformulation ne change pas les tirages.
+- The buttons name the action: "Create ROM", "Open Report".
+- The boxes describe their effect: "Replace Umbreon", "Keep the care in store".
+- The aids explain the behaviour of the present. They retain the useful limits: level 40, stone
+  prices, threshold of statistics, etc.
+- The entry entries are in one or two sentences and do not repeat the list of options.
+- An error indicates what blocks and how to resume. Internal details do not replace this
+  explanation.
+- Avoid slogans, repetitions and internal terms such as "identified routine", "native bytes" or
+  "markers" in the current course.
+- The settings names, translation parameters, profile values, and seed are distinct. A reformulation
+  does not change the hashes.
 
-Les libellés français sont dans `options.py` et `gui.py`. Les catalogues anglais
-et japonais sont dans `locales/en.py` et `locales/ja.py`. Toute modification doit
-rester cohérente dans les trois langues et conserver le sens des options.
+The French wording is in `options.py` and `gui.py`The English and Japanese catalogues are in
+`locales/en.py` and `locales/ja.py`. Any changes must remain consistent in all three languages and
+retain the meaning of the options.
 
-En japonais : わざ pour les capacités, とくせい pour les talents, 種族値 pour les
-statistiques de base et ダークポケモン pour les obscurs, selon la
-[présentation japonaise officielle](https://www.pokemon.co.jp/game/other/colosseum/).
-La purification est le [リライブ](https://www.nintendo.co.jp/ngc/gxxj/snatch/index.html).
-Les noms de fichiers, seeds, identifiants de réglages et champs de formatage sont
-conservés littéralement. Les textes japonais utilisent des polices système avec
-repli sur Yu Gothic UI, Meiryo et Noto Sans CJK JP ; aucun fichier de police propriétaire
-n’est distribué avec l’application.
+In Japanese: for abilities, for talents, for basic statistics, and for Shadow Pokémon, according to
+[official Japanese presentation](https://www.pokemon.co.jp/game/other/colosseum/). The purification
+is [リライブ](https://www.nintendo.co.jp/ngc/gxxj/snatch/index.html). File names, seeds, settings
+identifiers and formatting fields are kept literally. Japanese texts use system fonts with folding
+on Yu Gothic UI, Meiryo and Noto Without CJK JP. No proprietary font file is distributed with the
+application.

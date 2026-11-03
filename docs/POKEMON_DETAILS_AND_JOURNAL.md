@@ -1,79 +1,66 @@
-# Fiches Pokémon et journal HTML
+# Pokémon and HTML Log
 
-Les fiches décrivent les données finales de la partie configurée : types,
-talents possibles, statistiques de base, capacités de départ, apprentissages,
-CT compatibles et branches d’évolution. Elles sont calculées après les règles
-de Pokémon, de boss, de niveaux, de capacités, de CT et de noms.
+The sheets describe the final data of the configured part: types, talents, basic statistics, initial
+skills, learnings, TM compatible and branches of evolution. They are calculated after the rules of
+Pokémon, boss, levels, abilities, TM and names.
 
-## Évolutions
+## Evolutions
 
-Les méthodes sont relues dans le REL final. L’affichage ne déduit pas une
-évolution de l’espèce d’origine ni d’une simple case cochée. Avec l’adaptation
-des échanges avec objet, la fiche d’Onix indique une montée de niveau à partir
-du niveau 40. Sans cette adaptation, elle affiche l’échange avec Peau Métal et
-signale que cette condition demande une adaptation pour être accessible dans
-Colosseum.
+The methods are reread in the final REL. The display does not deduce an evolution of the original
+species or a simple check box. With the adaptation of the exchanges with object, the onix record
+indicates a level rise from level 40. Without this adaptation, it displays the exchange with Metal
+Coat and indicates that this condition requires an adaptation to be accessible in Colosseum.
 
-Toutes les branches suivantes sont incluses. Avec les évolutions adaptées,
-Fantominus indique Fantominus → Spectrum au niveau 25, puis Spectrum →
-Ectoplasma au niveau 40. Une pierre requise porte son nom dans la langue
-d’affichage. Les Pokémon obscurs rappellent qu’ils doivent être purifiés avant
-de pouvoir évoluer.
+All the following branches are included. With the adapted evolutions, Gastly] indicates Gastly →
+Haunter at level 25, then Haunter → Gengar at level 40. A required stone bears its name in the
+display language. Shadow Pokémon recall that they must be purified before they can evolve.
 
-Les talents sont présentés comme des possibilités : la fiche ne prétend pas
-prédire le talent effectivement choisi par le jeu, les IV, le genre, la nature
-ou le PID complet. Les règles natives dépendant de la personnalité restent
-signalées comme telles. Les capacités inconnues ou marqueurs spéciaux gardent
-leur identifiant au lieu d’être attribués à une capacité ordinaire.
+Talents are presented as possibilities: the sheet does not claim to predict the talent actually
+chosen by the game, the IVs, the genre, the nature or the complete PID. Native rules depending on
+the personality remain reported as such. Unknown abilities or special markers retain their
+identifier instead of being assigned to an ordinary ability.
 
-## Langues et origine des noms
+## Languages and origin of names
 
-L’affichage existe en français, anglais, allemand, espagnol, italien et japonais.
-Les noms natifs de la ROM sont utilisés lorsqu’elle possède la langue demandée.
-Pour les autres langues des ROM USA et japonaises, les noms d’interface utilisent
-les catalogues BSD de [PokéAPI](https://github.com/PokeAPI/pokeapi) : espèces,
-types, 354 capacités ordinaires, 77 talents et douze objets d’évolution.
+The display is available in French, English, German, Spanish, Italian and Japanese. The native names
+of the ROM are used when it has the requested language. For the other languages of the US and
+Japanese ROMs, the interface names use the BSD catalogues of
+[PokeAPI](https://github.com/PokeAPI/pokeapi): species, types, 354 ordinary abilities, 77 talents
+and 12 objects of evolution.
 
-Ces catalogues fournissent uniquement des noms. La puissance, la précision, les
-PP, les statistiques, les types, les talents admissibles, les compatibilités et
-les conditions d’évolution proviennent des octets finaux du jeu. Les noms
-modernes du catalogue de repli ne modifient pas les textes ni les mécaniques
-de la ROM.
+These catalogues only provide names. Power, precision, PPs, statistics, types, permissible talents,
+compatibilitys and conditions of evolution come from the final bytes of the game. Modern names of
+the replica catalogue do not change the texts or mechanics of the ROM.
 
-`licenses/pokeapi-details.json` conserve les URL, les empreintes SHA-256 des trois
-CSV sources, leur sélection et le hash du module produit. Le script
-`scripts/generate_detail_names.py` reconstruit le module à partir de ces CSV
-fournis localement. Aucun téléchargement n’a lieu pendant l’utilisation de
-l’application. La licence est conservée dans `licenses/pokeapi.txt`.
+`licenses/pokeapi-details.json` keeps the URLs, SHA-256 fingerprints of the three source CSVs, their
+selection and the hash of the product module. The `scripts/generate_detail_names.py` script
+reconstructs the module from these locally provided CSVs. No download takes place during the use of
+the application. The license is kept in `licenses/pokeapi.txt`.
 
 ## Journal
 
-Le journal HTML est consultable hors ligne dans un navigateur. Ses sections
-commencent fermées : réglages, starters, obscurs, cadeaux, dresseurs, évolutions
-et CT. Ouvrir une section révèle son contenu ; les sections suivantes restent
-fermées. Le journal reprend le même instantané final que les fiches, sans tirer
-une seconde fois les Pokémon.
+The HTML log can be viewed offline in a browser. Its sections start closed: settings, starters,
+Shadow Pokémon, gifts, trainers, evolutions and TM. Open a section reveals its content. The following
+sections remain closed. The journal takes the same final snapshot as the cards, without pulling the
+Pokémon a second time.
 
-La seed, la version, l’identité du jeu et ses empreintes sont affichées. Les
-chemins personnels du rapport de création ne sont pas repris. Les textes de
-seed, de nom ou de réglage sont échappés comme du texte, même s’ils contiennent
-des balises. Le fichier n’embarque ni script, ni image du jeu, ni ressource ou
-requête réseau. Une politique de contenu interdit les chargements externes.
+Seed, version, identity of the game and its fingerprints are displayed. The personal paths of the
+creation report are not included. Seed, name or setting texts are eluded as text, even if they
+contain tags. The file does not board script, game image, resource or network request. A content
+policy prohibits external loadings.
 
-Le statut chromatique est annoncé seulement lorsqu’il est connu : taux de
-0 ou 100 %, ou décision liée à la seed. Avec un taux intermédiaire sans liaison,
-le journal indique que le statut sera décidé en jeu. Les conditions d’Adelbert
-restent affichées pour les cadeaux concernés.
+The Shiny status is announced only when it is known: rate of 0 or 100%, or decision related to the
+seed. With an intermediate rate without connection, the newspaper indicates that the status will be
+decided at stake.Eagun remain displayed for the relevant gifts.
 
-## Vérification
+## Verification
 
-Les tests couvrent la lecture des octets finaux malgré des valeurs d’origine
-différentes, les conditions d’évolution, la purification préalable, les branches
-successives, les six langues, les compatibilités CT, l’absence de modification
-de l’instantané et le refus des références invalides. Le journal est contrôlé
-pour ses spoilers fermés, ses textes échappés, l’absence de chemin personnel et
-de ressource externe, et le refus d’écraser un fichier existant.
+The tests cover the reading of the final bytes despite different origin values, the conditions of
+evolution, the prior purification, successive branches, the six languages, the compatibility TM, the
+absence of modifications of instant and the refusal of invalid references. The journal is controlled
+for its spoilers closed, its escaped texts, the absence of personal path and external resource, and
+the refusal to crush an existing file.
 
-Les fiches ne constituent pas une observation en jeu de chaque évolution ni
-une prédiction de tous les tirages natifs. Elles décrivent les données finales
-de la nouvelle partie et distinguent les propriétés encore décidées par le jeu.
+The sheets do not constitute an observation in play of each evolution or a prediction of all native
+hashes. They describe the final data of the new part and distinguish the properties still decided by
+the game.

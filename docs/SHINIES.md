@@ -1,166 +1,144 @@
-# Pokémon chromatiques
+# Shiny Pokémon
 
-Depuis la v0.11.0, le moteur `seeded-shiny-status-v12` propose deux façons de
-choisir le statut chromatique, indépendamment de la randomisation des espèces.
+Since v0.11.0, the engine `seeded-shiny-status-v12` proposes two ways of choosing Shiny status,
+regardless of the randomization of species.
 
-| Paramètre | Valeur initiale | Effet |
+| Parameter | Initial value | Effect |
 | --- | --- | --- |
-| `custom_shinies` — Personnaliser les shinies | Désactivé | Active le taux personnalisé et déverrouille les starters et cadeaux concernés. Décoché, aucun octet lié aux shinies n’est modifié. |
-| `seeded_shinies` — Lier les chromatiques à la seed | Activé | Fixe les statuts à partir de la seed. Sans effet lorsque la personnalisation est désactivée. Décoché, conserve le tirage en jeu. |
-| `shiny_chance_percent` — Taux de shinies (%) | 1 % | Probabilité par rencontre ; quatre décimales dans l’interface. 0 % interdit les nouveaux shinies concernés ; 100 % les garantit. |
+| `custom_shinies` — Customize shinies | Off | Activates the custom rate and unlocks the starters and gifts concerned. Unchecked, no byte related to shinies is changed. |
+| `seeded_shinies` — Linking Shiny Pokémon to seed | Enabled | Sets the statutes from the set. No effect when customization is disabled. Unchecked, keeps the draw in play. |
+| `shiny_chance_percent` — Taux de shinies (%) | 1 % | Probability per encounter. Four decimal places in the interface. 0% prohibits the new shinies concerned. 100% guarantees them. |
 
-Le taux et la liaison restent visibles mais désactivés tant que
-`custom_shinies` est décoché. Modifier l’un de ces paramètres invalide l’aperçu.
-Les deux préréglages randomisés de l’application de bureau activent la
-personnalisation à 5 % et lient le résultat à la seed. Le tableau décrit
-les valeurs du moteur et de la CLI avant application d’un préréglage de bureau.
+The rate and connection remain visible but deactivated as long as `custom_shinies` is unchecked.
+Change one of these invalid parameters to the preview. Both randomized presets of the desktop
+application activate the customization to 5% and link the result to the seed. The table describes
+the values of the engine and the CLI before applying a desktop presets.
 
-## Mode lié à la seed et aperçu
+## Seed-related mode and preview
 
-Lorsque la personnalisation et la liaison sont actives, la seed détermine un
-statut par starter, cadeau, ID obscur ou emplacement de Pokémon de dresseur.
-Un obscur garde la même décision lors de ses réapparitions. Deux rencontres de
-la même espèce peuvent avoir des statuts différents : la clé dépend de la
-rencontre, et non de l’espèce.
+When customization and binding are active, the seed determines a status by starter, gift, obscure ID
+or location of Pokémon trainer. A darker keeps the same decision when it reappears. Two encounters
+of the same species may have different statuses: the key depends on the encounter, not the species.
 
-L’aperçu des deux starters, des 48 obscurs du scénario et des quatre cadeaux
-identifiés lit les décisions du moteur de création, sans refaire de tirage.
-Il affiche les statuts exacts pour une **nouvelle partie**, même à un taux
-intermédiaire, avec une étoile rouge pour les Pokémon chromatiques et la face
-correspondante de `poke_face.fsys`. Une même espèce peut donc demander les deux
-faces dans un même aperçu. Les lectures sont dédupliquées par espèce et statut,
-puis réparties en lots d’au plus 64 espèces. Aucun portrait n’est recoloré.
+The preview of both starters, the 48 Shadow Pokémon of the script and the four gifts identified reads
+the decisions of the creative engine, without redrawing. It displays the exact statuses for a **new
+part**, even at an intermediate rate, with a red star for the Shiny Pokémon and the corresponding
+face of `poke_face.fsys`. Thus, the same species can ask for both sides in the same overview. The
+readings are deduced by species and status, then divided into lots of up to 64 species. No portraits
+are recolored.
 
-Le pourcentage décrit une probabilité par clé, sans quota sur l’aperçu. Par
-exemple, 1 % ne garantit pas la présence d’un chromatique parmi les 54 Pokémon affichés.
-Une fois la seed et le taux choisis, les décisions sont fixes. Augmenter le taux
-pour la même seed conserve les chromatiques déjà sélectionnés et peut en ajouter.
+The percentage describes a probability per key, without quota on the preview. For example, 1% does
+not guarantee the presence of a Shiny one among the 54 Pokémon displayed. Once the seed and the rate
+chosen, the decisions are fixed. Increase the rate for the same seed keeps the already selected
+Shiny ones and can add them.
 
-La seed fixe seulement le choix du mode natif « jamais shiny » ou « toujours
-shiny ». La nature, le genre, le PID complet et les IV restent générés par le jeu.
-Le RNG du jeu et son état ne sont pas figés par le randomizer : la reproductibilité
-du statut ne rend pas toute la partie déterministe.
+The seed only sets the choice of the native mode "never shiny" or "always shiny". Nature, genre,
+complete PID and IV remain generated by the game. The RNG of the game and its state are not frozen
+by the randomizer: the reproducibility of the status does not make the whole part deterministic.
 
-## Tirage en jeu et anciens profils
+## Shooting in play and old profiles
 
-Décocher `seeded_shinies` conserve le mode de la v0.10 : le générateur aléatoire
-du jeu décide du statut lors de la génération, au taux demandé. La seed du
-randomizer ne prédit alors pas ce tirage. L’aperçu utilise les faces ordinaires
-aux taux intermédiaires et indique que le statut sera tiré en jeu. À 0 et 100 %,
-il peut annoncer respectivement l’absence ou la garantie de chromatiques.
+Unchecking `seeded_shinies` keeps the mode of the v0.10: the random generator of the game decides
+the status at the requested rate during the generation. The randomizer's seed then does not predict
+this draw. The preview uses the ordinary faces at intermediate rates and indicates that the status
+will be drawn at stake. At 0 and 100%, it can announce respectively the absence or guarantee of
+Shiny Pokémon.
 
-Les profils 0.5 à 0.10.1 sont vérifiés avant migration et reçoivent
-`seeded_shinies=False` pour conserver les sorties antérieures. Les profils
-antérieurs à 0.10 conservent aussi `custom_shinies=False`. Les nouveaux profils
-incluent les trois paramètres. Le mode sans liaison conserve les octets v11 :
-six comparaisons à 0, 25 et 100 %, avec et sans correctif des capacités de cadeaux,
-ont vérifié cette compatibilité.
+The profiles 0.5 to 0.10.1 are checked before migration and receive `seeded_shinies=False`] to keep
+previous outputs. The profiles prior to 0.10 also retain `custom_shinies=False`. The new profiles
+include the three parameters. The unlinked mode retains the v11 bytes: six comparisons at 0, 25 and
+100%, with and without gift capability fixes, verified this compatibility.
 
-## Portée
+## Scope
 
-Les appels couverts sont ceux des équipes de dresseurs, des Pokémon obscurs,
-de Noctali et Mentali et des dons de Posipi, Ho-Oh, Celebi et Pikachu identifiés
-dans la version PAL prise en charge. Leur espèce peut rester d’origine : le taux
-n’exige pas la randomisation des espèces. Les événements tardifs ne sont pas
-tous accessibles normalement dans cette ROM ; la présence d’un appel identifié
-ne garantit pas que son événement soit jouable.
+The calls covered are those of the trainer teams, Shadow Pokémon, Umbreon and Espeon and gifts
+of Plusle, Ho-Oh, Celebi and Pikachu identified in the supported PAL version. Their species may
+remain original: the rate does not require randomization of species. Not all late events are
+normally accessible in this ROM. The presence of an identified call does not guarantee that its
+event is playable.
 
-Les anciens PID d’obscurs déjà générés sont réutilisés comme dans le jeu d’origine.
-Les Pokémon purifiés et ceux déjà présents dans une sauvegarde ne sont pas
-retirés au sort. Changer la ROM ou les réglages ne remplace pas ces Pokémon.
-L’aperçu suppose donc une nouvelle partie ; il ne décrit pas rétroactivement une
-sauvegarde existante. L’application ne modifie pas les fichiers de sauvegarde.
+The old PIDs already generated are reused as in the original game. Purified Pokémon and those
+already present in a backup are not removed by lot. Changing the ROM or settings does not replace
+these Pokémon. The preview therefore assumes a new part. It does not retroactively describe an
+existing backup. The application does not modify the backup files.
 
 ## Implantation PAL
 
-Le patch exige le DOL d’origine dont le SHA-256 est
-`a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5`.
-Il vérifie les instructions d’origine avant chaque modification et ajoute une
-section de code exécutable réservée au-delà des données et de la pile du jeu.
-Cette section partage la réservation des correctifs de capacités des cadeaux ;
-sa limite basse d’arène est agrandie pour éviter son écrasement.
+The patch requires the original DOL of which the SHA-256 is
+`a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5`. It checks the original
+instructions before each modification and adds a section of executable code reserved beyond the data
+and stack of the game. This section shares the reservation of the gift capability patches. Its low
+limit of the arena is enlarged to avoid its crash.
 
-Le générateur de PID natif est à `0x80128584`. Un wrapper choisit une seule fois
-le mode natif « jamais shiny » ou « toujours shiny », puis laisse la fonction
-respecter ses contraintes de nature et de sexe. Le corps de cette fonction et
-le test canonique `(PIDhaut ^ PIDbas ^ SID ^ TID) < 8` restent inchangés.
-Le corps du générateur aléatoire natif reste également inchangé.
+The native PID generator is at `0x80128584`. A wrapper selects the native mode "never shiny" or
+"always shiny" once, and then lets the function respect its nature and gender constraints. The body
+of this function and the canonical test `(PIDhaut ^ PIDbas ^ SID ^ TID) < 8` remain unchanged. The
+body of the native random generator is also unchanged.
 
-### Décisions versionnées et tables natives
+### Versioned decisions and native tables
 
-Le tirage lié à la seed utilise SHA-256 avec le domaine
-`seeded-shiny-status-v1`. Son entrée est la concaténation de ce domaine ASCII,
-d’un octet nul, de la longueur de la seed UTF-8 sur deux octets big-endian,
-des octets UTF-8 exacts de la seed, d’un octet nul et de la clé ASCII. Les quatre
-premiers octets du digest, interprétés en entier big-endian, sont comparés au
-seuil du pourcentage. Les espaces de la seed ne sont pas retirés.
+The seed-related draw uses SHA-256 with the domain `seeded-shiny-status-v1`. Its entry is the
+concatenation of this domain ASCII, a null byte, of the length of the UTF-8 seed on two big-endian
+bytes, the exact UTF-8 bytes of the seed, a null byte and the ASCII key. The first four bytes of the
+digest, interpreted in whole big-endian, are compared to the threshold of the percentage. The spaces
+of the seed are not removed.
 
-Le seuil est `arrondi_au_plus_proche(pourcentage × 2^32 / 100)`, les égalités
-étant arrondies vers le haut. Les extrêmes valent exactement 0 et `2^32`.
-Un résultat strictement inférieur au seuil donne le statut chromatique. Le
-rapport conserve le taux demandé et le taux effectif associé au seuil entier.
+The threshold is `arrondi_au_plus_proche(pourcentage × 2^32 / 100)` with the equities rounded
+upwards. Extremes are exactly 0 and `2^32`. A result strictly below the threshold gives the Shiny
+status. The ratio keeps the requested rate and the effective rate associated with the entire
+threshold.
 
-Les clés sont `special:umbreon`, `special:espeon`, `special:plusle`,
-`special:ho-oh`, `special:celebi-event`, `special:pikachu-event`, ainsi que
-`trainer:<index>` et `shadow:<id>`. Le DOL contient deux tables d’un octet par
-entrée : 5 510 emplacements de dresseur (indices 0 à 5 509) et 97 entrées d’ID
-obscur (0 à 96). L’ID 0 représente l’absence d’obscur. Ces 97 entrées internes
-ne correspondent pas à 97 obscurs accessibles : l’aperçu porte sur les 48
-groupes obscurs du scénario. Les six appels spéciaux utilisent chacun une
-décision constante.
+The keys are `special:umbreon`, `special:espeon`, `special:plusle`, `special:ho-oh`,
+`special:celebi-event`, `special:pikachu-event`, as well as `trainer:<index>` and `shadow:<id>`. The
+DOL contains two tables of one byte per entry: 5,510 blocker locations (indices 0 to 5,509) and 97
+dark d-ID inputs (0 to 96). The DOL 0 represents the absence of d-obscur. These 97 internal entries
+do not correspond to 97 accessible Shadow Pokémon: the preview covers the 48 obscure groups of the
+scenario. The six special calls each use a constant decision.
 
-Un trampoline à `0x801FE83C` conserve l’index natif dans le mot inutilisé à
-`pile + 0x48` du cadre de son appelant. Le wrapper masque l’index de dresseur
-sur 16 bits, vérifie les bornes puis lit la table correspondante ; un index
-hors limites prend le mode non chromatique sans lecture hors table. Les décisions
-et empreintes des tables figurent dans `shinies.seeded_decisions` et
-`shinies.status_tables` du rapport. L’aperçu lit directement les décisions
-`specials` et `shadows`.
+A trampoline at `0x801FE83C` keeps the native index in the unused word at `pile + 0x48` of the frame
+of its caller. The wrapper masks the 16-bit trainer index, checks the terminals and reads the
+corresponding table. An out-of-limit index takes the non-Shiny mode without reading out the table.
+The decisions and hashes of the tables are contained in `shinies.seeded_decisions` and
+`shinies.status_tables` of the report. The preview reads directly the decisions `specials` and
+`shadows`.
 
-### Mode historique sans liaison
+### Historical mode without link
 
-Aux taux intermédiaires sans liaison, deux appels au RNG natif `0x800E42A4`
-forment un tirage de 32 bits comparé au même seuil. Les taux 0 et 100 n’ajoutent
-pas ce tirage intermédiaire. Ce chemin correspond au patch
-`native-shiny-generation-v1` du moteur `native-shiny-generation-v11` des versions
-0.10.0 et 0.10.1 ; le patch lié à la seed porte la version
-`seeded-shiny-status-v1`.
+At intermediate rates without link, two calls to the native NGR `0x800E42A4` This is a 32-bit draw
+compared to the same threshold. The rates 0 and 100 do not add this intermediate draw.
+`native-shiny-generation-v1` Engine `native-shiny-generation-v11` versions 0.10.0 and 0.10.1. The
+patch linked to the seed carries the version `seeded-shiny-status-v1`.
 
-Les sept appels détournés sont `0x80134940`, `0x80134A50`, `0x80134B70`,
-`0x80134C5C`, `0x80134D54`, `0x80134E7C` et `0x801FEC98`.
-Pour les obscurs, le PID est généré avec les identifiants du joueur.
-Un correctif à la sortie du réglage du propriétaire (`0x8012811C`) aligne le
-SID/TID complet des obscurs non purifiés sur ces mêmes identifiants, sans modifier
-leur PID. Il exclut les enregistrements déjà purifiés (`purification = -100`).
-La réutilisation native des anciens PID et les routines de capture restent en place.
+The seven diverted calls are `0x80134940`, `0x80134A50`, `0x80134B70`, `0x80134C5C`, `0x80134D54`,
+`0x80134E7C`, and `0x801FEC98`. For the Shadow Pokémon, the PID is generated with the player's
+identifiers. A patch at the exit of the owner's setting ([`0x8012811C`) aligns the complete SID/TID
+of the unpurified Shadow Pokémon to those same identifiers, without changing their PID. It excludes already
+purified recordings (`purification = -100`). Native reuse of the old PIDs and capture routines
+remain in place.
 
-## Sources et vérification
+## Sources and verification
 
-Les adresses et instructions ont été vérifiées directement dans le DOL local
-avec un désassemblage PowerPC big-endian. REA a identifié le fichier et son
-empreinte ; aucun décompilateur DOL utilisable n’était disponible dans ce
-backend Windows. Les premiers repères provenaient de références publiques,
-dont [les notes de rétro-ingénierie Colosseum](https://github.com/alexandria-p/pokemon-colosseum-modding/blob/main/Claude%20Assets/handoffs/2026-09-05_0020_code-set-complete.md)
-et [les définitions de données de GoD](https://github.com/PekanMmd/Pokemon-XD-Code/tree/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0).
-Le code du patch a été écrit à partir des instructions observées ; aucune
-implantation tierce du patch n’a été copiée.
+Addresses and instructions were checked directly in the local DOL with a PowerPC big-endian
+disassembly. REA identified the file and its print. No DOL decompilator usable was available in this
+Windows backend. The first markers came from public references, including [Colosseum
+retro-engineering
+notes](https://github.com/alexandria-p/pokemon-colosseum-modding/blob/main/Claude%20Assets/handoffs/2026-09-05_0020_code-set-complete.md)
+and [GoD data
+definitions](https://github.com/PekanMmd/Pokemon-XD-Code/tree/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0).
+The patch code was written from the observed instructions. No third-party installation of the patch
+was copied.
 
-Les tests automatisés contrôlent les seuils, les branches, la conservation des
-registres, les identifiants du propriétaire, le masque exact des écritures,
-la composition avec les correctifs de cadeaux et les octets laissés intacts.
-Ils couvrent aussi les décisions par seed, la monotonie des seuils, les index
-natifs et leurs bornes, la migration des profils, les portraits mixtes d’une même
-espèce et l’invalidation des résultats après modification de la liaison.
-Ces vérifications automatisées ne constituent pas une validation Dolphin du
-mode lié à la seed ni une partie complète du scénario.
+Automated tests control thresholds, branches, record keeping, owner IDs, the exact mask of the
+scripts, composition with gift patches and bytes left intact. They also cover decisions by seed,
+monotony of thresholds, native indexes and their bounds, migration of profiles, mixed portraits of
+the same species and invalidation of results after modification of the link. These automated checks
+do not constitute a Dolphin validation of the seed mode nor a complete part of the scenario.
 
-Les fichiers de preuve historiques et les ISO de test de la v0.10 sont privés dans
-`build/shinies-2026-11-01/` et ne font pas partie des distributions.
-Les documents de validation de la v0.10 restent des constats de cette version ;
-ils ne valident pas les nouveaux hooks du moteur v12.
+The historical evidence files and the test ISOs of the v0.10 are private in
+`build/shinies-2026-11-01/` and are not part of the distributions. The validation documents of the
+v0.10 remain observations of this version. They do not validate the new hooks of the v12 engine.
 
-La [validation du 2 novembre 2026](SEEDED_SHINIES_VALIDATION_2026-11-02.md)
-consigne deux démarrages Dolphin avec appels natifs contrôlés : 81 emplacements
-par démarrage, les 48 groupes obscurs, les six routines de starters et cadeaux
-et la branche de réutilisation d’un PID obscur. Les statuts restent identiques
-après des appels RNG supplémentaires ; ce sont des fixtures CPU sans partie jouée.
+The [validation of 2 November 2026](SEEDED_SHINIES_VALIDATION_2026-11-02.md) records two Dolphin
+startups with controlled native calls: 81 locations per boot, 48 obscure groups, six starter and
+gift routines and the re-use branch of an obscure PID. The status remains the same after additional
+RNG calls. These are unplayed CPU fixtures.

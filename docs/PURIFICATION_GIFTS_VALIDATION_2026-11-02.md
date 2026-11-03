@@ -1,101 +1,84 @@
-# Cadeaux de purification — 2 novembre 2026
+# Purification Gifts — November 2, 2026
 
-La [validation complémentaire](PURIFICATION_GIFTS_FOLLOWUP_2026-11-02.md)
-termine les essais de sauvegarde/rechargement, de conservation des scènes et
-de rendu des dialogues dans les cinq langues PAL. Le présent document conserve
-le périmètre et les limites de la première session.
+The [additional validation](PURIFICATION_GIFTS_FOLLOWUP_2026-11-02.md) completes the backup/reload,
+scene preservation and dialog rendering trials in the five PAL languages. This document retains the
+scope and limitations of the first session.
 
-La version 0.13.0 rend les deux cadeaux événementiels accessibles auprès
-d’Adelbert, à la Relique Sacrée. Par défaut, le cadeau de Pikachu demande
-10 purifications au niveau 30 et celui de Celebi 25 au niveau 45. Les espèces
-et les statuts chromatiques suivent le tirage du randomizer. Les quatre valeurs
-numériques se règlent séparément dans « Starters et cadeaux ».
+The version 0.13.0 makes the two event gifts available from [Eagun], at Relic Stone. By default,
+Pikachu's gift requires 10 purifications at level 30 and Celebi 25 at level 45. Species and Shiny
+status follow the randomizer draw. The four numerical values are set separately in "Starters and
+gifts".
 
-## Progression et conservation du scénario
+## Progress and conservation of the scenario
 
-L’accès attend les six indicateurs persistants `3527, 2582, 1067, 2860, 3531,
-2875`. Ils couvrent la défaite face à Skrub et toutes les scènes de suivi dans
-la maison, jusqu’à la dernière indication vers le Mont Bataille. Un seuil de
-zéro ne contourne pas cette condition.
+The access awaits the six persistent indicators `3527, 2582, 1067, 2860, 3531, 2875`. They cover
+defeat against Skrub and all the follow-up scenes in the house, until the last indication towards
+Mount Battle. A threshold of zero does not circumvent this condition.
 
-Le patch réutilise l’acteur Adelbert déjà présent dans le sanctuaire. Après la
-séquence complète, il y devient visible et interactif, tandis que son acteur
-habituel dans la maison est masqué. Avant cela, les scènes et conversations
-d’origine restent disponibles. Les autres acteurs et le déroulement des scènes
-ne sont pas réécrits. Les tests couvrent les 64 combinaisons de ces six indicateurs.
+The patch re-uses the actor Eagun already present in the sanctuary. After the complete sequence, it
+becomes visible and interactive, while its usual actor in the house is masked. Before that, the
+original scenes and conversations remain available. The other actors and the unfolding of the scenes
+are not rewritten. The tests cover the 64 combinations of these six indicators.
 
-Les 48 indicateurs natifs de purification sont additionnés. Les cadeaux utilisent
-la fonction native 217 avec les identifiants 5 et 6, ainsi que les indicateurs
-de réception persistants 2740 et 2737. Une interaction remet au plus un cadeau.
-La réception est marquée seulement après un succès : emplacement 0 à 5 dans
-l’équipe, ou retour -1 pour le PC. Le retour -2, équipe et PC pleins, laisse
-le cadeau disponible pour une autre visite.
+The 48 native purification indicators are added. Gifts use the native 217 function with the 5 and 6
+identifiers as well as the 2740 and 2737 persistent reception indicators. An interaction gives at
+most one gift. The reception is marked only after a success: location 0 to 5 in the team, or return
+-1 for the PC. The return -2, team and PC full, leaves the gift available for another visit.
 
-## Langues et compatibilité
+## Languages and compatibility
 
-Cinq nouveaux textes sont ajoutés dans chacune des banques française, anglaise,
-allemande, espagnole et italienne du sanctuaire. Le jeu choisit sa propre banque ;
-la langue de l’interface du randomizer est indépendante. Les anciennes allocations
-de texte, leurs alias et leurs contrôles natifs sont conservés octet par octet.
+Five new texts are added to each of the French, English, German, Spanish and Italian banks of the
+sanctuary. The game chooses its own bank. The language of the randomizer interface is independent.
+The old text allocations, their aliases and their native controls are kept byte byte.
 
-L’option est active dans les deux préréglages randomisés et inactive dans
-« Copie à l’identique ». Les profils 0.5 à 0.12 l’importent désactivée après
-validation de leur signature d’origine. L’ISO du précédent tirage v0.11 est
-reproduite exactement avec cette option désactivée, au SHA-256
+The option is active in both randomized and inactive presets in "Identical Copy". The 0.5 to 0.12
+import profiles are disabled after validation of their original signature. The ISO of the previous
+print v0.11 is reproduced exactly with this disabled option in the SHA-256
 `e8696b3c7fbb235ed8535e32e8bd9ea0e1309a33dfd69bf5e563f99859031372`.
 
-## Vérifications
+## Verifications
 
-La suite source exécute 365 tests, dont 363 réussis et deux ignorés. Le modèle
-de remise couvre 785 cas, avec seuils, indicateurs de réception, progression et
-capacité. Les tests d’intégration vérifient les archives originales strictement
-identifiées, les modifications autorisées et la conservation des autres membres.
-Les niveaux de génération et de rencontre sont modifiés ensemble et les capacités
-de départ utilisent le niveau final. Vingt-quatre rendus Qt couvrent les cadeaux
-et réglages dans les six langues de l’outil, à deux tailles de fenêtre.
+The source suite performs 365 tests, of which 363 were successful and two ignored. The discount
+model covers 785 cases, with thresholds, reception indicators, progression and capacity. The
+integration tests check the original archives strictly identified, the modifications allowed and the
+retention of the other members. Generation and encounter levels are modified together and the
+starting capacities use the final level. Twenty-four Qt renders cover gifts and settings in the six
+languages of the tool, with two window sizes.
 
-Un essai CPU distinct dans Dolphin exécute 19 cas avec le CMS exact de l’ISO et
-l’interpréteur natif. Les 19 réussissent : chaque indicateur de progression
-manquant bloque la remise, les seuils sont respectés, une équipe pleine envoie
-le cadeau au PC, et une équipe avec les 90 cases du PC pleines produit le retour
--2 sans valider la réception. Trois conversations successives donnent le premier
-cadeau dans l’emplacement 0, le second dans l’emplacement 1, puis aucun cadeau.
-Le contexte joueur synthétique est initialisé par le jeu et les CK3 passent son
-validateur. Seules les fonctions d’affichage et de mouvement sont interceptées
-dans ce harnais CPU ; les fonctions de génération, d’acquisition et d’écriture
-des indicateurs restent natives. Cette couverture de logique est distincte de
-l’interaction rendue décrite ci-dessous.
+A separate CPU trial in Dolphin executes 19 cases with the exact ISO CMS and native interpreter. The
+19 succeed: each missing progression indicator blocks the discount, the thresholds are respected, a
+full team sends the gift to the PC, and a team with the 90 boxes of the full PC produces the return
+-2 without validating the reception. Three successive conversations give the first gift in location
+0, the second in location 1, then no gift. The synthetic player context is initialized by the game
+and the CK3 pass its validator. Only the display and movement functions are intercepted in this CPU
+harness. The generation, acquisition and writing functions of the indicators remain native. This
+logical coverage is distinct from the interaction described below.
 
-L’ISO privée `rewards-seeded-25.iso`, seed `purification-rewards-1`, est reconstruite
-et vérifiée intégralement, au SHA-256
-`da8e0d6883231b9d1cb5578895ca469db600de4894a86c0d97c2c960a22121a7`.
-Le taux chromatique est de 25 %, avec statuts liés à la seed.
+Private ISO `rewards-seeded-25.iso`, seed `purification-rewards-1`, is reconstructed and fully
+verified, at SHA-256 `da8e0d6883231b9d1cb5578895ca469db600de4894a86c0d97c2c960a22121a7`The Shiny
+rate is 25%, with status linked to the seed.
 
-Dans Dolphin, une copie de sauvegarde a chargé le véritable sanctuaire et son
-script de production. Adelbert apparaît près de la Relique. L’interaction native
-affiche les seuils, propose les cadeaux, confirme leur réception puis refuse
-de les redonner. Les compteurs de purification sont préparés en RAM dans cette
-copie de travail ; 25 purifications n’ont pas été jouées pour cet essai.
+In Dolphin, a backup copy loaded the true sanctuary and its production script. Eagun appears near
+the Relic. The native interaction displays the thresholds, offers the gifts, confirms their receipt
+and then refuses to give them back. The purification meters are prepared in RAM in this working
+copy. 25 purifications were not played for this trial.
 
-| Cadeau | Résultat prévu et observé | Destination native |
+| Gift | Expected and observed result | Destination native |
 | --- | --- | --- |
-| Pikachu | Écrapince, niveau 30, ordinaire | PC, retour -1 |
-| Celebi | Donphan, niveau 45, ordinaire | PC, retour -1 |
+| Pikachu | Corphish, level 30, non-Shiny | PC, back -1 |
+| Celebi | Donphan, level 45, non-Shiny | PC, back -1 |
 
-Des points d’observation lisent les deux CK3 de 312 octets à l’entrée de la vraie
-routine d’ajout à l’équipe ou au PC. Ils ne remplacent ni génération ni acquisition.
-Espèce, niveau, niveau de rencontre et statut chromatique correspondent à l’aperçu.
-Les deux indicateurs de réception passent de zéro à un. Les indicateurs natifs de
-mouvement confirment que les commandes sont libérées après la conversation.
+Observation points read the two 312 bytes CK3 at the entrance to the real routine of adding to the
+team or PC. They do not replace generation or acquisition. Species, level, level of encounter and
+Shiny status correspond to the preview. Both reception indicators go from zero to one. Native
+movement indicators confirm that the commands are released after the conversation.
 
-Le processus Dolphin se ferme normalement avec le code zéro. Son moniteur confirme
-les empreintes inchangées des originaux protégés et du profil Dolphin personnel.
-Les captures, journaux et enregistrements restent privés dans
-`build/purification-rewards-2026-11-02/` et ne sont pas distribués.
+The Dolphin process normally closes with the zero code. Its monitor confirms the unchanged
+fingerprints of the protected originals and the personal Dolphin profile. Catches, logs and
+recordings remain private in `build/purification-rewards-2026-11-02/` and are not distributed.
 
-Cette vérification ne constitue pas une partie complète du scénario. Le masquage
-dans la maison et les six conditions de progression ont une couverture statique ;
-le cycle sauvegarde/rechargement de ces nouveaux cadeaux n’a pas été joué dans
-cette session. Les essais de repositionnement après dialogue ont rencontré un
-retour des caches de transformation du personnage ; aucun contournement n’a été
-ajouté au patch de production pour cette préparation de test.
+This check is not a complete part of the scenario. The masking in the house and the six conditions
+of progression have a static cover. The backup/reloading cycle of these new gifts was not played in
+this session. The repositioning tests after dialogue encountered a return of the transformation
+caches of the character. No circumvention was added to the production patch for this test
+preparation.

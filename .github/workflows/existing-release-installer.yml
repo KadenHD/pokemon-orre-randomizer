@@ -1,0 +1,58 @@
+name: Add Windows installer to an existing release
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Published release tag
+        required: true
+        type: string
+
+permissions:
+  contents: read
+concurrency:
+  group: installer-${{ inputs.tag }}
+
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Download the published Windows ZIP
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: |
+          if ($env:RELEASE_TAG -cnotmatch '^v\d+\.\d+\.\d+$') { throw 'Expected a version tag such as v0.20.0.' }
+          gh release download $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --dir dist/public --pattern '*-windows-x64.zip' --pattern 'SHA256SUMS.json'
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $archive = 'pokemon-orre-randomizer-' + $env:RELEASE_TAG.Substring(1) + '-windows-x64.zip'
+          if (-not (Test-Path -LiteralPath (Join-Path 'dist/public' $archive) -PathType Leaf)) { throw 'Release and archive versions differ.' }
+      - name: Build and test the Windows installer
+        shell: pwsh
+        run: ./scripts/build_installer.ps1 -SmokeTest
+      - uses: actions/upload-artifact@v7
+        with:
+          name: orre-randomizer-installer
+          path: dist/public/*-setup.exe
+          if-no-files-found: error
+          compression-level: 0
+  publish:
+    needs: windows
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v7
+        with:
+          name: orre-randomizer-installer
+          path: release-assets
+      - name: Attach the installer to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ inputs.tag }}
+        run: gh release upload "$RELEASE_TAG" release-assets/*-setup.exe --repo "$GITHUB_REPOSITORY"

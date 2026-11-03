@@ -1,184 +1,161 @@
-# Version 0.16 : retrouver les réglages et relire sa configuration
+# Version 0.16: Retrieve settings and reread its configuration
 
-Le moteur reste `details-and-progression-v15`. Les **82 paramètres, dont
-57 booléens dans quinze catégories**, leurs valeurs et les domaines de tirage
-ne changent pas. La version de l’application passe à 0.16.0 ; le schéma de
-profil reste 1.
+The engine remains `details-and-progression-v15`. The **82 parameters, including 57 booleans in 15
+categories**, their values and the drawing fields do not change. The version of the application goes
+up to 0.16.0. The profile diagram remains 1.
 
-## Recherche des réglages
+## Search settings
 
-En mode Avancé, **Rechercher un réglage…** porte sur les libellés, aides,
-catégories et choix traduits dans la langue courante. Les accents sont ignorés ; des synonymes usuels,
-comme les termes shiny/chromatique, facilitent la recherche.
+In Advanced mode, **Search settings…** refers to words, aids, categories and choices translated into
+the current language. The accents are ignored. Usual synonyms, such as shiny/Shiny terms, facilitate
+search.
 
-Les résultats sont temporaires : un clic ou Entrée ouvre la catégorie du réglage,
-le fait défiler dans la zone visible et lui donne le focus. Le formulaire normal
-reprend ensuite sa place. Cette action ne change aucune valeur et n’invalide pas
-un aperçu dont la configuration reste identique. La recherche ne porte pas sur
-les noms des Pokémon de l’aperçu, qui gardent leurs propres champs de recherche.
+The results are temporary: a click or Enter opens the category of the setting, scrolls it into the
+visible area and gives it the focus. The normal form then resumes its place. This action does not
+change any value and does not invalidate an overview whose configuration remains the same. The
+search does not cover the names of the Pokémon of the preview, which keep their own search fields.
 
-## Rétablir les valeurs conseillées d’une catégorie
+## Restore the recommended values of a category
 
-Le bouton **Valeurs conseillées** concerne la catégorie courante et utilise
-les valeurs de **Pokémon + capacités**, c’est-à-dire `Options.recommended()`. Cette référence ne reprend
-pas le dernier profil importé ni les valeurs du mode Copie à l’identique.
+The **Recommended values** button refers to the current category and uses the values of **Pokémon +
+moves**, i.e. `Options.recommended()`. This reference does not include the last imported profile or
+the values of the identical Copy mode.
 
-Seuls les champs de cette catégorie sont rétablis. La seed, les chemins, les
-autres catégories et la langue restent conservés. Les changements effectifs
-invalident l’aperçu ; le moteur doit alors le recalculer avec ces valeurs.
-Les contraintes entre catégories restent vérifiées normalement.
+Only fields in this category are re-established. Seed, paths, other categories and language are
+retained. Actual changes invalidate the preview. The engine must then recalculate it with these
+values. Constraints between categories remain checked normally.
 
-## Récapitulatif avant création
+## Summary before creation
 
-Le volet **Réglages appliqués** à l’étape Créer distingue les règles qui seront
-appliquées des valeurs simplement mémorisées. Il décrit notamment les choix manuels de starters, contraintes,
-statuts chromatiques, niveaux et multiplicateurs actifs. Par exemple, une valeur
-d’EXP différente de ×1 est effective, tandis que les trois facteurs de courbe
-ne le sont que lorsque la difficulté progressive est activée.
+The **Applied settings** pane at the Create step distinguishes the rules that will be applied from
+the simply memorized values. It describes in particular the manual choices of starters, constraints,
+Shiny status, levels and multipliers active. For example, a different d-EXP value of ×1 is
+effective, while the three curve factors are only effective when the progressive difficulty is
+activated.
 
-Le résumé ne révèle pas les espèces tirées par la seed. Les starters choisis
-manuellement peuvent être nommés puisqu’ils ont été explicitement sélectionnés.
-L’aperçu complet reste une action séparée. Le message d’annulation est simplifié
-en « Annulation… ». L’ouverture du volet fait défiler la page juste assez pour
-montrer les premières lignes de détail, en gardant l’action de création visible.
+The summary does not reveal the species drawn by the seed. The manually selected starters can be
+named as they have been explicitly selected. The full overview remains a separate action. The
+cancellation message is simplified in "Cancellation...". The opening of the pane scrolls the page
+just enough to show the first lines of detail, keeping the creation action visible.
 
-## Compatibilité des profils et du moteur
+## Profile and engine compatibility
 
-Les profils v0.15 conservent leurs 82 champs et leurs valeurs, y compris les
-starters manuels, la courbe, l’EXP et la jauge obscure. Leur version, empreinte,
-identité de jeu, types de valeurs et liste exacte de champs restent contrôlés.
-Un champ manquant ou inconnu n’est pas ignoré. Le réexport porte la version
-de l’application courante et le même identifiant de moteur.
+The profiles v0.15 keep their 82 fields and their values, including manual starters, curve, exp and
+obscure gauge. Their version, footprint, game identity, value types and exact list of fields remain
+under control. A missing or unknown field is not ignored. The re-export carries the current version
+of the application and the same engine ID.
 
-Les tests utilisent un profil exporté par l’archive publique v0.15 conservée,
-avec les huit ajouts v0.15 non neutres. Les anciens profils v0.14 et antérieurs
-gardent leurs règles de migration précédentes.
+The tests use a profile exported by the preserved public archive v0.15, with the eight non-neutral
+additions v0.15. The old v0.14 and previous profiles keep their previous migration rules.
 
-La régression compare les configurations recommandée et combinée aux preuves
-v0.15 dans les trois régions, avec la même ROM, seed et les mêmes options.
-Les six ensembles d’offsets, tailles et empreintes de payload correspondent.
-Les trois ISO combinées v0.15 sont ensuite comparées intégralement à la source
-et au plan de patch courant : tous les octets correspondent. Aucune nouvelle image ISO
-n’est écrite par ce contrôle.
+The regression compares the recommended configurations and combined with the evidence v0.15 in the
+three regions, with the same ROM, seed and the same options. The six sets of d-offset, size and
+payload fingerprints correspond. The three combined ISOs v0.15 are then compared in full to the
+current patch source and plane: all bytes correspond. No new ISO image is written by this control.
 
-Les 39 fichiers du moteur et lecteurs concernés sont aussi identiques aux
-sources v0.15 archivées. Le changement de navigation et de métadonnée de version
-ne modifie donc pas ces résultats. Les preuves sont privées dans
-`build/v16-validation/regression-result.json` ; les trois images originales et
-les 46 fichiers du profil Dolphin personnel restent inchangés pendant cet essai.
+The 39 files of the engine and drives concerned are also identical to the v0.15 archived sources.
+The change in version navigation and metadata does not change these results. The evidence is private
+in `build/v16-validation/regression-result.json`. The three original images and the 46 files of the
+Dolphin Personal Profile remain unchanged during this trial.
 
-## Validation automatisée de l’interface
+## Automated interface validation
 
-La suite complète exécute **449 tests**, avec deux cas explicitement ignorés.
-Les tests de recherche et de récapitulatif couvrent la navigation au clavier,
-le focus et le défilement vers un résultat, la remise à zéro limitée à la catégorie,
-la conservation de la seed et des autres valeurs, les règles inactives et
-l’absence de révélation des tirages aléatoires.
+The complete suite executes **449 tests**, with two explicitly ignored cases. Search and summary
+tests cover keyboard navigation, focus and scrolling towards a result, category-limited reset,
+retention of the seed and other values, inactive rules, and absence of revelation of random hashes.
 
-Les deux exécutables v0.16 ont été construits dans des dossiers de staging neufs,
-sans reconstruire le codec Rust ni modifier les distributions précédentes.
-Leur diagnostic embarqué, exécuté hors écran avec préférences et chemins
-temporaires privés, parcourt **168 états par édition**, soit **336 états** :
+The two executables v0.16 were built in new staging folders, without reconstructing the Rust codec
+or modifying previous distributions. Their on-board diagnosis, executed off-screen with private
+preferences and temporary paths, runs **168 statements per edition**, i.e. **336 statements**.
 
-| Contrôle par édition | États |
+| Editing control | States |
 | --- | ---: |
 | Navigation existante | 48 |
 | Dialogues d’exclusion | 24 |
-| Options chromatiques | 60 |
-| Aperçus synthétiques | 24 |
-| Recherche, catégorie et récapitulatif v0.16 | 12 |
+| Shiny Options | 60 |
+| Summary overview | 24 |
+| Search, Category and Summary v0.16 | 12 |
 
-Les douze nouveaux états correspondent aux six langues et aux deux tailles
-de fenêtre (1040 × 800 et 680 × 540). Les 156 états antérieurs restent comparables
-aux diagnostics v0.15. Les deux éditions vérifient aussi leur codec Rust,
-l’icône de l’application et leurs ressources respectives : pack local présent,
-ressources du jeu absentes de l’édition publique.
+The twelve new states correspond to the six languages and two window sizes (1040 × 800 and 680 ×
+540). The 156 previous states remain comparable to the diagnoses v0.15. Both editions also check
+their Rust codec, application icon and respective resources: local pack present, game resources
+absent from public publishing.
 
-Ces diagnostics n’ouvrent aucune ROM ni préférence personnelle et ne lancent
-pas Dolphin. Après la revue visuelle, trois fichiers de présentation ont été
-ajustés : compteur de résultats, largeur du nom de catégorie, formulation et
-défilement du récapitulatif. Les tests ciblés et les douze contrôles de mise en
-page dans les six langues aux deux tailles passent avec ces ajustements. Les
-deux exécutables finaux repassent leurs 336 états de diagnostic au total. Le
-premier staging, les applications v0.15 et les 50 anciens ZIP sont conservés.
+These diagnostics do not open any ROMs or personal preference and do not launch Dolphin. After the
+visual review, three presentation files were adjusted: the results counter, the width of the
+category name, the formulation and scrolling of the summary. Targeted tests and the twelve layout
+checks in the six languages in both sizes pass with these adjustments. The two final executables
+re-align their 336 diagnostic states in total. The first staging, the applications v0.15 and the 50
+old ZIPs are retained.
 
-La revue visible sous Windows confirme qu’Entrée rejoint le réglage trouvé,
-que la remise à zéro des chromatiques conserve la seed et l’EXP à ×2, et que
-le récapitulatif conserve ces valeurs en japonais. La version finale affiche
-le compteur corrigé, le nom complet de la catégorie et les premières lignes
-du volet dès son ouverture. Ce contrôle de présentation s’arrête avant la
-création d’une nouvelle ROM. Les preuves privées sont dans
-`build/v16-validation/suite/full-source.log`,
-`build/v16-frozen-final/staging-validation.json` et `build/v16-runtime/ui-final/`.
+The review under Windows confirms that the entry joins the setting found, that the reset of the
+Shiny Pokémon keeps the seed and theEXP at ×2, and that the summary keeps these values in Japanese.
+The final version displays the corrected counter, the full name of the category and the first lines
+of the shutter as soon as it opens. This presentation control stops before the creation of a new
+ROM. Private evidence is in `build/v16-validation/suite/full-source.log`,
+`build/v16-frozen-final/staging-validation.json` and `build/v16-runtime/ui-final/`.
 
-## Nouveaux essais QOL dans Dolphin
+## New QOL Trials in Dolphin
 
-Les cinq étapes ont été observées dans chacune des trois régions, soit **15
-étapes validées sous Dolphin**. Ces essais complètent les observations de combat
-en Europe consignées pour la v0.15. [Bilan v0.15](DESKTOP_V15.md)
+The five stages were observed in each of the three regions: **15 steps validated under Dolphin**.
+These tests complement the combat observations recorded in Europe for the v0.15. [Bilan
+v0.15](DESKTOP_V15.md)
 
-Les essais utilisent les images combinées de la matrice v0.15, dont le contrôle
-binaire ci-dessus confirme la concordance avec le moteur courant. La seed est
-`feature-v15-validation-1`, avec **EXP ×2 et jauge ×3**. Les rapports de chaque
-image et l’agrégat privé détaillent les autres options et les empreintes.
+The tests use the combined images of the matrix v0.15, whose binary control above confirms the
+concordance with the current engine. The seed is `feature-v15-validation-1`, with **EXP ×2 and gauge
+×3**. The ratios of each image and the private aggregate detail the other options and fingerprints.
 
-| Image | Identité | Début du SHA-256 |
+| Image | Identity | Start of SHA-256 |
 | --- | --- | --- |
 | USA | `GC6E01` | `8006d9ba6db9ffb0` |
-| Japon | `GC6J01` | `90e1570f628c825a` |
+| Japan | `GC6J01` | `90e1570f628c825a` |
 | Europe | `GC6P01` | `e03d4da870d5d5a3` |
 
-| Observation native | USA | Japon | Europe |
+| Observation native | USA | Japan | Europe |
 | --- | --- | --- | --- |
-| Marche avec jauge 1 → 0, plancher à zéro et compteur 256 → 0 | Observé | Observé | Observé |
-| Libération à la Relique avec réserve 499 → 0, EXP 57 820 → 58 319 et niveau 35 conservé | Observé | Observé | Observé |
-| Purification finale avec ruban national, drapeau natif 0 → 1 et total 25 → 26 | Observé | Observé | Observé |
-| EXP normale ×2 en combat et niveau 35 → 36 | Gain 673 → 1 346, total 58 319 → 59 665 | Gain 448 → 896, total 58 319 → 59 215 | Gain 448 → 896, total 58 319 → 59 215 |
-| EXP ×2 effectivement ajoutée à la réserve du partenaire obscur | 12 313 → 13 659 (+1 346) | 12 313 → 13 209 (+896) | 12 313 → 13 209 (+896) |
+| March with gauge 1 → 0, zero floor and counter 256 → 0 | Observed | Observed | Observed |
+| Relic release with reserve 499 → 0, EXP 57 820 → 58 319 and level 35 retained | Observed | Observed | Observed |
+| Final purification with national ribbon, native flag 0 → 1 and total 25 → 26 | Observed | Observed | Observed |
+| Normal EXP ×2 in combat and level 35 → 36 | Gain 673 → 1 346, total 58 319 → 59 665 | Gain 448 → 896, total 58 319 → 59 215 | Gain 448 → 896, total 58 319 → 59 215 |
+| EXP ×2 actually added to the dark partner's reserve | 12 313 → 13 659 (+1 346) | 12 313 → 13 209 (+896) | 12 313 → 13 209 (+896) |
 
-La Relique transfère **499 points une seule fois**, à la valeur exacte de la
-réserve. La marche observe le delta natif −0,5, multiplié en −1,5. Le jeu
-applique ensuite le plancher à zéro et réinitialise le compteur. Les gains
-natifs de combat sont relevés dans chaque région avant application du facteur.
+The Relic transfers **499 points once only**, to the exact value of the reserve. The walk observes
+the native delta -0.5, multiplied in -1.5. The game then applies the floor to zero and resets the
+counter. Native combat gains are recorded in each region before applying the factor.
 
-Les trois sessions se sont fermées normalement avec un code retour de 0.
-L’agrégat `build/v16-runtime/result.json` associe chaque étape à sa capture et à
-son empreinte. Après les trois fermetures, `build/v16-runtime/final-preservation.json`
-confirme par SHA-256 l’intégrité des **18 fichiers protégés**, dont les **six ROM
-ISO et RVZ originales**, ainsi que celle des **46 fichiers du profil Dolphin
-personnel**, sauvegardes comprises.
+The three sessions normally closed with a return code of 0. The aggregate
+`build/v16-runtime/result.json` associates each step with its capture and footprint. After the three
+closures, `build/v16-runtime/final-preservation.json` confirms by SHA-256 the integrity of **18
+protected files**, including **six original ISO and RVZ ROMs**, as well as that of **46 Personal
+Dolphin Profile Files**, including backups.
 
-### Préparation et portée des observations
+### Preparation and scope of comments
 
-Les essais reprennent sur de **nouvelles cartes préparées hors ligne**. Le
-premier Pokémon est Lanturn niveau 35, avec EXP 57 820, réserve 499, jauge 1
-et compteur de marche 255. Le total initial de purifications est 25. Tortank
-niveau 33 commence avec une réserve de 12 313 et une jauge de 800. Les PV
-restaurés proviennent de la guérison native observée dans l’essai Europe
-antérieur.
+The tests shall be repeated on **new maps prepared offline**The first Pokémon is Lanturn level 35,
+with EXP 57 820, Reserve 499, Gauge 1 and Power Meter 255. The initial total purifications is 25.
+Blastoise Level 33 begins with a reserve of 12,313 and a gauge of 800. The restored VP comes from
+the native healing observed in the previous Europe trial.
 
-Les PID, IV, EV, capacités et statistiques stockées sont hérités des fixtures
-précédentes. Le relevé japonais `fixture-stat-comparison.json` associe les
-statistiques initiales de Lanturn et Tortank aux tables d’origine. Le parcours
-valide les mécanismes ciblés avec une équipe préexistante. L’acquisition de
-cette équipe, les 25 purifications initiales, l’équilibrage et une partie
-complète du scénario restent hors de son périmètre.
+The PID, IV, EV, capabilities and stored statistics are inherited from previous fixtures. The
+Japanese survey `fixture-stat-comparison.json` combines the initial statistics of Lanturn and
+Blastoise with the original tables. The route validates the targeted mechanisms with a pre-existing
+team. The acquisition of this team, the initial 25 purifications, balancing and a full part of the
+scenario remain outside its scope.
 
-Les dialogues, choix, déplacements et KO sont réalisés par les commandes du jeu.
-Les captures relèvent les arguments, les registres et les changements produits
-par les fonctions natives. Dans chaque région, le bridge intervient une fois
-pour rejoindre la salle de combat à partir d’une vraie transition de porte.
-Après contrôle de l’état initial, il ajuste uniquement la destination et son
-argument `r3`. L’audit conserve les destinations et chaque demande du bridge.
-La lecture des registres flottants se limite à PS0 dans le protocole RSP utilisé.
+The dialogues, choices, movements and KO are made by the controls of the game. The captures
+highlight the arguments, records and changes produced by the native functions. In each region, the
+bridge intervenes once to reach the fighting room from a real door transition. After checking the
+initial state, it adjusts only the destination and its argument `r3`. The audit keeps the
+destinations and every request of the bridge. The reading of the floating registers is limited to
+PS0 in the RSP protocol used.
 
-Les autres multiplicateurs relèvent des contrôles automatisés. Le témoin de
-refus au seuil natif d’EXP obscure figure dans le bilan v0.15. Les preuves,
-cartes, captures et audits sont conservés dans le dossier privé `build/v16-runtime/`.
+The other multipliers are subject to automated checks. The witness of refusal at the native
+threshold of darkEXP appears in the balance sheet v0.15. Evidence, maps, captures and audits are
+kept in the private file `build/v16-runtime/`.
 
 ## Distribution Windows
 
-L’édition locale utilise le pack de présentation extrait dans ce projet.
-L’édition publique comprend le code source et l’application Windows sans ce
-pack. Les archives ne contiennent aucune ROM, sauvegarde ni copie de Dolphin.
-Les deux éditions utilisent les exécutables validés et le même codec Rust.
+The local edition uses the presentation package extracted in this project. The public edition
+includes the source code and the Windows application without this package. The archives do not
+contain any ROM, backup or copy of Dolphin. Both editions use validated executables and the same
+Rust codec.

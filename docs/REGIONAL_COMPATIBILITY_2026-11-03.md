@@ -1,161 +1,137 @@
-# Compatibilité Europe, USA et Japon — version 0.14.0
+# Compatibility Europe, USA and Japan — version 0.14.0
 
-La version 0.14 accepte les trois ROM Colosseum révision 0 identifiées dans le
-[README](../README.md#compatibilité). Elle conserve les mêmes options dans les
-trois régions, avec des dispositions de données et des adresses natives propres
-à chaque exécutable. Les fichiers originaux restent en lecture seule ; chaque
-création produit une image et un rapport séparés.
+Version 0.14 accepts the three Colosseum revision 0 ROMs identified in
+[README](../README.md#compatibility). It retains the same options in all three regions, with data
+provisions and native addresses specific to each executable. Original files remain read-only. Each
+creation produces a separate image and report.
 
-## Identification et adaptation
+## Identification and adaptation
 
-L’en-tête sélectionne une région candidate. Le SHA-256 de l’ISO entière, après
-décompression d’une RVZ, doit ensuite correspondre exactement à cette région.
-Changer un identifiant dans un en-tête ne suffit pas à autoriser un patch.
-Les exécutables DOL, les données `common.rel` et les archives des cadeaux et
-boutiques possèdent également leurs propres empreintes et contrôles de contenu.
-Un mélange de composants de régions différentes est refusé.
+The header selects a candidate region. The entire ISO SHA-256, after decompression of an RVZ, must
+then correspond exactly to this region. Changing an ID in a header is not enough to allow a patch.
+DOL executables, `common.rel` data and gift and shop archives also have their own fingerprints and
+content checks. A mixture of components from different regions is refused.
 
-| Version | Identifiant | Taille du DOL original | Langues du jeu |
+| Version | Identifier | Size of the original DOL | Languages of the game |
 | --- | --- | ---: | --- |
-| Europe | `GC6P01` | 4 096 576 octets | Anglais, français, allemand, italien, espagnol |
-| USA | `GC6E01` | 3 779 808 octets | Anglais |
-| Japon | `GC6J01` | 3 699 680 octets | Japonais |
+| Europe | `GC6P01` | 4 096 576 octets | English, French, German, Italian, Spanish |
+| USA | `GC6E01` | 3 779 808 octets | English |
+| Japan | `GC6J01` | 3 699 680 octets | Japanese |
 
-Les tables partagent les mêmes schémas et comptes : 820 dresseurs, 5 510
-enregistrements de Pokémon de dresseur, 413 lignes d’espèces dont les 386 espèces
-réelles, 358 capacités et 97 lignes de métadonnées obscures. Leurs positions et
-banques de noms diffèrent. Les banques USA portent le tag natif `US` ; les banques
-japonaises utilisent leurs en-têtes natifs et des chaînes UTF-16BE.
+The tables share the same diagrams and accounts: 820 trainers, 5,510 records of Pokémon of trainer,
+413 lines of species including the 386 real species, 358 capacities and 97 lines of obscure
+metadata. Their positions and banks of names differ. USA banks bear the native tag `US`. Japanese
+banks use their native headers and UTF-16BE chains.
 
-Les six routines de starters et cadeaux, les constructeurs, les capacités de
-départ, les tables d’objets et de CT, les générateurs de PID et les variables
-de joueur/mémoire ont été identifiés dans chaque exécutable. Les instructions
-et cibles de branchement attendues sont vérifiées avant modification. La
-variable SDK `arenaLo` japonaise utilise notamment un déplacement différent ;
-les allocations des nouveaux patchs suivent chaque version.
+The six starter and gift routines, the constructors, the starting capabilities, the object and TM
+tables, the PID generators and the player/memory variables have been identified in each executable.
+The expected connection instructions and targets are checked before modification. The Japanese SDK
+`arenaLo` variable uses a different displacement, among other things. The allocations of the new
+patches follow each version.
 
-Les régions USA et Japon possèdent une seule archive de boutique, contre cinq
-pour PAL. Les patchs ne cherchent donc plus à créer des variantes de langue
-absentes. Les noms japonais des pierres restent natifs ; le correctif
-d’espacement concerne onze libellés PAL et un libellé USA, sans changement
-nécessaire au Japon.
+The USA and Japan regions have only one store archive, compared to five for PAL. The patches no
+longer seek to create missing language variants. The Japanese names of the stones remain native. The
+patch of spacing concerns eleven PAL labels and a USA wording, without any necessary change in
+Japan.
 
-## Cadeaux d’Adelbert et langues
+## GiftsEagun and Languages
 
-Le script original de la Relique est identique dans les trois régions. Les
-quelques différences du script de maison japonais se trouvent hors des zones
-modifiées. Les conditions de scénario, identifiants natifs des cadeaux et
-indicateurs persistants sont conservés. Les membres non ciblés des archives
-restent identiques.
+The original script of the Relic is identical in all three regions. The few differences in the
+Japanese home script are outside the modified areas. The script conditions, native identifiers of
+gifts and persistent indicators are retained. The non-target members of the archives remain
+identical.
 
-Les cinq nouveaux dialogues suivent la langue native du jeu : cinq traductions
-en Europe, anglais aux USA, japonais au Japon. Le japonais utilise de véritables
-chaînes UTF-16BE, les contrôles natifs et la typographie pleine chasse. L’interface
-de l’outil garde ses six langues, indépendamment de la ROM. Les noms manquants
-dans une ROM monolingue proviennent du catalogue traduit déjà fourni avec l’outil
-pour l’aperçu ; les noms écrits dans le jeu restent ceux de sa propre banque.
+The five new dialogues follow the native language of the game: five translations in Europe, English
+in the USA, Japanese in Japan. Japanese uses real UTF-16BE channels, native controls and full
+hunting typography. The interface of the tool keeps its six languages, regardless of the ROM. The
+missing names in a monolingual ROM come from the translated catalogue already provided with the tool
+for preview. The names written in the game remain those of its own bank.
 
-Les validations détaillées des cadeaux PAL, dont sauvegarde et rechargement,
-restent décrites dans le [suivi précédent](PURIFICATION_GIFTS_FOLLOWUP_2026-11-02.md).
-Les essais USA et japonais ont ensuite validé les deux acquisitions natives,
-le rendu des cinq dialogues, une sauvegarde dans le jeu et un rechargement dans
-un nouveau processus, suivi du refus d’un second don. La préparation des cartes
-QA et les limites des deux contrôles de texte sont détaillées dans le
-[suivi Dolphin des cadeaux régionaux](REGIONAL_GIFTS_DOLPHIN_2026-11-03.md).
+The detailed validations of PAL gifts, including backup and reloading, remain described in [previous
+follow-up](PURIFICATION_GIFTS_FOLLOWUP_2026-11-02.md). USA and Japanese trials then validated the
+two native acquisitions, rendering of the five dialogs, a backup in the game and reloading in a new
+process, followed by refusal of a second gift. The preparation of QA cards and the limits of the
+two text checks are detailed in [follow-up Dolphin of regional
+gifts](REGIONAL_GIFTS_DOLPHIN_2026-11-03.md).
 
-## Contrôles du moteur et des images
+## Engine and image checks
 
-La suite source exécute 386 tests : 384 réussissent et deux sont ignorés. Les
-tests régionaux contrôlent notamment les instructions PowerPC des patchs, le
-retour des appels natifs et la conservation des registres, les noms japonais,
-les boutiques, les exclusions, les CT, les boss et les migrations de profils.
-Les trois tests du codec Rust réussissent également.
+The source suite executes 386 tests: 384 succeeds and two are ignored. Regional tests control among
+other things the PowerPC instructions of patches, the return of native calls and the preservation of
+registers, Japanese names, shops, exclusions, TM, bosses and profile migrations. The three tests of
+the Rust codec also succeed.
 
-La matrice de données réelles couvre 18 configurations par région, soit 54 cas
-et 108 constructions répétées des patchs. Elle relit les octets finaux et vérifie :
+The actual data matrix covers 18 configurations per region, 54 cases and 108 repeated patch
+constructions. It rereads the final bytes and checks.
 
-- les 3 355 emplacements de dresseurs référencés et remplis ;
-- les 48 familles obscures distinctes lorsque cette règle est active ;
-- les stades des starters, filtres de génération, règles des boss et modes avancés ;
-- les objets, boutiques, six pierres et noms dans chaque banque native ;
-- les décisions chromatiques liées à la seed à 25 % et 100 %, leurs tables
-  finales de 5 510 emplacements de dresseurs et 97 lignes obscures ;
-- les seuils personnalisés de cadeaux 0/48 et leurs niveaux 17/88 ;
-- neuf appels réels de l’aperçu, chacun avec les 54 portraits et les résultats
-  des deux starters, quatre cadeaux et 48 obscurs comparés aux données finales.
+- the 3,355 sites of qualified and filled trainers;
+- the 48 distinct dark families when this rule is active;
+- starter stages, generation filters, boss rules and advanced modes;
+- objects, shops, six stones and names in each native bank;
+- 25 % and 100 % seed Shiny decisions, their final tables of 5,510 erector locations and 97 obscure
+  lines;
+- personalized gift thresholds 0/48 and their levels 17/88;
+- nine real calls from the preview, each with 54 portraits and results of the two starters, four
+  gifts and 48 Shadow Pokémon compared to the final data.
 
-Les trois RVZ fournies ont ensuite suivi la chaîne de création complète vers
-ISO puis RVZ. La redécompression de chaque sortie RVZ retrouve exactement
-l’ISO attendue. Le mode copie sur les trois ISO restitue leur SHA-256 original.
-Chaque source est réhachée après traitement et reste inchangée.
+The three RVZs provided then followed the complete creation chain to ISO and then RVZ. The
+recompression of each RVZ output is exactly the expected ISO. The copy mode on the three ISOs
+returns their original SHA-256. Each source is recompressed after processing and remains unchanged.
 
-La régression PAL reproduit à l’identique l’ISO de l’essai v0.13, seed
-`purification-rewards-1`, taux chromatique 25 %, au SHA-256
-`da8e0d6883231b9d1cb5578895ca469db600de4894a86c0d97c2c960a22121a7`.
-Dix-huit compositions DOL ont aussi des octets et rapports identiques aux
-sources v0.13 archivées.
+The PAL regression reproduced in the same ISO l v0.13, seed `purification-rewards-1`, 25 per cent
+Shiny rate, SHA-256 `da8e0d6883231b9d1cb5578895ca469db600de4894a86c0d97c2c960a22121a7`Eighteen DOL
+compositions also have bytes and reports identical to the sources v0.13 archived.
 
-## Démarrages dans Dolphin
+## Starts in Dolphin
 
-Les trois images ont été démarrées séparément avec des profils et cartes
-mémoire neufs, sans importer de sauvegarde ni de SRAM personnels. Le menu natif,
-la saisie du nom, la confirmation de nouvelle partie et le début de
-l’introduction ont été parcourus dans chaque région.
+The three images were started separately with new memory profiles and cards, without importing
+backup or personal SRAM. The native menu, the name entry, confirmation of new part and the beginning
+of the introduction were searched in each region.
 
-Seed : `regional-validation-1`. Les données de l’équipe ont été lues après la
-génération et l’attribution natives du propriétaire, sans substitution de
-Pokémon, de PID, de script ni de savestate.
+Seed: `regional-validation-1`. Team data were read after the owner's native generation and
+allocation, without substitution of Pokémon, PID, script or savestate.
 
-| Région | Taux testé | Premier starter | Second starter | Statuts observés dans l’équipe |
+| Region | Rate tested | First starter | Second starter | Status observed in the team |
 | --- | --- | --- | --- | --- |
-| Europe | 25 %, liés à la seed | Wattouat, niveau 26 | Kaiminus, niveau 25 | Deux ordinaires, conformes à l’aperçu |
-| USA | 25 %, liés à la seed | Wattouat, niveau 26 | Kaiminus, niveau 25 | Deux ordinaires, conformes à l’aperçu |
-| Japon | 100 %, liés à la seed | Wattouat, niveau 26 | Kaiminus, niveau 25 | Deux chromatiques, conformes à l’aperçu |
+| Europe | 25 %, linked to the seed | Mareep, level 26 | Totodile, level 25 | Two non-Shiny Pokémon, in accordance with the overview |
+| USA | 25 %, linked to the seed | Mareep, level 26 | Totodile, level 25 | Two non-Shiny Pokémon, in accordance with the overview |
+| Japan | 100 %, linked to the seed | Mareep, level 26 | Totodile, level 25 | Two Shiny, in accordance with the overview |
 
-Les espèces, niveaux, expérience et quatre capacités correspondent dans les
-six enregistrements. Les statuts chromatiques sont calculés à partir de leurs
-PID et identifiants de propriétaire définitifs. Les enregistrements temporaires
-observés avant transfert ne suffisent pas à ce dernier contrôle : le jeu leur
-attribue encore leur propriétaire après la routine de génération.
+The species, levels, experience and four capacities correspond to the six records. The Shiny
+statuses are calculated from their PIDs and final owner IDs. The temporary records observed before
+transfer are not enough for this last control: the game still assigns their owner to them after the
+generation routine.
 
-Au Japon, l’introduction a également été poursuivie jusqu’au contrôle du
-personnage devant le train. Le menu Pokémon affiche les deux starters, leurs
-noms japonais, niveaux et portraits chromatiques. Les trois sessions retenues
-se ferment normalement avec un code de retour nul. Les empreintes des trois
-RVZ originales et de tous les fichiers du profil Dolphin personnel, dont la
-carte mémoire et la SRAM, restent identiques avant et après les essais.
+In Japan, the introduction was also continued until the character was checked in front of the train.
+The Pokémon menu displays the two starters, their Japanese names, levels and Shiny portraits. The
+three sessions selected normally close with a zero return code. The fingerprints of the three
+original RVZs and all files of the Dolphin Personal Profile, including the memory card and SRAM,
+remain the same before and after the tests.
 
-Le harnais utilise la copie privée Dolphin 2609a déjà employée par les essais
-précédents, avec son correctif d’entrée hôte et des profils isolés. Cette copie
-ne fait pas partie de la distribution. Deux premières tentatives de lancement
-PAL ont bloqué avant l’initialisation du débogueur ; elles ont été arrêtées et
-leur conservation des originaux et du profil personnel a été vérifiée. Les
-profils suivants activent la journalisation ; les essais USA/Japon désactivent
-le backend SDL DirectInput des joysticks pour éviter un blocage documenté de
-l’hôte, tout en conservant le clavier et la manette de test de Dolphin.
+The harness uses the private copy Dolphin 2609a already used in previous trials, with its host input
+patch and isolated profiles. This copy is not part of the distribution. Two first attempts to launch
+PAL have blocked before the debugger initialization. They have been stopped and their retention of
+the originals and personal profile has been verified. The following profiles activate logging.
+USA/Japan trials disable the SDL DirectInput backend of the joysticks to avoid a documented blocking
+of the host, while maintaining the keyboard and Dolphin test controller.
 
-Ces essais valident les démarrages et les équipes de nouvelles parties. Ils
-ne constituent pas trois parties complètes, ni une répétition de chaque
-évolution, achat, capture et combat tardif dans chaque région. Le test sur un
-autre PC Windows reste une vérification de distribution distincte.
+These tests validate start-ups and teams of new games. They do not constitute three complete parts,
+nor a repeat of each evolution, purchase, capture and late combat in each region. The test on
+another Windows PC remains a separate distribution check.
 
-## Application et reproduction
+## Application and reproduction
 
-Les exécutables Windows local et public utilisent le même moteur. Chacun passe
-156 états de diagnostic Qt dans les six langues, les deux tailles de fenêtre,
-les réglages, les aperçus et les dialogues d’exclusion. Les archives sont
-extraites dans un nouveau chemin avec espaces et accents pour le test de
-démarrage ; le codec Rust et les ressources de l’édition sont vérifiés.
-L’édition publique ne contient ni ROM, ni sauvegarde, ni Dolphin, ni le pack
-d’images et de sons du jeu. Les archives de versions précédentes sont conservées.
+Local and public Windows executables use the same engine. Each pass 156 Qt diagnostic states in the
+six languages, two window sizes, settings, previews and exclusion dialogs. The archives are
+extracted in a new path with spaces and accents for the start test. The Rust codec and editing
+resources are checked. The public edition does not contain ROM, backup, Dolphin, or the game's image
+and sound pack. Archives of previous versions are kept.
 
-Les profils v0.13 gardent toutes leurs options, y compris les cadeaux et les
-chromatiques. Les nouveaux profils sont des configurations utilisables sur les
-trois régions. Le rapport d’une création conserve l’identifiant régional et les
-empreintes exactes : une reproduction binaire demande la même ROM, seed,
-configuration et version du moteur.
+The profiles v0.13 keep all their options, including gifts and Shiny Pokémon. The new profiles are
+configurations that can be used on all three regions. The report of a creation retains the regional
+identifier and the exact fingerprints: a binary reproduction requires the same ROM, seed,
+configuration and version of the engine.
 
-Les preuves contenant des données du jeu restent privées dans
-`build/region-compat-2026-11-02/` : inventaires, qualifications REL/DOL,
-`matrix/`, `creation-validation.json`, captures et observations `runtime/`.
-Elles ne sont pas embarquées dans les sources ou exécutables distribués.
+Evidence containing game data remains private in `build/region-compat-2026-11-02/`: inventories,
+REL/DOL qualifications, `matrix/`, `creation-validation.json`, captures and observations `runtime/`.
+They are not embedded in the distributed sources or executables.

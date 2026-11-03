@@ -1,190 +1,163 @@
-# Isolation et statut de fermeture des essais Dolphin
+# Isolation and closure status of Dolphin trials
 
-Recherche du 31 octobre 2026. Le binaire local porte l’étiquette UI Dolphin
-2609a. Les sources officielles du tag 2609a ont été récupérées au commit
-`409881c34357d0f105fd473167d15ab0bd9c1628`, avec leurs SHA-256 dans le manifeste
-local `build/dolphin-validation/references-isolation/manifest.json`. Le binaire
-est empreinté séparément à chaque essai ; cette recherche ne prétend pas établir
-une équivalence de compilation entre le binaire et les sources.
+Search of October 31, 2026. The local binary bears the tag UI Dolphin 2609a. The official sources of
+tag 2609a were recovered at commit `409881c34357d0f105fd473167d15ab0bd9c1628`, with their SHA-256 in
+the local manifest `build/dolphin-validation/references-isolation/manifest.json`. The binary is
+imprinted separately at each trial. This search does not purport to establish a compilation
+equivalence between binary and sources.
 
-## Ce que le code établit
+## What the code establishes
 
-L’option `-u`/`--user` est déclarée par
+The option `-u`/`--user` is declared by
 [CommandLineParse.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/UICommon/CommandLineParse.cpp).
-Dans [Main.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/DolphinQt/Main.cpp),
-`SetUserDirectory` reçoit ce chemin avant l’initialisation des configurations et
-de `Settings`. Le répertoire explicite est prioritaire sur les mécanismes de
-repli Windows. Le fichier `portable.txt` impose un repli dans `User/` à côté de
-l’exécutable lorsqu’aucun chemin explicite n’est fourni.
+In
+[Main.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/DolphinQt/Main.cpp),
+`SetUserDirectory` receives this path before the initialization of the configurations and
+`Settings`. The explicit directory is given priority over the Windows folding mechanisms. The
+`portable.txt` file requires a fallback in `User/` next to the executable when no explicit path is
+provided.
 [UICommon.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/UICommon/UICommon.cpp)
 
-`Settings::GetQSettings` place `Qt.ini` sous le répertoire de configuration
-issu du chemin utilisateur.
+`Settings::GetQSettings` place `Qt.ini` under the configuration directory from the user path.
 [Settings.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/DolphinQt/Settings.cpp)
-Les chemins reconstruits par Dolphin placent le SRAM GameCube dans son
-répertoire GC utilisateur ; la configuration de démarrage emploie ce chemin.
+The paths rebuilt by Dolphin place the SRAM GameCube in its user GC directory. The boot
+configuration uses this path.
 [FileUtil.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/Common/FileUtil.cpp),
 [ConfigManager.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/Core/ConfigManager.cpp)
 
-Un chemin de carte mémoire indiqué dans un INI peut toutefois viser un fichier
-externe au profil. L’argument `-u` seul ne remplace donc pas la vérification des
-chemins configurés.
+A memory card path indicated in an INI may, however, target a file external to the profile.
+Therefore, the argument `-u` alone does not replace the check of configured paths.
 
-La fin normale de `MainWindow::OnStopComplete`, lorsqu’une sortie est demandée,
-appelle `QGuiApplication::exit(0)`.
+The normal end of `MainWindow::OnStopComplete`, when an output is requested, calls
+`QGuiApplication::exit(0)`.
 [MainWindow.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/DolphinQt/MainWindow.cpp)
-`Main.cpp` renvoie le résultat de la boucle Qt ; certains échecs de démarrage
-produisent explicitement 1. Ces observations statiques ne suffisent pas à
-expliquer le statut 1 de l’ancien lanceur après une session jouée.
+`Main.cpp` returns the result of the Qt loop. Some boot failures explicitly produce 1. These static
+observations are not enough to explain the status 1 of the former launcher after a played session.
 
-## Corrections du dispositif de validation
+## Corrections to the validation device
 
-`scripts/run_dolphin_validation.py` lance directement une liste d’arguments par
-`subprocess.Popen`, sans shell intermédiaire. Il inscrit le PID, les arguments,
-les chemins et le statut `running` dans un rapport JSON, puis le véritable
-`return_code` du processus et son équivalent hexadécimal à sa fermeture.
-Les lecteurs peuvent suivre les mises à jour atomiques du JSON. Les captures
-stdout/stderr restent dans deux fichiers associés ; un fichier existant est
-refusé. Le statut du moniteur est distinct du code natif consigné.
+`scripts/run_dolphin_validation.py` directly launches a list of arguments by `subprocess.Popen`,
+without intermediate shell. It lists the PID, arguments, paths and status `running` in a JSON
+report, then the true `return_code` of the process and its hexadecimal equivalent when closed.
+Readers can follow JSON atomic updates. Stdout/stderr captures remain in two associated files. An
+existing file is refused. The status of the monitor is distinct from the recorded native code.
 
-Le lanceur exige une copie de Dolphin avec `portable.txt`, un profil préparé et
-un rapport situés sous `build/`. Les liens symboliques, jonctions et fichiers
-liés matériellement sont refusés pour les cibles de validation. Les chemins
-modifiables connus des INI de configuration et de jeu doivent rester dans le
-profil de l’essai. Les sections Gecko natives à lignes sans affectation sont
-acceptées sans autoriser des redirections externes de carte mémoire.
+The launcher requires a copy of Dolphin with `portable.txt`, a prepared profile and a report located
+under `build/`. The physically linked symbolic links, junctions and files are refused for validation
+targets. The known editable paths of the INI configuration and game must remain in the trial
+profile. The native non-assignment line gecco sections are accepted without allowing external
+redirections of memory card.
 
-L’image de jeu, l’exécutable et les fichiers protégés supplémentaires sont
-empreintés avant et après. Le profil personnel entier est inventorié, au-delà
-des seuls dossiers Config/GC. Aucun arrêt automatique ni restauration forcée de
-fichier personnel n’est effectué. Les résultats d’une session interrompue ne
-sont pas présentés comme un audit final. Les empreintes prouvent une stabilité
-des fichiers surveillés sur l’intervalle, pas l’absence de toute activité du
-système ni le bon fonctionnement de chaque scénario du jeu.
+The game image, the executable and the additional protected files are printed before and after. The
+entire personal profile is inventoried, beyond the only Config/GC folders. No automatic shutdown or
+forced restoration of personal file is performed. The results of a interrupted session are not
+presented as a final audit. The hashes prove a stability of the files monitored over the interval,
+not the absence of any system activity or the proper functioning of each scenario of the game.
 
-`scripts/start_dolphin_test.ps1` délègue désormais à ce moniteur. Il utilise par
-défaut la copie `build/dolphin-validation/portable/Dolphin.exe`, accepte un chemin
-de copie explicite, et renvoie le statut du moniteur. Le code du processus natif
-se lit dans le rapport JSON. Aucun émulateur n’est inclus dans les distributions.
+`scripts/start_dolphin_test.ps1` now delegates to this monitor. By default, it uses the
+`build/dolphin-validation/portable/Dolphin.exe` copy, accepts an explicit copy path, and returns the
+status of the monitor. The native process code is read in the JSON report. No emulator is included
+in the distributions.
 
-Exemple, après préparation de la copie portable et du profil de test :
+Example, after preparation of the portable copy and test profile.
 
 ```powershell
 python scripts/run_dolphin_validation.py --emulator build/dolphin-validation/portable/Dolphin.exe --iso build/v05-qa/unchanged.iso --profile build/dolphin-validation/profiles/baseline-empty --report build/dolphin-validation/baseline-empty-run.json
 ```
 
-Choisir un nom de rapport neuf à chaque répétition. L’option `--protect-file`
-peut être répétée pour ajouter les images originales et l’installation originale
-de Dolphin à l’audit, en plus de l’image montée et du clone déjà surveillés.
-`--debugger` ouvre les panneaux du débogueur lorsque le scénario l’exige.
+Choose a new report name at each repetition. The option `--protect-file` can be repeated to add the
+original images and the original installation of Dolphin to the audit, in addition to the mounted
+image and the clone already monitored. `--debugger` opens the debugger panels when the scenario
+requires it.
 
-## Première observation contrôlée
+## First controlled observation
 
-Sur une ISO strictement identique à l’originale, un profil vide et D3D12, le
-processus observé PID 30268 s’est terminé avec le code natif **0** après fermeture
-par l’interface. Le moniteur a confirmé les fichiers protégés inchangés et les
-**46 fichiers du profil personnel inchangés**. Preuve locale :
+On an ISO strictly identical to the original, an empty profile and D3D12, the observed process PID
+30268 ended with the native code **0** after closing by the interface. The monitor confirmed the
+unchanged protected files and the **46 files of the personal profile unchanged**. Local proof:
 `build/dolphin-validation/baseline-empty-run.json`.
 
-Cette observation ne reproduit pas l’ancien statut 1 et n’en établit pas la
-cause rétroactivement. Les essais avec carte copiée et image randomisée sont
-consignés dans leurs rapports distincts et dans le compte rendu de validation
-principal.
+This observation does not duplicate the former status 1 and does not establish the cause
+retroactively. Tests with copied maps and randomized images are recorded in their separate reports
+and in the main validation report.
 
-## Événements Windows et comparaison des contextes
+## Windows events and context comparison
 
-Une lecture ciblée des événements Application Error / Windows Error Reporting
-pour `Dolphin.exe` sur les 48 heures précédentes a trouvé de véritables rapports
-`APPCRASH`, absents du journal texte Dolphin. Le fichier privé
-`build/dolphin-validation/dolphin-windows-errors.json` conserve les 12 événements
-filtrés, SHA-256
-`a2fd75282984acc9efb184c0e83daf8d80251ea969dacfec20c2ca74dc113e81`.
+A targeted reading of the events Application Error / Windows Error Reporting for `Dolphin.exe` over
+the previous 48 hours found real reports `APPCRASH`, missing from the Dolphin text journal. The
+private file `build/dolphin-validation/dolphin-windows-errors.json` keeps the 12 filtered events,
+SHA-256 `a2fd75282984acc9efb184c0e83daf8d80251ea969dacfec20c2ca74dc113e81`.
 
-| Heure locale le 31 octobre | Processus et chemin | Module et exception |
+| Local time October 31st | Process and path | Module and exception |
 | --- | --- | --- |
-| 11:37:32 à 11:37:35 | PID 10276 (`0x2824`), `Dolphin-x64/Dolphin.exe` | `ntdll.dll`, `0xc0000008` |
-| 11:45:43 | Même PID et même chemin | `XInputUap.dll`, `0xc0000005`, offset `0x22c7` |
+| 11:37:32 to 11:37:35 | PID 10276 (`0x2824`), `Dolphin-x64/Dolphin.exe` | `ntdll.dll`, `0xc0000008` |
+| 11:45:43 | Same PID and same path | `XInputUap.dll`, `0xc0000005`, offset `0x22c7` |
 
-Ces horaires concordent avec l’ancienne session à carte copiée, dont le journal
-Dolphin avait été créé à 11:37:32. L’ancien lanceur n’enregistrait pas le PID ;
-le lien exact avec son code 1 reste donc une corrélation temporelle. Les rapports
-Windows établissent une anomalie native de Dolphin dans ces modules ; ils ne
-démontrent pas que les données randomisées ou la sauvegarde en sont la cause.
-Sans pile d’appels retenue, le module fautif ne suffit pas à désigner une cause
-racine dans Dolphin, dans Windows ou dans un pilote.
+These schedules are consistent with the old copied card session, of which the Dolphin newspaper had
+been created at 11:37:32. The old launcher did not record the PID. The exact link with its code 1
+remains a temporal correlation. Windows reports establish a native Dolphin anomaly in these modules.
+They do not demonstrate that the randomized data or backup are the cause. Without the chosen call
+stack, the fault module is not enough to designate a root cause in Dolphin, Windows or a driver.
 
-Le clone de test lancé ensuite dans le contexte bureau hors AppContainer, PID
-8140, chargeait `C:\WINDOWS\SYSTEM32\DINPUT8.dll` et
-`C:\WINDOWS\SYSTEM32\xinput1_4.dll`. `XInputUap.dll` ne figurait pas dans cet
-inventaire ciblé. Preuve locale :
-`build/dolphin-validation/host-input-modules.json`. Cette différence fournit une
-piste d’environnement vérifiable ; elle ne prouve pas, à elle seule, une
-résolution du plantage de fermeture.
+The test clone then launched in the non-AppContainer desktop context, PID 8140, loaded
+`C:\WINDOWS\SYSTEM32\DINPUT8.dll`] and `C:\WINDOWS\SYSTEM32\xinput1_4.dll`. `XInputUap.dll` was not
+included in this targeted inventory. Local proof:
+`build/dolphin-validation/host-input-modules.json`. This difference provides a verifiable
+environmental track. It does not alone prove a resolution of the closure crash.
 
-Dans les sources épinglées, le backend Win32 initialise XInput globalement, même
-si la manette sélectionnée utilise DInput. Sa désinitialisation libère la DLL.
-Aucune clé INI de désactivation de ce backend n’est présente dans les fonctions
-inspectées ; écrire une option inventée ne constituerait pas une correction.
+In pinned sources, the Win32 backend initializes XInput globally, even if the selected controller
+uses DInput. Its uninstallation releases the DLL. No INI key to disable this backend is present in
+the inspected functions. Writing an invented option would not constitute a correction.
 [Win32.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/InputCommon/ControllerInterface/Win32/Win32.cpp),
 [XInput.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/InputCommon/ControllerInterface/XInput/XInput.cpp)
-Les quatre sources du contrôleur sont conservées avec leurs empreintes dans
-`references-isolation/controller-manifest.json`, sous le dossier local de QA.
+The controller's four sources are stored with their fingerprints in
+`references-isolation/controller-manifest.json`, under the local QA folder.
 
-Pour les essais avec débogueur, lancer le moniteur Dolphin et son client GDB
-dans le même contexte bureau hors AppContainer évite le blocage de boucle locale
-observé dans le conteneur. Aucune exemption réseau AppContainer ni autre réglage
-Windows n’a été changé. Le lancement de débogage resté bloqué dans le conteneur
-a été arrêté explicitement comme essai diagnostique abandonné ; son statut
-`0xffffffff` ne doit pas être compté comme un test de fermeture normale.
+For debugger testing, run the Dolphin monitor and its GDB client in the same context out of
+AppContainer desktop avoids local loop blocking observed in the container. No AppContainer network
+exemption or other Windows setting ns has been changed. The debugging launch remained blocked in the
+container has been explicitly stopped as an abandoned diagnostic trial. Its status `0xffffffff`
+should not be counted as a normal closing test.
 
-La correction vérifiable du dispositif est donc un lancement isolé et identifié,
-avec canaux stdout/stderr valides, surveillance complète des originaux, contexte
-de débogage cohérent et codes natifs enregistrés. Les fermetures réelles suivantes
-sur image vierge et image randomisée restent les observations décisives pour
-juger de la stabilité du contexte retenu.
+The verifiable correction of the device is therefore an isolated and identified launch, with valid
+stdout/stderr channels, complete monitoring of originals, consistent debugging context and recorded
+native codes. The following actual closures on blank image and randomized image remain decisive
+observations to judge the stability of the chosen context.
 
-## Savestates pendant un arrêt GDB
+## Savestates during GDB shutdown
 
-Une sauvegarde d’état demandée dans l’interface appelle `State::SaveAs`, puis
-`Core::RunOnCPUThread`. Lorsque le cœur est démarré, cette opération met la
-sérialisation en attente sur le thread CPU.
+A status backup requested in the interface calls `State::SaveAs`, then `Core::RunOnCPUThread`. When
+the heart is started, this operation puts serialization on hold on the thread CPU.
 [State.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/Core/State.cpp#L458),
 [Core.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/Core/Core.cpp#L767)
 
-Le thread CPU arrêté par GDB attend dans `ProcessCommands(true)` ; il ne vide
-pas cette file pendant cette attente. En déduction du code, une sauvegarde
-peut rester en suspens jusqu’à la reprise par le client GDB. La consultation des
-métadonnées de savestates prend aussi un verrou qui attend la fin des tâches de
-sauvegarde, ce qui peut bloquer temporairement l’interface. Pour les fixtures,
-créer l’état avant le dialogue du PNJ, ou lors d’une pause ordinaire, puis
-installer les points d’arrêt.
+The thread CPU stopped by GDB waits in `ProcessCommands(true)`. It does not empty this file during
+this wait. In addition to the code, a backup can remain outstanding until the GDB client resumes.
+The reference to the metadata of savestates also takes a lock that awaits the end of the backup
+tasks, which can temporarily block the interface. For fixtures, create the status before the
+dialogue of the PNJ, or during an ordinary pause, then install the breakpoints.
 [CPU.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/Core/HW/CPU.cpp#L145),
 [State.cpp](https://github.com/dolphin-emu/dolphin/blob/409881c34357d0f105fd473167d15ab0bd9c1628/Source/Core/Core/State.cpp#L562)
 
-## Clôture des fixtures privées
+## Closing of private fixtures
 
-Le helper local `build/dolphin-validation/finalize_validation.py` refuse toute
-correction si un processus Dolphin tourne encore ou si le contrôle s’exécute
-dans AppContainer. Il compare les empreintes initiales des 2011 fichiers du jeu,
-2691 fichiers de l’installation originale, 46 fichiers personnels et deux images
-sources. Il ne restaure jamais de fichier personnel.
+The local helper `build/dolphin-validation/finalize_validation.py` refuses any correction if a
+Dolphin process is running again or if the control is running in AppContainer. It compares the
+initial fingerprints of the 2011 game files, 2691 files from the original installation, 46 personal
+files and two source images. It never restores a personal file.
 
-Après arrêt des essais, son option `--apply` conserve une copie du binaire et
-des INI de test, rétablit le seul clone officiel, puis désactive GDB, le mode
-débogueur et les cheats des profils privés. Un nouvel essai sans débogueur doit
-ensuite se terminer normalement, puis un audit sans `--apply` clôture la
-vérification. Les états construits pour les fixtures restent dans les dossiers
-privés de QA.
+After the tests have stopped, its option `--apply` keeps a copy of the binary and INI test, restores
+the only official clone, then disables GDB, debugger mode and the cheats of private profiles. A new
+trial without debugger must then end normally, then an audit without `--apply` closes the check. The
+states built for fixtures remain in the private folders of QA.
 
-## Contrôles automatiques
+## Automatic checks
 
-Neuf tests ciblés passent dans `tests/test_dolphin_validation.py` : transmission
-exacte des chemins avec espaces sans shell, code natif non nul, empreintes de
-tout le profil, détection de modification ou disparition d’un fichier, refus des
-chemins externes et des liens matériels, absence de remplacement d’un rapport,
-et contrôle des chemins de carte dans les INI spécifiques au jeu.
+Nine targeted tests pass in `tests/test_dolphin_validation.py`: exact transmission of paths with
+shellless spaces, non-zero native code, fingerprints of the entire profile, detection of
+modification or disappearance of a file, refusal of external paths and material links, absence of
+replacement of a report, and control of map paths in game-specific INIs.
 
-Cinq tests privés du finaliseur couvrent le refus d’un processus actif, la
-restauration limitée au clone, le blocage si un original a changé, le refus
-d’écraser un rapport et l’absence de correction en mode audit seul. Ces tests
-utilisent des fichiers temporaires et des inventaires simulés.
+Five private tests of the finaliser cover refusal of an active process, clone-limited restoration,
+blocking if an original has changed, refusal to overwrite a report and lack of correction in audit
+alone. These tests use temporary files and simulated inventories.

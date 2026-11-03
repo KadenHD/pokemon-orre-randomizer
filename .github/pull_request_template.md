@@ -1,6 +1,6 @@
-Décrire le problème et le comportement obtenu après la correction.
+Describe the problem and how the change addresses it.
 
-Validation effectuée : commandes, résultats et limites.
+List the checks you ran, their results, and any limitations.
 
-Si les tirages changent, préciser la version du moteur et la compatibilité des profils.
-Ne joindre ni données du jeu, ni sauvegarde, ni chemins personnels.
+If the change affects randomization results, specify the engine version and profile compatibility.
+Leave game data, save files, and personal paths out of the pull request.

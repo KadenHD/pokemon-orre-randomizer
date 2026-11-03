@@ -1,55 +1,75 @@
-# Ressources et intégrité de l'extraction
+# Resources and integrity of extraction
 
-Analyse statique du 30 octobre 2026. Le script `scripts/survey_assets.py` lit les fichiers sans les modifier et sans lancer le jeu. Les identifiants `ASSET-*` ci-dessous désignent des constats locaux reproductibles, pas des Evidence REA.
+Static analysis of October 30, 2026. The script `scripts/survey_assets.py` reads the files without
+modifying them and without starting the game. The identifiers `ASSET-*` below refer to reproducible
+local findings, not REA evidence.
 
-## Résultat vérifié
+## Audited result
 
-**Les 2 011 fichiers de `game/` sont identiques octet par octet aux plages correspondantes de l'ISO locale fournie.** Le contrôle porte sur 712 453 188 octets : les 2 006 fichiers du système de fichiers du disque et les cinq fichiers de `sys/`. Il ne compare pas les zones inutilisées du disque avec un autre exemplaire et n'établit aucune authenticité externe de l'ISO.
+**The 2,011 files of `game/` are identical byte per byte to the corresponding ranges of the local
+ISO provided.** The control covers 712 453 188 bytes: the 2,006 files of the disk file system and
+the five files of `sys/`. It does not compare unused areas of the disk with another copy and does
+not establish any external authenticity of ISO.
 
-Commande de reproduction depuis la racine du projet :
+Reproduction command from the project root.
 
 ```powershell
 python scripts/survey_assets.py --game game --iso 'Pokemon Colosseum (Europe) (En,Fr,De,Es,It).iso'
 ```
 
-Le résultat JSON doit contenir `all_ranges_byte_identical: true`, aucune entrée dans `mismatches`, et les identités suivantes pour reproduire cette analyse.
+The JSON result must contain `all_ranges_byte_identical: true`, no entry in `mismatches`, and the
+following identities to reproduce this analysis.
 
 | Source | SHA-256 |
 |---|---|
-| ISO locale, 1 459 978 240 octets | `1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9` |
+| ISO local, 1 459 978 240 bytes | `1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9` |
 | `game/sys/boot.bin` | `466709a5575548e3f6abe74d21f89e2fa9e4ed119df75b91bc49fc546116e192` |
 | `game/sys/fst.bin` | `6da386f1db41c37489bf7fb959a2c7009ea87edf7c9606d19c1f1fb9e8e418be` |
 | `game/files/opening.bnr` | `e673c2fae370f3586f367f1d9b38a5719b06fef152ddb1c43cb9019fa8d2f1b4` |
 
 ## Observations
 
-### ASSET-001 — Identité du disque
+### ASSET-001 — Disc identity
 
-Dans `sys/boot.bin`, les six octets à `0x00` sont `47 43 36 50 30 31`, soit **`GC6P01`**. Le numéro de disque à `0x06` et la révision à `0x07` valent zéro. Le titre ASCII à `0x20` est `Pokemon Colosseum`. La signature à `0x1C` est `C2 33 9F 3D`.
+In `sys/boot.bin`, the six bytes to `0x00` are `47 43 36 50 30 31`, **`GC6P01`**. The disk number to
+`0x06` and the revision to `0x07` are worth zero. The ASCII title to `0x20` is `Pokemon Colosseum`.
+The signature to `0x1C` is `C2 33 9F 3D`.
 
-Les mots big-endian de l'en-tête donnent :
+The big-endian words of the header give.
 
-| Position dans `boot.bin` | Valeur | Interprétation utilisée par le contrôle |
+| Position in `boot.bin` | Value | Interpretation used by the control |
 |---|---:|---|
-| `0x420` | 125 952 (`0x1EC00`) | Position du DOL dans l'ISO |
-| `0x424` | 4 222 720 (`0x406F00`) | Position de la FST dans l'ISO |
-| `0x428` | 69 251 | Taille de la FST |
+| `0x420` | 125 952 (`0x1EC00`) | Position of DOL in ISO |
+| `0x424` | 4 222 720 (`0x406F00`) | Position of the FST in ISO |
+| `0x428` | 69 251 | FST size |
 
-Le mot à `0x18` dans `bi2.bin` vaut `2`. L'identifiant contenant `P`, les variantes de ressources et le nom de l'ISO concordent avec une édition européenne ; cette qualification est une interprétation de ces champs, distincte de leurs valeurs observées.
+The word to `0x18` in `bi2.bin` is `2`. The identifier containing `P`, the resource variants and the
+ISO name are consistent with a European edition. This qualification is an interpretation of these
+fields, distinct from their observed values.
 
-### ASSET-002 — Exhaustivité et contenu de l'extraction
+### ASSET-002 — Exhaustivity and content of extraction
 
-La FST contient 2 009 entrées de 12 octets : une racine, deux répertoires (`movie`, entrée 202 ; `sound`, entrée 791) et 2 006 fichiers. La table de noms commence à `0x5E2C` (24 108 octets). Tous les chemins attendus sont présents dans `game/files/`, sans fichier supplémentaire et avec les tailles attendues.
+The FST contains 2,009 entries of 12 bytes: one root, two directories ([`movie`], entry 202.
+`sound`, entry 791) and 2,006 files. The name table starts at `0x5E2C` (24,108 bytes). All expected
+paths are present in `game/files/`, without additional file and with expected sizes.
 
-Le contrôle indépendant lit directement l'en-tête et la FST de l'ISO, puis compare chaque fichier avec sa plage, par blocs d'au plus 1 Mio. Les cinq fichiers de `sys/` sont également comparés : `boot.bin` à `0`, `bi2.bin` à `0x440`, `apploader.img` à `0x2440`, puis `main.dol` et `fst.bin` aux positions de l'en-tête. Les tailles attendues sont calculées depuis l'ISO : tailles fixes pour boot et bi2, champs de taille de l'apploader, dernière fin de section pour le DOL et champ de taille FST. Elles ne sont pas reprises depuis les fichiers extraits. Résultat : **2 011 correspondances exactes, zéro divergence**. La sortie complète est conservée dans `analysis/generated/assets-survey.json`.
+The independent control reads directly the ISO header and FST, then compares each file with its
+range, in blocks of not more than 1 Mio. `sys/` are also compared: `boot.bin` to `0`, `bi2.bin` to
+`0x440`, `apploader.img` to `0x2440`, then `main.dol` and `fst.bin` The expected sizes are
+calculated from ISO: fixed sizes for boot and bi2, apploader size fields, last end of section for
+DOL and FST size field. They are not repeated from the extracted files. Result: **2 011 exact
+matches, zero divergence**. The complete output is kept in `analysis/generated/assets-survey.json`.
 
-Une vérification sur une petite ISO synthétique confirme la détection d'un octet de payload modifié et de fichiers DOL, apploader ou FST tronqués.
+A small synthetic ISO check confirms the detection of a modified payload byte and of truncated DOL,
+apploader or FST files.
 
-La première plage de fichier de la FST commence à l'octet 751 816 640 ; la dernière se termine à 1 459 978 240. Ce décalage important est une propriété des positions du disque ; les fichiers extraits représentent environ 712 Mo, contre 1,46 Go pour l'image disque.
+The first file range of the FST starts on byte 751 816 640. The last one ends at 1 459 978 240. This
+important shift is a property of the disk positions. The extracted files represent about 712 MB,
+compared to 1.46 GB for the disk image.
 
-### ASSET-003 — Répartition des fichiers
+### ASSET-003 — Distribution of files
 
-| Répertoire | Fichiers | Octets |
+| Directory | Files | Octets |
 |---|---:|---:|
 | `game/files/`, directement | 1 994 | 415 723 917 |
 | `game/files/movie/` | 5 | 283 026 032 |
@@ -57,25 +77,41 @@ La première plage de fichier de la FST commence à l'octet 751 816 640 ; la der
 | `game/sys/` | 5 | 4 291 591 |
 | **Total** | **2 011** | **712 453 188** |
 
-Les extensions observées sont : 1 981 `.fsys`, 14 `.bin`, 7 `.samp`, 5 `.thp`, puis un `.bnr`, un `.dol`, un `.img` et un `.toc`.
+The observed extensions are: 1,981 `.fsys`, 14 `.bin`, 7 `.samp`, 5 `.thp`, then one `.bnr`, one
+`.dol`, one `.img` and one `.toc`.
 
-Les 1 981 `.fsys` commencent tous par les quatre octets ASCII **`FSYS`**. Par convention de nom, 1 185 ont le préfixe `wzx_` et 527 le préfixe `pkx_`. Les 269 autres couvrent notamment les familles `D1_`, `D2_`, `D4_`, `M1_` à `M4_`, `S1_`, `S2_`, les menus et des archives comme `common.fsys`, `people_archive.fsys`, `prog.fsys` ou `world_map.fsys`. Ces noms orientent les recherches mais ne démontrent pas à eux seuls le rôle du contenu.
+The 1,981 `.fsys` all start with the four bytes ASCII **`FSYS`**. By name convention, 1,185 have the
+prefix `wzx_` and 527 the prefix `pkx_`. The other 269 cover families `D1_`, `D2_`, `D4_`, `M1_` to
+`M4_`, `S1_`, `S2_`, menus and archives such as `common.fsys`, `people_archive.fsys`, `prog.fsys`]
+or `world_map.fsys`. These names guide the searches but do not show the role of content alone.
 
-Exemples de ressources importantes par taille : `people_archive.fsys` contient 18 069 472 octets, `chara_big.fsys` 5 802 944 et `poke_face.fsys` 4 824 000. Aucun de ces conteneurs n'est décompressé par ce script ; l'analyse FSYS détaillée est menée séparément.
+Exemples de ressources importantes par taille : `people_archive.fsys` contient 18 069 472 octets,
+`chara_big.fsys` 5 802 944 and `poke_face.fsys` 4,824,000. None of these containers is decompressed
+by this script. The detailed FSYS analysis is conducted separately.
 
 ### ASSET-004 — Variantes de langue
 
-La recherche bornée aux suffixes de nom `_fr`, `_ge`, `_it`, `_sp` identifie **13 groupes complets**, chacun accompagné d'une archive sans suffixe : `cb_menu`, `field_common`, `fight_common`, `pcbox_menu`, `pcbox_pocket_menu`, `pcbox_poke_box`, `pda_menu`, `pocket_menu`, `pokechg_menu`, `title`, `toolbattle_menu`, `topmenu`, `waza_menu`.
+The search limited to the suffixes of name `_fr`, `_ge`, `_it`, `_sp` identifies **13 groupes
+complets**, each with an archive without suffix: `cb_menu`, `field_common`, `fight_common`,
+`pcbox_menu`, `pcbox_pocket_menu`, `pcbox_poke_box`, `pda_menu`, `pocket_menu`, `pokechg_menu`,
+`title`, `toolbattle_menu`, `topmenu`, `waza_menu`.
 
-Cela représente 65 archives sur cette convention de nom. Il existe aussi d'autres noms évoquant des langues, notamment dans la famille `wzx_` ; le nombre 65 n'est donc pas un inventaire exhaustif de tous les contenus localisés. La présence d'une variante ne démontre pas que tous ses textes ont été traduits ni qu'un écran donné la charge à l'exécution.
+This represents 65 archives on this name convention. There are also other names evoking languages,
+especially in the family `wzx_`. The number 65 is therefore not an exhaustive inventory of all
+localized content. The presence of a variant does not show that all its texts have been translated
+or that a screen gives the load to the execution.
 
-`opening.bnr` commence par `BNR2` et mesure 8 096 octets. Ses six enregistrements de texte de 320 octets, aux positions `0x1820`, `0x1960`, `0x1AA0`, `0x1BE0`, `0x1D20`, `0x1E60`, sont strictement identiques. Le bandeau du disque n'apporte donc pas ici six traductions distinctes.
+`opening.bnr` begins with `BNR2` and measures 8,096 bytes. Its six 320 bytes text recordings, at
+positions `0x1820`, `0x1960`, `0x1AA0`, `0x1BE0`, `0x1D20`, `0x1E60`, are strictly identical. The
+disk strip does not bring here six separate translations.
 
-### ASSET-005 — Vidéos
+### Asset-005 — Videos
 
-Les cinq fichiers vidéo commencent par `54 48 50 00` (`THP\0`) et portent le mot de version `0x00011000`. Le flottant big-endian à `0x10` vaut environ 29,97 ; le mot à `0x14` donne les nombres d'images ci-dessous.
+The five video files start with `54 48 50 00`] (`THP\0`) and carry the word version `0x00011000`.
+The big-endian floating at `0x10` is about 29.97. The word to `0x14` gives the number of images
+below.
 
-| Fichier dans `files/movie/` | Octets | Images déclarées |
+| File in `files/movie/` | Octets | Images declared |
 |---|---:|---:|
 | `autodemo01.thp` | 101 534 896 | 2 700 |
 | `gs_logo.thp` | 2 375 888 | 130 |
@@ -83,8 +119,11 @@ Les cinq fichiers vidéo commencent par `54 48 50 00` (`THP\0`) et portent le mo
 | `staffroll.thp` | 113 114 768 | 5 250 |
 | `tpc.thp` | 1 953 856 | 75 |
 
-Ce sont des valeurs d'en-tête ; aucun décodage ni visionnage ne vérifie la durée effective ou le contenu audiovisuel.
+These are header values. No decoding or viewing checks the actual duration or audiovisual content.
 
-## Portée et suite utile
+## Scope and useful follow-up
 
-L'intégrité de l'extraction par rapport à l'ISO locale est établie. Les ressources sont accessibles pour les analyses FSYS, REL et DOL. Les rôles exacts des familles `pkx_` et `wzx_`, les tables de gameplay, le chargement des variantes de langue et les liens entre scripts de scènes et données restent à démontrer par analyse du contenu ou observation du jeu.
+The integrity of the extraction from the local ISO is established. Resources are available for FSYS,
+REL and DOL analyses. The exact roles of the `pkx_` and `wzx_` families, gameplay tables, loading of
+language variants, and links between scenes and data scripts remain to be demonstrated by content
+analysis or game observation.

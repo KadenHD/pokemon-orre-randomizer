@@ -37,6 +37,12 @@ sources and all upstream notices with a published binary distribution.
 The local build is not an Internet publication.
 Official licensing reference: https://www.qt.io/development/open-source-lgpl-obligations
 
+## Windows installer
+
+The Windows setup EXE is built with [Inno Setup 6.7.3](https://github.com/jrsoftware/issrc/releases/tag/is-6_7_3)
+by Jordan Russell and Martijn Laan. The installer extracts the same application
+files, replaceable Qt libraries, corresponding sources, and notices as the portable ZIP.
+
 ## Python and PyInstaller
 
 Python 3.12 is distributed under the PSF license and its included notices

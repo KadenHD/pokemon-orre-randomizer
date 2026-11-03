@@ -1,66 +1,58 @@
-# Langues de l’interface et du jeu
+# Languages of the interface and game
 
-L’outil propose les six langues originales de Pokémon Colosseum : français,
-anglais, allemand, espagnol, italien et japonais. Elles sont toutes accessibles
-dans le sélecteur, avant même de charger une ROM.
+The tool offers the six original languages of Pokémon Colosseum: French, English, German, Spanish,
+Italian and Japanese. They are all accessible in the selector, even before loading a ROM.
 
-Au démarrage, **Système** suit la première langue reconnue dans les préférences
-du système. Une variante régionale comme `es-MX`, `de-CH` ou `fr-CA` utilise le
-catalogue correspondant. Si aucune langue n’est reconnue, l’outil utilise
-l’anglais. Le choix manuel est enregistré et peut être remis sur **Système**.
+On startup, **System** follows the first language recognized in the system preferences. A regional
+variant such as `es-MX`, `de-CH` or `fr-CA` uses the corresponding catalogue. If no language is
+recognized, the tool uses English. The manual choice is recorded and can be returned to **System**.
 
-Le changement s’applique immédiatement aux pages, options, aides, erreurs,
-progression et dialogues de fichiers. Les chemins, la seed et les profils restent
-intacts. Il ne modifie ni les réglages ni le résultat de la randomisation.
-L’aperçu conserve son résultat et affiche les noms dans la nouvelle langue,
-y compris les noms japonais. Les numéros du Pokédex national servent aussi
-à la recherche. Les fiches et le journal HTML suivent la langue de l’outil.
+The change applies immediately to pages, options, aids, errors, progress and file dialogs. Paths,
+seed and profiles remain intact. It does not change the settings or the result of randomization. L的
+preview keeps its result and displays the names in the new language, including Japanese names. The
+numbers of the national Pokédex are also used for searching. The sheets and HTML log follow the
+language of the tool.
 
-## Langue dans le jeu
+## Language in the game
 
-Le sélecteur de l’outil ne traduit pas la ROM. Le moteur accepte **Colosseum
-Europe `GC6P01`, USA `GC6E01` et Japon `GC6J01`, révision 0**, au format ISO ou RVZ,
-avec contrôle de l’empreinte complète de chaque image. L’interface conserve ses
-six langues quelle que soit la région de la ROM.
+The tool selector does not translate the ROM. The engine accepts **Colossium Europe `GC6P01`, USA
+`GC6E01` and Japan `GC6J01`, revision 0**, in ISO or RVZ format, with control of the full footprint
+of each image. The interface retains its six languages regardless of the region of the ROM.
 
-Les cinq banques européennes sont conservées. Le jeu européen affiche les noms
-de pierres dans la langue choisie dans le jeu, indépendamment de celle de l’outil :
+The five European banks are kept. The European game displays the names of stones in the language
+chosen in the game, regardless of the tool.
 
-| Langue du jeu | Soleil | Lune | Feu | Foudre | Eau | Plante |
+| Language of the game | Soleil | Lune | Feu | Foudre | Eau | Plante |
 | --- | --- | --- | --- | --- | --- | --- |
-| Français | Pierre Soleil | Pierre Lune | Pierre Feu | Pierre Foudre | Pierre Eau | Pierre Plante |
-| Anglais | Sun Stone | Moon Stone | Fire Stone | Thunder Stone | Water Stone | Leaf Stone |
-| Allemand | Sonnenstein | Mondstein | Feuerstein | Donnerstein | Wasserstein | Blattstein |
-| Espagnol | Piedra Solar | Piedra Lunar | Piedra Fuego | Piedra Trueno | Piedra Agua | Piedra Hoja |
-| Italien | Pietra Solare | Pietra Lunare | Pietra Focaia | Pietra Tuono | Pietra Idrica | Pietra Foglia |
+| French | Pierre Soleil | Pierre Lune | Pierre Feu | Pierre Foudre | Pierre Eau | Pierre Plante |
+| English | Sun Stone | Moon Stone | Fire Stone | Thunder Stone | Water Stone | Leaf Stone |
+| German | Sonnenstein | Mondstein | Feuerstein | Donnerstein | Wasserstein | Blattstein |
+| Spanish | Piedra Solar | Piedra Lunar | Piedra Fuego | Piedra Trueno | Piedra Agua | Piedra Hoja |
+| Italian | Pietra Solare | Pietra Lunare | Pietra Focaia | Pietra Tuono | Pietra Idrica | Pietra Foglia |
 
-L’option **Espacer les noms des pierres** corrige onze libellés PAL et un libellé
-USA sans remplacer les traductions natives. La ROM USA conserve l’anglais ;
-la ROM japonaise conserve ses noms japonais, sans correctif d’espacement.
-Les mots allemands composés restent en un seul mot. Une
-**Copie à l’identique** laisse tous les textes d’origine inchangés.
+The option **Add spaces to stone names** corrects eleven PAL words and a US wording without
+replacing native translations. The US ROM retains English. The Japanese ROM retains its Japanese
+names, without any patching. The German compound words remain in one word. One **Unchanged copy**
+leaves all original texts unchanged.
 
-## Vérification
+## Verification
 
-Les tests contrôlent les clés, champs de formatage et choix de toutes les options,
-la détection des variantes régionales, la persistance du choix et la conservation
-du formulaire et de l’aperçu. Le diagnostic de l’exécutable parcourt 48 états :
-six langues, deux tailles de fenêtre et quatre pages ou modes. Il vérifie aussi
-le chargement des traductions Qt des dialogues.
+The tests check the keys, formatting fields and choices of all options, the detection of regional
+variants, the persistence of choice and the preservation of the form and preview. The diagnosis of
+the executable runs through 48 states: six languages, two window sizes and four pages or modes. It
+also checks the loading of Qt translations of the dialogs.
 
-La validation locale du 1er novembre 2026 vérifie les quatorze catégories de
-réglages et le mode Simple dans les six langues, à 1040 × 800 et 680 × 540, soit
-180 états sans débordement horizontal détecté. Elle lit les 30 noms de pierres
-dans les banques de la ROM. Pour la seed `98205757d6a5da47`, les aperçus ISO et
-RVZ correspondent au résultat de la version précédente et les empreintes des
-sources restent identiques. Ces contrôles ne constituent pas une partie complète
-sous Dolphin ; aucun profil ni aucune sauvegarde personnelle n’est ouvert.
+The local validation of November 1, 2026 checks the fourteen settings categories and the Simple mode
+in the six languages, at 1040 × 800 and 680 × 540, i.e. 180 states without horizontal overflow
+detected. It reads the 30 stone names in the ROM banks. For the `98205757d6a5da47` Seed, the ISO and
+RVZ previews correspond to the result of the previous version and the fingerprints of the sources
+remain the same. These controls do not constitute a complete part under Dolphin. No profile or
+personal backup is opened.
 
-Les rapports locaux sont conservés dans `build/languages-2026-11-01/` et exclus
-des distributions. Les fichiers du moteur sont identiques à ceux de la version
-précédente ; seuls des noms localisés sont ajoutés aux métadonnées du rapport.
+Local reports are stored in `build/languages-2026-11-01/` and excluded from distributions. The
+engine files are identical to those in the previous version. Only localized names are added to the
+report metadata.
 
-Les validations régionales et les fiches/journaux ajoutés depuis cet essai sont
-décrits dans les [notes v0.15](DESKTOP_V15.md). La recherche, la remise à zéro
-d’une catégorie et le récapitulatif de la v0.16 sont suivis dans les
-[notes v0.16](DESKTOP_V16.md), avec leurs propres résultats de validation.
+The regional validations and the fact sheets/newspapers added since this test are described in
+[notes v0.15](DESKTOP_V15.md). The search, the reset of a category and the summary of v0.16 are
+followed in [notes v0.16](DESKTOP_V16.md), with their own validation results.

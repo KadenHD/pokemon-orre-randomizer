@@ -1,262 +1,221 @@
-# Version 0.15 : fiches, starters choisis et progression
+# Version 0.15: files, selected starters and progress
 
-La v0.15 ajoute des fiches Pokémon, un journal HTML, le choix manuel des starters,
-une courbe de niveaux et deux réglages de rythme de jeu. Les aperçus RVZ réutilisent
-leur décompression et la recompression devient annulable dans les codecs Rust
-et Python. Les trois ROM révision 0 Europe, USA et Japon restent identifiées
-par leur empreinte complète.
+The v0.15 adds Pokémon plugs, an HTML log, the manual choice of starters, a level curve and two game
+rhythm settings. RVZ previews reuse their decompression and the recompression becomes cancelable in
+the Rust and Python codecs. The three ROM revision 0 Europe, USA and Japan remain identified by
+their full footprint.
 
-Moteur : `details-and-progression-v15`. Les **82 paramètres, dont 57 booléens**,
-restent répartis dans les quinze catégories. Les nouvelles règles de jeu sont
-neutres par défaut : starters tirés par la seed, courbe désactivée, EXP et
-purification à ×1.
+Engine: `details-and-progression-v15`. **82 parameters, including 57 booleans**, remain in the
+fifteen categories. The new game rules are neutral by default: starters drawn by the seed, curve
+deactivated, EXP and purification to ×1.
 
-## Choisir les starters
+## Choose starters
 
-Dans **Avancé → Starters et cadeaux**, **Premier starter** et **Second starter**
-proposent une liste recherchable par nom ou numéro national du Pokédex.
-**Tirage avec la seed** conserve le tirage habituel. Il est possible de fixer
-les deux starters ou d’en fixer un seul et de tirer son partenaire.
+In **Advanced → Starters and gifts**, **First starter** and **Second starter** propose a searchable
+list by name or national number of the Pokédex. **Draw with the seed** keeps the usual draw. It is
+possible to fix the two starters or to fix one and draw its partner.
 
-Le choix manuel est prioritaire sur le stade, le filtre de familles à trois
-stades et la comparaison de puissance avec le Pokémon remplacé. Il ne contourne
-pas les exclusions par espèce/type, les générations, le filtre légendaire ni
-les contraintes du duo : familles différentes, absence de type commun et
-puissance proche entre les deux Pokémon. Si ces règles ne permettent pas le
-choix, l’outil indique ce qu’il faut corriger ; il ne les désactive pas tout seul.
-Munja reste exclu de la sélection pour conserver la protection existante.
+The manual choice takes precedence over the stage, the three-stage family filter and the power
+comparison with the replaced Pokémon. It does not bypass the exclusions by species/type, the
+generations, the legendary filter or the constraints of the duo: different families, lack of common
+type and near power between the two Pokémon. If these rules do not allow the choice, the tool
+indicates what needs to be corrected. It does not disable them alone. Shedinja remains excluded from
+the selection to retain the existing protection.
 
-Décocher **Remplacer Noctali** ou **Remplacer Mentali** conserve le starter
-d’origine ; son sélecteur manuel n’a alors aucun effet. Les niveaux de départ
-restent 26 et 25, avec l’expérience initiale adaptée à l’espèce choisie.
+Unchecking **Replace Umbreon** or **Replace Espeon** retains the original starter. Its manual
+selector then has no effect. The starting levels remain 26 and 25, with the initial experience
+adapted to the chosen species.
 
-Dans les deux préréglages randomisés, les starters tirés par la seed restent par
-défaut des formes de base de familles à trois stades. Ces deux filtres sont
-indépendants et peuvent être modifiés.
+In the two randomized presets, the starters drawn by the seed remain by default the basic forms of
+three-stage families. These two filters are independent and can be modified.
 
-## Fiches et vérification des réglages
+## Data sheets and verification of settings
 
-Les boutons **Détails** des starters et des rencontres de l’aperçu ouvrent une
-fiche dans la langue de l’outil. Elle contient :
+The **Details** buttons of starters and preview encounters open a sheet in the language of the tool.
+It contains.
 
-- les types, talents possibles et statistiques de base finaux ;
-- les capacités connues pour la rencontre lorsque leur liste est déterminée ;
-- les apprentissages par niveau et les CT compatibles ;
-- la chaîne d’évolution complète, avec les conditions inscrites dans cette ROM.
+- possible types, talents and final basic statistics;
+- the abilities known for the meeting when their list is determined;
+- Level learning and compatible TM;
+- the complete evolution chain, with the conditions entered in this ROM.
 
-Ces données proviennent des octets finaux, après randomisation et corrections
-d’évolution. Elles ne sont pas déduites d’un Pokédex moderne. Par exemple,
-Spectrum indique une montée de niveau à partir de 40 lorsque l’adaptation des
-échanges simples est activée ; une évolution conservée par échange est signalée
-comme indisponible directement dans Colosseum. Un obscur doit être purifié avant
-d’évoluer. Les talents affichés sont les possibilités de l’espèce ; le jeu
-détermine encore le talent individuel.
+These data come from the final bytes, after randomization and correction of evolution. They are not
+deduced from a modern Pokédex. For example, Haunter indicates a level rise from 40 when the
+adaptation of simple exchanges is activated. An evolution preserved by exchange is reported as
+unavailable directly in Colosseum. An obscure must be purified before evolving. The talents
+displayed are the possibilities of the species. The game still determines individual talent.
 
-Les noms restent disponibles en français, anglais, allemand, espagnol, italien
-et japonais. Les lecteurs utilisent les banques natives disponibles et des noms
-de repli pour les langues absentes d’une ROM monolingue. La provenance de ces
-catalogues figure dans les [notices tierces](../THIRD_PARTY_NOTICES.md).
+The names remain available in French, English, German, Spanish, Italian and Japanese. Readers use
+the available native banks and withdrawal names for the languages missing from a monolingual ROM.
+The source of these catalogues appears in the [notices tierces](../THIRD_PARTY_NOTICES.md).
 
-**Vérifier les réglages** lance le moteur utilisé par l’aperçu et la création,
-sans publier de ROM. Les incompatibilités de filtres, de stades ou de couple sont
-présentées avec les corrections possibles. Une vérification réussie correspond
-à la ROM, la seed et les options courantes ; tout changement l’invalide.
+**Check settings** launches the engine used by preview and creation, without publishing ROM.
+Incompatibilities of filters, stages or torque are presented with possible corrections. A successful
+check corresponds to the ROM, the seed and the current options. Any invalid change.
 
-## Difficulté progressive
+## Progressive difficulty
 
-Dans **Niveaux et capture**, la courbe facultative remplace le multiplicateur
-global par trois valeurs, chacune de ×0,5 à ×2 :
+In **Levels and capture**, the optional curve replaces the global multiplier by three values, each
+from ×0.5 to ×2.
 
-| Plage | Niveau de la rencontre dans le jeu d’origine |
+| Plage | Level of the encounter in the original game |
 | --- | --- |
-| Début | 1 à 35 |
-| Milieu | 36 à 50 |
-| Fin | 51 à 100 |
+| Start | 1-35 |
+| Milieu | 36-50 |
+| Fin | 51-100 |
 
-La plage est choisie avant toute modification de niveau. Elle n’est donc pas
-recalculée lorsqu’un Pokémon passe de 35 à 39, par exemple. Ces catégories ne
-représentent pas des chapitres ou des villes. Le résultat est arrondi à l’entier
-le plus proche et borné entre 1 et 100.
+The range is chosen before any level change. Therefore, it is not recalculated when a Pokémon rises
+from 35 to 39, for example. These categories do not represent chapters or cities. The result is
+rounded to the nearest integer and bounded between 1 and 100.
 
-L’ordre est **courbe → bonus des boss → choix du stade final**. Les obscurs
-reçoivent la modification générale de niveau, mais restent exclus du bonus des
-boss et du filtre de stade final. Les starters et cadeaux gardent leurs réglages
-de niveau propres. Désactiver la courbe rétablit le multiplicateur global ; ses
-trois valeurs peuvent rester mémorisées sans être appliquées.
+The order is **curve → boss bonus → choice of final stage**. Dark people receive the general level
+change, but remain excluded from the boss bonus and the final stage filter. Starters and gifts keep
+their level settings clean. Disabling the curve restores the global multiplier. Its three values can
+remain stored without being applied.
 
-## EXP et jauge obscure
+## EXP and Heart Gauge
 
-**Expérience gagnée ×** va de ×0,25 à ×5, avec un pas de 0,25 dans l’interface.
-Le gain de combat est modifié après les bonus natifs, avec arrondi à l’entier
-le plus proche et un minimum de 1 pour un gain positif. Le réglage concerne aussi
-l’EXP mise en réserve pour un obscur lorsque le jeu l’autorise ; elle n’est pas
-remultipliée à sa libération. L’EXP initiale et les Super Bonbons conservent leur
-traitement d’origine.
+**Battle EXP gained ×** ranges from ×0.25 to ×5, with a step of 0.25 in the interface. The fight win
+is changed after the native bonuses, with rounding to the nearest integer and a minimum of 1 for a
+positive gain. The setting also concerns the EXP set aside for a dark one when the game allows. It
+is not multiplied upon its release. The initial LEEXP and the Super Bonbons retain their original
+treatment.
 
-**Vitesse de purification ×** va de ×1 à ×10. Elle multiplie les diminutions
-de la jauge calculées par le jeu, avec son plancher à zéro. Les augmentations
-restent normales. La nature et les objets gardent leurs effets natifs avant ce
-facteur. La purification finale à la Relique et les conditions de scénario
-restent nécessaires.
+**Purification speed ×** ranges from ×1 to ×10. It multiplies the gauge decreases calculated by the
+game, with its floor to zero. Increases remain normal. Nature and objects keep their native effects
+before this factor. Final purification at the Relic and scenario conditions remain necessary.
 
-Les deux valeurs sont **×1 par défaut**. À ×1, aucun code QOL supplémentaire
-n’est ajouté. Les fonctions et instructions sont qualifiées séparément dans les
-trois exécutables ; un DOL inconnu ou une instruction inattendue sont refusés.
-Le code ajouté partage la réservation protégée des patchs de capacités des
-cadeaux et de chromatiques.
+Both values are **×1 by default**. To ×1, no additional QOL code is added. Functions and
+instructions are qualified separately in the three executables. An unknown DOL or unexpected
+instruction are refused. The added code shares the protected reservation of gift and Shiny
+capability patches.
 
-Les [contrats natifs et contrôles PowerPC](QOL_NATIVE_2026-11-03.md) décrivent
-la qualification, les registres et les limites. **Dolphin Europe confirme un
-gain de combat de 673 devenu 1 346 avec EXP ×2**, réellement ajouté à la réserve
-de Tortank (12 313 → 13 659). Lanturn reçoit le même gain calculé, puis le jeu
-refuse normalement sa mise en réserve tant que sa jauge est trop élevée.
-Avec jauge ×3, les diminutions natives −0,5 et −0,75 deviennent −1,5 et −2,25 :
-les jauges passent respectivement de 6 650 à 6 500 et de 800 à 575.
+The [native contracts and PowerPC controls](QOL_NATIVE_2026-11-03.md) describe qualification,
+records and limits. **Dolphin Europe confirms a 673 win with EXP ×2 became 1,346**, actually added
+to the reserve of Blastoise (12,313 → 13,659). Lanturn receives the same calculated gain, then the
+game normally refuses to reserve it as long as its gauge is too high. With gauge ×3, native
+decreases -0.5 and -0.75 become -1.5 and -2.25, respectively: the gauges increase from 6,650 to
+6,500 and from 800 to 575.
 
-Ces témoins proviennent d’un combat réel sur une carte de test distincte ; les
-captures n’écrivent ni EXP, ni jauge, ni résultat de combat. La progression
-synthétique de la fixture, sa correction de cohérence et les raccourcis de
-navigation gardés sont déclarés dans les notes natives. Les originaux et le
-profil Dolphin personnel restent inchangés après fermeture normale des deux
-essais. **Les nouveaux parcours QOL USA/Japon restent qualifiés par les contrats
-et la matrice, sans observation en jeu dans cet essai.** Aucune montée de niveau,
-purification finale, diminution par la marche ou branche du plancher à zéro n’a
-été observée ici. La matrice ci-dessous reste une vérification des données.
+These cookies come from a real fight on a separate test card. The captures do not write EXP, gauge,
+or combat result. The synthetic progression of the fixture, its consistency correction, and the
+navigation shortcuts kept are reported in the native notes. The originals and the personal Dolphin
+profile remain unchanged after normal closure of the two tests. **The new QOL USA/Japan routes
+remain qualified by the contracts and the matrix, without any observation in this essay.** No level
+rise, final purification, decrease by step or branch of the floor to zero has been observed here.
+The matrix below remains a check of the data.
 
 ## Journal HTML
 
-Chaque création produit trois fichiers séparés :
+Each creation produces three separate files.
 
-| Fichier | Contenu |
+| File | Contenu |
 | --- | --- |
-| `partie.iso` ou `partie.rvz` | Nouvelle image de jeu |
-| `partie.iso.json` ou `partie.rvz.json` | Rapport technique et reproduction |
-| `partie.iso.html` ou `partie.rvz.html` | Journal lisible, hors ligne |
+| `partie.iso` ou `partie.rvz` | New Game Image |
+| `partie.iso.json` ou `partie.rvz.json` | Technical report and reproduction |
+| `partie.iso.html` ou `partie.rvz.html` | Journal readable, offline |
 
-Le journal regroupe starters, obscurs, cadeaux, équipes des dresseurs, évolutions
-et CT. Les sections sont initialement repliées pour éviter les spoilers.
-**Ouvrir le journal** est disponible après la création. Son contenu décrit une
-nouvelle partie avec cette configuration ; il ne lit pas une sauvegarde existante.
+The journal consists of starters, Shadow Pokémon, gifts, trainers' teams, evolutions and TM. The sections
+are initially folded to avoid spoilers. **Open journal** is available after creation. Its content
+describes a new part with this configuration. It does not read an existing backup.
 
-L’application choisit la langue courante de l’interface. La CLI propose
-`--journal-language fr|en|de|es|it|ja`, avec `fr` par défaut. Ce choix ne modifie
-pas la langue du jeu. Le HTML est autonome, sans script, image ni ressource
-externe ; les chemins source et destination du rapport technique n’y sont pas
-repris. Les textes sont échappés et une politique de contenu limite les
-ressources actives.
+The application chooses the current language of the interface. The CLI offers `--journal-language
+fr|en|de|es|it|ja`, with `fr` by default. This choice does not change the language of the game. HTML
+is autonomous, without script, image or external resource. The source and destination paths of the
+technical report are not included. Texts are escaped and a content policy limits active resources.
 
-La création refuse un nom d’ISO/RVZ, de JSON ou de HTML déjà utilisé. Les fichiers
-sont publiés sans écrasement et un échec de publication retire les sorties
-intermédiaires de cette création.
+The creation refuses a name of ISO/RVZ, JSON or HTML already used. The files are published without
+overwriting and a failure of publication removes the intermediate outputs from this creation.
 
-## Aperçus RVZ et annulation
+## RVZ overviews and cancellation
 
-Une fenêtre conserve au maximum une décompression RVZ dans un dossier temporaire
-privé, avec son profil DolphinTool isolé. Changer la seed ou les options réutilise
-cette ISO ; les empreintes de la source, de l’outil et de l’ISO sont revalidées.
-Les horodatages seuls ne prouvent jamais l’identité des fichiers. L’ISO est
-également relue après le calcul pour rejeter une modification survenue pendant
-l’aperçu.
+A window keeps as much as possible an RVZ decompression in a private temporary folder, with its
+isolated DolphinTool profile. Change the set or options re-use this ISO. The hashes of the source,
+tool and ISO are re-validated. Horoding alone never prove the identity of the files. L的ISO is also
+re-read after calculation to reject a change that occurred during the preview.
 
-Changer la source ou l’outil, rencontrer une erreur, ou fermer la fenêtre libère
-le cache. Un calcul actif garde sa lecture jusqu’à son arrêt, puis le nettoyage
-a lieu. Aucun cache de jeu persistant n’est installé. Prévoir environ 1,5 Gio sur
-le volume temporaire du système pour un aperçu RVZ.
+Change the source or tool, encounter an error, or close the window releases the cache. An active
+calculation keeps its reading until it stops, then the cleaning takes place. No persistent game
+cache is installed. Provide about 1.5 Gio on the temporary volume of the system for an RVZ preview.
 
-Le codec Rust vérifie l’annulation par blocs d’environ 16 Kio ; la référence Python
-possède aussi ses points d’arrêt. Une compression interrompue ne renvoie pas de
-résultat partiel. Le contexte est propre à la tâche, l’ancien ABI est conservé
-et un ancien DLL peut utiliser le repli Python annulable. Les conversions
-DolphinTool déjà surveillées restent arrêtées par leur propriétaire en cas
-d’annulation.
+The Rust codec checks the block cancellation of about 16 Kio. The Python reference also has its
+breakpoints. An interrupted compression does not return a partial result. The context is specific to
+the task, the old ABI is kept and an old DLL can use the cancelable Python fold. DolphinTool
+conversions already monitored remain stopped by their owner in case of cancellation.
 
-L’essai réel d’une RVZ USA mesure 4,328 s pour la première préparation et 2,250 s
-pour la lecture suivante, avec une seule conversion, les mêmes octets ISO et
-suppression du cache à la fermeture. Ces temps ne couvrent pas le calcul complet
-de l’aperçu. Une annulation envoyée pendant la compression native de 8 Mio revient
-en 0,094 s depuis le début de l’appel ; la recompression suivante reste identique
-à Python. Ce sont des mesures locales, sans engagement de durée sur un autre PC.
+The real test of an RVZ USA is 4,328 s for the first preparation and 2,250 s for the next reading,
+with only one conversion, the same ISO bytes and removal of the cache at the closing. These times do
+not cover the complete calculation of the preview. A cancellation sent during the native compression
+of 8 Mio returns in 0.094 s since the beginning of the call. The following recompression remains
+identical to Python. These are local measures, without duration engagement on another PC.
 
-## Profils et validation des données réelles
+## Profiles and validation of actual data
 
-Les profils v0.14 sont importés avec les huit nouveaux réglages neutres. Leur
-empreinte est contrôlée avant migration. Un ancien profil contenant des champs
-v0.15 ou inconnus est refusé, même s’il a été réempreinté ; aucun champ n’est
-silencieusement ignoré. Le réexport utilise le format courant complet.
+The profiles v0.14 are imported with the eight new neutral settings. Their footprint is checked
+before migration. An old profile containing fields v0.15 or unknown is refused, even if it has been
+re-embedded. No field is silently ignored. The re-export uses the full current format.
 
-La matrice privée couvre six configurations par région, soit **18 cas et
-36 constructions répétées** : réglages recommandés, deux starters manuels,
-un starter manuel, courbe avec boss, EXP/jauge seuls et combinaison des ajouts
-avec types, talents, statistiques et chromatiques randomisés.
+The private matrix covers six configurations per region, i.e. **18 cases and 36 repeated
+constructions** recommended settings, two manual starters, a manual starter, a curve with boss,
+EXP/jauge alone and a combination of additions with randomized types, talents, statistics and Shiny
+Pokémon.
 
-Les contrôles relisent les octets finaux et vérifient, dans chaque région :
+The controls reread the final bytes and verify, in each region.
 
-- 386 fiches, 184 arêtes d’évolution et 3 947 apprentissages ;
-- 3 355 enregistrements de dresseurs, 48 groupes obscurs et leurs 108 variantes ;
-- les 398 rencontres du premier palier, 2 185 du deuxième, 772 du troisième et
-  145 bonus de boss dans le cas combiné ;
-- les deux starters manuels, leur dérogation au filtre de stade, et le refus
-  d’une espèce manuelle explicitement exclue ;
-- la composition des nouveaux blocs EXP/jauge avec les autres patchs, et
-  l’identité de tout le REL lorsque seuls les deux réglages QOL sont ajoutés ;
-- les six langues des journaux, leurs sections fermées et l’absence de chemins
-  source/destination ou de ressources actives externes.
+- 386 cards, 184 edges of evolution and 3,947 apprenticeships;
+- 3,355 records of trainers, 48 dark groups and their 108 variants;
+- the 398 first-tier meetings, 2 185 second, 772 third and 145 boss bonuses in the combined case;
+- the two manual starters, their derogation from the stage filter, and the refusal of an explicitly
+  excluded manual species;
+- the composition of the new EXP/jauge blocks with the other patches, and the identity of the entire
+  REL when only the two QOL settings are added;
+- the six languages of the newspapers, their closed sections and the absence of source/destination
+  paths or external active resources.
 
-Trois ISO combinées ont été créées et vérifiées intégralement. Avec les nouveaux
-réglages neutres, la comparaison des offsets, tailles et octets de chaque patch
-avec le moteur v0.14 archivé est identique dans les trois régions. Le mode copie
-produit zéro patch. Un contrôle complémentaire vérifie 2 508 formes finales
-non obscures par région, dont cinq emplacements qui franchissent le seuil
-uniquement après le bonus de boss.
+Three combined ISOs have been created and verified in full. With the new neutral settings, the
+comparison of the offsets, sizes and bytes of each patch with the v0.14 engine is identical in all
+three regions. The copy mode produces zero patch. An additional check checks 2,508 non-obscured
+final shapes per region, including five locations that cross the threshold only after the boss
+bonus.
 
-Les tests de migration comprennent un profil réellement exporté par les sources
-v0.14 archivées. Les tests croisés du codec, l’annulation native/Python, les
-changements de contenu malgré une taille/date identique, la corruption du cache,
-les erreurs et les lecteurs concurrents sont également contrôlés.
+Migration tests include a profile actually exported by archived v0.14 sources. Cross-tests of the
+codec, native/Python cancellation, content changes despite an identical size/date, cache corruption,
+errors and competing players are also controlled.
 
-Ces essais ne constituent pas une partie complète ni une validation de
-l’équilibrage, d’une console physique ou d’un second PC. Les essais régionaux
-et cadeaux précédents restent décrits dans la
-[validation v0.14](REGIONAL_COMPATIBILITY_2026-11-03.md).
+These tests do not constitute a complete part or a validation of balancing, a physical console or a
+second PC. The previous regional tests and gifts remain described in [validation
+v0.14](REGIONAL_COMPATIBILITY_2026-11-03.md).
 
-Les preuves contenant des données du jeu restent privées dans
-`build/v15-validation/` : `matrix-result.json`, `extra-checks.json`, trois ISO,
-rapports et journaux. Le contrôle cache/codec est dans
-`build/v15-pipeline-validation/real-cache-and-codec-validation.json`.
-Les témoins natifs Europe, leurs CK3 avant/après, les cartes de test, les
-moniteurs de conservation et l’agrégat de portée explicite restent dans
-`build/v15-runtime/` ; le bilan est `result.json`. Les cartes USA/Japon préparées
-avec les seuls PV observés après une guérison native Europe sont des données de
-test hors ligne, sans prétendre à une guérison jouée sur ces deux régions.
-Les empreintes des six sources ISO/RVZ et des 46 fichiers du profil Dolphin
-personnel restent identiques. Ces fichiers de preuve ne sont pas distribués.
+Evidence containing game data remains private in `build/v15-validation/`: `matrix-result.json`,
+`extra-checks.json`, three ISOs, reports and newspapers. The cache/codec control is in
+`build/v15-pipeline-validation/real-cache-and-codec-validation.json`. Europe native cookies, their
+prior/after CK3s, test cards, conservation monitors and the explicit scope aggregate remain in
+`build/v15-runtime/`. The balance sheet is `result.json`. USA/Japan maps prepared with the only PVs
+observed after native Europe healing are offline test data, without claiming a cure played on these
+two regions. The fingerprints of the six ISO/RVZ sources and the 46 files of the personal Dolphin
+profile remain identical. These evidence files are not distributed.
 
-## Validation des exécutables Windows
+## Validation of Windows executables
 
-Les deux éditions figées passent **312 états Qt au total** : 156 par édition,
-dans les six langues et aux tailles 1040×800 et 680×540. Ces diagnostics couvrent
-le parcours, les réglages, les exclusions et les aperçus de présentation. Les
-binaires et le codec contrôlés correspondent aux fichiers de la distribution.
+The two frozen editions pass **A total of 312 Qt states**: 156 by edition, in the six languages and
+sizes 1040×800 and 680×540. These diagnostics cover the route, settings, exclusions and presentation
+previews. The controlled binary and codec correspond to the distribution files.
 
-L’exécutable local a ensuite été utilisé dans sa fenêtre normale avec la ROM
-USA, la seed `a0b4009878a88547` et les starters manuels Ectoplasma/Steelix. Le
-diagnostic a d’abord signalé un couple impossible ; choisir ce duo admissible
-a permis de calculer l’aperçu, d’ouvrir la fiche française puis de créer une ISO
-séparée avec son JSON et son journal HTML. Une relecture indépendante compare
-l’intégralité de l’ISO aux sept patchs recalculés, ainsi que les fiches aux REL
-et DOL réellement extraits de cette ISO. Les espèces et niveaux obtenus sont
-Ectoplasma 26 et Steelix 25. Le journal français correspond au rapport ; son
-rendu dans les six langues garde les sections fermées et ne reprend aucun
-chemin personnel. La ROM source et la RVZ USA originale restent inchangées.
+The local executable was then used in its normal window with the US ROM, the seed `a0b4009878a88547`
+and the manual starters Gengar/Steelix. The diagnosis first pointed to an impossible couple.
+Choosing this eligible duo allowed to calculate the preview, to open the French file and then to
+create a separate ISO with its JSON and HTML journal. An independent rereading compares the entire
+ISO with the seven recalculated patches, as well as the records to the REL and DOL actually
+extracted from this ISO. The obtained species and levels are Gengar 26 and Steelix 25. The French
+newspaper corresponds to the report. Its rendering in all six languages keeps the sections closed
+and does not take up any personal path. The source ROM and the original RVZ USA remain unchanged.
 
-Les deux dossiers temporaires privés sont vides après fermeture de
-l’application, sans cache d’aperçu ni sortie intermédiaire orphelins. Les
-captures de la fenêtre et le contrôle binaire sont conservés dans
-`build/v15-runtime/ui/`, avec le bilan `frozen-creation-validation.json` ; les
-312 états sont consignés dans `build/v15-frozen/staging-validation.json`.
-Cette création utilise EXP et purification à ×1 et la courbe désactivée : elle
-complète les essais distincts de ces réglages sans constituer une partie
-complète ni un test sur un autre PC.
+The two private temporary folders are empty after closing the application, without an orphaned
+preview cache or intermediate output. Window captures and binary control are kept in
+`build/v15-runtime/ui/`, with the balance sheet `frozen-creation-validation.json`. The 312 states
+are recorded in `build/v15-frozen/staging-validation.json`. This creation uses EXP and purification
+at ×1 and the curve is disabled: it completes the separate tests of these settings without
+constituting a complete part or a test on another PC.
 
 ## CLI
 
@@ -265,6 +224,5 @@ python -m colosseum_randomizer.cli original.iso duo.iso --seed ma-seed --starter
 python -m colosseum_randomizer.cli original.iso rythme.iso --seed ma-seed --progressive-levels --early-level-multiplier 0.9 --mid-level-multiplier 1.1 --late-level-multiplier 1.25 --experience-multiplier 2 --purification-multiplier 3
 ```
 
-Les numéros des starters sont ceux du Pokédex national, et non les indices
-internes du jeu. Les deux exemples créent des fichiers séparés et ne touchent
-pas aux sauvegardes.
+The numbers of the starters are those of the national Pokédex, not the internal clues of the game.
+Both examples create separate files and do not affect backups.

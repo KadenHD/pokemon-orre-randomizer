@@ -1,166 +1,147 @@
-# Application v0.5 : profils, starters et obscurs des boss
+# Application v0.5: boss profiles, starters and Shadow Pokémon
 
-Version du 31 octobre 2026. Moteur `starter-shadow-boss-rules-v7`.
-59 paramètres, dont 51 booléens, dans les quatorze catégories natives.
+Version of October 31, 2026. Engine `starter-shadow-boss-rules-v7`. 59 parameters, including 51
+booleans, in the fourteen native categories.
 
-## Profils partageables
+## Shareable profiles
 
-Importer ou exporter près du champ seed fonctionne sans sélectionner de ROM.
-Le JSON contient toutes les règles, la seed exacte, les versions application et
-moteur, le format de profil et l’identité publique de la ROM compatible. Aucun
-chemin de ROM, sortie, Dolphin ou sauvegarde n’est enregistré. Les chemins du
-formulaire ne changent pas à l’import ; le fichier entier est vérifié avant de
-modifier le formulaire. Une limite de 64 Ko, des types stricts et le rejet des
-clés inconnues, absentes ou répétées protègent des fichiers incorrects.
+Importing or exporting near the seed field works without selecting ROM. The JSON contains all the
+rules, the exact Seed, the application and engine versions, the profile format and the public
+identity of the compatible ROM. No path of ROM, output, Dolphin or backup is saved. The path of the
+form does not change to import. The entire file is checked before changing the form. A limit of 64
+KB, strict types and rejection of unknown, absent or repeated keys protect incorrect files.
 
-L’empreinte SHA-256 du contenu détecte une modification accidentelle. Ce n’est
-pas une signature d’authenticité. Les profils d’une autre version sont refusés
-avec une explication ; aucune migration silencieuse ne change les tirages.
-Un export refuse un fichier existant. La CLI accepte `--profile ma-partie.json` ;
-les options explicitement indiquées et `--seed` peuvent le surcharger.
+The SHA-256 print of the content detects an accidental modification. This is not a signature of
+authenticity. The profiles of another version are refused with an explanation. No silent migration
+changes the hashes. An export refuses an existing file. The CLI accepts `--profile ma-partie.json`.
+The options explicitly indicated and `--seed` may overload it.
 
 ## Duo de starters
 
-Quatre cases s’appliquent aux espèces de départ randomisées :
+Four boxes apply to randomized starting species.
 
-- `starter_balance_pair` : écart de total de statistiques au plus égal à
-  `max(50, 20 % du plus faible)`, à partir des statistiques finales.
-- `starter_distinct_families` : familles d’évolution différentes.
-- `starter_complementary_types` : aucun type partagé, à partir des types finaux.
-  Il ne s’agit pas d’une garantie de couverture de tous les types adverses.
-- `starter_base_forms` : aucune préévolution dans le graphe natif. Les espèces
-  sans évolution sont admissibles, y compris les légendaires autorisés.
+- `starter_balance_pair`: difference in total statistics not more than `max(50, 20 % du plus
+  faible)`, based on final statistics.
+- `starter_distinct_families`: different families of evolution.
+- `starter_complementary_types`: no type shared, from the final types. This is not a guarantee of
+  coverage of all the opposing types.
+- `starter_base_forms`: no preevolution in the native graph. Non-evolutionary species are eligible,
+  including legendary authorized species.
 
-Les filtres de génération/légendaires et la préférence de puissance globale
-restent respectés. Un partenaire dont la randomisation est désactivée ne change
-pas et sert de contrainte au second. Si aucun couple n’est possible, la création
-échoue avec une explication et aucune sortie. Les couples admissibles sont
-énumérés, puis un couple est choisi uniformément avec la seed ; aucune limite
-arbitraire de tentatives ne peut rejeter un couple pourtant possible.
+The generation/legendar filters and the overall power preference remain respected. A partner whose
+randomization is disabled does not change and serves as a constraint to the second. If no couple is
+possible, the creation fails with an explanation and no output. Eligible couples are listed, then a
+couple is chosen uniformly with the seed. No arbitrary limit of attempts can reject a couple yet
+possible.
 
-Les niveaux 26/25 et les instructions restent conservés ; les deux EXP suivent
-le groupe de croissance final. Les attaques sont choisies après les espèces.
-Les autres dons gardent leur tirage indépendant. Ces quatre nouvelles cases
-restent désactivées dans les valeurs de base CLI, pour préserver les anciens
-usages ; les trois premières sont activées par « Règles recommandées ».
+The 26/25 levels and instructions are retained. The two EXPs follow the final growth group. Attacks
+are selected after the species. The other gifts keep their circulation independent. These four
+new boxes remain disabled in the CLI base values, to preserve the old uses. The first three are
+activated by "Recommended Rules".
 
-## Pokémon obscurs des boss
+## Shadow Pokémon bosses
 
-Les sept chefs déjà identifiés utilisent sept groupes obscurs distincts :
-19, 21, 23, 34, 38, 43 et 44, dans 16 apparitions de leurs variantes.
+The seven leaders already identified use seven distinct dark groups: 19, 21, 23, 34, 38, 43 and 44,
+in 16 appearances of their variants.
 
-- `boss_shadow_legendary_mode` : filtres globaux, conserver le statut légendaire
-  d’origine, ou exclure les légendaires/fabuleux de ces sept groupes.
-- `boss_shadow_power_mode` : suivre la préférence globale, imposer une fenêtre
-  stricte de `±max(50, 20 % du total natif remplacé)`, ou ignorer cette préférence
-  chez les boss. Les autres filtres restent appliqués dans les trois modes.
-- `boss_shadow_min_bst` : minimum de total **natif**, avant toute redistribution
-  optionnelle des statistiques. Zéro signifie aucun minimum.
+- `boss_shadow_legendary_mode`: global filters, retain the legendary original status, or exclude the
+  legendary/fabulous from these seven groups.
+- `boss_shadow_power_mode`: follow the overall preference, impose a strict window of `±max(50, 20 %
+  du total natif remplacé)`, or ignore this preference among bosses. The other filters remain
+  applied in all three modes.
+- `boss_shadow_min_bst`: minimum total **natif**, before any optional redistribution of statistics.
+  Zero means no minimum.
 
-Les 48 familles sont attribuées simultanément par matching lorsque l’unicité
-est activée. Une famille utile à un boss ne peut donc pas être consommée sans
-possibilité de réaffectation par un tirage ordinaire précédent. Les contraintes
-strictes ne sont jamais assouplies. Un repli de préférence globale de puissance
-nécessaire pour l’unicité est consigné dans le rapport.
+The 48 families are assigned simultaneously by matching when singleness is activated. A family
+useful to a boss can therefore not be consumed without the possibility of reassignment by a previous
+ordinary draw. The strict constraints are never relaxed. A general preference withdrawal of power
+required for singleness is recorded in the report.
 
-Les filtres globaux restent prioritaires : conserver un légendaire tout en les
-interdisant produit une erreur explicite. Les niveaux, identifiants obscurs,
-taux de capture, nombre de Pokémon et scripts ne changent pas. Les réglages de
-niveaux/capture existants restent indépendants. Toutes les apparitions d’un même
-obscur reçoivent la même espèce. Les deux options de renforcement/variété des
-compagnons non obscurs s’appliquent ensuite sans toucher à ces tirages.
+Global filters remain a priority: keeping a legendary while prohibiting them produces an explicit
+error. Levels, obscure identifiers, capture rates, number of Pokémon and scripts do not change.
+Existing level/capture settings remain independent. All appearances of the same obscure receive the
+same species. The two reinforcement/variety options of non-obscured companions then apply without
+touching these hashes.
 
-Par défaut, ces trois réglages spécifiques sont neutres : le fonctionnement des
-obscurs de la v0.4 est conservé. Ils s’ignorent si les obscurs ne sont pas randomisés.
+By default, these three specific settings are neutral: the operation of the Shadow Pokémon of v0.4 is
+preserved. They gift't know if the Shadow Pokémon are randomized.
 
 ## Validation technique
 
-196 tests Python et trois tests Rust réussis. Les tests ajoutés couvrent les profils et leur import
-transactionnel dans le formulaire, l’EXP et les attaques après sélection du duo,
-les propriétés finales, les filtres stricts, un matching avec réaffectation, les
-sept groupes de boss et leurs alias, l’unicité des 48 familles et les octets
-autorisés. Neuf tests du moniteur Dolphin vérifient aussi l'isolation des chemins,
-le suivi des fichiers personnels et l'enregistrement du code natif du processus.
-Les sources originales restent lues sans écriture.
+196 Python tests and three Rust tests passed. The tests added cover the profiles and their
+transactional import in the form, theEXP and attacks after selection of the duo, the final
+properties, the strict filters, a match with reassignment, the seven boss groups and their aliases,
+the uniqueness of the 48 families and the authorized bytes. Nine tests of the Dolphin monitor also
+check the isolation of the paths, the tracking of personal files and the recording of the native
+code of the process. The original sources remain read without writing.
 
-La seed de validation figure dans le rapport de test local.
+The local test report records the validation seed.
 
-| Essai | Résultat |
+| Test | Result |
 | --- | --- |
-| Preset recommandé depuis ISO | 10,80 s ; ISO `648cc8c0744c87fce40a7d4dbdd3f6f95f8df29bc48415ee33507cb5d1894b35` |
-| Import du profil et reconstruction | 11,56 s ; même ISO |
-| Import dans l’exécutable Windows, puis création à 100 % | 10,62 s ; même ISO |
-| Tous changements désactivés | 7,97 s ; ISO strictement identique à l’originale |
-| RVZ → RVZ, boss statut légendaire conservé, puissance proche, minimum 450 et starters de base | 24,12 s ; retour ISO vérifié `e3bf0206a25701bd17a04d8f51fb1b96b6560bbab373a82949a94566dad21adc` |
+| Preset recommended from ISO | 10,80 s. ISO `648cc8c0744c87fce40a7d4dbdd3f6f95f8df29bc48415ee33507cb5d1894b35` |
+| Profile import and reconstruction | 11.56 s. Whether or not ISO |
+| Import to Windows executable, then create 100% | 10.62 s. Whether or not ISO |
+| All changes disabled | 7.97 s. ISO strictly identical to the original |
+| RVZ → RVZ, boss legendary status preserved, near power, minimum 450 and basic starters | 24.12 s. ISO return verified `e3bf0206a25701bd17a04d8f51fb1b96b6560bbab373a82949a94566dad21adc` |
 
-Le duo recommandé attendu est Hypocéan niveau 26, BST 440, EXP 17 576, et Élektek
-niveau 25, BST 490, EXP 15 625. Les types ne se recoupent pas ; l’écart 50 est
-inférieur à la tolérance 88. Ces valeurs proviennent des données finales.
+The expected recommended duo is Seadra level 26, TSB 440, EXP 17 576, and Electabuzz level 25, TSB
+490, EXP 15 625. Types do not overlap. Deviation 50 is less than tolerance 88. These values are
+derived from the final data.
 
-Les rapports et captures de QA restent dans `build/v05-qa/` et
-`build/dolphin-validation/`, hors distribution.
-La vérification technique ne certifie pas un scénario intégralement joué.
-Les observations Dolphin sont consignées séparément des valeurs attendues.
+QA reports and catches remain in `build/v05-qa/`] and `build/dolphin-validation/`, out of
+distribution. Technical verification does not certify a fully played scenario. Dolphin observations
+are recorded separately from expected values.
 
-La procédure de publication vérifie l'intégrité des archives et l'absence de
-ROM, sauvegarde ou émulateur. Elle lance les tests depuis une archive source
-extraite sans le dump du jeu ; les cas exigeant les données locales ou un codec
-compilé sont alors ignorés. Le résultat propre aux archives reconstruites est
-consigné après exécution de `scripts/verify_release.py`.
+The publication procedure verifies the integrity of the archives and the absence of ROM, backup or
+emulator. It launches tests from a source archive extracted without the dump of the game. Cases
+requiring local data or a compiled codec are then ignored. The result specific to the reconstructed
+archives is recorded after execution of `scripts/verify_release.py`.
 
-## Première passe Dolphin et conservation : historique
+## First Dolphin Pass and Conservation: Historical
 
-Lors de la première passe, deux démarrages à froid ont été effectués dans des
-profils sous `build/v05-qa/` :
-une carte vide pour l’ISO recommandée, puis une copie de la carte personnelle pour
-`gameplay-check.iso`. Cette dernière active les règles obscures de boss et retire
-la protection des soins vendus, afin de préparer un contrôle de boutique.
-Le chargement de la copie et les déplacements depuis le PC, à l’extérieur et vers le pont ont
-été observés. Les captures sont dans `evidence/`. Aucun état RAM d’une ancienne
-ISO n’a été chargé.
+During the first pass, two cold starts were made in profiles under `build/v05-qa/`: an empty card
+for recommended ISO, then a copy of the personal card for `gameplay-check.iso`. The latter activates
+the obscure rules of boss and removes the protection of the care sold, in order to prepare a shop
+check. The loading of the copy and the movements from the PC, outside and towards the bridge were
+observed. The catches are in `evidence/`. No RAM status of an old ISO was loaded.
 
-À ce stade initial, les nouveaux starters, achats, collecte de coffre,
-purification suivie d'une CT et combats des sept boss n'avaient pas encore été
-vérifiés en jeu. Leurs données avaient seulement été contrôlées automatiquement.
-Le premier lanceur Dolphin s’est terminé avec le code 0 ; le second a retourné 1
-après fermeture, sans diagnostic visible et avec un journal vide. La cause de ce
-statut de fermeture n’est pas établie ; ce contrôle ne vaut pas validation d’une
-session complète. Le randomizer ne lance pas Dolphin dans le parcours utilisateur.
+At this initial stage, the new starters, purchases, safe collection, purification followed by a TM
+and fights of the seven bosses had not yet been checked in the game. Their data had only been
+checked automatically. The first Dolphin launcher ended with code 0. The second returned 1 after
+closing, without a visible diagnosis and with an empty journal. The cause of this closure status is
+not established. This control is not valid for a full session. The randomizer does not launch
+Dolphin into the user's path.
 
-Après les essais, les ISO/RVZ sources, les 2 011 fichiers de `game/` et la carte
-mémoire personnelle `MemoryCardA.EUR.raw` ont conservé leurs empreintes. Une
-instance Dolphin personnelle était déjà ouverte avant les tests. Parmi ses
-20 fichiers inventoriés, `Config/Qt.ini` et `GC/SRAM.raw` ont changé pendant la
-session ; cette passe n’établit pas l’auteur de ces deux écritures. Leur état
-courant n’a pas été remplacé pour tenter une restauration. La carte mémoire de
-jeu personnelle reste identique à la copie initiale. Les manifestes détaillés
-restent locaux et ne sont pas distribués. Ces observations historiques ne sont
-pas remplacées par les essais suivants et aucune restauration n'est revendiquée.
+After the tests, the ISO/RVZ sources, the 2,011 files of `game/` and the personal memory card
+`MemoryCardA.EUR.raw` retained their fingerprints. A personal Dolphin instance was already opened
+before the tests. Among its 20 files inventoried, `Config/Qt.ini` and `GC/SRAM.raw` changed during
+the session. This pass did not establish the author of these two scripts. Their current condition
+was not replaced to attempt a restoration. The personal game memory card remains the same as the
+original copy. Detailed manifests remain local and are not distributed. These historical
+observations are not replaced by the following tests and no restoration is claimed.
 
-## Suivi fonctionnel du 31 octobre 2026
+## Functional follow-up of 31 October 2026
 
-Le [rapport Dolphin daté](DOLPHIN_VALIDATION_2026-10-31.md) distingue désormais
-les valeurs attendues, les préparations privées et les actions natives observées.
-Une nouvelle partie crée effectivement les starters Hypocéan 26 et Élektek 25.
-Dans une copie préparée, Onix 39 est purifié, apprend Tunnel par CT05 puis évolue
-en Steelix au niveau 40 après un Super Bonbon. L'apprentissage, l'évolution et
-les quatre capacités conservées sont vérifiés en mémoire et à l'écran.
+The [Dolphin report dated](DOLPHIN_VALIDATION_2026-10-31.md) now distinguishes the expected values,
+private preparations and observed native actions. A new part actually creates the starters Seadra 26
+and Electabuzz 25. In a prepared copy, Onix 39 is purified, learns Tunnel by CT05 and then evolves
+into Steelix at level 40 after a Super Bonbon. Learning, evolution and the four capacities retained
+are checked in memory and on the screen.
 
-L'achat de Précision+ à Pyrite débite exactement 950 et ajoute un exemplaire.
-Le coffre testé donne trois Défense+ et active son drapeau natif. Une véritable
-capture de Cochignon obscur niveau 35, groupe 19, ajoute un Pokémon dans une
-case PC vide : occupation 14→15, Master Ball 1→0, drapeau de capture 2144 : 0→1.
-Les Pokémon déjà présents dans le PC restent identiques. Ces résultats ne
-proviennent pas d'une injection des récompenses ou du Pokémon capturé.
+The purchase of Accuracy+ at Pyrite Town debits exactly 950 and adds a copy. The tested chest gives
+three Defense+ and activates its native flag. A true capture of Piloswine obscure level 35, group
+19, adds a Pokémon in an empty PC box: occupation 14→15, Master Ball 1→0, capture flag 2144: 0→1.
+The Pokémon already present in the PC remain identical. These results do not come from an injection
+of rewards or captured Pokémon.
 
-Le rapport daté fait référence pour le statut des sept équipes de boss, des
-fermetures Dolphin et du contrôle final de conservation. Il décrit l'équipe de
-test au niveau 80, les accès accélérés aux scènes, la remise à zéro préalable
-d'un drapeau de capture sur une copie et la séparation entre l'émulateur officiel
-et sa copie privée de diagnostic. Ces essais ne certifient pas une partie
-complète, l'équilibrage normal ou le fonctionnement sur console physique.
+The dated report refers to the status of the seven boss teams, the Dolphin closures and the final
+conservation control. It describes the test team at level 80, accelerated access to the scenes, the
+pre-zeroing of a capture flag on a copy and the separation between the official emulator and his
+private diagnostic copy. These tests do not certify a complete part, normal balancing or physical
+console operation.
 
-## Recherche des formats
+## Searching for formats
 
-- [Champs et sélection des starters](reverse-engineering/V05_STARTERS_RESEARCH.md)
-- [Inventaire et règles des obscurs de boss](reverse-engineering/V05_SHADOW_BOSS_RESEARCH.md)
+- [Fields and starters selection](reverse-engineering/V05_STARTERS_RESEARCH.md)
+- [Inventory and rules of dark bosses](reverse-engineering/V05_SHADOW_BOSS_RESEARCH.md)

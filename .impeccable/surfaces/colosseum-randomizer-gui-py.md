@@ -7,65 +7,60 @@ related_targets: ["colosseum_randomizer/ui_theme.py", "colosseum_randomizer/ui_w
 
 # Surface : colosseum_randomizer/gui.py
 
-Mode : Operate. La composition C reprend un assistant compact proche
-des menus originaux de Colosseum. Composition approuvée :
-`.impeccable/mocks/c-assistant-compact.png`.
+Mode: Operate. The composition C takes over a compact assistant close to the original Colosseum
+menus. Approved composition: `.impeccable/mocks/c-assistant-compact.png`.
 
-Parcours : ROM d’origine → Réglages → Créer. Simple par défaut, avancé à la demande,
-sans changer les paramètres lorsque l’on bascule. Les trois presets correspondent
-à Options.recommended(), Options() et Options.none(). Un profil différent est
-signalé comme personnalisé. FR/EN/DE/ES/IT/JA et langue système restent disponibles en traitement.
+Route: original ROM → Settings → Create. Simple by default, advanced on demand, without changing the
+settings when you switch. The three presets correspond to Options.recommended(), Options() and
+Options.none(). A different profile is reported as custom. FR/EN/DE/ES/IT/JA and system language
+remain available for processing.
 
-Le raffinement 0.12 approuvé conserve le monde graphique et sépare Configuration
-et Aperçu des Pokémon. La seed et le menu Profils restent communs. Le contenu
-est centré et limité à 1 200 px ; seul le contenu actif défile dans l’étape Réglages.
+The approved 0.12 refinement retains the graphic world and separates Configuration and Overview of
+Pokémon. The Seed and Profiles menu remain common. The content is centered and limited to 1,200 px.
+Only active content scrolls through the Settings step.
 
-| Engagement visible | Réalisation |
+| Engagement visible | Implementation |
 |---|---|
-| En-tête court, titre et langue | Titre RANDOMIZER en QLabel à côté du logo Pokémon Colosseum ; langue en QComboBox natif |
-| Bandeau des trois étapes en haut | Trois QPushButton checkables ; étape active cyan, retours sans perte de saisie |
-| Un panneau vert principal avec cadre argenté et angles coupés | QWidget/QPainter ; contenu Qt sémantique, aucun texte rasterisé |
-| Trois points de départ dans le même groupe | Pokémon + capacités, Pokémon seuls, Copie à l’identique ; descriptions comparables et détails communs repliés par défaut |
-| Seed et profils communs aux vues | QLineEdit, Nouvelle seed et menu Profils avec import/export ; aucune perte de valeurs ni d’aperçu valide au changement de vue |
-| Catégories avancées adaptées à l’espace | Les 15 catégories et 74 contrôles, dont 56 booléens ; colonne de 192 px si la fenêtre fait au moins 900 px et que toutes les catégories tiennent en hauteur, sinon sélecteur compact ; choix actif conservé au redimensionnement ou changement de langue |
-| Chromatiques | Personnalisation décochée par défaut ; taux de 0 à 100 % à quatre décimales et liaison à la seed visibles mais désactivés sans la personnalisation ; liaison cochée par défaut ; aide permanente pour 0 et 100 % ; pictogramme Poké Ball étoilée au trait |
-| Aperçu réel commun | Calculer l’aperçu explicite, barre animée et annulation ; statut ✓ Aperçu à jour dans la rangée des onglets après résultat, détail en infobulle, Actualiser l’aperçu après modification ; noms FR/EN/DE/ES/IT/JA, niveaux disponibles et portraits 42 × 42 lus dans la ROM |
-| Trois onglets de Pokémon | Starters · 2, Obscurs · 48 et Cadeaux · 4 ; deux portraits de starters et listes plates comparant Pokémon d’origine à Avec cette seed ; résultat partagé sans recalcul au changement d’onglet |
-| Recherche et défilement lisibles | Recherche par nom ou numéro dans les six langues ; filtre chromatique quand le statut est connu, compteur de la plage visible parmi les résultats filtrés et état sans résultat ; liste occupant la hauteur disponible, barre de 15 px contrastée ; molette sur un champ sans focus transmise au formulaire parent |
-| Fond à deux Poké Balls indigo | Texture réelle title.fsys/menu_042 exportée une fois et embarquée |
-| Pied avec Retour et Continuer/Créer | Action persistante visible à 680 × 540 ; clavier, focus et état désactivé explicites ; aide liée à la configuration, à une nouvelle partie ou aux conditions d’événements selon la vue |
-| Sortie, progression et résultat | Étape 3, format ISO/RVZ, destination séparée, annulation, dossier et rapport |
+| Short header, title and language | Title RANDOMIZER in QLabel next to the Pokémon Colosseum logo. Native QComboBox language |
+| Headband of the three stages at the top | Three QPushButton checkables. Active cyan step, returns without loss of input |
+| A main green panel with silver frame and cut corners | QWidget/QPainter. Semantic Qt content, no rastered text |
+| Three starting points in the same group | Pokémon + moves, Pokémon only, identical copy. Comparable descriptions and common details folded by default |
+| Seed and Common Profiles | QLineEdit, New Seed and Profiles menu with import/export. No value loss or valid preview at change of view |
+| Advanced categories adapted to space | The 15 categories and 74 controls, including 56 booleans. 192 px column if the window is at least 900 px and all categories hold height, if not compact selector. Active choice retained at resize or change of language |
+| Shinies | Customization unchecked by default. Rate from 0 to 100% to four decimal places and link to the seed visible but disabled without customization. Link checked by default. Permanent help for 0 and 100%. Poké Poké pictogram Star ball on line |
+| Common Real Overview | Calculate the explicit preview, animated bar and cancellation. Status ✓ Updated view in the row of tabs after result, infobulle detail, Update preview after modification. Names FR/EN/DE/ES/IT/JA, available levels and portraits 42 × 42 read in the ROM |
+| Three tabs of Pokémon | Starters · 2, Shadow Pokémon · 48 and Gifts · 4. Two portraits of starters and flat lists comparing Pokémon from origin to With this seed. Result shared without recalculation at tab change |
+| Readable search and scrolling | Search by name or number in the six languages. Shiny filter when status is known, meter of the range visible among the filtered results and status without result. List occupying the available height, bar of 15 px contrasted. Scroll on a field without focus transmitted to the parent form |
+| Poké Balls indigo background | Actual texture title.fsys/menu_042 exported once and loaded |
+| Foot with Return and Continue/Create | Persistent action visible at 680 × 540. Explicit keyboard, focus and deactivated state. Help related to configuration, new part or event conditions according to view |
+| Output, progression and result | Step 3, ISO/RVZ format, separate destination, cancellation, folder and report |
 
-Les libellés inventés par le générateur ne sont pas repris. Les boutons de manette
-ne sont pas des raccourcis de l’application. Le logo 96 × 32 reste un petit badge
-à sa taille utile ; le titre principal est du texte. La construction locale utilise les images et sons exportés du jeu.
+The labels invented by the generator are not taken up. The controller buttons are not shortcuts of
+the application. The logo 96 × 32 remains a small badge of its useful size. The main title is text.
+The local construction uses the images and sounds exported from the game.
 
-Points à vérifier : source absente/incompatible ; changements de langue et de mode
-sans perdre chemins/seed/options ; retour entre étapes ; progression/annulation ;
-pack corrompu avec repli sobre ; rendu petite fenêtre ; noms d’objets dans les
-cinq langues de la ROM et correction bornée des pierres ; originaux préservés.
+Check points: source absent/incompatible. Language and fashion changes without losing
+paths/feed/options. Step-by-step return. Progress/cancellation. Corrupted pack with sober fold.
+Rendered small window. Object names in the five ROM languages and limited stone correction.
+Originals preserved.
 
-Ajouts confirmés : boutons Musique et Sons indépendants, activés au premier
-lancement si disponibles, choix mémorisé. Pack autonome images/curseur/SFX/musique ; aucune lecture de ROM pour
-démarrer l’interface, aucun cache à amorcer. Sous-libellés comparables des presets.
-Lorsque la personnalisation des shinies et la liaison sont actives, une ligne sous
-les starters annonce « Statuts chromatiques fixés par la seed. » avant le calcul
-aux taux intermédiaires. L’aperçu utilise les décisions du moteur pour une
-nouvelle partie : portraits normaux ou chromatiques authentiques de la ROM,
-mentions textuelles traduites « chromatique » et « non chromatique », y compris
-en dessous de 100 %. Une même espèce peut porter des statuts différents selon
-la rencontre. Le taux n’impose pas de quota. À 0 et 100 %, les messages existants
-annoncent respectivement l’absence ou la garantie des starters chromatiques.
-Sans liaison, le statut reste tiré en jeu aux taux intermédiaires et la légende
-l’indique. Changer la personnalisation, la liaison ou le taux invalide l’ancien
-aperçu. Les profils 0.5 à 0.10.1 conservent la liaison désactivée à l’import.
+Confirmed additions: Independent music and sounds buttons, activated at the first launch if
+available, stored choice. Independent image/cursor/SFX/music pack. No ROM reading to start the
+interface, no cache to start. Comparable presets sub-labelled. When the customization of shinies and
+the link are active, a line under the starters announces "Shiny status set by the seed." before the
+calculation at intermediate rates. The preview uses the engine decisions for a new part: authentic
+normal or Shiny portraits of the ROM, translated text words "Shiny" and "nonchromatic", including
+below 100%. The same species may carry different status according to the encounter. The rate does
+not impose a quota. At 0 and 100%, the existing messages announce respectively the absence or
+guarantee of Shiny starters. Without link, the status remains in play at intermediate rates and the
+legend indicates it. Change the customization, link or invalid rate the old preview. The profiles
+0.5 to 0.10.1 keep the link disabled at limport.
 
-Le calcul de production ne crée aucune ROM. Changer la ROM, la seed ou les
-règles retire les lignes périmées et invite à actualiser. Les dons événementiels
-sont étiquetés ; le pied de l’onglet Cadeaux rappelle leurs conditions d’obtention.
-Si l’accès est activé, l’étiquette affiche plutôt le nom localisé d’Adelbert et
-le seuil choisi. Les deux seuils et niveaux dépendent de la case d’accès, avec
-descriptions dans les six langues et invalidation de l’aperçu après modification.
-Les originaux et sauvegardes restent préservés. Aucun choix de direction ne reste
-ouvert ; les contrôles futurs portent sur la petite et la grande fenêtre, les six
-langues, les états de calcul/annulation, les filtres et la conservation des valeurs.
+The production calculation does not create any ROMs. Changing the ROM, the seed or the rules removes
+the outdated lines and invites to update. Event gifts are labelled. The foot of the Gifts tab
+reminds them of their requirements for obtaining. If access is enabled, the label instead displays
+the localized name of[Eagun] and the chosen threshold. Both thresholds and levels depend on the
+access box, with descriptions in the six languages and invalidation of the preview after
+modification. Originals and backups remain preserved. No choice of direction remains open. Future
+controls cover the small and large window, the six languages, calculation/cancellation states,
+filters and preservation of values.

@@ -1,89 +1,80 @@
-# Application v0.2 : règles indépendantes et accélération Rust
+# Application v0.2: independent rules and acceleration Rust
 
-Version du 30 octobre 2026, Windows x64. Le moteur de sélection devient
-`selective-story-rules-v4` ; le preset recommandé conserve exactement les données
-de la v3 pour la même seed.
+Version of October 30, 2026, Windows x64. The selection engine becomes `selective-story-rules-v4`.
+The recommended preset keeps exactly the v3 data for the same seed.
 
-## Les seize booléens
+## The 16 Booleans
 
-| Groupe | Paramètres indépendants |
+| Groupe | Independent parameters |
 | --- | --- |
-| Dresseurs | `randomize_trainers`, `randomize_shadows`, `unique_shadows` |
+| Trainers | `randomize_trainers`, `randomize_shadows`, `unique_shadows` |
 | Starters | `starter_umbreon`, `starter_espeon` |
-| Dons et récompenses | `gift_plusle`, `gift_hooh`, `event_celebi`, `event_pikachu` |
-| Évolutions | `evolve_trade`, `evolve_trade_items`, `evolve_coquiperl`, `evolve_day_night`, `evolve_beauty` |
-| Boutiques | `stones_phenac`, `stones_pyrite` |
+| Gifts and awards | `gift_plusle`, `gift_hooh`, `event_celebi`, `event_pikachu` |
+| Evolutions | `evolve_trade`, `evolve_trade_items`, `evolve_coquiperl`, `evolve_day_night`, `evolve_beauty` |
+| Shops | `stones_phenac`, `stones_pyrite` |
 
-Les seize sont activés par défaut. Les deux presets restaurent les recommandations
-ou désactivent tout. L'option de familles uniques se désactive si les obscurs ne
-sont pas randomisés. Chaque routine de starter/don a sa propre seed dérivée ;
-désactiver un Pokémon ne change pas les tirages des autres.
+The 16 are enabled by default. Both presets restore the recommendations or disable everything. The
+option of single families is turned off if the dark ones are not randomized. Each starter/gift
+routine has its own derived seed. Deactivating a Pokémon does not change the draws of others.
 
-Les catégories d'évolution modifient respectivement 4, 6, 2, 2 et 1 routes, en
-conservant les cibles et le graphe des familles. Un paramétrage qui active les
-nouvelles évolutions par pierre sans proposer de boutique est refusé avant de
-commencer, pour préserver leur accessibilité. Le stock original est conservé et
-chaque boutique peut être activée indépendamment. Le prix de la Pierre Lune est
-ajusté à 2 100 lorsque des pierres sont proposées.
+The evolution categories modify 4, 6, 2, 2 and 1 roads respectively, keeping the targets and the
+graph of the families. A setting that activates the new changes by stone without offering a shop is
+refused before beginning, to preserve their accessibility. The original stock is kept and each shop
+can be activated independently. The price of the Moon Stone is adjusted to 2,100 when stones are
+proposed.
 
-En CLI : `--starter-umbreon` / `--no-starter-umbreon`, et de même pour chaque
-paramètre, avec des tirets à la place des underscores. Les anciens raccourcis
-`--keep-specials`, `--keep-evolutions` et `--allow-shadow-family-duplicates` restent
-acceptés. Les rapports JSON conservent les seize valeurs effectives.
+In CLI: `--starter-umbreon` / `--no-starter-umbreon`, and similarly for each parameter, with dashes
+instead of underscores. The old shortcuts `--keep-specials`, `--keep-evolutions` and
+`--allow-shadow-family-duplicates` remain accepted. JSON ratios retain the sixteen actual values.
 
-## Performance mesurée
+## Measured performance
 
-Le profilage d'une archive a attribué presque tout le temps aux codecs LZSS. Le
-module Rust implémente donc l'encodage et le décodage ; l'interface reste Qt et
-l'orchestration Python. Il ne dépend d'aucune crate externe et se construit hors
-ligne. Le codec Python de référence reste disponible sans Rust.
+The profiling of an archive has attributed almost all the time to LZSS codecs. The Rust module
+therefore implements encoding and decoding. The interface remains Qt and the Python orchestration.
+It does not depend on any external crates and is built offline. The Python reference codec remains
+available without Rust.
 
-Mesure locale séquentielle de la reconstruction des six archives originales,
-incluant décodage, encodage et contrôles :
+Sequential local measure of the reconstruction of the six original archives, including decoding,
+encoding and controls.
 
 | Traitement | Python | Rust |
 | --- | ---: | ---: |
 | Six archives | 23,234 s | 0,568 s |
-| Gain sur cette étape | | ×40,91 |
+| Gain on this step | | ×40,91 |
 
-Les six archives produites sont identiques octet pour octet entre les deux
-implémentations. Les temps sont des observations sur ce poste ; le gain ne
-s'applique pas aux copies disque, hashes ou conversions DolphinTool.
+The six archives produced are identical byte for byte between the two implementations. Times are
+observations on this post. The gain does not apply to DolphinTool disk, hash or conversion copies.
 
-Création ISO complète avec la seed historique de test et toutes les règles activées :
+Complete ISO creation with the test history and all the rules enabled.
 
-| Étape | Temps |
+| Step | Temps |
 | --- | ---: |
-| Validation de la source | 0,922 s |
-| Transformations et archives | 1,812 s |
-| Copie et écriture des patches | 1,281 s |
-| Vérification intégrale de l'ISO | 1,953 s |
-| Dernier contrôle de la source | 0,969 s |
-| Total observé | 6,94 s |
+| Source validation | 0,922 s |
+| Transformations and archives | 1,812 s |
+| Copying and writing patches | 1,281 s |
+| Full ISO verification | 1,953 s |
+| Last source control | 0,969 s |
+| Total observed | 6,94 s |
 
-SHA-256 de sortie : `e37dae3666fae8323cb9f9c55c679c170053c96430d0d22fe2c6057e3aeea941`.
-Il correspond exactement à l'ISO v3 déjà testée sous Dolphin. La source est intacte.
-Les mesures sont reproductibles avec `scripts/benchmark_codec.py` (dump local
-requis) et les temps par étape apparaissent désormais dans chaque rapport.
+SHA-256 output: `e37dae3666fae8323cb9f9c55c679c170053c96430d0d22fe2c6057e3aeea941`. It corresponds
+exactly to the ISO v3 already tested under Dolphin. The source is intact. The measurements are
+reproducible with `scripts/benchmark_codec.py` (local dumping required) and the times per step now
+appear in each report.
 
 ## Validation
 
-72 tests Python et 3 tests Rust passent. Les tests croisent le code Python et Rust,
-incluant les références chevauchantes, les tours du tampon de 4 Kio, les données
-aléatoires et les flux malformés. Les tests de règles vérifient séparément les six
-starters/dons, les cinq catégories d'évolution, dresseurs/obscurs et les deux boutiques.
-Le preset vide conserve exactement les données originales ; le preset recommandé
-reproduit la v3.
+72 Python tests and 3 Rust tests pass. The tests cross the Python and Rust codes, including
+overlapping references, 4Kio buffer towers, random data and misformed flows. Rules tests separately
+check the six starters/gifts, the five evolution categories, trainers/Shadow Pokémon and both stores.
+The empty preset keeps exactly the original data. The recommended preset reproduces the v3.
 
-Essais complets supplémentaires : copie ISO avec toutes les règles désactivées
-identique à l'original ; création RVZ personnalisée avec vérification de son
-retour vers ISO, uniquement 108 apparitions obscures changées, 11 routes adaptées
-et pierres à Pyrite seule. Depuis l'EXE, décocher Noctali tout en gardant Mentali
-activé a produit une ISO en 6,97 s ; lecture du DOL de sortie : Noctali d'origine
-(197), second starter Flagadoss (80). Le rapport conserve bien les seize booléens
-et confirme le codec Rust et la source intacte. Les cinq tests Qt passent aussi
-après adaptation de la taille initiale à l'écran.
+Additional complete tests: ISO copy with all the deactivated rules identical to the original. Custom
+RVZ creation with verification of its return to ISO, only 108 obscure appearances changed, 11 roads
+adapted and stones to Pyrite Town alone. Since the EXE, uncheck Umbreon while keeping Espeon
+activated has produced an ISO in 6.97 s. Reading the output DOL: Umbreon original (197), second
+starter Slowbro (80). The report keeps the sixteen booleans well and confirms the Rust codec and the
+intact source. The five Qt tests also pass after adjusting the initial size to the screen.
 
-Les originaux, les anciennes ISO et les anciens ZIP de version sont conservés.
-Le périmètre PAL GC6P01 révision 0 et les limites de validation du scénario restent
-ceux de la v0.1. Aucun dump, ressource du jeu, émulateur ou sauvegarde n'est distribué.
+The originals, the old ISOs and the old version ZIPs are retained. The PAL GC6P01 revision 0
+perimeter and the validation limits of the scenario remain those of the v0.1. No dump, game
+resource, emulator or backup is distributed.

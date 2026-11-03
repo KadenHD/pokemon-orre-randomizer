@@ -1,144 +1,124 @@
-# EXP et purification accélérée : contrats natifs régionaux
+# EXP and accelerated purification: regional native contracts
 
-Les deux réglages sont indépendants et valent **×1 par défaut**. À ×1 tous les
-deux, le patch renvoie les octets reçus sans ajouter de section ni modifier le
-jeu. Ces options ne réécrivent aucune sauvegarde.
+Both settings are independent and are worth **×1 by default**. At both ×1 the patch returns received
+bytes without adding a section or changing the game. These options do not rewrite any backup.
 
-## Effet des réglages
+## Effect of settings
 
-**EXP des combats ×0,25 à ×5** multiplie le gain final de chaque bénéficiaire,
-après les bonus natifs d’objet et de propriétaire. Le résultat est arrondi à
-l’entier le plus proche, avec un minimum de 1 pour un gain initialement positif.
-Le même réglage concerne l’EXP mise en réserve pour un Pokémon obscur lorsque
-le jeu l’autorise ; cette réserve n’est pas remultipliée à sa libération.
-L’EXP initiale des starters, le niveau de départ et les Super Bonbons gardent
-leur traitement d’origine. Les montées de niveau et l’affichage du gain utilisent
-la valeur modifiée dans le parcours natif.
+**Combat EXP ×0.25 to ×5** multiplys the final gain of each beneficiary, after the native bonus of
+the object and owner. The result is rounded to the nearest integer, with a minimum of 1 for an
+initial gain positive. The same setting applies to the EXP set aside for a Shadow Pokémon when the
+game allows. This reserve is not multiplied upon its release. The initial starters' EXPP, the
+starting level and the Super Bonbons keep their original processing. Level climbs and the gain
+display use the modified value in the native course.
 
-**Diminution de la jauge obscure ×1 à ×10** multiplie uniquement les variations
-négatives calculées par la routine native de progression de la purification.
-Les augmentations de jauge ne sont pas accélérées. Les effets de la nature et
-des objets sont calculés avant ce multiplicateur ; le jeu conserve ensuite son
-plancher à zéro. L’option ne purifie pas automatiquement un Pokémon et ne
-déverrouille aucune scène, Relique ou récompense.
+**Decreased Heart Gauge ×1 to ×10** multiplys only negative variations calculated by the native
+routine of purification progression. Gauge increases are not accelerated. The effects of nature and
+objects are calculated before this multiplier. The game then retains its floor at zero. The option
+does not automatically purify a Pokémon and does not unlock any scene, Relic or reward.
 
-## Qualification des exécutables
+## Qualification of executables
 
-Les noms et la lecture du parcours USA proviennent des sources primaires du
-[projet de décompilation Colosseum](https://github.com/dougchansan/pkmn-colosseum/tree/ad02df4900c623d16d02b9a8ddd9c53ea0cd3db2),
-notamment `pokemon_range_8011F77C.c` et `fight_range_80211A00.c`. Cette source
-sert à interpréter les instructions ; elle n’est pas exécutée ni compilée par
-l’application.
+The names and readings of the USA route come from the primary sources of [Colosseum decompilation
+project](https://github.com/dougchansan/pkmn-colosseum/tree/ad02df4900c623d16d02b9a8ddd9c53ea0cd3db2),
+notably `pokemon_range_8011F77C.c` and `fight_range_80211A00.c`. This source is used to interpret
+the instructions. It is not executed or compiled by the application.
 
-Les fonctions sont retrouvées séparément dans les trois DOL originaux par une
-recherche de leur séquence complète, avec normalisation des appels et adresses
-relocalisés. Chaque recherche a un résultat unique dans une section de code.
-Le patch de production vérifie ensuite l’empreinte **non normalisée de toute la
-fonction**, l’instruction remplacée et l’identité exacte du DOL d’origine.
-Il ne calcule pas les adresses régionales à partir d’un décalage commun.
+The functions are found separately in the three original DOLs by searching for their complete
+sequence, with normalization of the calls and addresses relocated. Each search has a unique result
+in a code section. The production patch then checks the **non-standardized of the entire function**
+print, the replaced instruction and the exact identity of the original DOL. It does not calculate
+the regional addresses from a common offset.
 
-| Région | Fonction EXP | Instruction EXP ciblée | Fonction de jauge | Instruction de jauge ciblée |
+| Region | Fonction EXP | Targeted EXP instruction | Fonction de jauge | Targeted gauge instruction |
 | --- | --- | --- | --- | --- |
 | Europe `GC6P01` | `0x80227DF4` | `0x80228150` | `0x80123A84` | `0x80123CE0` |
 | USA `GC6E01` | `0x802232F4` | `0x80223650` | `0x8011F910` | `0x8011FB6C` |
 | Japon `GC6J01` | `0x8021EA8C` | `0x8021EDE8` | `0x8011D0C8` | `0x8011D324` |
 
-Le point EXP précède la séparation entre le gain normal et la mise en réserve
-obscure. Le point de jauge remplace l’addition de la variation à la jauge,
-juste avant le plancher natif à zéro. Les instructions déplacées sont rejouées
-et l’exécution reprend à l’instruction suivante, sans modifier le registre de
-retour. Les registres encore nécessaires au parcours natif sont conservés.
+The EXP point precedes the separation between the normal gain and the dark reserve. The gauge point
+replaces the addition of the variation to the gauge, just before the native floor at zero. The
+displaced instructions are replayed and the execution resumes with the following instruction,
+without modifying the return log. The registers still necessary for the native course are retained.
 
-Le calcul entier d’EXP utilise un dénominateur de 10 000. Un plafond défensif
-de 65 535 avant multiplication évite tout dépassement du calcul sur 32 bits.
-Il dépasse les gains natifs admissibles : les 413 lignes d’espèces de chaque
-région ont un rendement d’EXP maximal de 255 ; même au niveau 100 avec trois
-bonus successifs de ×1,5, le gain par bénéficiaire reste inférieur à 12 295.
-Les statistiques randomisées ne modifient pas ce rendement.
+The full calculation of EXP uses a denominator of 10,000. A defensive ceiling of 65,535 before
+multiplication avoids any overrun of the 32-bit calculation. It exceeds the eligible native
+earnings: the 413 cash lines in each region have a maximum EXP yield of 255. Even at the 100 level
+with three consecutive bonuses of ×1.5, the gain per beneficiary remains less than 12,295.
+Randomized statistics do not change this yield.
 
-Le code ajouté utilise la section `text2` déjà réservée par les patchs de
-capacités des cadeaux et de chromatiques, ou crée cette même réservation si
-elle est absente. La garde de l’arène est étendue en conséquence. L’empreinte
-des fonctions, l’ancienne réservation et la liste exacte des plages modifiables
-doivent correspondre avant d’écrire les nouveaux octets.
+The added code uses the `text2` section already reserved by gift and Shiny capability patches, or
+creates the same reservation if it is absent. The arena guard is extended accordingly. The function
+footprint, the old reservation and the exact list of editable ranges must match before writing the
+new bytes.
 
-## Vérifications et limites
+## Verifications and limitations
 
-Les tests exécutent les instructions PowerPC produites dans un décodeur
-indépendant : 189 combinaisons de gains/taux/régions et 72 combinaisons de
-jauges/variations/multiplicateurs/régions, avec contrôle du retour, des registres,
-de l’arrondi, du minimum et du plancher natif. Les trois exécutables originaux
-font aussi l’objet de contrôles de répétabilité, de composition avec les patchs
-existants et de rejet d’instructions ou d’en-têtes altérés.
+The tests perform the PowerPC instructions produced in an independent decoder: 189 combinations of
+gains/rates/regions and 72 combinations of gauges/variations/multipliers/regions, with feedback
+control, registers, rounding, minimum and native floor control. The three original executables are
+also subject to repeatability checks, composition checks with existing patches and rejection of
+altered instructions or headers.
 
-### Observations réelles dans Dolphin Europe
+### Actual observations in Dolphin Europe
 
-L’ISO combinée Europe a été jouée avec **EXP ×2 et jauge ×3**, sur une copie
-de carte de test isolée du profil personnel. Les arrêts sur instructions natives
-ont permis de comparer les valeurs avant et après les blocs ajoutés, puis après
-les écritures du jeu dans les enregistrements Pokémon :
+The combined ISO Europe was played with **EXP ×2 and gauge ×3**, on a copy of a test card isolated
+from the personal profile. The stops on native instructions allowed to compare the values before and
+after the added blocks, then after the play entries in the Pokémon records.
 
-| Témoin | Valeur native et résultat observé |
+| Witness | Native value and observed result |
 | --- | --- |
-| Réduction de jauge en combat, Lanturn | Variation −0,5 devenue −1,5 ; jauge entière **6 650 → 6 500** |
-| Réduction de jauge en combat, Tortank | Variation −0,75 devenue −2,25 ; jauge entière **800 → 575** |
-| EXP, Lanturn encore trop obscur | Gain **673 → 1 346** dans le bloc ; le seuil natif refuse ensuite la mise en réserve, qui reste à **0** |
-| EXP, Tortank prêt à recevoir sa réserve | Gain **673 → 1 346** ; réserve réellement écrite par le jeu **12 313 → 13 659**, soit **+1 346** |
+| Combat gauge reduction, Lanturn | Change -0.5 to -1.5. Whole gauge **6 650 → 6 500** |
+| Combat gauge reduction, Blastoise | Change -0,75 become -2,25. Whole gauge **800 → 575** |
+| EXP, Lanturn still too dark | Gain **673 → 1 346** in the block. The native threshold then refuses to reserve, which remains at **0** |
+| EXP, Blastoise ready to receive its reserve | Gain **673 → 1 346**. Reservation actually written by the game **12 313 → 13 659**, that is **+1 346** |
 
-Le témoin Lanturn rejeté ne compte donc pas comme un gain appliqué. Celui de
-Tortank prouve l’ajout réel d’EXP en réserve. Les captures contrôlent les
-registres encore utilisés et le lien de retour ; les fichiers Pokémon bruts
-avant/après ne diffèrent que dans la jauge ou la réserve attendue. Le débogueur
-expose la moitié PS0 des registres flottants, pas les moitiés paired-single PS1.
-Aucune capture ne force un PC, une jauge, une EXP, un résultat de combat ou une
-récompense. Deux passages de porte réels utilisent un raccourci de navigation
-déclaré et gardé vers Pyrite ; destination et argument natif sont redirigés
-ensemble, sans sauter à une instruction de combat.
+The rejected Lanturn witness therefore does not count as an applied gain. The one of Blastoise
+proves the actual addition of the EXP in reserve. The catches control the registers still used and
+the return link. The raw Pokémon files before/after differ only in the gauge or the expected
+reserve. The debugger exposes the half PS0 of the floating registers, not the paired-single PS1. No
+capture forces a PC, a gauge, an EXP, a combat result or a reward. Two actual doorways use a
+declared and kept navigation shortcut to Pyrite Town. Destination and native argument are redirected
+together, without jumping to a combat instruction.
 
-Les cartes de test contiennent une progression synthétique héritée des essais
-de cadeaux. Une incohérence de ces données a été corrigée dans de **nouvelles**
-cartes v3 : six Pokémon de l’équipe avaient une jauge positive mais leur drapeau
-global indiquait une purification. Douze bits ont été ajustés en conservant le
-total de 25, sans modifier les Pokémon, l’EXP, les jauges, le scénario ou les
-anciens emplacements de sauvegarde. Le premier témoin Tortank provient de
-l’ancienne carte ; le témoin Lanturn de jauge et les deux témoins EXP proviennent
-du nouvel essai cohérent. Ce changement de fixture n’est pas un correctif du
-patch de production et ne prouve pas 25 purifications jouées.
+The test cards contain a synthetic progression inherited from the gift tests. An inconsistency of
+this data was corrected in **nouvelles** v3 cards: six team Pokémon had a positive gauge but their
+overall flag indicated purification. Twelve bits were adjusted by keeping the total of 25, without
+changing the Pokémon, the EXP, the gauges, the scenario or the old backup locations. The first
+witness Blastoise came from the old card. The Lanturn gauge witness and the two EXP witnesses came
+from the new consistent test. This fixture change is not a patch of the production patch and does
+not prove 25 purifications performed.
 
-La guérison des six Pokémon a aussi été effectuée auprès de l’infirmière native
-dans l’essai Europe. Des cartes USA/Japon distinctes ont ensuite reçu uniquement
-les trois octets de PV restaurés observés dans cette guérison, pour préparer
-d’éventuels essais. Cette préparation hors ligne ne constitue pas une guérison
-jouée ni une validation QOL sur ces deux régions.
+The healing of the six Pokémon was also performed with the native nurse in the Europe trial.
+Separate USA/Japan maps were then received only the three restored PV bytes observed in this
+healing, to prepare any tests. This offline preparation does not constitute a healing performed or a
+QOL validation on these two regions.
 
-Les deux processus Dolphin Europe se sont fermés normalement. Les empreintes
-avant/après des fichiers protégés, des ROM originales et du profil Dolphin
-personnel sont identiques. Les gardes de l’outil de test ont également refusé
-les demandes hors contrat ; ces refus et les erreurs de lecture sont conservés
-séparément des captures réussies.
+The two Dolphin Europe processes were closed normally. The fingerprints before/after protected
+files, original ROMs and the Dolphin Personal Profile are identical. The guards of the test tool
+also refused out-of-contract applications. These refusals and reading errors are kept separately
+from successful captures.
 
 ### Limites restantes
 
-**Les nouveaux parcours QOL USA et Japon n’ont pas été joués dans cet essai.**
-Leurs contrats natifs, la matrice de données et les instructions PowerPC sont
-qualifiés séparément ; cela ne remplace pas une observation régionale réelle.
-Aucune montée de niveau d’un Pokémon normal, libération de réserve lors de la
-purification finale, diminution déclenchée par la marche ou branche du plancher
-de jauge à zéro n’a été observée ici. Les autres multiplicateurs restent couverts
-par les contrôles automatisés. Aucune partie complète ni validation de
-l’équilibrage n’est revendiquée.
+**The new QOL USA and Japan races were not played in this essay.** Their native contracts, the data
+matrix and the PowerPC instructions are qualified separately. This does not replace a real regional
+observation. No rise in the level of a normal Pokémon, reserve release during the final
+purification, decrease triggered by the step or branch of the zero gauge floor was observed here.
+The other multipliers remain covered by the automated controls. No complete part or validation of
+the balancing is claimed.
 
-Les rapports de création antérieurs gardent leur indication initiale de
-validation à effectuer. L’agrégat privé daté `build/v15-runtime/result.json`
-décrit les observations ultérieures et leurs limites, sans réécrire ces rapports.
+Previous creation reports shall retain their initial validation indication to be performed. Private
+aggregate dated `build/v15-runtime/result.json` describes subsequent observations and their
+limitations, without rewriting these reports.
 
-Les listings, les empreintes de recherche et le clone source épinglé restent
-privés dans `build/qol-v15/`. Les captures, cartes et moniteurs de cette exécution
-restent dans `build/v15-runtime/`. Les données du jeu ne sont pas distribuées.
+Listings, search hashes and the pinned source clone remain private in `build/qol-v15/`. The
+captures, maps and monitors of this execution remain in `build/v15-runtime/`. The game data are not
+distributed.
 
 ### Suivi distinct en v0.16
 
-Les [notes de validation v0.16](DESKTOP_V16.md) consignent les observations
-supplémentaires USA/Japon et l’état du nouvel essai Europe. Elles distinguent
-chaque étape réellement jouée, les préconditions synthétiques et les limites du
-bridge. Elles complètent ce compte rendu historique sans élargir sa portée.
+The [notes de validation v0.16](DESKTOP_V16.md) records the additional US/Japan observations and the
+state of the new Europe trial. They distinguish each stage actually played, the synthetic
+preconditions and the boundaries of the bridge. They complement this historical account without
+broadening its scope.

@@ -1,66 +1,100 @@
-# Randomizer v3 : familles obscures uniques et évolutions accessibles
+# Randomizer v3: unique Shadow Pokémon families and accessible evolutions
 
-Version PAL GC6P01 révision 0, 30 octobre 2026. Algorithme `unique-shadow-families-accessible-evolutions-v3`.
+PAL version GC6P01 revision 0, 30 October 2026. Algorithm
+`unique-shadow-families-accessible-evolutions-v3`.
 
-La v3 répond à deux règles : les 48 identifiants de Pokémon obscurs doivent appartenir à 48 familles d'évolution différentes, et les évolutions doivent être réalisables dans Colosseum. Elle autorise toujours les formes déjà évoluées dans les tirages.
+The v3 responds to two rules: the 48 identifiers of Shadow Pokémon must belong to 48 different
+families of evolution, and the evolutions must be achievable in Colosseum. It always allows the
+forms already evolved in the hashes.
 
 ## Jouer
 
-Lancer `jouer-randomizer-histoire.ps1` à la racine. Il ouvre l'ISO `build/randomizer-v3/colosseum-pal-randomizer-v3.iso` avec le profil séparé `build/randomizer-v3/play-user`, préparé sans importer la carte mémoire d'origine.
+Launch `jouer-randomizer-histoire.ps1` at the root. It opens ISO
+`build/randomizer-v3/colosseum-pal-randomizer-v3.iso` with the separate profile
+`build/randomizer-v3/play-user`, prepared without importing the original memory card.
 
-Commencer une **nouvelle partie**. Changer d'ISO ne transforme pas les starters et les Pokémon déjà capturés dans une sauvegarde existante. Le profil `dolphin-user` sert uniquement aux essais avec une copie de sauvegarde ; le lanceur utilise `play-user` pour jouer.
+Starting a **new part**. Changing ISO does not transform starters and Pokémon already captured in an
+existing backup. The `dolphin-user` profile is used only for testing with a backup copy. The
+launcher uses `play-user` to play.
 
-Les règles des dresseurs et dons de la v2 restent en vigueur, y compris les six routines spéciales identifiées. Pour cette seed : Queulorior niveau 26 et Flagadoss niveau 25 au départ. Les événements externes ne sont pas activés.
+The rules of the trainers and gifts of the v2 remain in force, including the six special
+routines identified. For this seed: Smeargle level 26 and Slowbro level 25 at the start. External
+events are not activated.
 
-## Unicité des familles obscures
+## Uniqueity of dark families
 
-Les familles sont calculées depuis le graphe complet des évolutions du `common.rel` original : 386 espèces, 184 liens, 202 composantes connexes. Les embranchements font partie d'une même famille, notamment Évoli, Debugant, Chenipotte et Ningale.
+Families are calculated from the complete graph of the evolutions of the original `common.rel`: 386
+species, 184 links, 202 related components. Branches are part of the same family, including Eevee,
+Tyrogue, Wurmple and Nincada.
 
-La v2 donnait seulement 43 familles distinctes. La v3 conserve le plus petit identifiant obscur de chaque famille, réserve toutes les familles déjà retenues puis retire uniquement les cinq collisions, dans l'ordre des identifiants. Le tirage SHA-256 utilise la seed et la clé `shadow-family-v3:{identifiant}`. Il n'utilise ni l'heure ni l'état global du générateur Python.
+The v2 gave only 43 distinct families. The v3 keeps the smallest obscure identifier of each family,
+reserves all families already retained and then removes only the five collisions, in the order of
+the identifiers. The SHA-256 draw uses the seed and the key `shadow-family-v3:{identifiant}`. It
+uses neither the time nor the overall state of the Python generator.
 
-| Identifiant obscur retiré | Collision v2 | Remplacement v3 |
+| Dark ID removed | Collision v2 | Replacement v3 |
 | --- | --- | --- |
-| 5 | Roucool / Roucarnage | Vibraninf |
-| 31 | Gloupti / Avaltout | Ptéra |
-| 35 | Tadmorv / Grotadmorv | Porygon2 |
-| 42 | Mimitoss répété | Balignon |
-| 57 | Élektek répété | Élecsprint |
+| 5 | Pidgey / Pidgeot | Vibrava |
+| 31 | Gulpin / Swalot | Aerodactyl |
+| 35 | Grimer / Muk | Porygon2 |
+| 42 | Venonat repeated | Shroomish |
+| 57 | Electabuzz repeated | Manectric |
 
-Les neuf occurrences de ces cinq groupes chez les dresseurs sont synchronisées avec la table des obscurs. L'unicité porte sur les **48 groupes capturables** : les rencontres répétées d'un même identifiant conservent la même espèce. Les Pokémon ordinaires des dresseurs et les six dons ne changent pas par rapport à la v2.
+The nine occurrences of these five groups in the blockers are synchronized with the table of the
+Shadow Pokémon. The uniqueness relates to **48 groupes capturables**: the repeated encounters of the
+same identifier retain the same species. The ordinary Pokémon of the blockers and the six gifts do
+not change in relation to the v2.
 
-## Évolutions rendues accessibles
+## Developments made accessible
 
-Les 184 destinations et tous les embranchements sont conservés. Seules 15 méthodes et conditions changent, soit 30 octets effectifs dans les données d'évolution.
+The 184 destinations and all branches are kept. Only 15 methods and conditions change, i.e. 30
+effective bytes in the evolution data.
 
-| Espèce | Évolution | Nouvelle condition |
+| Species | Developments | New condition |
 | --- | --- | --- |
-| Kadabra | Alakazam | Niveau 40 |
-| Machopeur | Mackogneur | Niveau 40 |
-| Gravalanch | Grolem | Niveau 40 |
-| Spectrum | Ectoplasma | Niveau 40 |
-| Onix | Steelix | Niveau 40 |
-| Hypocéan | Hyporoi | Niveau 40 |
-| Insécateur | Cizayox | Niveau 40 |
-| Porygon | Porygon2 | Niveau 40 |
-| Têtarte | Tarpaud | Pierre Soleil |
-| Ramoloss | Roigada | Pierre Eau |
-| Coquiperl | Serpang | Pierre Eau |
-| Coquiperl | Rosabyss | Pierre Lune |
-| Évoli | Mentali | Pierre Soleil |
-| Évoli | Noctali | Pierre Lune |
-| Barpau | Milobellus | Niveau 40 |
+| Kadabra | Alakazam | Level 40 |
+| Machoke | Machamp | Level 40 |
+| Graveler | Golem | Level 40 |
+| Haunter | Gengar | Level 40 |
+| Onix | Steelix | Level 40 |
+| Seadra | Kingdra | Level 40 |
+| Scyther | Scizor | Level 40 |
+| Porygon | Porygon2 | Level 40 |
+| Poliwhirl | Politoed | Sun Stone |
+| Slowpoke | Slowking | Water Stone |
+| Clamperl | Huntail | Water Stone |
+| Clamperl | Gorebyss | Moon Stone |
+| Eevee | Espeon | Sun Stone |
+| Eevee | Umbreon | Moon Stone |
+| Feebas | Milotic | Level 40 |
 
-Les évolutions au niveau 40 se déclenchent lors d'un gain de niveau à partir de 40, y compris si le Pokémon est obtenu au-dessus de ce seuil. La purification des obscurs reste nécessaire. Les règles natives de bonheur simple, de statistiques de Debugant, de personnalité de Chenipotte et le mécanisme spécial de Ningale restent inchangés.
+The evolutions at level 40 are triggered by a level gain from 40 onwards, including if the Pokémon
+is obtained above this threshold. Purification of the dark remains necessary. The native rules of
+simple happiness, statistics of Tyrogue, personality of Wurmple and the special mechanism of Nincada
+remain unchanged.
 
-L'examen du moteur PAL a confirmé que les méthodes jour/nuit d'Évoli n'aboutissent pas à une évolution. Le moteur retient également la dernière branche compatible : remplacer toutes les branches d'une espèce par le même niveau supprimerait des choix. Des pierres distinctes conservent donc l'accès à chaque destination. Tartard reste accessible par Pierre Eau et Flagadoss au niveau 37.
+Examination of the PAL engine confirmed that the day/night methods of Eevee do not result in an
+evolution. The engine also retains the last compatible branch: replacing all branches of a species
+by the same level would remove choices. Separate stones therefore retain access to each destination.
+Poliwrath remains accessible by Water Stone and Slowbro at level 37.
 
-## Pierres en boutique
+## Stones in store
 
-Les pierres Soleil, Lune, Feu, Foudre, Eau et Plante sont ajoutées aux catalogues d'achat 3 et 5, correspondant à Phénacit et Pyrite. Leur prix est de **2 100** chacune. Seul le prix initial nul de la Pierre Lune nécessite une modification dans `main.dol` ; les cinq autres prix sont déjà de 2 100.
+The Sun, Moon, Fire, Lightning, Water and Plant stones are added to the purchase catalogues 3 and 5,
+corresponding to Phenac City and Pyrite Town. Their price is **2 100** each. Only the original price
+zero of the Moon Stone requires a change in `main.dol`. The other five prices are already 2,100.
 
-Les cinq archives `pocket_menu.fsys`, `pocket_menu_fr.fsys`, `pocket_menu_ge.fsys`, `pocket_menu_it.fsys` et `pocket_menu_sp.fsys` sont modifiées. Le catalogue REL occupe 109 de ses 122 entrées, sans changer sa taille ni ses relocations. Les stocks initiaux restent disponibles. Les trois listes 0 à 2 sont réordonnées pour partager leurs suffixes, sans gagner ni perdre d'article ; les neuf autres listes restent identiques. Les types de dialogue et devises ne changent pas. Les onze autres membres de chaque archive sont inchangés après décompression.
+The five archives `pocket_menu.fsys`, `pocket_menu_fr.fsys`, `pocket_menu_ge.fsys`,
+`pocket_menu_it.fsys` and `pocket_menu_sp.fsys` are being modified. The REL catalogue occupies 109
+of its 122 entries, without changing its size or relocations. The initial stocks remain available.
+The three lists 0 to 2 are reordered to share their suffixes, without winning or losing any item.
+The other nine lists remain identical. The types of dialogue and currency do not change. The other
+eleven members of each archive are unchanged after decompression.
 
-Le premier essai ciblait les listes 0 à 2, interprétées à tort comme des menus d'achat. Le test réel de Pyrite a détecté l'absence des pierres dans son catalogue. La correction cible les menus d'achat de type 0 ; un contrôle de régression vérifie explicitement le stock de Pyrite et l'absence de pierres ajoutées aux listes 0 à 2. L'ISO d'essai est conservée sous `build/randomizer-v3-before-shop-fix/`.
+The first trial targeted lists 0 to 2, misinterpreted as buying menus. The actual test of Pyrite
+Town detected the absence of stones in its catalogue. The correction targets the purchasing menus of
+type 0. A regression check explicitly checks the stock of Pyrite Town and the absence of stones
+added to lists 0 to 2. The test ISO is kept under `build/randomizer-v3-before-shop-fix/`.
 
 ## Reconstruction reproductible
 
@@ -70,40 +104,66 @@ python scripts/randomize_accessible.py --verify-only --output-dir build/randomiz
 python -m unittest discover -s tests -v
 ```
 
-La reconstruction part toujours des originaux vérifiés. `common.fsys` et les cinq archives de boutiques sont replacés dans l'espace libre précédant les fichiers du disque ; les six entrées FST sont actualisées. Les anciennes copies restent dans l'ISO. Tous les octets hors des plages autorisées sont comparés à l'ISO source.
+The reconstruction always starts from the verified originals. `common.fsys` and the five store
+archives are placed in the free space before the disk files. The six FST entries are updated. The
+old copies remain in ISO. All bytes outside the allowed ranges are compared to the ISO source.
 
-| Fichier produit | SHA-256 |
+| Product file | SHA-256 |
 | --- | --- |
 | ISO v3 | `e37dae3666fae8323cb9f9c55c679c170053c96430d0d22fe2c6057e3aeea941` |
 | `common.rel` v3 | `0dd207d42d07b483fa5fa745a22d244846af845a4bd8866b11c02432bb6d2360` |
 | `main.dol` v3 | `381add7c69294f0ebd54d7019c195cc6bc9717db2f51f49cb6dee5a76ac33363` |
-| REL de boutiques, commun aux cinq langues | `322c09fe916c3dc5ac3f1c5e87c019639a09761bda6b92d6cb2df7ab3d346986` |
+| REL of shops, common to the five languages | `322c09fe916c3dc5ac3f1c5e87c019639a09761bda6b92d6cb2df7ab3d346986` |
 
-Taille ISO : 1 459 978 240 octets. DolphinTool : vérification réussie, aucun problème signalé, CRC32 `4540a9cd`, SHA-1 `37496b7c3607b871713fce6e52081ffbb44d1a44`.
+ISO size: 1 459 978 240 bytes. DolphinTool: successful verification, no problems reported, CRC32
+`4540a9cd`, SHA-1 `37496b7c3607b871713fce6e52081ffbb44d1a44`.
 
-## Vérifications et limites
+## Verifications and limitations
 
-Les **43 tests** passent. Ils couvrent les familles ramifiées, le tirage déterministe et sa stabilité JSON, les occurrences obscures partagées, la conservation des tirages ordinaires et spéciaux, les règles d'évolution, les cinq langues et les stocks des autres boutiques. Une seconde lecture de l'ISO reconstruite confirme les 48 familles, les 15 règles, les charges utiles et l'absence de modification hors des plages prévues.
+The **43 tests** pass. They cover branched families, deterministic drawing and JSON stability,
+shared obscure occurrences, preservation of ordinary and special hashes, rules of evolution, the
+five languages and stocks of other shops. A second reading of the reconstructed ISO confirms the 48
+families, the 15 rules, the payloads and the absence of modification outside the planned ranges.
 
-Le test sous **Dolphin 2609a** a démarré normalement l'ISO finale, chargé la carte mémoire copiée avec « Continuer », puis rejoint le magasin de Pyrite. Les six pierres sont visibles à 2 100. L'achat d'une Pierre Lune a été effectué : quantité 0 → 1 et solde 8 015 → 5 915. Le sac initial étant plein, les deux Super Potions de la copie ont d'abord été vendues pour libérer un emplacement. Aucun changement n'a été apporté à la sauvegarde d'origine.
+The test under **Dolphin 2609a** normally started the final ISO, loaded the memory card copied with
+"Continue", then joined the store of Pyrite Town. The six stones are visible to 2,100. The purchase
+of one Moon Stone was made: quantity 0 → 1 and balance 8 015 → 5,915. The original bag being full,
+the two Super Potions of the copy were first sold to release a location. No change was made to the
+original backup.
 
-Un état rapide provenant du premier essai a été écarté pour la validation finale, car il restaurait l'ancien catalogue en RAM. Les captures finales proviennent du parcours normal depuis la carte mémoire sur l'ISO corrigée.
+A fast state from the first test was discarded for final validation, as it would restore the old RAM
+catalog. The final captures come from the normal route from the memory card on the corrected ISO.
 
-- [Les six pierres à 2 100](../../build/randomizer-v3/evidence/02-six-stones-at-2100.jpg).
-- [Pierre Lune avant l'achat](../../build/randomizer-v3/evidence/05-moon-stone-free-slot-before.jpg).
-- [Pierre Lune reçue et solde débité](../../build/randomizer-v3/evidence/06-moon-stone-purchase-success.jpg).
-- [Résumé de validation](randomizer-v3-validation.json).
+- [The six stones at 2,100](../../build/randomizer-v3/evidence/02-six-stones-at-2100.jpg).
+- [Moon Stone prior to
+  purchase](../../build/randomizer-v3/evidence/05-moon-stone-free-slot-before.jpg).
+- [Moon Stone received and balance
+  debited](../../build/randomizer-v3/evidence/06-moon-stone-purchase-success.jpg).
+- [Validation summary](randomizer-v3-validation.json).
 
-Les preuves de test Dolphin et les contrôles d'intégrité sont consignés dans `randomizer-v3-validation.json` et `build/randomizer-v3/evidence/`. La progression intégrale du scénario, l'équilibrage et le déclenchement en jeu de chaque branche d'évolution restent à valider. Phénacit et les quatre autres langues sont contrôlés dans les données ; leur interface n'a pas été parcourue. Les contrôles binaires ne sont pas présentés comme une partie complète.
+Dolphin test evidence and integrity checks are recorded in `randomizer-v3-validation.json` and
+`build/randomizer-v3/evidence/`. The full progression of the scenario, balancing and triggering of
+each branch of evolution remain to be validated. Phenac City and the other four languages are
+checked in the data. Their interface has not been searched. The binary controls are not presented as
+a complete part.
 
-Les fichiers `game/`, l'ISO source, les anciennes ISO et le profil Dolphin d'origine sont conservés. Les sauvegardes de test et de jeu sont isolées.
+The `game/` files, the source ISO, the old ISO and the original Dolphin profile are kept. Test and
+game backups are isolated.
 
-## Sources de formats et preuve PAL
+## Sources of Formats and PAL Evidence
 
-Les offsets et empreintes sont vérifiés sur ce dump PAL. Les sources communautaires servent à interpréter les structures ; elles ne remplacent pas cette vérification régionale.
+Offsets and hashes are checked on this PAL dump. Community sources are used to interpret structures.
+They do not replace this regional verification.
 
-- [Méthodes d'évolution de Pokemon-XD-Code](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/enums/XGEvolutionMethods.swift).
-- [Structure d'une évolution](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/XGEvolution.swift).
-- [Structure et prix des objets](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMItem.swift).
-- [Symboles des tables REL](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/file%20formats/XGRelocationTable.swift).
-- [Décompilation du moteur, corroboration US](https://github.com/dougchansan/pkmn-colosseum/blob/ad02df4900c623d16d02b9a8ddd9c53ea0cd3db2/src/game/pokemon_range_80128524.c). Le dispatch PAL a été vérifié indépendamment à l'adresse RAM `0x8012C87C` / offset DOL `0x12987C`, avec sa table de sauts RAM `0x803B0510` / fichier `0x3AD510`.
+- [Evolution methods of
+  Pokemon-XD-Code](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/enums/XGEvolutionMethods.swift).
+- [Structure of an
+  evolution](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/XGEvolution.swift).
+- [Structure and price of
+  objects](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/data%20types/enumerable/CMItem.swift).
+- [Symbols of REL
+  tables](https://github.com/PekanMmd/Pokemon-XD-Code/blob/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0/Objects/file%20formats/XGRelocationTable.swift).
+- [Engine decompilation, US
+  substantiation](https://github.com/dougchansan/pkmn-colosseum/blob/ad02df4900c623d16d02b9a8ddd9c53ea0cd3db2/src/game/pokemon_range_80128524.c).
+  The PAL dispatch was independently checked at RAM `0x8012C87C` / DOL offset `0x12987C`, with its
+  RAM jump table `0x803B0510` / file `0x3AD510`.

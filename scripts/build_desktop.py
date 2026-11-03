@@ -21,7 +21,7 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
              "CONTRIBUTING.md", "PRODUCT.md", "DESIGN.md", "pyproject.toml", "requirements-build.txt", ".gitignore", ".gitattributes",
              "lancer-randomizer.ps1")]
     for directory, extensions in (("colosseum_randomizer", {".py"}), ("tests", {".py"}),
-                                  ("scripts", {".py", ".ps1", ".spec"}), ("docs", {".md"}),
+                                  ("scripts", {".py", ".ps1", ".spec", ".iss"}), ("docs", {".md"}),
                                   ("licenses", {".txt", ".json", ".md"}), (".github", {".yml", ".md"})):
         files += [p for p in (ROOT / directory).rglob("*") if p.is_file() and p.suffix in extensions]
     files += [ROOT / "native/Cargo.toml", ROOT / "native/Cargo.lock", ROOT / "native/src/lib.rs"]

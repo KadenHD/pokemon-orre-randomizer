@@ -1,49 +1,44 @@
-# Stades des starters — 0.8.0
+# Starter evolution stages — 0.8.0
 
-Les modes **Pokémon + capacités** et **Pokémon seuls** choisissent par défaut
-les deux starters parmi les formes de base de familles à trois stades.
-Les niveaux restent à 26 et 25. Les autres filtres et les corrections d’évolution
-conservent leurs réglages habituels.
+The **Pokémon + moves** and **Pokémon only** modes by default select the two starters from the
+three-stage family base forms. The levels remain at 26 and 25. The other filters and the d'evolution
+fixes retain their usual settings.
 
-Dans **Avancé → Starters et cadeaux** :
+In **Advanced → Starters and gifts**.
 
-| Choix du stade | Pokémon admissibles |
+| Choice of stage | Eligible Pokémon |
 | --- | --- |
-| Tous les stades | Aucun filtre sur le stade |
-| Forme de base | Sans préévolution, y compris les Pokémon qui n’évoluent pas si le filtre à trois stades est désactivé |
-| Première évolution | Une évolution après une base ; par exemple Herbizarre |
-| Évolution finale | Forme évoluée sans évolution supplémentaire ; par exemple Florizarre |
+| Any stage | No filter on the stadium |
+| Base form | Without preevolution, including Pokémon which does not evolve if the three-stage filter is deactivated |
+| First evolution | An evolution after a base. For example Ivysaur |
+| Final evolution | Evolved shape without further evolution. For example Venusaur |
 
-**Familles à trois stades uniquement** exige deux évolutions successives présentes
-dans Colosseum. Le nombre de branches ne compte pas : Évoli et ses évolutions
-forment une famille à deux stades. Chenipotte et ses deux branches forment une
-famille à trois stades. Les bébés sont pris en compte : Pichu → Pikachu → Raichu.
-Les évolutions ajoutées après la troisième génération ne sont pas inventées.
+**Three-stage families only** requires two successive evolutions present in Colosseum. The number of
+branches does not count: Eevee and its evolutions form a family at two stages. Wurmple and its two
+branches form a family at three stages. Babies are taken into account: Pichu → Pikachu → Raichu. The
+evolutions added after the third generation are not invented.
 
-Ces règles ne changent que les starters remplacés. Garder Noctali ou Mentali
-conserve son espèce, son niveau et son expérience. Ce starter peut néanmoins
-contraindre son partenaire si les règles de puissance, de types ou de familles
-du duo sont actives. Si aucune paire n’est possible, l’outil indique quelles
-contraintes ajuster ; il ne contourne pas les exclusions.
+These rules only change the starters replaced. Keep Umbreon or Espeon its species, level and
+experience. This starter can nevertheless force its partner if the rules of power, types or families
+of the duo are active. If no pair is possible, the tool indicates which constraints to adjust. It
+does not bypass exclusions.
 
-## Équilibrage et reproduction
+## Balancing and reproduction
 
-Avec le filtre à trois stades et le choix Base, l’option de puissance proche
-compare les candidats à Évoli, la base d’origine du duo, au lieu de comparer une
-base à Noctali ou Mentali. La puissance du duo est toujours comparée entre les
-deux espèces effectivement tirées, avec leurs statistiques finales.
+With the three-stage filter and the Base selection, the near power option compares the candidates to
+Eevee, the base of origin of the duo, instead of comparing a base to Umbreon or Espeon. The power of
+the duo is always compared between the two actually drawn species, with their final statistics.
 
-Les chaînes viennent des cibles d’évolution du REL original vérifié. Le calcul
-refuse les cycles, distingue les stades des branches et ne change aucune
-condition d’évolution. Les options d’évolutions accessibles et de vente de
-pierres restent responsables des conditions pratiques d’évolution dans le jeu.
+The chains come from the targets of evolution of the original verified REL. The calculation refuses
+cycles, distinguishes the stages of the branches and does not change any condition of evolution. The
+options of accessible evolutions and of sale of stones remain responsible for the practical
+conditions of evolution in the game.
 
-Le choix uniforme parmi les paires admissibles garde le domaine de tirage
-`starter-pair-sha256-v1`. Les profils 0.5, 0.6, 0.6.1 et 0.7 sont d’abord vérifiés
-avec leur empreinte d’origine, puis convertis : l’ancien booléen de formes de
-base devient le choix Base ou Tous les stades, et le nouveau filtre est désactivé.
-Ils gardent donc leurs sélections et leur ancien équilibrage. Leur réexport se
-fait au format courant et conserve ces valeurs, sans activer les nouveaux défauts.
+The uniform choice among the eligible pairs keeps the drawing field `starter-pair-sha256-v1`. The
+profiles 0.5, 0.6, 0.6.1 and 0.7 are checked first with their original footprint, then converted:
+the former Boolean of basic shapes becomes the Base or All Stages choice, and the new filter is
+disabled. They therefore keep their selections and their old balance. Their re-export is in the
+current format and keeps these values, without enabling the new defects.
 
-Le moteur `starter-evolution-stages-v9` s’applique à la ROM européenne GC6P01,
-révision 0, au format ISO ou RVZ. La langue de l’interface ne participe pas au tirage.
+The engine `starter-evolution-stages-v9` applies to the European ROM GC6P01, revision 0, in ISO or
+RVZ format. The language of the interface does not participate in the drawing.

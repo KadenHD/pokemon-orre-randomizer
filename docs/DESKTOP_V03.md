@@ -1,126 +1,110 @@
-# Application v0.3 : paramètres de partie
+# Application v0.3: Part parameters
 
-Le moteur `advanced-gameplay-rules-v5` ajoute 26 paramètres aux seize règles
-précédentes : 42 paramètres au total, dont 38 booléens, un choix de mode et trois
-valeurs numériques. L'application reste locale et conserve la ROM source.
+The engine `advanced-gameplay-rules-v5` adds 26 parameters to the 16 previous rules: 42 parameters
+in total, including 38 booleans, one mode choice and three numerical values. The application remains
+local and retains the source ROM.
 
 ## Configuration
 
-| Catégorie | Réglages |
+| Category | Settings |
 | --- | --- |
-| Dresseurs | Espèces ordinaires, obscurs, familles obscures uniques |
-| Starters et dons | Noctali, Mentali, Posipi, Ho-Oh, Celebi, Pikachu indépendants |
-| Capacités | Attaques dresseurs, starters, dons ; apprentissages par niveau ; mode cohérent/chaos ; garanties offensive et même type ; doublons ; exclusions Destruction/Explosion et K.O. en un coup |
-| Espèces autorisées | Générations I/II/III ; légendaires/fabuleux ; puissance comparable |
-| Talents | Randomisation ; cohérence par famille |
-| Statistiques | Redistribution ; conservation du total d'origine |
-| Types | Randomisation ; cohérence par famille |
-| Objets tenus | Remplacer les objets présents ; sélection utile en combat |
-| Difficulté et capture | Niveaux ×0,5–2 ; capture ×0,25–5 ; minimum 0–255 |
-| Évolutions | Les cinq catégories accessibles de la v0.2 |
-| Boutiques | Pierres à Phénacit et Pyrite séparément |
+| Trainers | Common species, dark, unique Shadow Pokémon families |
+| Starters and gifts | Umbreon, Espeon, Plusle, Ho-Oh, Celebi, Independent Pikachu |
+| Moves | Attacks on trainers, starters, gifts. Level learning. Coherent/chaos mode. Offensive and same type guarantees. Duplicates. Exclusions Destruction/Explosion and K.O. in one stroke |
+| Allowed species | Generations I/II/III. Legendary/fabulous. Comparable power |
+| Abilities | Randomization. Family consistency |
+| Base stats | Redistribution. Retention of total origin |
+| Types | Randomization. Family consistency |
+| Held items | Replace objects present. Useful selection in combat |
+| Difficulty and capture | Levels ×0.5–2. Capture ×0.25–5. Minimum 0–255 |
+| Evolutions | The five accessible categories of the v0.2 |
+| Shops | Stones at Phenac City and Pyrite Town separately |
 
-Le preset recommandé active les espèces, les quatre randomisations de capacités
-en mode cohérent, les remplacements de puissance comparable, les protections,
-les évolutions accessibles et les boutiques. Types, talents, statistiques et objets
-restent désactivés. Les multiplicateurs restent à 1 et le minimum de capture à 0.
-« Tout désactiver » remet aussi les valeurs numériques à leur valeur neutre.
-La CLI conserve les anciens changements par défaut ; ses nouvelles options sont
-explicites, par exemple `--randomize-learnsets --randomize-starter-moves`.
+The recommended preset activates species, the four randomizations of capabilities in coherent mode,
+replacements of comparable power, protections, accessible evolutions and shops. Types, talents,
+statistics and objects remain deactivated. Multipliers remain at 1 and the minimum capture at 0.
+"Everything deactivates" also gives digital values to their neutral value. The LTC retains the old
+changes by default. Its new options are explicit, for example `--randomize-learnsets
+--randomize-starter-moves`.
 
-## Règles et protections
+## Rules and protections
 
-- Chaque tirage utilise SHA-256 avec la seed et une clé stable. Les options et
-  versions sont enregistrées dans le rapport JSON ; aucune RNG système ne décide
-  des données de la partie.
-- Le mode cohérent adapte la puissance au niveau et préfère une seconde attaque
-  correspondant à la statistique offensive. La séparation physique/spécial est
-  celle de la génération III, déterminée par le type.
-- Les quatre attaques peuvent être tirées séparément des espèces. Les garanties
-  utilisent les types finaux après randomisation. Les niveaux d'apprentissage et
-  les octets réservés restent intacts ; les fenêtres de quatre apprentissages
-  conservent une attaque offensive du même type si cette protection est activée.
-- Charge Noire et les marqueurs spéciaux sont protégés : les 30 enregistrements
-  de dresseurs qui en contiennent conservent tout leur bloc de capacités. Les
-  autres enregistrements ne changent que les identifiants des attaques.
-- Les filtres ne sont jamais relâchés silencieusement. Les 48 groupes obscurs
-  restent synchronisés et leurs familles restent distinctes lorsque demandé.
-  Une combinaison impossible produit une erreur récupérable.
-- Dès qu'un filtre d'espèces ou la puissance comparable est actif, Munja est
-  exclu des remplacements pour éviter les blocages de combat liés à Garde Mystik.
-  La sélection historique sans ces réglages reste compatible avec la v0.2 et
-  peut tirer Munja. Ses propriétés natives et son PV de base restent protégés.
-  Garde Mystik n'est pas attribué aux autres espèces.
-- Les statistiques sont bornées à 1–255. Sans conservation du total, le total
-  tiré est compris entre 250 et 680. Les talents sont tirés dans le catalogue
-  natif, avec un ou deux emplacements selon l'espèce.
-- Les objets sont remplacés uniquement dans les emplacements déjà occupés,
-  dans un catalogue observé chez les adversaires ; les marqueurs restent intacts.
-  Le Bandeau Choix n'est pas choisi sans attaque physique infligeant des dégâts.
-- Les niveaux restent entre 1 et 100 ; les starters et dons gardent leur niveau.
-  La capture modifie les 48 groupes actifs et reste entre 1 et 255.
+- Each draw uses SHA-256 with the seed and a stable key. Options and versions are saved in the JSON
+  report. No system RNG decides the data of the game.
+- The coherent mode adapts power to the level and prefers a second attack corresponding to offensive
+  statistics. The physical/special separation is that of generation III, determined by the type.
+- The four attacks can be drawn separately from the species. The warranties use the final types
+  after randomization. The learning levels and reserved bytes remain intact. The windows of four
+  learnings retain an offensive attack of the same type if this protection is activated.
+- Black load and special markers are protected: the 30 records of trainers that contain them retain
+  their entire block of capabilities. The other records only change the identifiers of attacks.
+- Filters are never released silently. The 48 dark groups remain synchronized and their families
+  remain distinct when requested. An impossible combination produces a recoverable error.
+- As soon as a species filter or comparable power is active, Shedinja is excluded from replacements
+  to avoid combat blockages related to Mystik Guard. The historical selection without these settings
+  remains compatible with v0.2 and can shoot Shedinja. Its native properties and its basic PV remain
+  protected. Mystik Guard is not attributed to other species.
+- The statistics are limited to 1–255. Without conserving the total, the total drawn is between 250
+  and 680. Talents are drawn in the native catalogue, with one or two locations depending on the
+  species.
+- The objects are replaced only in the already occupied locations, in a catalogue observed among the
+  opponents. The markers remain intact. The Choosing Strip is not chosen without physical attack
+  inflicting damage.
+- The levels remain between 1 and 100. Starters and gifts keep their level. The capture changes
+  the 48 active groups and remains between 1 and 255.
 
-## Attaques des dons et image disque
+## Gifts attacks and disk image
 
-Les dons calculent normalement leurs attaques depuis les apprentissages globaux.
-Une petite routine PowerPC appelle le constructeur natif puis ses quatre setters
-de capacités. Elle permet de régler les attaques d'un don sans modifier les
-autres Pokémon de son espèce. Lorsque seuls les apprentissages sont randomisés,
-elle conserve au contraire les attaques natives appropriées à l'espèce du don.
+Gifts normally calculate their attacks since the global learnings. A small PowerPC routine calls
+the native constructor and then its four skill sets. It allows to regulate the attacks of a gift
+without changing the other Pokémon of its kind. When only the learnings are randomized, it retains
+on the contrary the native attacks appropriate to the species of the gift.
 
-La section de code ajoutée fait 544 octets pour les quatre dons et sa protection
-d'arène mémoire. Le DOL étendu est placé dans un espace libre de l'ISO et son
-pointeur de démarrage est adapté ; la FST et le DOL original restent conservés à
-leur emplacement initial. Les signatures des instructions, les branches et les
-plages de modification sont vérifiées avant toute sortie.
+The added code section makes 544 bytes for the four gifts and its memory arena protection. The
+extended DOL is placed in a free space of ISO and its boot pointer is adapted. The original FST and
+DOL remain at their original location. The instructions signatures, branches and modification ranges
+are verified before any output.
 
-## Validation locale
+## Local validation
 
-111 tests Python passent, dont les contrôles Qt, les limites numériques, les
-tirages cohérents/chaos, les types finaux, les 48 familles, les niveaux/captures,
-les champs réservés et l'indépendance des dons. Un petit interpréteur PowerPC
-teste les appels des quatre setters, le retour constructeur, les registres et
-la protection de l'arène. Ces tests ne remplacent pas l'obtention réelle des dons
-tardifs dans une partie complète.
+111 Python tests pass, including Qt controls, numerical limits, consistent/chaos hashes, final
+types, 48 families, levels/captures, reserved fields and the independence of gifts. A small
+PowerPC interpreter tests the calls of the four sets, the manufacturer return, the registers and the
+protection of the arena. These tests do not replace the actual obtaining of late gifts in a
+complete part.
 
-ISO avec le préréglage recommandé et la seed historique de test :
+ISO with the recommended preset and the historical test seed.
 
 ```
 source  1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9
 sortie  425f1d846db101bfceaed6f941c05890eaa34cd27c5cf0fed0732830e84c7ebd
 ```
 
-Les 1 459 978 240 octets de l'ISO sont vérifiés contre la source et les seuls
-remplacements attendus. Le hash source est recalculé en fin de traitement.
-Construction locale observée : environ 10 secondes avec le codec Rust.
-La nouvelle ISO démarre à froid sous Dolphin 2609a, avec un profil isolé, une
-carte mémoire vierge et sans ancien état rapide. Les sauvegardes du profil
-habituel ne sont pas chargées dans ce test.
+The 1,459,978,240 bytes of ISO are checked against the source and the only replacements expected.
+The hash source is recalculated at the end of the processing. Local construction observed: about 10
+seconds with the Rust codec. The new ISO starts cold under Dolphin 2609a, with an isolated profile,
+a blank memory card and without an old fast state. The backups of the usual profile are not loaded
+in this test.
 
-Les deux starters ont été ouverts dans une nouvelle partie : Gardevoir niveau 26
-(Extrasenseur, Éclair, Protection, Onde Boréale) et Saquedeneu niveau 25
-(Poing Dard, Larcin, Reflet Magik, Bulles d'O). Les noms, niveaux, quatre attaques
-et PP affichés correspondent au rapport. L'EXP du premier starter est 21 970,
-seuil attendu pour son groupe de croissance au niveau 26.
+The two starters were opened in a new game: Gardevoir at level 26 (Extrasensory, Thunder Shock, Reflect, and Aurora Beam) and Tangela at level 25 (Needle Arm, Thief, Magic Coat, and Bubble Beam). The names,
+levels, four attacks and PP displayed correspond to the report. The EXP of the first starter is
+21,970, expected threshold for its growth group at level 26.
 
-Une seconde construction reproduit exactement le SHA-256 de l'ISO recommandée.
-Le preset sans changement reproduit exactement le SHA-256 de la source.
-Un parcours RVZ → RVZ a aussi été exécuté avec types, talents, statistiques,
-objets et attaques randomisés, génération III seule sans légendaires, niveaux
-×1,25, capture ×2 et minimum 100. L'ISO issue de sa redécompression correspond
-à l'ISO vérifiée avant compression (`97805312f1f72eb6db29654b310ef4f7da5e039c24e22177da922a1bab3ea6cd`).
-Les 2 011 fichiers extraits et les 20 fichiers inventoriés du profil Dolphin
-original conservent tous leurs empreintes SHA-256.
+A second construction accurately reproduces the recommended ISO SHA-256. The changeless preset
+reproduces exactly the SHA-256 of the source. A RVZ → RVZ route was also executed with randomized
+types, talents, statistics, objects and attacks, generation III alone without legendary, levels
+×1,25 capture ×2 and minimum 100. The ISO resulting from its recompression corresponds to the ISO
+verified before compression ([`97805312f1f72eb6db29654b310ef4f7da5e039c24e22177da922a1bab3ea6cd`].
+The 2,011 extracted files and the 20 inventoried files of the original Dolphin profile retain all
+their SHA-256 fingerprints.
 
-L'exécutable Windows 0.3 a démarré sans terminal et a créé sa propre ISO avec
-le preset recommandé en 10,02 secondes. Son SHA-256 est identique à celui de la
-version source et la fenêtre affiche le succès à 100 %. Les pages Capacités et
-Difficulté/capture ont été contrôlées visuellement. Les archives passent les
-contrôles d'intégrité et d'absence de données du jeu ; les sources extraites
-sans ROM exécutent 111 tests avec succès, dont 29 ignorés faute de données locales.
+The Windows 0.3 executable started without a terminal and created its own ISO with the recommended
+preset in 10.02 seconds. Its SHA-256 is identical to the source version and the window displays 100%
+success. The Capabilities and Difficulty/Capture pages have been visually controlled. The archives
+pass the integrity and lack of data checks of the game. The sources extracted without ROM run 111
+tests successfully, 29 of which are ignored due to lack of local data.
 
-Les fichiers locaux de preuve et rapports restent dans `build/v03-qa/` et
-`build/v03-default.iso.json`, hors distribution. Le scénario complet, tous les
-dons tardifs, l'équilibrage et les autres ordinateurs restent à valider. Le
-contrôle manuel actuel vérifie le démarrage, l'EXP et les attaques des starters ;
-un combat complet avec ces nouvelles attaques reste à jouer.
+The local evidence and reports files remain in `build/v03-qa/` and `build/v03-default.iso.json`, out
+of distribution. The full scenario, all late gifts, balancing and other computers remain to be
+validated. The current manual control checks the start-up, the EXP and the starters attacks. A
+complete fight with these new attacks remains to be played.
