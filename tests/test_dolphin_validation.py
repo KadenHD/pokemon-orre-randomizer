@@ -18,7 +18,7 @@ spec.loader.exec_module(launcher)
 class DolphinValidationTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
-        self.root = Path(self.temp.name)
+        self.root = Path(self.temp.name).resolve()
         self.build = self.root / "build"
         self.emulator = self.build / "portable/Dolphin.exe"
         self.emulator.parent.mkdir(parents=True)
