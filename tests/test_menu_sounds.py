@@ -57,7 +57,7 @@ class MenuSoundCacheTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
+        self.root = Path(self.temporary.name).resolve()
         self.cache = self.root / "cache"
         self.waves = {key: sounds._wav(bytes(spec[-1] * 2), spec[-2]) for key, spec in sounds._SOUNDS.items()}
 

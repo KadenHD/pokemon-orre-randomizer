@@ -19,7 +19,7 @@ from tests.test_artwork import fsys, portrait, texture
 class StarterPreviewTests(unittest.TestCase):
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory()
-        self.root = Path(self.folder.name)
+        self.root = Path(self.folder.name).resolve()
         self.source = self.root / "original.iso"
         self.source.write_bytes(b"synthetic original")
         self.summary = {"special_gameplay": {"specials": [

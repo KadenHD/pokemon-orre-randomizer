@@ -174,7 +174,7 @@ class V15GuiTests(unittest.TestCase):
 class JournalPublicationTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()
-        self.root = Path(self.directory.name)
+        self.root = Path(self.directory.name).resolve()
         self.source, self.output = self.root / 'original.iso', self.root / 'copy.iso'
         self.source.write_bytes(bytes(range(64)))
         self.json_path, self.html_path = self.root / 'copy.iso.json', self.root / 'copy.iso.html'

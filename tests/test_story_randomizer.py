@@ -78,7 +78,7 @@ class StoryRandomizerTests(unittest.TestCase):
 class EmptyProfileTests(unittest.TestCase):
     def test_empty_profile_preserves_original_and_imports_no_save(self):
         with tempfile.TemporaryDirectory() as directory:
-            root = Path(directory)
+            root = Path(directory).resolve()
             original = root / "original"
             (original / "GC").mkdir(parents=True)
             card = original / "GC/MemoryCardA.EUR.raw"
