@@ -1,0 +1,98 @@
+# Third-party software
+
+The project's own source code is licensed under MIT (see LICENSE). That license
+does not cover Nintendo game software, user-supplied images, or third-party libraries.
+No ROM, saved game or Dolphin executable is included. The local interface pack
+contains exported game images and audio, as described below.
+The separate `dist/public/` edition excludes that pack. Its panels and controls
+are drawn by application code and work without game media.
+
+The **Eclipse** application icon in `colosseum_randomizer/assets/app/` is original
+abstract artwork generated with the built-in image_gen tool and selected for this
+project. It is included under the project's MIT license. Its master PNG, ICO,
+prompt and file hashes accompany the sources; it is not extracted from a game.
+
+## Qt for Python / Qt / Shiboken
+
+The desktop application uses unmodified PySide6 Essentials and Shiboken 6.11.2,
+including QtCore, QtGui and QtWidgets, under the LGPL version 3 option. Qt libraries
+are dynamically loaded from the `_internal` directory in the Windows distribution.
+You may replace them with compatible modified builds and rebuild this application
+from the accompanying source archive. No restriction is imposed on reverse
+engineering for debugging modifications to those libraries.
+
+License texts and upstream notices are in `licenses/`. Upstream source and build
+instructions for the corresponding versions are available at:
+
+- https://code.qt.io/cgit/pyside/pyside-setup.git/?h=v6.11.2
+- https://code.qt.io/cgit/qt/qtbase.git/?h=v6.11.2
+- https://download.qt.io/official_releases/QtForPython/pyside6/PySide6-6.11.2-src/
+- https://download.qt.io/archive/qt/6.11/6.11.2/submodules/
+- https://doc.qt.io/qtforpython-6/building_from_source/index.html
+
+The `third-party-sources` directory contains the corresponding unmodified QtBase,
+QtSvg and PySide/Shiboken source archives for 6.11.2. Their upstream URLs and
+SHA-256 hashes are recorded in `licenses/qt/upstream-manifest.json`. Keep these
+sources and all upstream notices with a published binary distribution.
+The local build is not an Internet publication.
+Official licensing reference: https://www.qt.io/development/open-source-lgpl-obligations
+
+## Python and PyInstaller
+
+Python 3.12 is distributed under the PSF license and its included notices
+(`licenses/Python-LICENSE.txt`). PyInstaller 6.22.3 uses the GPL with its bootloader
+exception, reproduced in `licenses/PyInstaller-COPYING.txt`; that exception permits
+building an application under its own license.
+
+## Pokémon, type, move, ability and evolution-item names
+
+The French, English, German, Spanish, Italian and Japanese names for national
+species #1–386, plus the 17 Generation III type names, are selected from the PokéAPI
+data repository: https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/pokemon_species_names.csv
+The copyright notice, redistribution conditions and disclaimer are reproduced
+in `licenses/pokeapi.txt`. The downloaded source hash and selection are recorded
+in `licenses/pokeapi-names.json`. No API request is made by the application.
+
+The v0.15 detail sheets and offline HTML journal also include presentation-name
+fallbacks for Generation III moves #1–354, abilities #1–77 and twelve evolution
+items, in the same six languages. The source tables are:
+
+- https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/move_names.csv
+- https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/ability_names.csv
+- https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_names.csv
+
+These selections are stored in `colosseum_randomizer/locales/detail_names.py`.
+Their source SHA-256 hashes, language IDs, item-ID mapping and generated-file hash
+are recorded in `licenses/pokeapi-details.json`. They use the same BSD 3-Clause
+terms and copyright notice reproduced in `licenses/pokeapi.txt`; retain that file
+and both provenance manifests with source and binary distributions.
+
+The fallback catalogs supply display names only. Species properties, move
+properties, evolution methods, conditions, learnsets and TM compatibility are
+read from the final patched ROM rather than taken from a modern online Pokédex.
+Available native ROM name banks are used by the corresponding readers before
+fallback names. No ROM bytes, portraits or audio are part of these name catalogs,
+and using the sheets or journal does not contact PokéAPI.
+
+## Rust codec
+
+The optional LZSS codec in `native/` is this project's MIT code, with no third-party
+Rust crates. The bundled DLL is built using Rust 1.93.1 and includes parts of the
+Rust standard library. Upstream copyright and license notices are preserved in
+`licenses/rust/`. Its source and offline build instructions accompany this project.
+
+## Format research
+
+The binary formats were implemented in this project from local observations.
+Community references, including Pokemon-XD-Code, are linked in the research
+documentation. Their code and game data are not copied into release archives.
+
+Pokémon, Nintendo and their associated names belong to their respective owners.
+This project is independent and is not an official Nintendo product.
+
+## Local game interface pack
+
+`colosseum_randomizer/assets/game/` contains images and audio exported from the user-supplied Colosseum
+ROM for this local build. These game resources are not covered by the MIT license
+of the application code. Their hashes, source identifiers and transformations are
+recorded in `colosseum_randomizer/assets/game/provenance.json`. No ROM, BIOS or saved game is included.

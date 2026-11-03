@@ -1,0 +1,21 @@
+{
+  "source": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/pokemon_species_names.csv",
+  "sha256": "820cde17074cdb1c2b0595c997fb8f998e773bd5da3bb525dec85703c86c5fd9",
+  "selection": "local_language_id=1,5,6,7,8,9; national species IDs 1..386; name only",
+  "output": "colosseum_randomizer/locales/selection_names.py",
+  "license": "pokeapi.txt",
+  "languages": {
+    "fr": 5,
+    "en": 9,
+    "de": 6,
+    "es": 7,
+    "it": 8,
+    "ja": 1
+  },
+  "type_names": {
+    "source": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/type_names.csv",
+    "selection": "17 Gen III types, same six languages; native ID 9 omitted",
+    "verified": "2026-11-01",
+    "data_sha256": "2c577a4ac579cb9763debfc6bb5320bce8ad623b1313332f3ef153f6934f4136"
+  }
+}

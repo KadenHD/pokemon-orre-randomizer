@@ -1,0 +1,24 @@
+name: Signaler un problème
+description: Une erreur dans l’application ou une partie générée.
+body:
+  - type: markdown
+    attributes:
+      value: "Ne joignez aucune ROM ni sauvegarde. Retirez les chemins et informations personnelles des rapports."
+  - type: input
+    id: version
+    attributes:
+      label: Version de l’application et Windows
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Étapes pour reproduire
+      description: "Indiquez la seed, les réglages ou le profil JSON, puis le résultat attendu et le résultat observé."
+    validations:
+      required: true
+  - type: textarea
+    id: report
+    attributes:
+      label: Message d’erreur ou extraits du rapport
+      description: "Version du moteur et empreintes utiles. Relisez le contenu avant de l’envoyer."

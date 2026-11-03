@@ -1,0 +1,44 @@
+{
+  "license": "pokeapi.txt",
+  "generated": "2026-11-03",
+  "languages": {
+    "fr": 5,
+    "en": 9,
+    "de": 6,
+    "es": 7,
+    "it": 8,
+    "ja": 1
+  },
+  "sources": {
+    "move_names.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/move_names.csv",
+      "sha256": "99e23ee38ea53d1473474d463b87651deac3cd4928750f8186feae66da45c147"
+    },
+    "ability_names.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/ability_names.csv",
+      "sha256": "8acb80c42210f86ae747dc3347b060d69cd2574a9dbfaf74774ae632ca6348da"
+    },
+    "item_names.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/item_names.csv",
+      "sha256": "c4ad0b446e395c378d8ba75d6900f051cc9ebb99431d4000adeac35f492852f0"
+    }
+  },
+  "output": "colosseum_randomizer/locales/detail_names.py",
+  "output_sha256": "49f9bfad27c5db55efe91525f0dfdd7d4a3716fea4cdc598ca121f3ac3ad35aa",
+  "selection": "Moves 1..354; abilities 1..77; twelve native Gen III evolution item names, six languages.",
+  "policy": "Fallback presentation names only; actual move and evolution properties come from final ROM bytes. Native names take precedence when the ROM has that language.",
+  "native_evolution_item_to_pokeapi": {
+    "93": 80,
+    "94": 81,
+    "95": 82,
+    "96": 83,
+    "97": 84,
+    "98": 85,
+    "187": 198,
+    "192": 203,
+    "193": 204,
+    "199": 210,
+    "201": 212,
+    "218": 229
+  }
+}

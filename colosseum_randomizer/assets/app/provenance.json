@@ -1,0 +1,30 @@
+{
+  "name": "Éclipse",
+  "selection": "B",
+  "date": "2026-11-01",
+  "origin": "Original abstract icon generated with built-in image_gen; not extracted from a ROM.",
+  "license": "MIT",
+  "sizes": [
+    16,
+    20,
+    24,
+    32,
+    40,
+    48,
+    64,
+    128,
+    256
+  ],
+  "encoding": "RGBA PNG frames in an ICO container, transparent padding of 1/16 per side",
+  "generator": "scripts/build_app_icon.py",
+  "files": {
+    "icon.png": {
+      "bytes": 1127033,
+      "sha256": "86add1b53ee5f0291fc12ce934df3ae60bb54c87ee861836ce793153fc966c2b"
+    },
+    "icon.ico": {
+      "bytes": 79943,
+      "sha256": "1bb5cc4f7ef60ecbf6efb0da64b77f3d827fb44a2a3e5ed5e80510dd5c080c92"
+    }
+  }
+}

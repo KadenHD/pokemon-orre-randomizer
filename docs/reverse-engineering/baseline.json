@@ -1,0 +1,117 @@
+{
+  "date": "2026-10-30",
+  "identity": {
+    "disc_id": "GC6P01",
+    "revision": 0,
+    "title": "Pokemon Colosseum",
+    "iso_sha256": "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9",
+    "dol_sha256": "a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5",
+    "common_rel_sha256": "ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b"
+  },
+  "evidence_ids": [
+    "ASSET-001",
+    "ASSET-002",
+    "LOCAL-STRUCTURE-001",
+    "LOCAL-TABLES-001",
+    "LOCAL-REA-001"
+  ],
+  "inventory": {
+    "file_count": 2011,
+    "total_bytes": 712453188,
+    "fsys_count": 1981,
+    "fsys_member_count": 6863,
+    "member_compression_counts": {
+      "LZSS": 6683,
+      "none": 180
+    },
+    "failures": []
+  },
+  "iso_comparison": {
+    "iso_name": "Pokemon Colosseum (Europe) (En,Fr,De,Es,It).iso",
+    "iso_bytes": 1459978240,
+    "iso_sha256": "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9",
+    "fst_files_compared": 2006,
+    "sys_files_compared": 5,
+    "sys_expected_sizes": {
+      "boot.bin": 1088,
+      "bi2.bin": 8192,
+      "apploader.img": 116484,
+      "main.dol": 4096576,
+      "fst.bin": 69251
+    },
+    "bytes_compared": 712453188,
+    "mismatches": [],
+    "all_ranges_byte_identical": true,
+    "scope": "Exact byte comparison of FST payloads and five sys ranges; unused disc bytes not compared"
+  },
+  "tables": {
+    "trainers": {
+      "offset": 1433324,
+      "count": 820,
+      "stride": 52,
+      "pointer_index": 44,
+      "count_index": 45,
+      "count_offset": 2200180
+    },
+    "trainer_pokemon": {
+      "offset": 1486404,
+      "count": 5510,
+      "stride": 80,
+      "pointer_index": 48,
+      "count_index": 49,
+      "count_offset": 2200188
+    },
+    "moves": {
+      "offset": 2012044,
+      "count": 358,
+      "stride": 56,
+      "pointer_index": 62,
+      "count_index": 63,
+      "count_offset": 2200220
+    },
+    "species": {
+      "offset": 2033100,
+      "count": 413,
+      "stride": 284,
+      "pointer_index": 68,
+      "count_index": 69,
+      "count_offset": 2200232
+    },
+    "shadow": {
+      "offset": 2172320,
+      "count": 97,
+      "stride": 56,
+      "pointer_index": 80,
+      "count_index": 81,
+      "count_offset": 2200256
+    }
+  },
+  "statistics": {
+    "species_slots": 413,
+    "unique_national_dex_1_to_386": 386,
+    "national_dex_duplicates": {},
+    "species_without_national_dex": 27,
+    "trainer_pokemon_nonzero_species": 3388,
+    "shadow_records_nonzero_species": 48,
+    "trainer_pokemon_with_shadow_id": 108,
+    "trainer_pokemon_with_ffff_move_marker": 30
+  },
+  "reference_checks": {
+    "issues": []
+  },
+  "dol_entry_ram_address": "0x80003154",
+  "common_rel": {
+    "size": 2210420,
+    "module_id": 125,
+    "version": 3
+  },
+  "schema_source": "https://github.com/PekanMmd/Pokemon-XD-Code/tree/f2d6c4af0b6bdd78717fb41f7be7cc14aa5476a0",
+  "validation": {
+    "parser_unit_tests": 12,
+    "status": "passed",
+    "runtime_game_execution": false,
+    "repacking_tested": false,
+    "deep_decompilation": "unavailable"
+  },
+  "scope": "Static analysis of this exact local dump; local IDs are not REA Evidence IDs."
+}
