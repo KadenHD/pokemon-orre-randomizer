@@ -392,3 +392,35 @@ cover the new hooks. An isolated Dolphin session with the debugger disabled
 displayed the European game's health and safety screen. A Windows firewall
 dialog prevented further input. The test monitor confirmed that the personal
 Dolphin profile was unchanged.
+
+## Release candidate validation
+
+The `0.21.0rc1` Windows ZIP and installer were downloaded from GitHub and
+matched their published SHA-256 digests. The executable from that ZIP passed
+diagnostics with fresh application data and no developer tools on PATH. The
+checks included the three XD screens at two window sizes in all six languages.
+
+A separate European ISO used the `xd-story-check` seed, a 100% shiny rate
+for the starter and eligible gifts, ×1.5 battle EXP, and ×3 purification.
+A fresh Dolphin playthrough reached the lab and wrote an in-game save.
+Reading the newest slot confirmed a level-10 Horsea with a shiny PID.
+Reloading the card in a separate session preserved that starter and its
+shiny appearance in the party summary.
+
+At the Relic Stone, the native ceremony purified Rhyhorn. This check started
+with a prepared card that unlocked access to the Relic and set Rhyhorn's
+Heart Gauge to zero.
+
+A prepared level-39 Kadabra gained one level from a Rare Candy. Dolphin
+played the evolution scene and reported that Kadabra evolved into Alakazam
+at level 40.
+
+A Cave play test placed Poké Snacks in the native menu, left the spot for
+the lab and let the game choose an encounter. The prepared card placed
+the step counter near the appearance threshold. The game produced a
+non-rare encounter. The earlier rare catches used cards with the encounter
+already pending.
+
+The numerical effects of the battle EXP and Heart Gauge multipliers are
+covered by instruction-level tests. A matched comparison of their awards
+and gauge changes in Dolphin is still pending.
