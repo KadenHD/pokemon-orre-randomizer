@@ -49,12 +49,13 @@ def _read_range(stream, offset: int, size: int, file_size: int) -> bytes:
     return data
 
 
-def _disc_files(iso: Path, names=None) -> dict[str, bytes]:
+def _disc_files(iso: Path, names=None, *, is_xd: bool = False) -> dict[str, bytes]:
     names = {"title.fsys", "poke_face.fsys", "opening.bnr"} if names is None else names
     with iso.open("rb") as stream:
         size = os.fstat(stream.fileno()).st_size
         boot = _read_range(stream, 0, 0x440, size)
-        if (boot[:6] not in (b"GC6P01", b"GC6E01", b"GC6J01") or boot[6:8] != b"\0\0"
+        game_ids = (b"GXXP01", b"GXXE01", b"GXXJ01") if is_xd else (b"GC6P01", b"GC6E01", b"GC6J01")
+        if (boot[:6] not in game_ids or boot[6:8] != b"\0\0"
                 or boot[0x1c:0x20] != bytes.fromhex("c2339f3d")):
             raise ArtworkError("Unsupported artwork source.")
         fst_offset, fst_size = struct.unpack_from(">II", boot, 0x424)
@@ -158,16 +159,36 @@ def _decode_pixels(width: int, height: int, fmt: int, data: bytes) -> bytes:
     return bytes(pixels)
 
 
+def _indexed_pixels(width: int, height: int, data: bytes) -> bytes:
+    """Decode XD's 8×4 indexed tiles followed by a 256-entry RGB5A3 palette."""
+    tiles_wide = (width + 7) // 8
+    size = tiles_wide * ((height + 3) // 4) * 32
+    if not 0 < width <= 2048 or not 0 < height <= 2048 or len(data) != size + 512 or size > _MAX_MEMBER:
+        raise ArtworkError("Invalid indexed artwork pixel range.")
+    palette = [bytes(_rgb5a3(value)) for value in struct.unpack_from(">256H", data, size)]
+    pixels = bytearray()
+    for y in range(height):
+        row = (y // 4) * tiles_wide * 32 + (y % 4) * 8
+        for x in range(width):
+            index = data[row + (x // 8) * 32 + (x % 8)]
+            pixels.extend(palette[index])
+    return bytes(pixels)
+
+
 def _texture(raw: bytes, dimensions: tuple[int, int]) -> bytes:
     if len(raw) < 128:
         raise ArtworkError("Truncated artwork texture.")
     width, height = struct.unpack_from(">HH", raw)
-    formats = {4: 0xb0, 16: 0x90, 32: 0x45}
+    formats = {4: 0xb0, 8: 1, 16: 0x90, 32: 0x45}
     fmt = raw[4]
     if ((width, height) != dimensions or fmt not in formats or raw[5] != 1 or
             struct.unpack_from(">I", raw, 8)[0] != formats[fmt] or
             struct.unpack_from(">I", raw, 0x28)[0] != 128):
         raise ArtworkError("Unsupported artwork texture.")
+    if fmt == 8:
+        if struct.unpack_from(">I", raw, 0xC)[0] != 3:
+            raise ArtworkError("Unsupported indexed artwork palette.")
+        return _indexed_pixels(width, height, raw[128:])
     return _decode_pixels(width, height, fmt, raw[128:])
 
 
@@ -283,7 +304,8 @@ def load_cached_artwork(cache_dir: Path) -> dict[str, Path]:
         raise ArtworkError("Artwork cache is unavailable.") from error
 
 
-def extract_portraits(iso: Path, species_ids: tuple[int, ...], *, shiny: bool = False) -> dict[int, bytes]:
+def extract_portraits(iso: Path, species_ids: tuple[int, ...], *, shiny: bool = False,
+                      is_xd: bool = False) -> dict[int, bytes]:
     """Read up to 64 42px faces in one archive pass, indexed by internal ID.
 
     Gen III internal IDs differ from national Pokédex numbers. The face archive
@@ -293,7 +315,7 @@ def extract_portraits(iso: Path, species_ids: tuple[int, ...], *, shiny: bool = 
     if type(shiny) is not bool or not 1 <= len(species_ids) <= 64 or any(type(i) is not int or not 1 <= i <= 412 for i in species_ids):
         raise ArtworkError("Invalid portrait species IDs.")
     try:
-        archive = _disc_files(Path(iso), {"poke_face.fsys"})["poke_face.fsys"]
+        archive = _disc_files(Path(iso), {"poke_face.fsys"}, is_xd=is_xd)["poke_face.fsys"]
         members = parse_fsys(archive)["members"]
         return {i: _portrait_png(archive, members, i, shiny=shiny) for i in set(species_ids)}
     except ArtworkError:

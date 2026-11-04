@@ -35,6 +35,175 @@ class GuiTests(unittest.TestCase):
         self.assertTrue(self.window.create_button.isEnabled())
         self.assertIn("Choisissez", self.window.status.text())
 
+    def test_xd_theme_and_rom_format_follow_game_selection(self):
+        from unittest.mock import patch
+
+        window = self.window
+        window.show_home()
+        window.open_xd.click()
+        xd = window.xd
+        self.assertIs(window.game_views.currentWidget(), xd)
+        self.assertTrue(window.surface.xd)
+        self.assertFalse(window.logo.isHidden())
+        self.assertFalse(window.profile_menu.isHidden())
+        self.assertEqual(xd.pages.currentIndex(), 0)
+        xd.create_button.click()
+        self.assertEqual(xd.pages.currentIndex(), 0)
+        xd.source.setText("C:/original.RVZ")
+        self.assertEqual(xd.format.currentText(), "RVZ")
+        self.assertEqual(Path(xd.destination.text()).name, "xd-randomized.rvz")
+        self.assertFalse(xd.source_conversion.isHidden())
+        self.assertTrue(xd.tool_block.isHidden())
+        xd.source_conversion.click()
+        self.assertFalse(xd.tool_block.isHidden())
+        self.assertFalse(xd.output_tool_block.isHidden())
+        xd.tool.setText("C:/DolphinTool.exe")
+        self.assertEqual(xd.output_tool.text(), xd.tool.text())
+        xd.format.setCurrentText("ISO")
+        self.assertFalse(xd.tool_block.isHidden())
+        self.assertTrue(xd.output_tool_block.isHidden())
+        xd.source.setText("C:/original.iso")
+        self.assertTrue(xd.tool_block.isHidden())
+        xd.rules["randomize_shadows"].setChecked(False)
+        self.assertFalse(xd.rules["unique_shadow_families"].isEnabled())
+
+        with patch.object(xd, "validate_source"):
+            xd.create_button.click()
+            self.assertEqual(xd.pages.currentIndex(), 1)
+            xd.create_button.click()
+            self.assertEqual(xd.pages.currentIndex(), 2)
+        window.language_combo.setCurrentIndex(window.language_combo.findData("ja"))
+        self.assertEqual(xd.create_button.text(), "ROMを作成")
+        self.assertFalse(xd.rules["randomize_shadows"].isChecked())
+        window.show_home()
+        window.open_colosseum.click()
+        self.assertIs(window.game_views.currentWidget(), window.colosseum)
+        self.assertFalse(window.surface.xd)
+        self.assertEqual(window.source.text(), "")
+        self.assertFalse(window.profile_menu.isHidden())
+
+    def test_xd_creation_uses_its_options_in_the_shared_worker(self):
+        from unittest.mock import patch
+        from PySide6.QtCore import QThread
+        from PySide6.QtTest import QTest
+
+        window = self.window
+        window.show_xd()
+        xd = window.xd
+        source = Path(self.preferences_dir.name) / "original.iso"
+        source.write_bytes(b"path validation fixture")
+        xd.source.setText(str(source))
+        xd.rules["randomize_shadows"].setChecked(False)
+        captured = {}
+
+        def fake_randomize(**arguments):
+            captured.update(arguments, thread=QThread.currentThread())
+            arguments["progress"](50, "Création de la nouvelle ISO…")
+            return {"output": str(arguments["destination"])}
+
+        with patch("colosseum_randomizer.gui.randomize", side_effect=fake_randomize):
+            xd.start()
+            for _ in range(100):
+                if not window.busy:
+                    break
+                QTest.qWait(10)
+
+        self.assertFalse(window.busy)
+        self.assertIsNot(captured["thread"], self.app.thread())
+        self.assertFalse(captured["xd_options"].randomize_shadows)
+        self.assertFalse(captured["xd_options"].unique_shadow_families)
+        self.assertEqual(xd.progress.value(), 100)
+        self.assertTrue(xd.create_button.isEnabled())
+        self.assertIsNone(window.result)
+
+    def test_xd_preview_keeps_the_same_result_across_language_changes(self):
+        from unittest.mock import patch
+        from PySide6.QtCore import QThread
+        from PySide6.QtTest import QTest
+
+        window = self.window
+        window.show_xd()
+        xd = window.xd
+        source = Path(self.preferences_dir.name) / "original.iso"
+        source.write_bytes(b"preview fixture")
+        xd.source.setText(str(source))
+        started_on = []
+        summary = {
+            "starter": {"original": 133, "species": 283, "level": 10},
+            "national_ids": {"283": 258},
+            "decks": {"Story": {"shadows": [{"shadow_id": 2, "original": 37, "species": 25, "level": 21}]}},
+            "poke_spots": [{"spot": "rock", "original": 27, "species": 25, "levels": [10, 20], "chance": 50}],
+            "gifts": [{"key": "duking-trapinch", "required_species": 25, "original": 25, "species": 283, "level": 20},
+                      {"key": "hordel-trade", "required_species": 25, "required_evolution": 26,
+                       "original": 239, "species": 283, "level": 20}],
+        }
+
+        def fake_preview(**arguments):
+            started_on.append(QThread.currentThread())
+            arguments["progress"](20, "Application des réglages…")
+            return summary
+
+        with patch("colosseum_randomizer.preview.preview_xd", side_effect=fake_preview) as calculate:
+            xd.start_preview()
+            for _ in range(100):
+                if not window.busy:
+                    break
+                QTest.qWait(10)
+            self.assertFalse(window.busy)
+            self.assertIsNot(started_on[0], self.app.thread())
+            self.assertTrue(xd.preview_button.isHidden())
+            self.assertIn("Évoli → Gobou", xd.preview_starter.text())
+            xd.encounter_tabs.setCurrentIndex(2)
+            self.assertEqual(xd.preview_details.topLevelItemCount(), 2)
+            self.assertIn("Échange contre Togepi ou Togetic", xd.preview_details.topLevelItem(1).text(0))
+            window.language_combo.setCurrentIndex(window.language_combo.findData("en"))
+            self.assertEqual(xd.encounter_tabs.currentIndex(), 2)
+            self.assertIn("Trade for Pikachu", xd.preview_details.topLevelItem(0).text(1))
+            self.assertIn("Trade for Pikachu or Raichu", xd.preview_details.topLevelItem(1).text(1))
+            self.assertIn("Eevee → Mudkip", xd.preview_starter.text())
+            xd.start_preview()
+            calculate.assert_called_once()
+
+        xd.seed.setText("changed")
+        self.assertIsNone(xd.preview_result)
+        self.assertTrue(xd.preview_starter.isHidden())
+        self.assertFalse(xd.preview_button.isHidden())
+        self.assertIsNone(window.result)
+        self.assertEqual(list(source.parent.glob("*.iso")), [source])
+
+    def test_xd_preview_ignores_a_late_result_after_editing_the_seed(self):
+        from unittest.mock import patch
+        from PySide6.QtTest import QTest
+
+        window = self.window
+        window.show_xd()
+        xd = window.xd
+        source = Path(self.preferences_dir.name) / "original.iso"
+        source.write_bytes(b"preview fixture")
+        xd.source.setText(str(source))
+        observed_cancellation = []
+
+        def fake_preview(**arguments):
+            observed_cancellation.append(arguments["cancel"].wait(2))
+            return {"starter": {"original": 133, "species": 25, "level": 10}}
+
+        with patch("colosseum_randomizer.preview.preview_xd", side_effect=fake_preview):
+            xd.start_preview()
+            self.assertTrue(window.busy)
+            self.assertFalse(xd.create_button.isEnabled())
+            xd.seed.setText("changed while loading")
+            for _ in range(100):
+                if not window.busy:
+                    break
+                QTest.qWait(10)
+
+        self.assertEqual(observed_cancellation, [True])
+        self.assertFalse(window.busy)
+        self.assertIsNone(xd.preview_result)
+        self.assertTrue(xd.preview_starter.isHidden())
+        self.assertFalse(xd.preview_button.isHidden())
+        self.assertTrue(xd.create_button.isEnabled())
+
     def test_shiny_switch_gates_rate_and_preserves_values_across_languages(self):
         rate = self.window.rule_fields["shiny_chance_percent"]
         toggle = self.window.rule_checks["custom_shinies"]

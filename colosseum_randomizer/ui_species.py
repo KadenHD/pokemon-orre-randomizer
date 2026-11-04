@@ -6,7 +6,7 @@ from .locales.selection_names import SPECIES_NAMES
 
 
 class SpeciesChoice(QComboBox):
-    def __init__(self, window):
+    def __init__(self, window, on_edit=None):
         super().__init__()
         self.window = window
         self.setEditable(True)
@@ -17,7 +17,8 @@ class SpeciesChoice(QComboBox):
         self.completer().setFilterMode(Qt.MatchFlag.MatchContains)
         self.completer().setCaseSensitivity(Qt.CaseSensitivity.CaseInsensitive)
         self.retranslate()
-        self.lineEdit().textEdited.connect(lambda _text: window.rules_changed())
+        on_edit = on_edit or window.rules_changed
+        self.lineEdit().textEdited.connect(lambda _text: on_edit())
         self.lineEdit().editingFinished.connect(self.commit_text)
 
     def value(self):

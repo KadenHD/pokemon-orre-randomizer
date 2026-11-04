@@ -27,7 +27,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag }}
         run: |
-          if ($env:RELEASE_TAG -cnotmatch '^v\d+\.\d+\.\d+$') { throw 'Expected a version tag such as v0.20.0.' }
+          if ($env:RELEASE_TAG -cnotmatch '^v\d+\.\d+\.\d+(?:rc\d+)?$') { throw 'Expected a version tag such as v0.20.0 or v0.21.0rc1.' }
           gh release download $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --dir dist/public --pattern '*-windows-x64.zip' --pattern 'SHA256SUMS.json'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           $archive = 'pokemon-orre-randomizer-' + $env:RELEASE_TAG.Substring(1) + '-windows-x64.zip'

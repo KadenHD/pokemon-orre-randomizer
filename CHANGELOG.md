@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.21.0rc1
+
+- Added a dedicated Pokémon XD wizard for European, North American, and Japanese revision-0 discs.
+- Added seeded XD options for the starter, trainers, Shadow Pokémon, gifts, Poké Spots, trades,
+  moves, items, and progression. XD keeps its own story requirements and Shadow shiny rules.
+- Added XD encounter previews, profiles, creation reports, and ISO or RVZ output.
+
 ## 0.20.0
 
 - Pokémon Orre Randomizer opens on the choice of the game. Choose Colosseum to open the wizard. XD is marked as planned.

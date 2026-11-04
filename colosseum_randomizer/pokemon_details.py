@@ -46,7 +46,8 @@ def evolution_text(method: int, condition: int, *, language: str = "fr",
     key = {1: "evo_friend", 2: "evo_day", 3: "evo_night", 4: "evo_level",
            5: "evo_trade", 6: "evo_trade_item", 7: "evo_item", 8: "evo_attack",
            9: "evo_equal", 10: "evo_defense", 11: "evo_personality",
-           12: "evo_personality", 13: "evo_level", 14: "evo_shedinja", 15: "evo_beauty"}.get(method)
+           12: "evo_personality", 13: "evo_level", 14: "evo_shedinja", 15: "evo_beauty",
+           16: "evo_key_item"}.get(method)
     if key is None:
         raise FormatError(f"unsupported final evolution method {method}")
     item = (item_names or {}).get(language) or EVOLUTION_ITEM_NAMES.get(language, {}).get(condition)

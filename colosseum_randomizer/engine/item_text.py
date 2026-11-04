@@ -94,7 +94,7 @@ def _merged(ranges: list[tuple[int, int]]) -> list[tuple[int, int]]:
 
 
 def _patch_bank(original: bytes, current: bytes, base: int, end: int, language: str,
-                replacements: dict, donors: tuple) -> tuple[bytes, dict]:
+                replacements: dict, donors: tuple, *, reclaim_replaced: bool = False) -> tuple[bytes, dict]:
     """Bounded table core; production callers must fingerprint the original REL."""
     if len(current) != len(original) or current[base:end] != original[base:end]:
         raise FormatError("localized name bank differs from the original")
@@ -121,6 +121,14 @@ def _patch_bank(original: bytes, current: bytes, base: int, end: int, language: 
                               "before_offset": row["start"], "after_offset": target["start"],
                               "pointer_offset": row["pointer_offset"],
                               "released_range": [row["start"], row["end"]]})
+    if reclaim_replaced:
+        if replacements.keys() & {target for _, target in donors}:
+            raise FormatError("a canonical name cannot also be replaced")
+        for identifier in replacements:
+            row = entries[identifier]
+            if any(other["id"] != identifier and other["start"] == row["start"] for other in entries.values()):
+                raise FormatError("another ID aliases replaced name storage")
+            regions.append((row["start"], row["end"]))
     regions = _merged(regions)
     free = [list(region) for region in regions]
     output, changes = bytearray(current), []
@@ -211,22 +219,29 @@ def _relocation_ranges(data: bytes, parsed: dict) -> tuple[list, list]:
 
 def apply_item_name_spacing(original_rel: bytes, current_rel: bytes) -> tuple[bytes, dict]:
     region = region_for_rel(original_rel)
+    return patch_item_name_banks(original_rel, current_rel, region.name_bank_indices, region.native_languages,
+                                 REPLACEMENTS, DONORS)
+
+
+def patch_item_name_banks(original_rel: bytes, current_rel: bytes, bank_indices: tuple[int, ...],
+                          native_languages: tuple[str, ...], replacements: dict, donors: dict,
+                          *, reclaim_replaced: bool = False) -> tuple[bytes, dict]:
     if len(original_rel) != len(current_rel):
         raise FormatError("item name spacing requires the fingerprinted original regional REL")
     parsed = parse_rel(original_rel)
     symbols = rel_symbols(original_rel, parsed)
     original_names, tables = localized_names(original_rel, symbols)
-    banks = [table for table in tables if table["symbol_index"] in region.name_bank_indices]
-    if tuple(table["language_tag"] for table in banks) != region.native_languages:
+    banks = [table for table in tables if table["symbol_index"] in bank_indices]
+    if tuple(table["language_tag"] for table in banks) != native_languages:
         raise FormatError("unverified original native name bank layout")
     output, reports = current_rel, []
     for bank in banks:
         language, base, end = bank["language_tag"], bank["offset"], bank["end"]
         if current_rel[base:end] != original_rel[base:end]:
             raise FormatError("native name bank has already been changed")
-        if language in REPLACEMENTS:
+        if language in replacements:
             output, report = _patch_bank(original_rel, output, base, end, language,
-                                          REPLACEMENTS[language], DONORS[language])
+                                          replacements[language], donors[language], reclaim_replaced=reclaim_replaced)
             reports.append(report)
     allowed = [tuple(region) for report in reports for region in report["allowed_ranges"]]
     writes, targets = _relocation_ranges(original_rel, parsed)
@@ -239,7 +254,8 @@ def apply_item_name_spacing(original_rel: bytes, current_rel: bytes) -> tuple[by
     names, output_tables = localized_names(output, symbols)
     for language, entries in original_names.items():
         for identifier, text in entries.items():
-            expected = REPLACEMENTS.get(language, {}).get(identifier, (text, text))[1]
+            expected = (replacements.get(language, {}).get(identifier, (text, text))[1]
+                        if language in native_languages else text)
             if names[language].get(identifier) != expected:
                 raise FormatError("localized native name validation failed")
     if [{k: v for k, v in bank.items() if k != "plain_short_strings_decoded"} for bank in output_tables] != [
@@ -247,8 +263,8 @@ def apply_item_name_spacing(original_rel: bytes, current_rel: bytes) -> tuple[by
         raise FormatError("localized name bank positions changed")
     return output, {"version": VERSION, "enabled": True,
                     "changed_names": sum(len(report["edits"]) for report in reports),
-                    "native_languages": list(region.native_languages),
-                    "unchanged_compound_language": "GE" if region.game_id == "GC6P01" else None, "banks": reports,
+                    "native_languages": list(native_languages),
+                    "unchanged_compound_language": "GE" if "GE" in native_languages else None, "banks": reports,
                     "allowed_ranges": [list(region) for region in sorted(allowed)],
                     "all_other_ids_resolve_to_identical_bytes": True,
                     "relocation_sources_and_targets_untouched": True,

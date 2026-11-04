@@ -62,6 +62,9 @@ git tag -a v0.20.0 -m "Pokémon Orre Randomizer 0.20.0"
 git push origin v0.20.0
 ```
 
+For a release candidate, use a matching version and tag such as `0.21.0rc1`
+and `v0.21.0rc1`. The workflow publishes it as a prerelease.
+
 The Windows installer uses the verified public ZIP as its payload. It installs
 for the current user, including the application, replaceable Qt DLLs, and notices.
 The build script downloads a hash-pinned portable Inno Setup compiler into

@@ -7,7 +7,8 @@ import sys
 
 from .engine.analyze_game import FormatError
 from .service import Options, UserError, find_dolphin_tool, randomize
-from .profiles import load_profile
+from .profiles import XD_SPOT_MIGRATION, load_profile
+from .xd import XDOptions
 
 
 def comma_ids(value):
@@ -17,13 +18,31 @@ def comma_ids(value):
         raise argparse.ArgumentTypeError("Utilisez des numéros séparés par des virgules.") from error
 
 
+def add_options(parser, option_type, prefix=""):
+    for item in fields(option_type):
+        argument = "--" + prefix + item.name.replace("_", "-")
+        kind = item.metadata["kind"]
+        kwargs = {"default": argparse.SUPPRESS, "help": item.metadata["description"].replace("%", "%%")}
+        if kind == "bool":
+            kwargs["action"] = argparse.BooleanOptionalAction
+        elif kind == "choice":
+            kwargs["choices"] = [value for value, _ in item.metadata["choices"]]
+        else:
+            kwargs["type"] = {"float": float, "int": int, "species_set": comma_ids, "type_set": comma_ids}[kind]
+        parser.add_argument(argument, **kwargs)
+
+
 def main() -> int:
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
-    parser = argparse.ArgumentParser(description="Create a separate, seeded Colosseum Europe/USA/Japan ISO/RVZ.")
+    parser = argparse.ArgumentParser(description="Create a separate, seeded Pokémon Colosseum or XD ISO/RVZ.")
     parser.add_argument("source", type=Path)
     parser.add_argument("destination", type=Path)
+    parser.add_argument("--game", choices=("colosseum", "xd"), default="colosseum")
+    xd_group = parser.add_argument_group("Pokémon XD")
+    xd_group.add_argument("--xd-copy", action="store_true", help="Create a byte-identical XD copy")
+    add_options(xd_group, XDOptions, "xd-")
     parser.add_argument("--seed", help="Seed ; sinon utiliser celle du profil importé")
     parser.add_argument("--profile", type=Path, help="Profil JSON exporté par l’application")
     parser.add_argument("--journal-language", choices=("fr", "en", "de", "es", "it", "ja"), default="fr",
@@ -35,20 +54,7 @@ def main() -> int:
     parser.add_argument("--starter-base-forms", action=argparse.BooleanOptionalAction,
                         default=argparse.SUPPRESS,
                         help="Ancien nom : utilisez --starter-stage base ou --starter-stage any")
-    for item in fields(Options):
-        argument = "--" + item.name.replace("_", "-")
-        if item.metadata["kind"] == "bool":
-            parser.add_argument(argument, action=argparse.BooleanOptionalAction,
-                                default=argparse.SUPPRESS, help=item.metadata["description"])
-        elif item.metadata["kind"] == "choice":
-            parser.add_argument(argument, choices=[choice[0] for choice in item.metadata["choices"]],
-                                default=argparse.SUPPRESS, help=item.metadata["description"])
-        elif item.metadata["kind"] in ("species_set", "type_set"):
-            parser.add_argument(argument, type=comma_ids, default=argparse.SUPPRESS,
-                                help=item.metadata["description"] + " IDs séparés par des virgules.")
-        else:
-            parser.add_argument(argument, type=float if item.metadata["kind"] == "float" else int,
-                                default=argparse.SUPPRESS, help=item.metadata["description"])
+    add_options(parser, Options)
     args = parser.parse_args()
     last = [-1, ""]
     def progress(percent, message):
@@ -56,6 +62,29 @@ def main() -> int:
             print(f"{percent:3d}% {message}", file=sys.stderr, flush=True)
             last[:] = percent, message
     try:
+        xd_overrides = {item.name: getattr(args, f"xd_{item.name}") for item in fields(XDOptions)
+                        if hasattr(args, f"xd_{item.name}")}
+        if args.game == "xd":
+            if (args.keep_specials or args.keep_evolutions or args.allow_shadow_family_duplicates
+                    or hasattr(args, "starter_base_forms") or any(hasattr(args, item.name) for item in fields(Options))):
+                parser.error("Colosseum options cannot be used with --game xd")
+            if args.xd_copy and (xd_overrides or args.profile):
+                parser.error("--xd-copy cannot be combined with XD randomizer options or a profile")
+            profile = load_profile(args.profile, is_xd=True) if args.profile else None
+            seed = args.seed if args.seed is not None else profile.seed if profile else "copy" if args.xd_copy else None
+            if seed is None:
+                parser.error("--game xd requires --seed, --profile or --xd-copy")
+            xd_options = (XDOptions.unchanged() if args.xd_copy else
+                          replace(profile.options if profile else XDOptions(), **xd_overrides))
+            if profile and profile.xd_spot_migration and xd_options.randomize_poke_spots:
+                print(XD_SPOT_MIGRATION, file=sys.stderr)
+            report = randomize(args.source, args.destination, seed,
+                               dolphin_tool=args.dolphin_tool, progress=progress,
+                               journal_language=args.journal_language, xd_options=xd_options)
+            print(json.dumps(report, ensure_ascii=False, indent=2))
+            return 0
+        if args.xd_copy or xd_overrides:
+            parser.error("XD options require --game xd")
         profile = load_profile(args.profile) if args.profile else None
         seed = args.seed if args.seed is not None else profile.seed if profile else None
         if seed is None:

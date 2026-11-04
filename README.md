@@ -1,9 +1,9 @@
 # Pokémon Orre Randomizer
 
 A free, open-source desktop randomizer for the Pokémon games set in Orre.
-**Pokémon Colosseum** is supported today. **Pokémon XD** is planned.
+The source tree supports **Pokémon Colosseum** and **Pokémon XD: Gale of Darkness**.
 
-Choose a clean Colosseum ISO or RVZ, a seed, and the rules you want to change.
+Choose a clean ISO or RVZ, a seed, and the rules you want to change.
 The app processes the image locally and writes a separate output file.
 
 ## Download and run
@@ -13,8 +13,42 @@ On Windows 10 or 11 (64-bit), download the **Windows setup EXE** from
 and run it. For portable use, download the Windows ZIP, extract the entire
 archive, and open `OrreRandomizer.exe` beside its `_internal` folder.
 
-Choose **Pokémon Colosseum** on the home screen. The Windows builds include
-Python and the Rust codec.
+Choose your game on the home screen. The Windows builds include Python and
+the Rust codec. Pokémon XD requires a build with XD support.
+
+## Pokémon XD
+
+The XD screen accepts the European, US, and Japanese revision-0 discs in
+ISO or RVZ format. **ROM**, **Settings**, and **Create** follow the same
+workflow as Colosseum. Preview the starter, Shadow Pokémon, gifts, and Poké
+Spots before creating the ROM. Select a Pokémon to see its final stats,
+moves, compatible TMs, and evolution routes.
+
+- Replace Eevee at level 10. Choose a species or filter the random draw by
+  evolution stage and family length.
+- Randomize opponents in the story, Colosseum, and Mt. Battle decks.
+- Randomize Shadow Pokémon while preserving Shadow Lugia. Separate advanced
+  options replace the tutorial Teddiursa and Hordel's Shadow Togepi.
+  Hordel accepts either form of the replacement family after purification.
+  The family rule avoids repeats across the starter, rewards, and Shadow Pokémon.
+- Randomize the rewards from Duking's three trades, Hordel's trade, and the
+  three Mt. Battle prizes. The game uses its own language for the new species
+  names. The preview lists the species each trader requests.
+- Shuffle the three native species within each Poké Spot. Duking requests
+  the Pokémon in each new rare slot. The two special encounters keep their
+  original rules.
+- Convert trade and Beauty evolutions into level or stone evolutions. The
+  optional Gateon Port shop stock makes all six stones available for 2,100
+  Poké Dollars each. The Eevee shard routes use their native rules.
+- Randomize moves, learnsets, TMs, held items, treasures, shop stock, types,
+  abilities, and base stats. Adjust opponent levels, battle EXP, catch rates,
+  purification speed, and story boss teams in Advanced settings.
+- Both randomizing presets give the starter and ordinary gifts a seeded 5%
+  shiny chance. Shadow encounters use XD's native shiny policy.
+
+Use **Unchanged copy** to preserve the game data. Save settings in an XD
+profile or recover them from the verification report. Creation also writes
+an HTML journal. [XD disc research](docs/reverse-engineering/XD.md)
 
 ## Using the app
 
@@ -196,6 +230,7 @@ python -m colosseum_randomizer.cli original.iso new-game.iso --seed my-seed
 python -m colosseum_randomizer.cli original.rvz new-game.rvz --seed my-seed --dolphin-tool C:\Dolphin\DolphinTool.exe
 python -m colosseum_randomizer.cli original.iso shared-game.iso --profile my-game.json
 python -m colosseum_randomizer.cli original.iso duo.iso --seed my-seed --starter-umbreon-species 94 --starter-espeon-species 208 --journal-language en
+python -m colosseum_randomizer.cli xd-original.iso xd-new.iso --game xd --seed my-seed
 ```
 
 Run `python -m colosseum_randomizer.cli --help` for all CLI flags. Rules can be

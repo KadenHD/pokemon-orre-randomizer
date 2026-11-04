@@ -45,7 +45,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
             "application_icon_available": application_icon() is not None,
             "rom_opened": False, "personal_preferences_opened": False,
             "home_states": [], "states": [], "exclusion_states": [], "shiny_states": [], "preview_states": [],
-            "consolidation_states": []}
+            "consolidation_states": [], "xd_states": []}
     with tempfile.TemporaryDirectory(prefix="diagnostic-prefs-", dir=report.parent) as folder:
         window = MainWindow(settings=QSettings(str(Path(folder)/"preferences.ini"), QSettings.Format.IniFormat),
                             system_languages=["fr-FR"])
@@ -78,6 +78,24 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                     if screenshots:
                         home["screenshot"] = f"home-{language}-{width}.png"
                         assert window.grab().save(str(report.parent / home["screenshot"]))
+                    window.open_xd.click()
+                    xd = window.xd
+                    assert window.game_views.currentWidget() is xd and window.surface.xd
+                    assert xd.source.text() == ""
+                    for step in range(3):
+                        xd.step = step
+                        xd.pages.setCurrentIndex(step)
+                        xd.refresh_navigation()
+                        app.processEvents()
+                        action = xd.create_button
+                        assert xd.pages.currentIndex() == step and action.isVisible() and action.isEnabled()
+                        assert window.rect().contains(action.mapTo(window, action.rect().center()))
+                        state = {"language": language, "width": width, "height": height, "step": step + 1}
+                        if screenshots:
+                            state["screenshot"] = f"xd-{language}-{width}-step{step + 1}.png"
+                            assert window.grab().save(str(report.parent / state["screenshot"]))
+                        data["xd_states"].append(state)
+                    window.show_home()
                     window.open_colosseum.click()
                     assert window.game_views.currentWidget() is window.colosseum
                     window.back_button.click()

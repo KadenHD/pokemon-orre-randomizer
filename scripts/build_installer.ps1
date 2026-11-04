@@ -7,10 +7,11 @@ $ErrorActionPreference = 'Stop'
 $root = (Resolve-Path -LiteralPath (Join-Path $PSScriptRoot '..')).Path
 $public = (Resolve-Path -LiteralPath $PublicDirectory).Path
 $manifest = Get-Content -LiteralPath (Join-Path $public 'SHA256SUMS.json') -Raw | ConvertFrom-Json -AsHashtable
-$archives = @($manifest.Keys | Where-Object { $_ -match '^pokemon-orre-randomizer-\d+\.\d+\.\d+-windows-x64\.zip$' })
+$archivePattern = '^pokemon-orre-randomizer-(?<version>\d+\.\d+\.\d+(?:rc\d+)?)-windows-x64\.zip$'
+$archives = @($manifest.Keys | Where-Object { $_ -cmatch $archivePattern })
 if ($archives.Count -ne 1) { throw 'Expected one public Windows archive in SHA256SUMS.json.' }
 $archiveName = $archives[0]
-$version = [regex]::Match($archiveName, '\d+\.\d+\.\d+').Value
+$version = [regex]::Match($archiveName, $archivePattern).Groups['version'].Value
 $archive = Join-Path $public $archiveName
 $installerName = $archiveName.Replace('.zip', '-setup.exe')
 $destination = Join-Path $public $installerName

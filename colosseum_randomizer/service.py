@@ -47,6 +47,7 @@ from .locales.selection_names import SPECIES_NAMES
 from .native_codec import backend, cancellation_scope, CodecCancelled
 from .options import Options, SPECIAL_OPTIONS
 from .i18n import Message, LANGUAGES
+from . import xd
 
 ISO_SIZE = 1_459_978_240
 ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
@@ -87,9 +88,9 @@ class RVZToolRequired(UserError):
     """The paths are valid, but RVZ conversion still needs DolphinTool."""
 
 
-def validate_options(options: Options) -> Options:
+def validate_setting_values(options):
     normalized = {}
-    for item in fields(Options):
+    for item in fields(options):
         value = getattr(options, item.name)
         kind = item.metadata["kind"]
         if item.metadata.get("selector") == "species" and value == -1:
@@ -106,7 +107,11 @@ def validate_options(options: Options) -> Options:
             if not isinstance(value, (list, tuple)) or any(type(i) is not int or i not in allowed for i in value):
                 raise UserError("Liste d’exclusions invalide : {label}.", label=Message(item.metadata["label"]))
             normalized[item.name] = tuple(sorted(set(value)))
-    options = replace(options, **normalized)
+    return replace(options, **normalized)
+
+
+def validate_options(options: Options) -> Options:
+    options = validate_setting_values(options)
     if (options.randomize_trainers or options.randomize_shadows or options.boss_team_variety or options.trainer_force_evolved or any(getattr(options, name) for name in SPECIAL_OPTIONS.values())) and not any((options.allow_gen1, options.allow_gen2, options.allow_gen3)):
         raise UserError("Activez au moins une génération dans « Pokémon autorisés ».")
     if options.evolution_groups & {"trade_items", "coquiperl", "day_night"} and not options.stone_shops:
@@ -221,22 +226,31 @@ def read_exact(stream, offset: int, size: int) -> bytes:
     return data
 
 
-def check_header(path: Path) -> bytes:
+def check_header(path: Path, *, is_xd: bool = False) -> bytes:
     with path.open("rb") as stream:
         boot = stream.read(0x440)
     try:
         if path.stat().st_size != ISO_SIZE:
             raise FormatError("invalid disc size")
-        region_for_boot(boot)
+        (xd.region_for_boot if is_xd else region_for_boot)(boot)
     except FormatError:
+        if is_xd:
+            raise UserError("ROM non prise en charge. Utilisez Pokémon XD Europe, USA ou Japon (révision 0), complet et sans modification.") from None
         raise UserError("ROM non prise en charge. Utilisez Colosseum Europe, USA ou Japon (révision 0), complet et sans modification.") from None
     return boot
 
 
-def check_disc_identity(boot: bytes, digest: str):
+def check_disc_identity(boot: bytes, digest: str, *, is_xd: bool = False):
     try:
+        if is_xd:
+            region = xd.region_for_boot(boot)
+            if digest != region.iso_sha256:
+                raise FormatError("disc differs from the exact validated XD revision")
+            return region
         return validate_disc_hash(boot, digest)
     except FormatError:
+        if is_xd:
+            raise UserError("Cette ROM ne correspond pas à une version prise en charge de Pokémon XD. Utilisez une copie complète et non modifiée.") from None
         raise UserError("Cette ROM ne correspond pas à une version prise en charge. Utilisez une copie complète et non modifiée de Colosseum Europe, USA ou Japon.") from None
 
 
@@ -438,13 +452,16 @@ def final_report_summary(original_rel: bytes, base_rel: bytes, rel: bytes,
 
 def _cancellable_compression(function):
     @wraps(function)
-    def run(iso, boot, seed, options, progress, cancel):
+    def run(iso, boot, seed, options, progress, cancel, **kwargs):
         try:
             with cancellation_scope(cancel):
-                return function(iso, boot, seed, options, progress, cancel)
+                return function(iso, boot, seed, options, progress, cancel, **kwargs)
         except CodecCancelled as error:
             raise Cancelled("Création annulée. Aucun fichier de sortie n'a été conservé.") from error
     return run
+
+
+build_xd_patches = _cancellable_compression(xd.build_patches)
 
 
 @_cancellable_compression
@@ -628,10 +645,15 @@ def publish_new(source: Path, destination: Path) -> None:
 def randomize(source: Path, destination: Path, seed: str, options: Options = Options(),
               dolphin_tool: Path | None = None, progress: Progress | None = None,
               cancel: threading.Event | None = None, *, journal_language: str = "fr",
-              prepared_patches: PreparedPatches | None = None) -> dict:
+              prepared_patches: PreparedPatches | None = None,
+              xd_options: xd.XDOptions | None = None) -> dict:
     progress = progress or (lambda percent, message: None)
     cancel = cancel or threading.Event()
-    options = validate_options(options)
+    is_xd = xd_options is not None
+    if is_xd:
+        xd_options = xd.validate_options(xd_options)
+    else:
+        options = validate_options(options)
     if journal_language not in LANGUAGES:
         raise ValueError("unsupported journal language")
     started = time.monotonic()
@@ -644,7 +666,7 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
     checkpoint(cancel)
     progress(0, "Lecture de la ROM d’origine…")
     if source.suffix.lower() == ".iso":
-        check_header(source)
+        check_header(source, is_xd=is_xd)
     source_hash = file_hash(source, cancel, progress, 0, 8, "Vérification de la ROM d’origine…")
     # TemporaryDirectory owns only a fresh random directory, under the selected parent.
     with tempfile.TemporaryDirectory(prefix=".colosseum-", dir=destination.parent) as temp:
@@ -654,16 +676,19 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
             progress(8, "Conversion RVZ → ISO avec DolphinTool…")
             iso = work / "source.iso"
             convert(dolphin_tool, source, iso, work, cancel)
-        boot = check_header(iso)
+        boot = check_header(iso, is_xd=is_xd)
         iso_hash = source_hash if iso == source else file_hash(iso, cancel, progress, 9, 18, "Vérification de l’ISO décompressée…")
-        region = check_disc_identity(boot, iso_hash)
+        region = check_disc_identity(boot, iso_hash, is_xd=is_xd)
         timings["input_validation"] = round(time.monotonic() - started, 4)
         phase = time.monotonic()
-        reused = prepared_patches is not None and prepared_patches.matches(source, source_hash, iso_hash, seed, options)
+        reused = not is_xd and prepared_patches is not None and prepared_patches.matches(source, source_hash, iso_hash, seed, options)
         if reused:
             checkpoint(cancel)
             progress(20, "Réutilisation du calcul de l’aperçu…")
             patches, summary = prepared_patches.patches, copy.deepcopy(prepared_patches.summary)
+        elif is_xd:
+            progress(20, "Application des réglages…")
+            patches, summary = build_xd_patches(iso, boot, seed, xd_options, progress, cancel)
         else:
             patches, summary = build_patches(iso, boot, seed, options, progress, cancel)
         timings["transform_and_archives"] = round(time.monotonic() - phase, 4)
@@ -702,8 +727,8 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
         if file_hash(source, cancel, progress, 90, 98, "Dernière vérification de la ROM d’origine…") != source_hash:
             raise UserError("La ROM d’origine a changé pendant la création. Aucune ROM n’a été enregistrée. Réessayez avec une copie intacte.")
         timings["rvz_and_source_verification"] = round(time.monotonic() - phase, 4)
-        report = {"application_version": __version__, "engine_version": ENGINE_VERSION,
-                  "seed": seed, "options": asdict(options), "game_id": region.game_id, "revision": region.revision,
+        report = {"application_version": __version__, "engine_version": xd.VERSION if is_xd else ENGINE_VERSION,
+                  "seed": seed, "options": asdict(xd_options if is_xd else options), "game_id": region.game_id, "revision": region.revision,
                   "source": str(source), "source_sha256": source_hash,
                   "source_iso_sha256": iso_hash, "output": str(destination),
                   "output_sha256": output_hash, "output_iso_sha256": output_iso_hash,
@@ -714,6 +739,8 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
                   "elapsed_seconds": round(time.monotonic() - started, 2),
                   "codec": backend(), "stage_seconds": timings,
                   "runtime_validation": "Technical verification only; full playthrough and balance are not certified."}
+        if is_xd:
+            report["game"] = "xd"
         pending_report = work / "report.json"
         pending_journal = work / "journal.html"
         pending_journal.write_text(render_journal(report, journal_language), encoding="utf-8")

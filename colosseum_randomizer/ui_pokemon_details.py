@@ -36,7 +36,7 @@ def evolution_form(name, icon):
 
 
 class PokemonSheet(QDialog):
-    def __init__(self, parent, row, name, icon, language):
+    def __init__(self, parent, row, name, icon, language, *, xd=False):
         super().__init__(parent)
         self.setAttribute(Qt.WidgetAttribute.WA_DeleteOnClose)
         self.setWindowTitle(detail_text("details", language))
@@ -45,13 +45,16 @@ class PokemonSheet(QDialog):
         details = row["details"]
         tr = lambda key, **values: detail_text(key, language, **values)
         surface = GameSurface()
-        surface.set_background(parent.artwork.get("background"))
+        if xd:
+            surface.set_xd(True)
+        else:
+            surface.set_background(parent.artwork.get("background"))
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
         outer.addWidget(surface)
         frame = QVBoxLayout(surface)
         frame.setContentsMargins(12, 12, 12, 12)
-        panel = MenuPanel()
+        panel = MenuPanel(xd=xd)
         frame.addWidget(panel)
         layout = QVBoxLayout(panel)
         layout.setContentsMargins(18, 15, 18, 14)

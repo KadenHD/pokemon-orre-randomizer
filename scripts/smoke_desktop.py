@@ -64,6 +64,7 @@ def main():
         assert data["successful"] and data["frozen"] and data["codec"] == "rust-lzss-v1"
         assert data["application_icon_available"] and {16, 256} <= set(data["application_icon_sizes"])
         assert len(data["home_states"]) == 12
+        assert len(data["xd_states"]) == 36
         assert len(data["states"]) == 48
         assert len(data["exclusion_states"]) == 24
         assert len(data["shiny_states"]) == 60
@@ -77,9 +78,11 @@ def main():
         assert not any((work/"AppData").rglob("*.ini"))
         evidence = args.report.with_suffix("")
         evidence.mkdir()
-        for state in data["home_states"] + data["states"] + data["exclusion_states"] + data["shiny_states"] + data["preview_states"]:
-            if "screenshot" in state:
-                shutil.copyfile(work/state["screenshot"], evidence/state["screenshot"])
+        state_keys = ("home_states", "xd_states", "states", "exclusion_states", "shiny_states", "preview_states")
+        for key in state_keys:
+            for state in data[key]:
+                if "screenshot" in state:
+                    shutil.copyfile(work/state["screenshot"], evidence/state["screenshot"])
         data.update(edition=args.edition, archive=archives[0],
                     archive_sha256=manifest[archives[0]]["sha256"],
                     extracted_to_unicode_path=True, developer_path_removed=True,
@@ -88,7 +91,7 @@ def main():
         with args.report.open("x", encoding="utf-8") as stream:
             json.dump(data, stream, ensure_ascii=False, indent=2)
             stream.write("\n")
-    count = sum(len(data[key]) for key in ("home_states", "states", "exclusion_states", "shiny_states", "preview_states"))
+    count = sum(len(data[key]) for key in state_keys)
     print(f"Extracted {args.edition} app: {count} UI states, Rust codec and resource edition verified.")
 
 

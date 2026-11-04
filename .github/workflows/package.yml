@@ -70,6 +70,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          release_flags=()
+          if [[ "$GITHUB_REF_NAME" =~ rc[0-9]+$ ]]; then
+            release_flags+=(--prerelease)
+          fi
           gh release create "$GITHUB_REF_NAME" release-assets/*-setup.exe release-assets/*.zip release-assets/SHA256SUMS.json \
             --repo "$GITHUB_REPOSITORY" --verify-tag --generate-notes \
-            --title "Pokémon Orre Randomizer $GITHUB_REF_NAME"
+            --title "Pokémon Orre Randomizer $GITHUB_REF_NAME" "${release_flags[@]}"

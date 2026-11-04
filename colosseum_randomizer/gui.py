@@ -34,7 +34,9 @@ from .preview import baseline_rows, preview_starters, report_rom_matches, ROULET
 from .preview_cache import PreviewCache
 from .ui_species import SpeciesChoice
 from .locales.selection_names import SPECIES_NAMES
-from .ui_theme import GameSurface, MenuPanel, MenuCheckBox, STYLE, JAPANESE_FONT_STYLE
+from .ui_theme import GameSurface, MenuPanel, MenuCheckBox, STYLE, XD_STYLE, JAPANESE_FONT_STYLE
+from .xd_artwork import xd_emblem
+from .xd_ui import XDWorkspace
 from .ui_icons import category_icon
 from .ui_audio import MenuAudio
 from .ui_music import MenuMusic
@@ -53,14 +55,16 @@ class Worker(QObject):
     failed = Signal(object, bool)
     finished = Signal()
 
-    def __init__(self, arguments: dict):
+    def __init__(self, arguments: dict, task=None, failure_message=None):
         super().__init__()
         self.arguments = arguments
+        self.task = task or randomize
+        self.failure_message = failure_message or "La création a échoué. Relancez l’application, puis réessayez."
 
     @Slot()
     def run(self):
         try:
-            self.succeeded.emit(randomize(**self.arguments, progress=self.progress.emit))
+            self.succeeded.emit(self.task(**self.arguments, progress=self.progress.emit))
         except Cancelled as error:
             self.failed.emit(error, True)
         except (UserError, FormatError, OSError) as error:
@@ -68,7 +72,7 @@ class Worker(QObject):
         except Exception:
             if sys.stderr:
                 traceback.print_exc()
-            self.failed.emit("La création a échoué. Relancez l’application, puis réessayez.", False)
+            self.failed.emit(self.failure_message, False)
         finally:
             self.finished.emit()
 
@@ -209,6 +213,7 @@ class MainWindow(QMainWindow):
                 painter.end()
                 self.cursor_icon = QIcon(canvas)
         self.artwork = {}
+        self.xd_logo = xd_emblem()
         self.roulette_faces = {}
         self.roulette_index = 0
         self.roulette_timer = QTimer(self)
@@ -476,6 +481,8 @@ class MainWindow(QMainWindow):
                             (QPalette.ColorRole.PlaceholderText, "#b0c6bd")):
             palette.setColor(role, QColor(color))
         self.setPalette(palette)
+        self.xd = XDWorkspace(self, found)
+        self.game_views.addWidget(self.xd)
         self.setStyleSheet(STYLE)
         self.set_advanced_mode(False)
         self.set_options(recommended_preset())
@@ -551,10 +558,19 @@ class MainWindow(QMainWindow):
         layout.addSpacing(8)
 
         xd_row = QHBoxLayout()
+        badge = QLabel()
+        badge.setPixmap(self.xd_logo)
+        xd_row.addWidget(badge)
+        xd_text = QVBoxLayout()
         xd = self.label("Pokémon XD")
         xd.setObjectName("subheading")
-        xd_row.addWidget(xd, 1)
-        xd_row.addWidget(self.note("À venir"))
+        xd_text.addWidget(xd)
+        xd_text.addWidget(self.note("ISO ou RVZ · Europe, USA et Japon"))
+        xd_row.addLayout(xd_text, 1)
+        self.open_xd = self.button("Ouvrir XD")
+        self.open_xd.setObjectName("primary")
+        self.open_xd.clicked.connect(self.show_xd)
+        xd_row.addWidget(self.open_xd)
         layout.addLayout(xd_row)
         layout.addStretch(1)
         frame.addWidget(scroll_area(content))
@@ -566,15 +582,42 @@ class MainWindow(QMainWindow):
         self.game_views.setCurrentWidget(self.home)
         self.logo.hide()
         self.title.setText("ORRE RANDOMIZER")
+        self.title.setAccessibleName(APP_NAME)
         self.profile_menu.hide()
+        self.apply_game_style()
         self.open_colosseum.setFocus()
 
     def show_colosseum(self):
+        if self.busy:
+            return
         self.game_views.setCurrentWidget(self.colosseum)
+        self.logo.setPixmap(QPixmap(str(self.artwork["logo"])) if "logo" in self.artwork else QPixmap())
         self.logo.setVisible("logo" in self.artwork)
         self.title.setText("RANDOMIZER" if "logo" in self.artwork else "COLOSSEUM")
+        self.title.setAccessibleName("Pokémon Colosseum")
         self.profile_menu.show()
+        self.apply_game_style()
         self.source.setFocus()
+
+    def show_xd(self):
+        if self.busy:
+            return
+        self.game_views.setCurrentWidget(self.xd)
+        self.logo.setPixmap(self.xd_logo)
+        self.logo.show()
+        self.title.setText("RANDOMIZER")
+        self.title.setAccessibleName("Pokémon XD")
+        self.profile_menu.show()
+        if not self.xd.tool.text() and self.tool.text():
+            self.xd.tool.setText(self.tool.text())
+        self.xd.refresh_preview_identity()
+        self.apply_game_style()
+        self.xd.focus_current_step()
+
+    def apply_game_style(self):
+        xd = self.game_views.currentWidget() is self.xd
+        self.surface.set_xd(xd)
+        self.setStyleSheet((XD_STYLE if xd else STYLE) + (JAPANESE_FONT_STYLE if self.language == "ja" else ""))
 
     def go_back(self):
         if self.step == 0:
@@ -1213,7 +1256,7 @@ class MainWindow(QMainWindow):
 
     def retranslate(self):
         self.setLocale(QLocale(self.language))
-        self.setStyleSheet(STYLE + (JAPANESE_FONT_STYLE if self.language == "ja" else ""))
+        self.apply_game_style()
         app = QApplication.instance()
         if self._qt_translator is not None:
             app.removeTranslator(self._qt_translator)
@@ -1225,6 +1268,7 @@ class MainWindow(QMainWindow):
                 self._qt_translator = translator
         for setter, message in self._text_bindings:
             setter(self.text(message))
+        self.xd.retranslate()
         self.rule_visibility_timer.start(0)
         for control in self.rule_fields.values():
             if isinstance(control, (ExcludedSelection, SpeciesChoice)):
@@ -1657,6 +1701,9 @@ class MainWindow(QMainWindow):
     def import_profile(self, path: Path):
         if self.busy:
             return
+        if self.game_views.currentWidget() is self.xd:
+            self.xd.import_configuration(path)
+            return
         try:
             profile = load_profile(path)
         except (UserError, OSError) as error:
@@ -1672,6 +1719,9 @@ class MainWindow(QMainWindow):
 
     def import_creation_report(self, path: Path):
         if self.busy:
+            return
+        if self.game_views.currentWidget() is self.xd:
+            self.xd.import_configuration(path, report=True)
             return
         try:
             report = load_creation_report(path)
@@ -1735,6 +1785,9 @@ class MainWindow(QMainWindow):
     def export_profile(self, path: Path):
         if self.busy:
             return
+        if self.game_views.currentWidget() is self.xd:
+            self.xd.export_configuration(path)
+            return
         try:
             save_profile(path, self.seed.text(), self.current_options())
         except (UserError, OSError) as error:
@@ -1744,15 +1797,19 @@ class MainWindow(QMainWindow):
         self.set_status("Profil enregistré : {path}.", path=path)
 
     def choose_profile(self):
-        path, _ = QFileDialog.getOpenFileName(self, self.text("Importer un profil"), "", self.text("Profil Colosseum (*.json)"))
+        path, _ = QFileDialog.getOpenFileName(self, self.text("Importer un profil"), "", self.profile_filter())
         if path:
             self.import_profile(Path(path))
 
     def choose_profile_destination(self):
-        path, _ = QFileDialog.getSaveFileName(self, self.text("Exporter le profil"), "colosseum-profile.json",
-                                             self.text("Profil Colosseum (*.json)"), options=QFileDialog.Option.DontConfirmOverwrite)
+        game = "xd" if self.game_views.currentWidget() is self.xd else "colosseum"
+        path, _ = QFileDialog.getSaveFileName(self, self.text("Exporter le profil"), f"{game}-profile.json",
+                                             self.profile_filter(), options=QFileDialog.Option.DontConfirmOverwrite)
         if path:
             self.export_profile(Path(path))
+
+    def profile_filter(self):
+        return self.text("Profil XD (*.json)" if self.game_views.currentWidget() is self.xd else "Profil Colosseum (*.json)")
 
     def toggle_advanced(self, checked):
         self.advanced.setVisible(checked and Path(self.source.text().strip()).suffix.lower() == ".rvz")
@@ -1825,13 +1882,17 @@ class MainWindow(QMainWindow):
 
     def dragEnterEvent(self, event):
         urls = event.mimeData().urls()
-        if (self.game_views.currentWidget() is self.colosseum and not self.busy and len(urls) == 1
+        if (self.game_views.currentWidget() in (self.colosseum, self.xd) and not self.busy and len(urls) == 1
                 and urls[0].isLocalFile() and Path(urls[0].toLocalFile()).suffix.lower() in (".iso", ".rvz")):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
-        self.source.setText(event.mimeData().urls()[0].toLocalFile())
-        self.suggest_destination()
+        path = event.mimeData().urls()[0].toLocalFile()
+        if self.game_views.currentWidget() is self.xd:
+            self.xd.source.setText(path)
+        else:
+            self.source.setText(path)
+            self.suggest_destination()
         event.acceptProposedAction()
 
     @Slot()
@@ -1853,7 +1914,6 @@ class MainWindow(QMainWindow):
                 self.output_tool.setFocus()
                 self.output_scroll.ensureWidgetVisible(self.output_tool)
             return
-        self.cancel_event = threading.Event()
         self.busy = True
         self.step = 2
         self.refresh_navigation()
@@ -1873,15 +1933,20 @@ class MainWindow(QMainWindow):
         self.progress_bar.setValue(0)
         arguments = dict(source=source, destination=destination, seed=self.seed.text(),
                          options=options,
-                         dolphin_tool=tool, cancel=self.cancel_event, prepared_patches=self.preview_plan)
+                         dolphin_tool=tool, prepared_patches=self.preview_plan)
         arguments["journal_language"] = self.language
+        self.start_worker(arguments, self.on_progress, self.succeeded, self.show_error)
+
+    def start_worker(self, arguments, on_progress, on_success, on_error, *, task=None, failure_message=None):
+        self.cancel_event = threading.Event()
+        self.busy = True
         self.thread = QThread(self)
-        self.worker = Worker(arguments)
+        self.worker = Worker(dict(arguments, cancel=self.cancel_event), task, failure_message)
         self.worker.moveToThread(self.thread)
         self.thread.started.connect(self.worker.run)
-        self.worker.progress.connect(self.on_progress)
-        self.worker.succeeded.connect(self.succeeded)
-        self.worker.failed.connect(self.show_error)
+        self.worker.progress.connect(on_progress)
+        self.worker.succeeded.connect(on_success)
+        self.worker.failed.connect(on_error)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.finished)
@@ -1923,27 +1988,35 @@ class MainWindow(QMainWindow):
         self.busy = False
         self.worker = None
         self.thread = None
-        self.settings.setEnabled(True)
-        self.create_button.setEnabled(True)
-        self.cancel_button.setEnabled(False)
-        self.refresh_navigation()
+        if self.game_views.currentWidget() is self.xd:
+            self.xd.finished()
+        else:
+            self.settings.setEnabled(True)
+            self.create_button.setEnabled(True)
+            self.cancel_button.setEnabled(False)
+            self.refresh_navigation()
         if self.close_after_cancel:
             self.close()
 
     def cancel(self):
         self.cancel_event.set()
-        self.cancel_button.setEnabled(False)
-        self.set_status("Annulation…")
+        if self.game_views.currentWidget() is self.xd:
+            self.xd.cancelling()
+        else:
+            self.cancel_button.setEnabled(False)
+            self.set_status("Annulation…")
 
     def open_result(self, report):
-        if self.result:
-            path = Path(self.result["output"])
+        result = self.xd.result if self.game_views.currentWidget() is self.xd else self.result
+        if result:
+            path = Path(result["output"])
             path = path.with_suffix(path.suffix + ".json") if report else path.parent
             QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
 
     def show_journal(self):
-        if self.result and self.result.get("journal"):
-            QDesktopServices.openUrl(QUrl.fromLocalFile(str(self.result["journal"])))
+        result = self.xd.result if self.game_views.currentWidget() is self.xd else self.result
+        if result and result.get("journal"):
+            QDesktopServices.openUrl(QUrl.fromLocalFile(str(result["journal"])))
 
     def show_starter_detail(self, key):
         rows = self.preview_result.get("starters", []) if self.preview_result else []
@@ -1963,7 +2036,7 @@ class MainWindow(QMainWindow):
         if self.detail_window is not None:
             self.detail_window.close()
         dialog = PokemonSheet(self, row, self.preview_species_name(row), self.preview_portrait(row),
-                              self.language)
+                              self.language, xd=self.game_views.currentWidget() is self.xd)
         dialog.finished.connect(lambda _result: setattr(self, "detail_window", None))
         self.detail_window = dialog
         dialog.show()

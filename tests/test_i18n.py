@@ -57,7 +57,8 @@ class TranslationTests(unittest.TestCase):
 
     def test_static_ui_and_recoverable_pipeline_messages_have_no_catalog_gaps(self):
         messages = set()
-        for filename in ("gui.py", "service.py", "profiles.py", "preview.py", "ui_exclusions.py", "engine/trainer_policies.py"):
+        for filename in ("gui.py", "xd_ui.py", "service.py", "profiles.py", "preview.py",
+                         "ui_exclusions.py", "engine/trainer_policies.py"):
             tree = ast.parse((ROOT / "colosseum_randomizer" / filename).read_text("utf-8"))
             for node in ast.walk(tree):
                 if not isinstance(node, ast.Call):

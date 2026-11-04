@@ -10,6 +10,7 @@ import threading
 
 from .artwork import ArtworkError, extract_portraits
 from . import service
+from .xd import VERSION as XD_VERSION, XDOptions
 from .options import Options, SPECIAL_OPTIONS
 from .profiles import CreationReport, validate_seed
 from .pokemon_details import encounter_details
@@ -216,3 +217,65 @@ def preview_starters(source: Path, seed: str, options: Options,
             "source_sha256": source_hash, "source_iso_sha256": iso_hash,
             "starters": starters, "shadows": shadows, "gifts": gifts, "shiny_policy": shiny_policy,
             "family_duplicates": summary.get("story_families", {}).get("duplicates", [])}
+
+
+@_discard_failed_cache
+def preview_xd(source: Path, seed: str, xd_options: XDOptions,
+               dolphin_tool: Path | None = None, *, progress=None,
+               cancel: threading.Event | None = None, cache: PreviewCache | None = None) -> dict:
+    """Read the same verified XD patch plan used by Create, without publishing it."""
+    progress = progress or (lambda percent, message: None)
+    cancel = cancel or threading.Event()
+    seed = validate_seed(seed)
+    source = Path(source).expanduser().resolve()
+    extension = source.suffix.lower()
+    if extension not in (".iso", ".rvz") or not source.is_file():
+        raise service.UserError("Sélectionnez un fichier ISO ou RVZ existant.")
+    rvz = extension == ".rvz"
+    if rvz and (dolphin_tool is None or not Path(dolphin_tool).is_file()):
+        raise service.RVZToolRequired("Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.")
+    service.checkpoint(cancel)
+    if not rvz:
+        service.check_header(source, is_xd=True)
+    progress(0, "Vérification de la ROM d’origine…")
+    digest = service.file_hash(source, cancel)
+    with (PreviewCache() if cache is None else nullcontext(cache)) as selected:
+        if not rvz:
+            selected.invalidate()
+        lease = (selected.lease(source, digest, Path(dolphin_tool), progress, cancel)
+                 if rvz else nullcontext(PreviewInput(source, digest, False)))
+        with lease as image:
+            boot = service.check_header(image.iso, is_xd=True)
+            region = service.check_disc_identity(boot, image.iso_hash, is_xd=True)
+            progress(20, "Application des réglages…")
+            _, summary = service.build_xd_patches(image.iso, boot, seed, xd_options, progress, cancel,
+                                                  include_details=True)
+            if catalog := summary.pop("detail_catalog", None):
+                starter = summary["starter"]
+                shadows = summary["decks"]["Story"]["shadows"]
+                rows = [starter, *shadows, *summary["gifts"], *summary["poke_spots"]]
+                requests = []
+                for row in rows:
+                    details = encounter_details(catalog, row["species"], level=row.get("level"),
+                                                moves=row.get("moves"), shadow="shadow_id" in row)
+                    row["details"] = details
+                    chain = (row["species"], *(step["target_species"] for step in details["evolution_chain"]))
+                    requests.append((row, chain))
+                progress(65, "Lecture des portraits…")
+                for shiny in (False, True):
+                    selected_rows = [(row, chain) for row, chain in requests if bool(row.get("shiny")) == shiny]
+                    indices = tuple(dict.fromkeys(index for _, chain in selected_rows for index in chain))
+                    portraits = {}
+                    for start in range(0, len(indices), 64):
+                        service.checkpoint(cancel)
+                        try:
+                            portraits.update(extract_portraits(image.iso, indices[start:start + 64],
+                                                              shiny=shiny, is_xd=True))
+                        except ArtworkError:
+                            continue
+                    for row, chain in selected_rows:
+                        row["portrait_png"] = portraits.get(row["species"], b"")
+                        row["evolution_portraits"] = {str(index): portraits[index] for index in chain if index in portraits}
+            if service.file_hash(source, cancel) != digest:
+                raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
+    return dict(summary, seed=seed, game_id=region.game_id, revision=region.revision, engine_version=XD_VERSION)

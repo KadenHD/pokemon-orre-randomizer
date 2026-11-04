@@ -23,6 +23,11 @@ class GameSurface(QWidget):
     def __init__(self):
         super().__init__()
         self.background = QPixmap()
+        self.xd = False
+
+    def set_xd(self, enabled):
+        self.xd = enabled
+        self.update()
 
     def set_background(self, path):
         self.background = QPixmap(str(path)) if path else QPixmap()
@@ -30,6 +35,15 @@ class GameSurface(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
+        if self.xd:
+            painter.fillRect(self.rect(), QColor("#1d1112"))
+            painter.setPen(Qt.PenStyle.NoPen)
+            for edge, color in ((0.62, "#2d191a"), (0.80, "#3b2021")):
+                x, y = self.width(), self.height()
+                painter.setBrush(QColor(color))
+                painter.drawPolygon(QPolygonF([QPointF(x * edge, 0), QPointF(x, 0),
+                                               QPointF(x, y), QPointF(x * (edge - 0.24), y)]))
+            return
         painter.fillRect(self.rect(), QColor("#181b3b"))
         if not self.background.isNull():
             image = self.background.scaled(self.size(), Qt.AspectRatioMode.KeepAspectRatioByExpanding,
@@ -40,10 +54,17 @@ class GameSurface(QWidget):
 
 class MenuPanel(QFrame):
     """Silver clipped corners, with Qt children remaining fully accessible."""
+
+    def __init__(self, *, xd=False):
+        super().__init__()
+        self.xd = xd
+
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-        for inset, color, width in ((1, "#b6ccc4", 2), (5, "#54726c", 1)):
+        border, trim, fill = ("#c5b6a9", "#6c4945", "#24191a") if self.xd else (
+            "#b6ccc4", "#54726c", "#082b24")
+        for inset, color, width in ((1, border, 2), (5, trim, 1)):
             box = QRectF(self.rect()).adjusted(inset, inset, -inset, -inset)
             x, y, r, b = box.left(), box.top(), box.right(), box.bottom()
             cut = 11 if inset == 1 else 8
@@ -51,7 +72,7 @@ class MenuPanel(QFrame):
                                  QPointF(r, b-cut), QPointF(r-cut, b), QPointF(x+cut, b),
                                  QPointF(x, b-cut), QPointF(x, y+cut)])
             painter.setPen(QPen(QColor(color), width))
-            painter.setBrush(QColor("#082b24") if inset == 1 else Qt.BrushStyle.NoBrush)
+            painter.setBrush(QColor(fill) if inset == 1 else Qt.BrushStyle.NoBrush)
             painter.drawPolygon(polygon)
 
 
@@ -145,3 +166,29 @@ QMenu::item:selected { background: #125359; }
 QScrollBar:vertical { background: #102e26; width: 15px; margin: 0; }
 QScrollBar::handle:vertical { background: #a3bdb1; border: 1px solid #69877a; border-radius: 3px; min-height: 44px; }
 """
+
+
+def xd_stylesheet():
+    """Apply XD's charcoal, red and gold palette to the shared Qt controls."""
+    style = STYLE
+    for original, replacement in {
+        "#181b3b": "#1d1112", "#f2f6f1": "#fff4e6", "#e4eee8": "#fff4e6",
+        "#dce8e1": "#f7e5d6", "#c1d8cf": "#e2c9bb", "#8be8e7": "#ffb384",
+        "#0b1c20": "#181314", "#829e98": "#a1837a", "#17666b": "#793d32",
+        "#71e2e6": "#ffad93", "#0c3029": "#382326", "#172c33": "#382527",
+        "#9eafa9": "#9d817a", "#24483f": "#593d3d", "#bce9de": "#f4cbb3",
+        "#0a3935": "#542e2d", "#125359": "#66302a", "#9dafa9": "#c4a79d",
+        "#1b292c": "#332323", "#40534f": "#765653", "#efd574": "#ffc772",
+        "#173e38": "#502f2e", "#245d4f": "#764139", "#a3bdb1": "#ba9c90",
+        "#60d4d9": "#ffad93", "#d6faf1": "#ffe5d6", "#50665b": "#836460",
+        "#40564d": "#654641", "#287b71": "#a45145", "#0b2520": "#352223",
+        "#102e26": "#352223", "#69877a": "#a3847c",
+        "#09271f": "#261b1c", "#173f32": "#583635",
+        "#a8f0ed": "#ffcfad", "#36584f": "#694743", "#54726c": "#795854",
+        "#294f41": "#654641",
+    }.items():
+        style = style.replace(original, replacement)
+    return style + '\nQLabel#xdStatus, QLabel#xdReview { color: #e2c9bb; font-size: 13px; }\n'
+
+
+XD_STYLE = xd_stylesheet()

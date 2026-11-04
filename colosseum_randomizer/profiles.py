@@ -8,11 +8,16 @@ from pathlib import Path
 import re
 
 from . import __version__
+from . import xd
 from .options import Options
 from .service import ENGINE_VERSION, ISO_SHA256, UserError, validate_options
 from .engine.regions import REGIONS, Region
 
 PROFILE_FORMAT = "colosseum-randomizer-profile"
+XD_PROFILE_FORMAT = "pokemon-xd-randomizer-profile"
+LEGACY_XD_ENGINE = "xd-story-sha256-v3"
+PREVIOUS_XD_ENGINE = "xd-story-sha256-v4"
+XD_SPOT_MIGRATION = "Réglages XD chargés. Les Poké Places utilisent le nouveau tirage."
 SCHEMA_VERSION = 1
 MAX_PROFILE_BYTES = 64 * 1024
 MAX_REPORT_BYTES = 32 * 1024**2
@@ -44,7 +49,7 @@ DETAILS_ENGINE_VERSION = "details-and-progression-v15"
 DETAILS_APP_VERSIONS = frozenset(("0.15.0", "0.16.0", "0.16.1", "0.17.0", "0.17.1", "0.17.2", "0.17.3", "0.17.4"))
 V15_FIELDS = frozenset(("starter_umbreon_species", "starter_espeon_species", "progressive_levels",
     "early_level_multiplier", "mid_level_multiplier", "late_level_multiplier", "experience_multiplier", "purification_multiplier"))
-CURRENT_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", __version__)
+CURRENT_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", "0.20.0", __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -55,7 +60,8 @@ GAME = {"id": "pokemon-colosseum", "roms": [region.profile_identity() for region
 @dataclass(frozen=True)
 class Profile:
     seed: str
-    options: Options
+    options: Options | xd.XDOptions
+    xd_spot_migration: bool = False
 
 
 @dataclass(frozen=True)
@@ -212,10 +218,54 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
     return Profile(seed, options)
 
 
-def load_profile(path: Path) -> Profile:
+def load_profile(path: Path, *, is_xd=False) -> Profile:
     with Path(path).open("rb") as stream:
         data = stream.read(MAX_PROFILE_BYTES + 1)
-    return parse_profile(data)
+    return parse_xd_profile(data) if is_xd else parse_profile(data)
+
+
+def parse_xd_profile(data: bytes, *, report=False) -> Profile:
+    if len(data) > (MAX_REPORT_BYTES if report else MAX_PROFILE_BYTES):
+        raise UserError("Profil trop volumineux : la limite est de 64 Ko." if not report
+                        else "Rapport trop volumineux : la limite est de 32 Mio.")
+    invalid = "Ce fichier ne contient pas de réglages Pokémon XD compatibles."
+    try:
+        payload = _decode_json(data)
+        if type(payload) is not dict or payload.get("engine_version") not in (
+            xd.VERSION, PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE,
+        ):
+            raise ValueError
+        legacy = payload["engine_version"] == LEGACY_XD_ENGINE
+        if report:
+            region = xd.REGIONS.get(payload["game_id"])
+            if (region is None or payload["source_iso_sha256"] != region.iso_sha256
+                    or type(payload["revision"]) is not int or payload["revision"] != region.revision):
+                raise ValueError
+        else:
+            if (payload.get("format") != XD_PROFILE_FORMAT
+                    or type(payload.get("schema_version")) is not int or payload["schema_version"] != SCHEMA_VERSION):
+                raise ValueError
+            digest = payload.pop("configuration_sha256")
+            if digest != hashlib.sha256(_canonical(payload)).hexdigest():
+                raise ValueError
+        options = payload["options"]
+        seed = payload["seed"]
+        expected = {item.name for item in fields(xd.XDOptions)}
+        if payload["engine_version"] != xd.VERSION:
+            expected.remove("randomize_hordel_gift")
+        if legacy:
+            expected.remove("randomize_tutorial_shadow")
+        if type(options) is not dict or set(options) != expected:
+            raise ValueError
+    except (ValueError, TypeError, KeyError, UnicodeError, RecursionError) as error:
+        raise UserError(invalid) from error
+    return Profile(validate_seed(seed), xd.validate_options(xd.XDOptions(**options)),
+                   xd_spot_migration=legacy and options["randomize_poke_spots"] is True)
+
+
+def load_xd_creation_report(path: Path) -> Profile:
+    with Path(path).open("rb") as stream:
+        return parse_xd_profile(stream.read(MAX_REPORT_BYTES + 1), report=True)
 
 
 def parse_creation_report(data: bytes) -> CreationReport:
@@ -247,11 +297,16 @@ def load_creation_report(path: Path) -> CreationReport:
         return parse_creation_report(stream.read(MAX_REPORT_BYTES + 1))
 
 
-def save_profile(path: Path, seed: str, options: Options) -> dict:
+def save_profile(path: Path, seed: str, options: Options | xd.XDOptions) -> dict:
     path = Path(path)
     if path.suffix.lower() != ".json":
         raise UserError("Enregistrez le profil dans un fichier .json.")
-    payload = profile_data(seed, options)
+    if isinstance(options, xd.XDOptions):
+        payload = {"format": XD_PROFILE_FORMAT, "schema_version": SCHEMA_VERSION, "engine_version": xd.VERSION,
+                   "seed": validate_seed(seed), "options": asdict(xd.validate_options(options))}
+        payload["configuration_sha256"] = hashlib.sha256(_canonical(payload)).hexdigest()
+    else:
+        payload = profile_data(seed, options)
     content = (json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode("utf-8")
     try:
         with path.open("xb") as stream:

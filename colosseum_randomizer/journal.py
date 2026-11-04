@@ -78,6 +78,9 @@ def _options(report: dict, language: str) -> str:
     from .options import Options
     from .locales.selection_names import SPECIES_NAMES, TYPE_NAMES
     metadata = {item.name: item.metadata for item in fields(Options)}
+    if report.get('game') == 'xd':
+        from .xd import XDOptions
+        metadata = {item.name: item.metadata for item in fields(XDOptions)}
     rows = []
     for key, value in report.get('options', {}).items():
         meta = metadata.get(key, {})
@@ -99,6 +102,54 @@ def _options(report: dict, language: str) -> str:
     return _table([detail_text('options', language), detail_text('on_this_rom', language)], rows)
 
 
+def _xd_spoilers(summary: dict, language: str) -> str:
+    from .i18n import translate
+    from .locales.selection_names import SPECIES_NAMES
+
+    tr = lambda key, **params: detail_text(key, language, **params)
+    national_ids = summary.get('national_ids', {})
+
+    def name(index):
+        return SPECIES_NAMES[language].get(national_ids.get(str(index)), str(index))
+
+    starter = summary.get('starter')
+    if not starter:
+        return ''
+    body = _section(tr('starters'), _table([tr('details'), tr('level', level='')],
+                    [[name(starter['species']), starter['level']]]))
+    shadows = summary.get('decks', {}).get('Story', {}).get('shadows', ())
+    if shadows:
+        body += _section(tr('shadows') + f" · {len(shadows)}",
+                         _table(['#', tr('details'), tr('level', level='')],
+                                [[row['shadow_id'], name(row['species']), row['level']] for row in shadows]))
+    spots = summary.get('poke_spots', ())
+    if spots:
+        labels = {'rock': 'Roche', 'oasis': 'Oasis', 'cave': 'Grotte'}
+        body += _section(translate('Poké Places ({count})', language).format(count=len(spots)),
+                         _table(['#', tr('details'), tr('level', level=''), '%'],
+                                [[translate(labels.get(row['spot'], row['spot']), language) + f" · {row['slot']}",
+                                  name(row['species']), '–'.join(map(str, row['levels'])), row['chance']]
+                                 for row in spots]))
+    gifts = summary.get('gifts', ())
+    if gifts:
+        def gift_label(row):
+            label = name(row['species'])
+            if row.get('required_species') is None:
+                return label
+            pokemon = name(row['required_species'])
+            if row.get('required_evolution') is not None:
+                trade = translate('Échange contre {pokemon} ou {evolution}', language).format(
+                    pokemon=pokemon, evolution=name(row['required_evolution']))
+            else:
+                trade = translate('Échange contre {pokemon}', language).format(pokemon=pokemon)
+            return f'{label} · {trade}'
+
+        body += _section(tr('gifts') + f" · {len(gifts)}",
+                         _table([tr('details'), tr('level', level='')],
+                                [[gift_label(row), row['level']] for row in gifts]))
+    return body
+
+
 def render_journal(report: dict, language: str = 'fr') -> str:
     """Render a private report without exposing paths or active HTML content."""
     if language not in LANGUAGES:
@@ -118,6 +169,8 @@ def render_journal(report: dict, language: str = 'fr') -> str:
     body += _table([tr('journal'), tr('on_this_rom')], metadata)
     body += '<p class="note">' + _e(tr('spoilers')) + '</p>'
     body += _section(tr('options'), _options(report, language))
+    if report.get('game') == 'xd':
+        return _journal_page('Pokémon XD · ' + tr('journal'), language, body + _xd_spoilers(summary, language))
     final_specials = {row['key']: row for row in summary.get('special_gameplay', {}).get('specials', [])}
 
     def special_group(keys):
@@ -177,6 +230,10 @@ def render_journal(report: dict, language: str = 'fr') -> str:
         body += _section(tr('evolutions'), _table([tr('details'), tr('evolutions'), tr('on_this_rom')], evolution_rows))
         body += _section(tr('tms'), _table([tr('tms'), tr('moves')], [[f"{row['tm']:02d}",
             display_name(catalog['moves'][str(row['move'])], language)] for row in catalog['tms']]))
+    return _journal_page(tr('journal'), language, body)
+
+
+def _journal_page(title: str, language: str, body: str) -> str:
     css = '''
     :root{color-scheme:light dark;font:16px/1.55 system-ui,sans-serif;color:#edf5f2;background:#101e22}
     body{max-width:76rem;margin:0 auto;padding:1.5rem}header{border-bottom:3px solid #71e2e6;margin-bottom:1.5rem}
@@ -191,7 +248,7 @@ def render_journal(report: dict, language: str = 'fr') -> str:
     return ('<!doctype html><html lang="' + language + '"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width, initial-scale=1">'
         '<meta http-equiv="Content-Security-Policy" content="default-src \'none\'; style-src \'unsafe-inline\'; base-uri \'none\'; form-action \'none\'">'
-        '<title>' + _e(tr('journal')) + '</title><style>' + css + '</style></head><body>' + body + '</body></html>')
+        '<title>' + _e(title) + '</title><style>' + css + '</style></head><body>' + body + '</body></html>')
 
 
 def save_journal(path: Path, report: dict, language: str = 'fr') -> None:
