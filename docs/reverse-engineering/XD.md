@@ -421,6 +421,31 @@ the step counter near the appearance threshold. The game produced a
 non-rare encounter. The earlier rare catches used cards with the encounter
 already pending.
 
-The numerical effects of the battle EXP and Heart Gauge multipliers are
-covered by instruction-level tests. A matched comparison of their awards
-and gauge changes in Dolphin is still pending.
+The numerical effects of the battle EXP and Heart Gauge multipliers were
+covered by instruction-level tests at the end of RC1. See the RC2 follow-up
+below for the additional runtime checks and correction.
+
+
+## RC2 runtime follow-up
+
+The European Dolphin check exposed an incorrect address for the appended EXP
+and purification code. The old reservation was 64 KiB inside the startup stack.
+Native stack clearing erased it, leaving a branch into zeroed memory when the
+player used a purification scent. The corrected reservation uses the arena floor
+loaded by the retail OSInit instructions: `0x805423A0` (Europe), `0x80507DA0`
+(USA), and `0x804E5200` (Japan). The patch now checks those native instructions
+before reserving memory. A regression test independently pins all three pairs.
+The engine version is `xd-story-sha256-v6`; RC1 settings and reports still import.
+
+A fresh European comparison used the original verified ISO and a separate ISO
+with only EXP ×1.5 and purification ×3 enabled, seed `rc2-qol-runtime`. Each run
+received an identical prepared QA card, separate from personal saves. For a
+level-25 Shadow Rhyhorn, one native Vivid Scent changed the Heart Gauge from
+6,000 to 5,700 at ×1 and from 6,000 to 5,100 at ×3. The corrected run completed
+the massage and returned control normally. Read-only RAM inspection confirmed
+that the appended code remained present after startup. Native function hashes
+and arena-floor signatures were checked against all three regional DOLs.
+
+ROMs, input QA cards, the emulator executable, and personal Dolphin data are
+hash-checked before and after the isolated runs. A second physical Windows PC
+and a complete playthrough remain outside this RC2 validation scope.

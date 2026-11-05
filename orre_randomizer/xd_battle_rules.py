@@ -36,10 +36,13 @@ TEXT1_TO_RAM = 0x800030A0
 TEXT2_HEADER = (0x08, 0x50, 0x98)
 # Native initial arena low, OSSetArenaLo address, and its stw instruction.
 ARENA = {
-    "GXXP01": (0x805323A0, 0x800ABEB0, 0x906D82F0),
-    "GXXE01": (0x804F7DA0, 0x800AA968, 0x906D82F0),
-    "GXXJ01": (0x804D5200, 0x800A6DFC, 0x906D82E8),
+    "GXXP01": (0x805423A0, 0x800ABEB0, 0x906D82F0),
+    "GXXE01": (0x80507DA0, 0x800AA968, 0x906D82F0),
+    "GXXJ01": (0x804E5200, 0x800A6DFC, 0x906D82E8),
 }
+# OSInit's native lis/addi pair loads the arena floor above the startup stack.
+# Checking BSS alone misses that stack: its clearing overwrote the old stubs.
+ARENA_INITIALIZERS = {"GXXP01": 0x800AAE98, "GXXE01": 0x800A9950, "GXXJ01": 0x800A5DE4}
 # Fixed instruction windows matched across the three retail DOLs. The EXP
 # window spans the last award bonus through the native shadow/ordinary split.
 DOL_CONTRACTS = {
@@ -353,6 +356,11 @@ def append_xd_dol_text(original, current, game_id, hooks):
     callable taking the new stub address and native continuation address.
     """
     section_ram, arena_setter, arena_store = ARENA[game_id]
+    initializer = ARENA_INITIALIZERS[game_id] - TEXT1_TO_RAM
+    expected_floor = struct.pack(">II", 0x3C600000 | ((section_ram + 0x8000) >> 16),
+                                 0x38630000 | (section_ram & 0xFFFF))
+    if any(data[initializer:initializer + 8] != expected_floor for data in (original, current)):
+        raise FormatError("unexpected XD native arena floor")
     arena_offset = arena_setter - TEXT1_TO_RAM
     section_offset = (len(original) + 31) & ~31
     section_header = tuple(u32(current, offset) for offset in TEXT2_HEADER)

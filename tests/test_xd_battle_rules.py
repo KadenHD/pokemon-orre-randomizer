@@ -3,6 +3,7 @@ import struct
 from types import SimpleNamespace
 
 import unittest
+from unittest.mock import patch
 
 from orre_randomizer.engine.analyze_game import FormatError
 from orre_randomizer.engine.inspect_tables import u16
@@ -16,9 +17,40 @@ from orre_randomizer.xd_battle_rules import (
     apply_deck_rules,
     apply_dol_battle_rules,
     apply_shadow_rules,
+    append_xd_dol_text,
     experience_numerator,
 )
 from tests.test_qol_rules import HookMachine
+
+
+class XDArenaReservationTests(unittest.TestCase):
+    def test_native_startup_floor_keeps_hooks_above_the_stack_in_all_regions(self):
+        # Independently observed OSInit instructions, not generated from ARENA.
+        regions = (
+            ("GXXP01", 0x805423A0, 0x800AAE98, "3c608054386323a0"),
+            ("GXXE01", 0x80507DA0, 0x800A9950, "3c60805038637da0"),
+            ("GXXJ01", 0x804E5200, 0x800A5DE4, "3c60804e38635200"),
+        )
+        for game_id, floor, initializer, instructions in regions:
+            with self.subTest(game_id=game_id):
+                original = bytearray(0xC0000)
+                for offset, value in ((4, 0x100), (0x4C, 0x800031A0), (0x94, len(original) - 0x100),
+                                      (0xD8, floor - 0x20000), (0xDC, 0x1000), (0xE0, 0x800031A0)):
+                    struct.pack_into(">I", original, offset, value)
+                _, setter, store = ARENA[game_id]
+                pos = initializer - 0x800030A0
+                original[pos:pos + 8] = bytes.fromhex(instructions)
+                struct.pack_into(">II", original, setter - 0x800030A0, store, 0x4E800020)
+                hook = 0x80004000
+                struct.pack_into(">I", original, hook - 0x800030A0, 0x60000000)
+                hooks = [(hook, 0x60000000, lambda *_: bytes.fromhex("60000000") * 8)]
+                result, report = append_xd_dol_text(bytes(original), bytes(original), game_id, hooks)
+                self.assertEqual(struct.unpack_from(">I", result, 0x50)[0], floor)
+                self.assertEqual(report[0]["stub_address"], floor + 32)
+                # Reintroducing the previous floor must fail before patching.
+                with patch.dict(ARENA, {game_id: (floor - 0x10000, setter, store)}):
+                    with self.assertRaisesRegex(FormatError, "native arena floor"):
+                        append_xd_dol_text(bytes(original), bytes(original), game_id, hooks)
 
 
 def _options(**values):

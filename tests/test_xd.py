@@ -24,6 +24,30 @@ def boot_for(game_id):
 
 
 class XDTests(unittest.TestCase):
+    def test_rc1_profile_keeps_all_options_after_runtime_hook_fix(self):
+        from dataclasses import asdict
+        from orre_randomizer.profiles import PREVIOUS_XD_QOL_ENGINE
+        region = xd.REGIONS["GXXP01"]
+        options = replace(xd.XDOptions.recommended(), randomize_hordel_gift=True,
+                          experience_multiplier=1.5, purification_multiplier=3)
+        data = {"engine_version": PREVIOUS_XD_QOL_ENGINE, "game_id": region.game_id,
+                "revision": 0, "source_iso_sha256": region.iso_sha256,
+                "seed": "old-runtime", "options": asdict(options)}
+        profile = parse_xd_profile(json.dumps(data).encode(), report=True)
+        self.assertEqual(profile.options, options)
+        self.assertFalse(profile.xd_spot_migration)
+        with TemporaryDirectory() as folder:
+            import hashlib
+            path = Path(folder) / "rc1-profile.json"
+            save_profile(path, "old-runtime", options)
+            payload = json.loads(path.read_text("utf-8"))
+            payload.pop("configuration_sha256")
+            payload["engine_version"] = PREVIOUS_XD_QOL_ENGINE
+            canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            payload["configuration_sha256"] = hashlib.sha256(canonical).hexdigest()
+            path.write_text(json.dumps(payload), encoding="utf-8")
+            self.assertEqual(load_profile(path, is_xd=True).options, options)
+
     def test_xd_profile_preserves_typed_options_and_rejects_colosseum_import(self):
         options = replace(xd.XDOptions.recommended(), excluded_species=(25, 133), randomize_hordel_gift=True,
                           starter_stage="first", trainer_level_multiplier=1.25)

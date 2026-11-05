@@ -17,6 +17,7 @@ PROFILE_FORMAT = "colosseum-randomizer-profile"
 XD_PROFILE_FORMAT = "pokemon-xd-randomizer-profile"
 LEGACY_XD_ENGINE = "xd-story-sha256-v3"
 PREVIOUS_XD_ENGINE = "xd-story-sha256-v4"
+PREVIOUS_XD_QOL_ENGINE = "xd-story-sha256-v5"
 XD_SPOT_MIGRATION = "Réglages XD chargés. Les Poké Places utilisent le nouveau tirage."
 SCHEMA_VERSION = 1
 MAX_PROFILE_BYTES = 64 * 1024
@@ -232,7 +233,7 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
     try:
         payload = _decode_json(data)
         if type(payload) is not dict or payload.get("engine_version") not in (
-            xd.VERSION, PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE,
+            xd.VERSION, PREVIOUS_XD_QOL_ENGINE, PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE,
         ):
             raise ValueError
         legacy = payload["engine_version"] == LEGACY_XD_ENGINE
@@ -251,7 +252,7 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         options = payload["options"]
         seed = payload["seed"]
         expected = {item.name for item in fields(xd.XDOptions)}
-        if payload["engine_version"] != xd.VERSION:
+        if payload["engine_version"] in (PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE):
             expected.remove("randomize_hordel_gift")
         if legacy:
             expected.remove("randomize_tutorial_shadow")

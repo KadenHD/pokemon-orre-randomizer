@@ -29,7 +29,7 @@ from .xd_species_gameplay import XDMoveRandomizer, detail_catalog, patch_species
 from .xd_story import (STARTER_DIALOGUE_ARCHIVE, TEDDIURSA, TUTORIAL_SHADOW, hordel_candidates,
                        patch_starter_dialogue, patch_tutorial, tutorial_candidates)
 
-VERSION = "xd-story-sha256-v5"
+VERSION = "xd-story-sha256-v6"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",

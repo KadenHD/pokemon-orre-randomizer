@@ -2,6 +2,10 @@
 
 ## 0.21.0rc2
 
+- Fixed XD battle EXP and purification hooks being placed inside the startup
+  stack. Added native arena-floor checks for European, US and Japanese discs.
+  The corrected engine still imports RC1 profiles without changing their settings.
+
 - Public Windows and source distributions include the complete verified interface
   pack: game logos, background, cursor, menu sounds and music. Packaging rejects
   undeclared media and verifies every recorded asset hash.
