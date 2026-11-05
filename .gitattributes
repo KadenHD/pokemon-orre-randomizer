@@ -5,3 +5,6 @@
 *.md text eol=lf
 *.ico binary
 *.png binary
+# Interface metadata is hashed byte-for-byte alongside the images and audio.
+# Preserve its exported bytes on Windows and Linux checkouts.
+orre_randomizer/assets/game/** -text
