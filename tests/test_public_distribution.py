@@ -9,6 +9,7 @@ from unittest.mock import patch
 
 from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME
 from scripts import build_desktop, verify_release
+from scripts.release_media import DOCUMENTATION_IMAGES, documentation_media
 
 
 class PublicDistributionTests(unittest.TestCase):
@@ -44,9 +45,20 @@ class PublicDistributionTests(unittest.TestCase):
         for path in files:
             relative = path.relative_to(build_desktop.ROOT).as_posix()
             self.assertNotIn("assets/game/", relative)
-            if relative not in {"orre_randomizer/assets/app/icon.png", "orre_randomizer/assets/app/icon.ico",
+            if relative not in {"docs/images/" + name for name in DOCUMENTATION_IMAGES} | {"orre_randomizer/assets/app/icon.png", "orre_randomizer/assets/app/icon.ico",
                                 "orre_randomizer/assets/app/logo.png"}:
                 self.assertNotIn(path.suffix.lower(), {".iso", ".rvz", ".fsys", ".raw", ".sav", ".png", ".ico", ".wav", ".dll"})
+
+    def test_documentation_media_rejects_tampering_and_unknown_names(self):
+        root = build_desktop.ROOT / "docs/images"
+        read = lambda name: (root / name).read_bytes()
+        self.assertEqual(documentation_media(read), DOCUMENTATION_IMAGES | {"manifest.json"})
+        with self.assertRaisesRegex(RuntimeError, "Invalid documentation screenshot"):
+            documentation_media(lambda name: b"changed" if name == "home.png" else read(name))
+        manifest = json.loads(read("manifest.json"))
+        manifest["files"]["private.png"] = manifest["files"]["home.png"]
+        with self.assertRaisesRegex(RuntimeError, "Unexpected documentation screenshots"):
+            documentation_media(lambda name: json.dumps(manifest).encode() if name == "manifest.json" else read(name))
 
     def test_public_media_exception_is_limited_to_exact_application_branding(self):
         for binary, prefix in ((False, f"{REPOSITORY_NAME}/"), (True, f"{APP_EXECUTABLE}/_internal/")):

@@ -1,3 +1,12 @@
+# Orre research index
+
+Current support and user behavior are documented in the [README](README.md),
+[compatibility reference](docs/COMPATIBILITY.md) and
+[validation summary](docs/VALIDATION.md). This file indexes historical research.
+For XD, start with [disc and gameplay tables](docs/reverse-engineering/XD.md).
+The Colosseum reports below retain their original dates and version scope; their
+old commands and dependencies do not describe the current desktop application.
+
 # Pokémon Colosseum: analysis of the PAL dump
 
 Reproducible static mapping of local extraction `game/`, carried out on October 30, 2026. Observed

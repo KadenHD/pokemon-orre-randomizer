@@ -58,8 +58,9 @@ the version, tests the public build, and publishes the Windows setup EXE, the
 portable Windows ZIP, the source ZIP, and `SHA256SUMS.json` for the ZIPs.
 
 ```powershell
-git tag -a v0.20.0 -m "Pokémon Orre Randomizer 0.20.0"
-git push origin v0.20.0
+$version = python -c "from orre_randomizer import __version__; print(__version__)"
+git tag -a "v$version" -m "Pokémon Orre Randomizer $version"
+git push origin "v$version"
 ```
 
 For a release candidate, use a matching version and tag such as `0.21.0rc1`
@@ -112,6 +113,14 @@ scenarios that were played. A full playthrough and balance across several seeds
 require separate testing. A visual check of each in-game menu complements the
 verification of item names in the five text banks.
 
-Before marking a release stable, record a test on a second Windows installation
-and a regular playthrough through the ending. List the tested features and any
-remaining gaps in the release notes.
+For a stable release, record the checks actually performed and their limits in
+the release notes. A stable tag does not imply every seed, region or hardware
+configuration has been played through. A full campaign and a second physical
+Windows PC are additional coverage opportunities; never report them as completed
+without evidence. See [current validation scope](VALIDATION.md).
+
+Keep earlier release tags and assets intact. Verify previous-version profiles
+without substituting the new preset defaults. After publishing, check that the
+new stable tag is returned by GitHub’s latest-release endpoint, download the
+installer and both ZIPs, compare their sizes/digests, and run the downloaded EXE
+in isolated application data. Update README screenshots when visible UI changes.

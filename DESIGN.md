@@ -1,6 +1,6 @@
 ---
 name: Pokémon Orre Randomizer
-description: Native Qt interface inspired by the original Colosseum menus.
+description: Shared native Qt layouts with Colosseum, XD and neutral home themes.
 colors:
   forest-panel: "#082b24"
   indigo-background: "#181b3b"
@@ -313,3 +313,10 @@ preview retains the same species and status as the engine.
 - **Gift't** enlarge portraits until they become the dominant element of the work area.
 - **Gift't** Raster wording or transform model captures into a clickable interface.
 - **Gift't** make the visual and audible start depend on a first ROM or cache to be filled.
+
+## Theme scope
+
+Both games use the same wizard and Pokémon-sheet templates. The color values
+above describe the Colosseum baseline; `ui_theme.py` defines XD and neutral-home
+variants. The shared layout is specified in `ui_workspace.py`. Changing a theme
+must not remove audio, profiles, previews or navigation from either game.

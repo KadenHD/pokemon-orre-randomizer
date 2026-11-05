@@ -30,6 +30,7 @@ from .engine.analyze_game import FormatError
 from .service import Cancelled, Options, RVZToolRequired, UserError, find_dolphin_tool, randomize, validate_options, validate_paths, check_header
 from .profiles import load_creation_report, load_profile, save_profile, validate_seed
 from .preferences import application_preferences
+from .presets import recommended_preset, species_preset
 from .preview import baseline_rows, preview_starters, report_rom_matches, ROULETTE_SPECIES
 from .preview_cache import PreviewCache
 from .ui_species import SpeciesChoice
@@ -132,17 +133,6 @@ class ReportRomCheck(QThread):
             self.message = Message("La ROM sélectionnée correspond au rapport ({region})." if matches else
                                    "La ROM sélectionnée diffère. Choisissez la ROM du rapport ({region}) pour reproduire la partie.",
                                    region=Message(region))
-
-
-_DESKTOP_RANDOM_RULES = dict(custom_shinies=True, shiny_chance_percent=5.0, diverse_story_families=True)
-
-
-def recommended_preset():
-    return replace(Options.recommended(), **_DESKTOP_RANDOM_RULES)
-
-
-def species_preset():
-    return replace(Options(), **_DESKTOP_RANDOM_RULES)
 
 
 class MainWindow(QMainWindow):
@@ -1075,7 +1065,7 @@ class MainWindow(QMainWindow):
         options = self.current_options()
         descriptions = (
             "Remplace les Pokémon des dresseurs, les obscurs, les starters et les cadeaux, avec une puissance proche de l’original.\nRandomise aussi les capacités de départ, les apprentissages par niveau, les CT et les objets des coffres et des boutiques.",
-            "Remplace les Pokémon des dresseurs, les obscurs, les starters et les cadeaux, sans chercher une puissance proche de l’original.\nGarde les capacités de départ, les apprentissages par niveau et les CT. Les objets restent en place, sauf les pierres ajoutées en boutique.",
+            "Remplace les Pokémon des dresseurs, les obscurs, les starters et les cadeaux, avec une puissance proche de l’original.\nGarde les capacités de départ, les apprentissages par niveau et les CT. Les objets restent en place, sauf les pierres ajoutées en boutique.",
             "Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/RVZ.",
         )
         selected = None

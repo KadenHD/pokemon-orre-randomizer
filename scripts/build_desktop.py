@@ -14,6 +14,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME, __version__
+from scripts.release_media import documentation_media
 
 
 def source_files(*, include_game_assets: bool = True) -> list[Path]:
@@ -26,6 +27,11 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
         files += [p for p in (ROOT / directory).rglob("*") if p.is_file() and p.suffix in extensions]
     files += [ROOT / "native/Cargo.toml", ROOT / "native/Cargo.lock", ROOT / "native/src/lib.rs"]
     files.append(ROOT / "docs/reverse-engineering/baseline.json")
+    documentation = ROOT / "docs/images"
+    for name in documentation_media(lambda name: (documentation / name).read_bytes()):
+        files.append(documentation / name)
+    files += [ROOT / "tests/fixtures/presets" / f"rc2-{game}-{mode}.json"
+              for game in ("colosseum", "xd") for mode in ("moves", "species")]
     files += [ROOT / "orre_randomizer/assets/app" / name
               for name in ("icon.png", "icon.ico", "provenance.json", "logo.png", "logo.json", "README.md")]
     # Explicit local interface pack exported once from the supplied game. Never
@@ -125,6 +131,10 @@ def main():
             target = app / path.relative_to(ROOT)
             target.parent.mkdir(parents=True, exist_ok=True)
             shutil.copyfile(path, target)
+        for name in documentation_media(lambda name: (ROOT / "docs/images" / name).read_bytes()):
+            target = app / "docs/images" / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(ROOT / "docs/images" / name, target)
         shutil.copytree(ROOT / "licenses", app / "licenses", dirs_exist_ok=True)
         sources = ROOT / "dist/third-party-sources"
         if not sources.is_dir():

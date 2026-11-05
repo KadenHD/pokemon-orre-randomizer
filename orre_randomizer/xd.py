@@ -139,11 +139,14 @@ class XDOptions:
     def recommended(cls) -> XDOptions:
         return cls(randomize_trainer_moves=True, randomize_starter_moves=True, randomize_gift_moves=True,
                    randomize_learnsets=True, randomize_tm_moves=True, tm_compatibility_mode="type",
-                   randomize_field_items=True, randomize_shop_items=True, custom_shinies=True)
+                   randomize_field_items=True, randomize_shop_items=True, custom_shinies=True,
+                   boss_team_variety=True)
 
     @classmethod
     def species_only(cls) -> XDOptions:
-        return cls(custom_shinies=True)
+        from .presets import without_moves_and_items
+
+        return without_moves_and_items(cls.recommended())
 
 
 def validate_options(options: XDOptions) -> XDOptions:

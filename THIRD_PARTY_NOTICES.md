@@ -2,7 +2,7 @@
 
 The project's own source code is licensed under MIT (see LICENSE). That license
 does not cover Nintendo game software, user-supplied images, or third-party libraries.
-No ROM, saved game or Dolphin executable is included. The local interface pack
+No ROM, saved game or Dolphin executable is included. The bundled interface pack
 contains exported game images and audio, as described below. The public and local
 editions include that verified pack. Its provenance and rights are separate
 from the application's MIT license.

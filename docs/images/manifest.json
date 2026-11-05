@@ -1,0 +1,24 @@
+{
+  "app_version": "1.0.0",
+  "language": "en",
+  "seed": "orre-v1-demo",
+  "description": "Real application captures with isolated demo preferences; no personal paths or saves.",
+  "files": {
+    "home.png": {
+      "bytes": 138261,
+      "sha256": "0013bf33b8591a018b60f7a5c63f2544cfa010f293ff74259621e6e73a4a8015"
+    },
+    "colosseum-settings.png": {
+      "bytes": 82576,
+      "sha256": "6cfe0af76dd7919e04f8dc814968d41d667cca9e20fe45606750af4354f57b4d"
+    },
+    "xd-settings.png": {
+      "bytes": 54831,
+      "sha256": "59bc7799d281bf345cadb59c015d987a6978efd2990a0d638248b58e3448e12a"
+    },
+    "pokemon-sheet.png": {
+      "bytes": 45088,
+      "sha256": "15b9523dbba64da7e75b6ddb454dd2aaf8e8bc85664eb612ef74fb604965c8ce"
+    }
+  }
+}

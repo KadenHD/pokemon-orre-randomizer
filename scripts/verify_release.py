@@ -11,6 +11,7 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME
+from scripts.release_media import documentation_media
 
 FORBIDDEN = {".iso", ".rvz", ".gcm", ".fsys", ".dol", ".rel", ".raw", ".gci", ".sav"}
 SOURCE_ROOT = f"{REPOSITORY_NAME}/"
@@ -45,6 +46,9 @@ def main():
             prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/assets/game/"
             pack = json.loads(archive.read(prefix + "provenance.json"))
             game_assets = {prefix + relative for relative in pack["files"]}
+            doc_prefix = (f"{APP_EXECUTABLE}/" if binary else SOURCE_ROOT) + "docs/images/"
+            doc_assets = {doc_prefix + name for name in documentation_media(
+                lambda name: archive.read(doc_prefix + name))}
             for item in archive.infolist():
                 name = Path(item.filename)
                 if (PurePosixPath(item.filename).is_absolute() or PureWindowsPath(item.filename).drive or
@@ -60,7 +64,8 @@ def main():
                 if item.filename.startswith(prefix) and item.filename not in game_assets | {prefix + "provenance.json"}:
                     raise RuntimeError("Unlisted interface asset: " + item.filename)
                 if (name.suffix.lower() in {".wav", ".png", ".jpg", ".jpeg", ".mp3", ".ogg", ".flac", ".ico"}
-                        and not application_media_allowed(item.filename, binary) and item.filename not in game_assets):
+                        and not application_media_allowed(item.filename, binary)
+                        and item.filename not in game_assets | doc_assets):
                     raise RuntimeError("Unlisted release media: " + item.filename)
             if archive.testzip() is not None:
                 raise RuntimeError("ZIP integrity check failed")
@@ -85,6 +90,7 @@ def main():
                            "no_rom_saves_or_emulator_files": True,
                            "application_icon_verified": True,
                            "application_logo_verified": True,
+                           "documentation_screenshots_verified": True,
                            "game_assets_included": True,
                            "interface_pack_at_runtime_location": True})
             if filename.endswith("-source.zip"):

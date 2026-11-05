@@ -50,7 +50,7 @@ DETAILS_ENGINE_VERSION = "details-and-progression-v15"
 DETAILS_APP_VERSIONS = frozenset(("0.15.0", "0.16.0", "0.16.1", "0.17.0", "0.17.1", "0.17.2", "0.17.3", "0.17.4"))
 V15_FIELDS = frozenset(("starter_umbreon_species", "starter_espeon_species", "progressive_levels",
     "early_level_multiplier", "mid_level_multiplier", "late_level_multiplier", "experience_multiplier", "purification_multiplier"))
-CURRENT_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", "0.20.0", "0.21.0rc1", __version__)
+CURRENT_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", "0.20.0", "0.21.0rc1", "0.21.0rc2", __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact

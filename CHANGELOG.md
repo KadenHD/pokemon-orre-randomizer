@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.0.0
+
+- First stable release for Colosseum and XD, with the shared three-step desktop
+  workflow, six interface languages and the complete verified interface pack.
+- Aligned the two randomizing presets: Pokémon-only now retains the same power,
+  starter-pair and boss-diversity rules as Pokémon + moves. XD enables the same
+  boss-diversity default. Moves, TMs and item randomization remain the distinction
+  between modes; game-specific protections remain in place.
+- Preserved existing CLI defaults and imported profile values. Added compatibility
+  checks against profiles exported by the published RC2 source distribution,
+  and retained RC1/RC2 import support.
+- Reorganized the English README with the Orre logo and real application captures.
+  Added user, compatibility and validation guides for both games; clarified the
+  scope of historical reports and native testing.
+- Included hash-verified documentation screenshots and compatibility fixtures in
+  release archives. Stable releases provide the Windows setup EXE, portable ZIP,
+  source ZIP and checksums. Earlier prerelease tags and assets are preserved.
+
 ## 0.21.0rc2
 
 - Fixed XD battle EXP and purification hooks being placed inside the startup

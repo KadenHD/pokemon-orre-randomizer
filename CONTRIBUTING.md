@@ -28,8 +28,10 @@ The older scripts delegate to the same engine. The CLI and GUI both call
 
 Format and safety tests run without a ROM. Integration tests that need a dump or
 a regional image declare the prerequisite and skip when it is unavailable.
-Keep ROMs, extracted game data, save files, game screenshots, and emulators out of
-the repository. Include the app version, settings, and relevant hashes in bug
+Keep ROMs, raw extracted game data, save files and emulators out of the repository.
+The published interface pack is an explicit, hash-verified media allowlist; it is
+not permission to add arbitrary game dumps. Documentation screenshots must use
+clean demo state without personal paths or saves. Media rights are separate from MIT. Include the app version, settings, and relevant hashes in bug
 reports. Review reports for local paths and personal information before sharing.
 
 For a new region or revision, document its hashes and independently verify its
@@ -48,8 +50,10 @@ help text, and messages.
 and engine state. The interface supports French, English, German, Spanish, Italian,
 and Japanese. French phrases are lookup keys for labels and `Options` metadata.
 The five files `locales/en.py`, `de.py`, `es.py`, `it.py`, and `ja.py` provide the
-other catalogs. The 83 settings, including 58 booleans across fifteen categories,
-use stable identifiers.
+other catalogs. Colosseum settings in `options.py` and XD settings in `XDOptions` use stable
+identifiers. Shared labels keep the same meaning across both games.
+`presets.py` centralizes the common desktop preset scope; preserve low-level
+CLI defaults and imported profiles when changing desktop defaults.
 
 `feature_i18n.py` contains additional messages and options. `detail_texts.py`
 provides the Pokémon details and journal strings in all six languages.
