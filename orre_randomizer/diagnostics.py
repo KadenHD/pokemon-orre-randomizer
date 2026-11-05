@@ -46,7 +46,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
             "application_logo_available": application_logo() is not None,
             "rom_opened": False, "personal_preferences_opened": False,
             "home_states": [], "states": [], "exclusion_states": [], "shiny_states": [], "preview_states": [],
-            "consolidation_states": [], "xd_states": []}
+            "consolidation_states": [], "xd_states": [], "xd_parity_states": []}
     with tempfile.TemporaryDirectory(prefix="diagnostic-prefs-", dir=report.parent) as folder:
         window = MainWindow(settings=QSettings(str(Path(folder)/"preferences.ini"), QSettings.Format.IniFormat),
                             system_languages=["fr-FR"])
@@ -96,6 +96,38 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                             state["screenshot"] = f"xd-{language}-{width}-step{step + 1}.png"
                             assert window.grab().save(str(report.parent / state["screenshot"]))
                         data["xd_states"].append(state)
+                    xd.step = 1
+                    xd.pages.setCurrentIndex(1)
+                    xd.workspace_tabs.setCurrentIndex(0)
+                    xd.set_advanced_mode(True)
+                    for category in xd.rule_groups:
+                        xd.rule_panel.categories.setCurrentRow(xd.rule_groups.index(category))
+                        app.processEvents()
+                        assert window.rect().contains(xd.create_button.mapTo(window, xd.create_button.rect().center()))
+                        state = {"language": language, "width": width, "height": height, "category": category}
+                        if screenshots:
+                            state["screenshot"] = f"xd-parity-{language}-{width}-category{xd.rule_groups.index(category)}.png"
+                            assert window.grab().save(str(report.parent / state["screenshot"]))
+                        data["xd_parity_states"].append(state)
+                    xd.workspace_tabs.setCurrentIndex(1)
+                    for tab, count in ((0, 1), (1, 83), (2, 7), (3, 9)):
+                        xd.encounter_tabs.setCurrentIndex(tab)
+                        app.processEvents()
+                        assert not xd.preview_button.isHidden()
+                        assert xd.preview_count.text() != window.text("Aucun résultat") or tab == 0
+                        if tab:
+                            assert not xd.preview_search.isHidden()
+                            assert xd.preview_details.topLevelItemCount() == count
+                            assert xd.preview_details.viewport().height() >= 46
+                        state = {"language": language, "width": width, "height": height, "tab": tab}
+                        if screenshots:
+                            state["screenshot"] = f"xd-parity-{language}-{width}-tab{tab}.png"
+                            assert window.grab().save(str(report.parent / state["screenshot"]))
+                        data["xd_parity_states"].append(state)
+                    xd.encounter_tabs.setCurrentIndex(0)
+                    xd.workspace_tabs.setCurrentIndex(0)
+                    xd.set_advanced_mode(False)
+                    xd.rule_panel.categories.setCurrentRow(0)
                     window.show_home()
                     window.open_colosseum.click()
                     assert window.game_views.currentWidget() is window.colosseum

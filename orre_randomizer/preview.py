@@ -222,7 +222,8 @@ def preview_starters(source: Path, seed: str, options: Options,
 @_discard_failed_cache
 def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                dolphin_tool: Path | None = None, *, progress=None,
-               cancel: threading.Event | None = None, cache: PreviewCache | None = None) -> dict:
+               cancel: threading.Event | None = None, cache: PreviewCache | None = None,
+               roulette=None, on_prepared=None) -> dict:
     """Read the same verified XD patch plan used by Create, without publishing it."""
     progress = progress or (lambda percent, message: None)
     cancel = cancel or threading.Event()
@@ -247,9 +248,18 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
         with lease as image:
             boot = service.check_header(image.iso, is_xd=True)
             region = service.check_disc_identity(boot, image.iso_hash, is_xd=True)
+            if roulette is not None:
+                try:
+                    roulette(extract_portraits(image.iso, ROULETTE_SPECIES, is_xd=True))
+                except ArtworkError:
+                    pass
+                service.checkpoint(cancel)
             progress(20, "Application des réglages…")
-            _, summary = service.build_xd_patches(image.iso, boot, seed, xd_options, progress, cancel,
+            patches, summary = service.build_xd_patches(image.iso, boot, seed, xd_options, progress, cancel,
                                                   include_details=True)
+            prepared = service.PreparedPatches(source=source, source_sha256=digest, iso_sha256=image.iso_hash,
+                seed=seed, options=xd_options, patches=tuple(patches),
+                summary=deepcopy({key: value for key, value in summary.items() if key != 'detail_catalog'}))
             if catalog := summary.pop("detail_catalog", None):
                 starter = summary["starter"]
                 shadows = summary["decks"]["Story"]["shadows"]
@@ -278,4 +288,7 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                         row["evolution_portraits"] = {str(index): portraits[index] for index in chain if index in portraits}
             if service.file_hash(source, cancel) != digest:
                 raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
+    if on_prepared is not None:
+        service.checkpoint(cancel)
+        on_prepared(prepared)
     return dict(summary, seed=seed, game_id=region.game_id, revision=region.revision, engine_version=XD_VERSION)

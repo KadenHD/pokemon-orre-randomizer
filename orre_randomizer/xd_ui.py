@@ -1,24 +1,26 @@
 """Pokémon XD creation form, sharing the desktop's validation and job runner."""
 
-from dataclasses import fields, replace
+from dataclasses import replace
 from html import escape
 from pathlib import Path
+import threading
 
 from PySide6.QtCore import QSignalBlocker, QSize, Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-    QProgressBar, QSpinBox, QToolButton, QTreeWidgetItem,
+    QPlainTextEdit, QProgressBar, QSpinBox, QToolButton, QTreeWidgetItem,
     QVBoxLayout, QWidget,
 )
 
 from .i18n import Message
 from .locales.selection_names import SPECIES_NAMES
-from .profiles import XD_SPOT_MIGRATION, load_profile, load_xd_creation_report, save_profile, validate_seed
+from .profiles import XD_SPOT_MIGRATION, load_creation_report, load_profile, save_profile, validate_seed
 from .service import RVZToolRequired, UserError, check_header, validate_paths
 from .ui_icons import CATEGORY_SYMBOLS
 from .ui_exclusions import ExcludedSelection, search_key
-from .settings_presentation import search_settings
+from .settings_presentation import (configuration_review, effective_xd_setting_names,
+                                    presentation_fields, search_settings)
 from .ui_pokemon_names import RICH_NAME_ROLE, shiny_name_html
 from .ui_species import SpeciesChoice
 from .ui_theme import MenuCheckBox
@@ -27,9 +29,13 @@ from .ui_workspace import (EncounterTable, RuleNavigation, configuration_workspa
                            wizard_frame, wizard_page)
 from .xd import XDOptions, validate_options
 from .xd_gifts import GIFT_TRADE_REQUIREMENTS, TOGETIC
+from .xd_preview import baseline_rows
+from .preview import ROULETTE_SPECIES
+from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS, PRESET_EVOLUTIONS,
+                             PRESET_SHINIES, ROM_DESCRIPTION, STEP_HELP, XD_CATEGORY_HELP)
 
 
-RULES = fields(XDOptions)
+RULES = presentation_fields(XDOptions)
 MOVE_RULES = ("randomize_trainer_moves", "randomize_starter_moves", "randomize_gift_moves", "randomize_learnsets")
 DEPENDENCIES = {
     "poke_spots_full_pokedex": ("randomize_poke_spots",),
@@ -59,9 +65,6 @@ DEPENDENCIES = {
 }
 
 SPOT_LABELS = {"rock": "Roche", "oasis": "Oasis", "cave": "Grotte"}
-STEP_HELP = ("Utilisez une ROM Pokémon XD complète et non modifiée.",
-             "Le mode Avancé permet de modifier chaque option du choix sélectionné.",
-             "La ROM d’origine est conservée.")
 
 
 class XDWorkspace(QWidget):
@@ -71,9 +74,24 @@ class XDWorkspace(QWidget):
         self.result = None
         self.status_message = ""
         self.status_error = False
+        self.creation_report = self.report_check = None
+        self.report_rom_message = ""
+        self.report_rom_timer = QTimer(self)
+        self.report_rom_timer.setSingleShot(True)
+        self.report_rom_timer.timeout.connect(lambda: window.check_report_rom(owner=self))
+        self._log_messages = []
+        self.last_stage = ""
         self.preview_result = None
+        self.preview_plan = None
         self.preview_key = None
         self.preview_running = False
+        self.preview_action = "Calculer l’aperçu"
+        self.roulette_faces = {}
+        self.roulette_index = 0
+        self.roulette_timer = QTimer(self)
+        self.roulette_timer.setInterval(115)
+        self.roulette_timer.timeout.connect(self.advance_roulette)
+        self._cache_source_key = None
         self.preview_message = "Choisissez la ROM d’origine pour calculer l’aperçu."
         self.preview_error = False
         self.step = 0
@@ -81,7 +99,7 @@ class XDWorkspace(QWidget):
 
         rom = wizard_page(self.pages)
         self.add_heading(rom, "Choisissez votre ROM")
-        rom.addWidget(window.note("Pokémon XD · Europe, USA et Japon"))
+        rom.addWidget(window.note(Message(ROM_DESCRIPTION, game="Pokémon XD")))
         rom.addSpacing(16)
         self.source, _ = file_field(
             rom, window, "ROM d’&origine", "ROM d’origine",
@@ -108,6 +126,7 @@ class XDWorkspace(QWidget):
         views.addWidget(preview)
 
         output = wizard_page(self.pages)
+        self.output_scroll = self.pages.widget(self.pages.count() - 1)
         output.setSpacing(8)
         self.add_heading(output, "Créez votre ROM")
         self.destination, _ = file_field(
@@ -136,6 +155,8 @@ class XDWorkspace(QWidget):
         self.review.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         window.bind(self.review.setAccessibleDescription, "Les valeurs mémorisées sans effet ne sont pas affichées ici.")
         self.review_toggle = self.disclosure("Réglages appliqués", self.review)
+        self.review_toggle.toggled.connect(lambda expanded: QTimer.singleShot(0, self, self.reveal_review)
+                                           if expanded else None)
         output.addWidget(self.review_toggle, 0, Qt.AlignmentFlag.AlignLeft)
         output.addWidget(self.review)
 
@@ -161,9 +182,28 @@ class XDWorkspace(QWidget):
         self.status.setTextFormat(Qt.TextFormat.PlainText)
         self.status.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
         layout.addWidget(self.status)
+        self.report_rom_status = QLabel()
+        self.report_rom_status.setObjectName("note")
+        self.report_rom_status.setWordWrap(True)
+        self.report_rom_status.setTextFormat(Qt.TextFormat.PlainText)
+        self.report_rom_status.hide()
+        layout.addWidget(self.report_rom_status)
         self.progress = QProgressBar()
+        window.bind(self.progress.setAccessibleName, "Progression de la création")
         self.progress.hide()
         layout.addWidget(self.progress)
+        self.details = QToolButton()
+        window.bind(self.details.setText, "Détails")
+        self.details.setCheckable(True)
+        self.details.hide()
+        layout.addWidget(self.details, 0, Qt.AlignmentFlag.AlignLeft)
+        self.log = QPlainTextEdit()
+        self.log.setReadOnly(True)
+        self.log.setMaximumBlockCount(200)
+        self.log.setMaximumHeight(90)
+        self.log.hide()
+        self.details.toggled.connect(self.log.setVisible)
+        layout.addWidget(self.log)
 
         footer = QHBoxLayout()
         self.home_button = window.button("Accueil")
@@ -186,6 +226,8 @@ class XDWorkspace(QWidget):
         self.source.textChanged.connect(self.invalidate_preview)
         self.seed.textChanged.connect(self.invalidate_preview)
         self.tool.textChanged.connect(self.invalidate_preview)
+        self.source.textChanged.connect(lambda: window.schedule_report_rom_check(owner=self))
+        self.tool.textChanged.connect(lambda: window.schedule_report_rom_check(owner=self))
         self.destination.textChanged.connect(self.destination_changed)
         self.format.currentTextChanged.connect(self.format_changed)
         self.update_tool()
@@ -204,12 +246,13 @@ class XDWorkspace(QWidget):
         self.preset_note = QLabel()
         self.preset_note.setWordWrap(True)
         simple_layout.addWidget(self.preset_note)
-        self.preset_common = window.note(
-            "Les échanges de Doking suivent les Poké Places. Le tirage évite les familles en double dans l’histoire.")
+        self.preset_common = window.note(PRESET_EVOLUTIONS)
         simple_layout.addWidget(self.preset_common)
-        self.preset_shiny = window.note(
-            "Le starter, les cadeaux et les obscurs ont 5 % de chance d’être chromatiques. La seed fixe le résultat.")
+        self.preset_shiny = window.note(PRESET_SHINIES)
         simple_layout.addWidget(self.preset_shiny)
+        self.preset_native = window.note(
+            "Dans XD, Lugia obscur garde son espèce. Les échanges de Doking suivent les Poké Places, qui gardent le taux chromatique d’origine.")
+        simple_layout.addWidget(self.preset_native)
         simple_layout.addStretch(1)
         self.configuration_pages.addWidget(scroll_area(simple))
 
@@ -222,6 +265,7 @@ class XDWorkspace(QWidget):
             page = QWidget()
             form = QVBoxLayout(page)
             form.setSpacing(8)
+            form.addWidget(window.note(XD_CATEGORY_HELP.get(group, CATEGORY_HELP.get(group, ""))))
             for item in RULES:
                 if item.metadata["group"] == group:
                     self.add_control(form, item)
@@ -353,9 +397,12 @@ class XDWorkspace(QWidget):
             button.setIcon(self.window.cursor_icon if index == self.step else QIcon())
             button.setEnabled(not self.window.busy)
         self.home_button.setText(text("Accueil" if self.step == 0 else "Retour"))
-        self.create_button.setText(text("Créer la ROM" if self.step == 2 else "Continuer"))
-        for button in (self.home_button, self.create_button):
-            button.setEnabled(not self.window.busy)
+        action = ("Créer la ROM" if effective_xd_setting_names(self.current_options())
+                  else "Créer une copie à l’identique")
+        self.create_button.setText(text(action if self.step == 2 else "Continuer"))
+        self.home_button.setEnabled(not self.window.busy)
+        self.create_button.setEnabled(not self.window.busy and
+                                      (self.step < 2 or self.window.preview_thread is None))
         if self.window.game_views.currentWidget() is self:
             self.window.profile_menu.setEnabled(not self.window.busy)
         self.status.setText(text(self.status_message or self.step_help()))
@@ -371,33 +418,20 @@ class XDWorkspace(QWidget):
             return
         text = self.window.text
         options = self.current_options()
-        entries = [text("Seed") + "  " + self.seed.text()]
-        defaults = XDOptions.unchanged()
-        for item in RULES:
-            name, metadata = item.name, item.metadata
-            value = getattr(options, name)
-            if not self.rule_applies(options, name):
-                continue
-            if value == getattr(defaults, name) and name not in ("starter_stage", "shiny_chance_percent"):
-                continue
-            label = text(metadata["label"])
-            if metadata["kind"] == "choice":
-                value = text(dict(metadata["choices"])[value])
-            elif metadata.get("selector") == "species":
-                value = SPECIES_NAMES[self.window.language].get(value, value)
-            elif metadata["kind"] in ("species_set", "type_set"):
-                value = len(value)
-            entries.append(label if metadata["kind"] == "bool" else f"{label}  {value}")
-        self.review.setText("\n".join(entries))
+        preset = next((button.text() for button, constructor in self.presets if options == constructor()),
+                      text("Personnalisés"))
+        header = text("Réglages : {preset}\nSeed : {seed}", preset=preset, seed=self.seed.text())
+        self.review.setText(header + "\n\n" + configuration_review(options, self.window.language))
+
+    def reveal_review(self):
+        if self.review.isVisible():
+            top = self.review.mapTo(self.output_scroll.widget(), self.review.rect().topLeft()).y()
+            self.output_scroll.ensureVisible(0, top + min(72, self.review.height()), 0, 12)
 
     def refresh_presets(self):
         options = self.current_options()
-        descriptions = (
-            "Change les Pokémon, les capacités, les CT et les objets dans XD.",
-            "Change les Pokémon. Les capacités, les CT et les objets suivent leurs règles d’origine.",
-            "Ces réglages produisent une copie à l’identique.",
-        )
-        description = "Réglages personnalisés"
+        descriptions = PRESET_DESCRIPTIONS
+        description = CUSTOM_PRESET
         randomizing = False
         for (button, constructor), note in zip(self.presets, descriptions, strict=True):
             preset = constructor()
@@ -410,9 +444,12 @@ class XDWorkspace(QWidget):
         self.preset_note.setText(self.window.text(description))
         self.preset_common.setVisible(randomizing)
         self.preset_shiny.setVisible(randomizing)
+        self.preset_native.setVisible(randomizing)
 
     @staticmethod
     def rule_applies(options, name):
+        if name in ("starter_stage", "starter_three_stage_families"):
+            return options.randomize_starter and options.starter_species == 0
         if name == "trainer_level_multiplier":
             return not options.progressive_levels
         if name == "tm_ensure_offensive":
@@ -466,12 +503,15 @@ class XDWorkspace(QWidget):
 
     def import_configuration(self, path, *, report=False):
         try:
-            profile = load_xd_creation_report(path) if report else load_profile(path, is_xd=True)
+            identity = load_creation_report(path, is_xd=True) if report else None
+            profile = identity.profile if identity is not None else load_profile(path, is_xd=True)
         except (UserError, OSError) as error:
             self.set_status(Message("Import impossible : {error}", error=self.window.error_message(error)), error=True)
             return
         self.set_options(profile.options)
         self.seed.setText(profile.seed)
+        self.creation_report = identity
+        self.window.schedule_report_rom_check(owner=self)
         if profile.xd_spot_migration:
             self.set_status(XD_SPOT_MIGRATION)
             return
@@ -492,29 +532,50 @@ class XDWorkspace(QWidget):
         preview.setSpacing(6)
         (self.encounter_tabs, self.preview_button, self.preview_cancel, self.preview_status,
          self.preview_progress) = preview_toolbar(
-            preview, window, ("Starter · 1", "Obscurs · 83", "Cadeaux · 7", "Poké Places · 9"),
-            self.start_preview, window.cancel)
+            preview, window, (Message("Starters · {count}", count=1), Message("Obscurs · {count}", count=83),
+                              Message("Cadeaux · {count}", count=7), "Poké Places · 9"),
+            self.start_preview, self.cancel_preview)
+        self.family_tab = self.encounter_tabs.addTab("")
+        self.encounter_tabs.setTabVisible(self.family_tab, False)
         self.preview_hint = window.note("Calculez l’aperçu pour afficher le tirage de cette seed.")
         self.preview_hint.setTextFormat(Qt.TextFormat.PlainText)
         preview.addWidget(self.preview_hint)
         self.preview_search = search_field(window, "Rechercher un Pokémon…")
-        self.preview_search.textChanged.connect(self.render_preview)
+        self.preview_search.textChanged.connect(self.filter_encounters)
         preview.addWidget(self.preview_search)
 
         party = QWidget()
         party_layout = QVBoxLayout(party)
         party_layout.setContentsMargins(0, 12, 0, 0)
         slot, self.preview_portrait, self.preview_starter, self.starter_details = starter_slot(
-            window, "Pokémon de départ", self.open_starter_details)
+            window, "Premier starter", self.open_starter_details)
         party_layout.addLayout(slot)
+        self.preview_shiny_status = QLabel()
+        self.preview_shiny_status.setWordWrap(True)
+        self.preview_shiny_status.setObjectName("note")
+        self.preview_shiny_status.setTextFormat(Qt.TextFormat.PlainText)
+        party_layout.addWidget(self.preview_shiny_status)
         party_layout.addStretch(1)
         self.preview_starter_row = scroll_area(party)
         preview.addWidget(self.preview_starter_row, 1)
 
-        self.preview_details = EncounterTable(window, "Détails de l’aperçu XD")
+        self.preview_details = EncounterTable(window, "Tirage des Pokémon obscurs et offerts")
         self.preview_details.itemClicked.connect(self.open_encounter_details)
         self.preview_details.itemActivated.connect(self.open_encounter_details)
         preview.addWidget(self.preview_details, 1)
+        self.family_page = QWidget()
+        family_layout = QVBoxLayout(self.family_page)
+        family_layout.setContentsMargins(0, 12, 0, 0)
+        heading = window.label("Familles en double")
+        heading.setObjectName("subheading")
+        family_layout.addWidget(heading)
+        self.family_duplicates = QLabel()
+        self.family_duplicates.setTextFormat(Qt.TextFormat.PlainText)
+        self.family_duplicates.setWordWrap(True)
+        family_layout.addWidget(self.family_duplicates)
+        family_layout.addStretch(1)
+        self.family_scroll = scroll_area(self.family_page)
+        preview.addWidget(self.family_scroll, 1)
         footer = QHBoxLayout()
         self.encounter_hint = window.label("Cliquez sur une ligne pour ouvrir sa fiche.")
         self.encounter_hint.setObjectName("previewCount")
@@ -579,16 +640,23 @@ class XDWorkspace(QWidget):
 
     @Slot()
     def invalidate_preview(self):
+        cache_key = self.source.text().strip(), self.tool.text().strip()
+        if cache_key != self._cache_source_key:
+            self.window.preview_cache.invalidate()
+            self._cache_source_key = cache_key
         options = self.current_options()
         for name, control in self.controls.items():
             control.setEnabled(self.rule_applies(options, name))
         self.refresh_review()
         self.refresh_presets()
-        if self.preview_key is not None:
-            self.preview_key = self.preview_result = None
+        if self.preview_key is not None and self.preview_key != self.preview_configuration():
+            self.preview_key = self.preview_result = self.preview_plan = None
+            if self.window.detail_window is not None:
+                self.window.detail_window.close()
             if self.preview_running:
-                self.window.cancel_event.set()
+                self.window.preview_cancel_event.set()
                 self.preview_cancel.setEnabled(False)
+            self.preview_action = "Actualiser l’aperçu"
             self.preview_message = "Seed ou réglages modifiés. Actualisez l’aperçu."
         elif not self.preview_running:
             self.preview_message = ("L’aperçu utilise la ROM, la seed et les réglages ci-dessus."
@@ -596,6 +664,7 @@ class XDWorkspace(QWidget):
                                     "Choisissez la ROM d’origine pour calculer l’aperçu.")
         self.preview_error = False
         self.render_preview()
+        self.refresh_navigation()
 
     @Slot()
     def start_preview(self):
@@ -611,46 +680,54 @@ class XDWorkspace(QWidget):
         from .preview import preview_xd
 
         tool = self.tool.text().strip()
+        try:
+            validate_seed(self.seed.text())
+            validate_options(self.current_options())
+        except UserError as error:
+            self.preview_failed(error, False)
+            return
         self.preview_key = self.preview_configuration()
         self.preview_running = True
+        self.preview_running_key = self.preview_key
+        self.window.preview_cancel_event = threading.Event()
+        self.roulette_faces.clear()
+        self.roulette_index = 0
         self.preview_error = False
-        self.preview_message = "Calcul en cours…"
+        self.preview_message = "Le tirage s’affichera à la fin du calcul…"
         self.preview_progress.setRange(0, 0)
         self.preview_cancel.setEnabled(True)
-        self.home_button.setEnabled(False)
-        self.create_button.setEnabled(False)
         self.render_preview()
         self.preview_cancel.setFocus()
-        self.window.start_worker(
+        self.window.launch_preview(
             dict(source=Path(source), seed=self.seed.text(), xd_options=self.preview_key[2],
-                 dolphin_tool=Path(tool) if tool else None, cache=self.window.preview_cache),
-            self.on_preview_progress, self.preview_succeeded, self.preview_failed,
+                 dolphin_tool=Path(tool) if tool else None, cache=self.window.preview_cache,
+                 cancel=self.window.preview_cancel_event),
+            owner=self, succeeded=self.preview_succeeded, failed=self.preview_failed,
+            progress=self.on_preview_progress, roulette=self.load_roulette_faces,
             task=preview_xd,
-            failure_message="Impossible de calculer l’aperçu. Vérifiez la ROM et les réglages, puis réessayez.",
         )
         self.refresh_navigation()
 
     @Slot(int, object)
     def on_preview_progress(self, percent, message):
-        if self.preview_key is None or self.window.cancel_event.is_set():
+        if self.preview_key is None or self.window.preview_cancel_event.is_set():
             return
         if percent > 0:
             self.preview_progress.setRange(0, 100)
             self.preview_progress.setValue(percent)
-        self.preview_message = message
-        self.preview_hint.setText(self.window.text(message))
+        self.preview_progress.setToolTip(self.window.text(message))
 
-    @Slot(dict)
-    def preview_succeeded(self, result):
+    @Slot(dict, object)
+    def preview_succeeded(self, result, prepared=None):
         self.refresh_preview_identity()
         if self.preview_key is None:
             return
-        if self.window.cancel_event.is_set():
+        if self.window.preview_cancel_event.is_set():
             self.preview_failed("", True)
             return
         self.preview_result = result
-        self.preview_message = ("Aperçu à jour" if result.get("starter") or result.get("gifts")
-                                else "Ces réglages produisent une copie à l’identique.")
+        self.preview_plan = prepared
+        self.preview_message = "Aperçu pour une nouvelle partie. Aucune ROM n’a été créée."
         focus_result = self.preview_cancel.hasFocus()
         self.render_preview()
         if focus_result:
@@ -661,43 +738,77 @@ class XDWorkspace(QWidget):
     def preview_failed(self, error, cancelled):
         if self.preview_running and self.preview_key is None:
             return
-        self.preview_key = self.preview_result = None
+        self.preview_key = self.preview_result = self.preview_plan = None
+        self.preview_action = "Réessayer"
         self.preview_error = not cancelled
         if cancelled:
             self.preview_message = "Aperçu annulé."
         else:
-            self.preview_message = self.window.error_message(error) if isinstance(error, Exception) else error
+            message = self.window.error_message(error) if isinstance(error, Exception) else error
+            self.preview_message = Message("Aperçu indisponible : {error}", error=Message(message))
         self.render_preview()
+
+    def cancel_preview(self):
+        if not self.preview_running:
+            return
+        self.window.preview_cancel_event.set()
+        self.preview_key = self.preview_result = self.preview_plan = None
+        self.preview_action = "Réessayer"
+        self.preview_message = "Annulation de l’aperçu…"
+        self.render_preview()
+
+    def finished_preview(self):
+        self.preview_running = False
+        self.preview_running_key = None
+        if self.preview_message == "Annulation de l’aperçu…":
+            self.preview_message = "Aperçu annulé."
+        self.render_preview()
+        self.refresh_navigation()
 
     def render_preview(self):
         ready = self.preview_result is not None
+        data = self.preview_result or baseline_rows(self.current_options())
+        self.render_family_duplicates(data)
+        tab = self.encounter_tabs.currentIndex()
+        rolling = (self.preview_running and self.preview_key is not None and not ready
+                   and not self.window.preview_cancel_event.is_set())
+        if rolling and not self.roulette_timer.isActive():
+            self.roulette_timer.start()
+        elif not rolling:
+            self.roulette_timer.stop()
+        self.preview_button.setText(self.window.text(self.preview_action))
         self.preview_button.setVisible(not self.preview_running and not ready)
+        self.preview_button.setEnabled(not self.window.busy and self.window.preview_thread is None and not ready)
         self.preview_cancel.setVisible(self.preview_running and not ready)
-        self.preview_progress.setVisible(self.preview_running and not ready)
+        self.preview_cancel.setText(self.window.text("Annulation de l’aperçu…" if
+            self.preview_running and self.window.preview_cancel_event.is_set() else "Annuler l’aperçu"))
+        self.preview_cancel.setEnabled(rolling)
+        self.preview_progress.setVisible(self.preview_running and not ready and tab == 0)
         status_style = "color: #ffb4c4;" if self.preview_error else ""
         if self.preview_hint.styleSheet() != status_style:
             self.preview_hint.setStyleSheet(status_style)
-        self.preview_hint.setText("" if ready and self.preview_message == "Aperçu à jour"
-                                  else self.window.text(self.preview_message))
-        self.preview_hint.setVisible(bool(self.preview_hint.text()))
+        self.preview_hint.setText(self.window.text(self.preview_message))
+        self.preview_hint.setVisible(not ready and (tab == 0 if self.preview_running else
+                                      self.preview_action != "Calculer l’aperçu"))
         self.preview_status.setText("✓ " + self.window.text("Aperçu à jour")
-                                    if ready and self.preview_message == "Aperçu à jour" else "")
+                                    if ready else "")
+        self.preview_status.setToolTip(self.window.text(self.preview_message))
         self.preview_status.setVisible(bool(self.preview_status.text()))
-        data = self.preview_result or {}
-        names = SPECIES_NAMES[self.window.language]
         ids = data.get("national_ids", {})
 
         def name(index):
-            national = ids.get(str(index), index)
-            return names.get(national, f"#{national}").capitalize()
+            return self.species_name(ids.get(str(index), index))
 
         def encounter(row, *, rich=False, show_original=False):
-            species = row["species"]
-            shown = name(species)
+            shown = self.species_name(self.national_dex(row, data))
+            if shown == "?":
+                return shown
             if rich:
                 shown = shiny_name_html(shown, 14) if row.get("shiny") else escape(shown)
-            original = row.get("original", species)
-            if show_original and original != species:
+            elif row.get("shiny"):
+                shown += " ★"
+            original = row.get("original", row["species"])
+            if show_original and original != row["species"]:
                 native = escape(name(original)) if rich else name(original)
                 shown = f"{native} → {shown}"
             level = row.get("level")
@@ -705,19 +816,20 @@ class XDWorkspace(QWidget):
                 level = "–".join(map(str, row["levels"]))
             return self.window.text("{name} · Niv. {level}", name=shown, level=level) if level is not None else shown
 
-        tab = self.encounter_tabs.currentIndex()
         starter = data.get("starter")
         self.preview_starter_row.setVisible(tab == 0)
+        self.family_scroll.setVisible(tab == self.family_tab)
         self.starter_details.setVisible(bool(starter and starter.get("details")))
         rich = bool(starter and starter.get("shiny"))
         self.preview_starter.setTextFormat(Qt.TextFormat.RichText if rich else Qt.TextFormat.PlainText)
-        name_text = encounter(starter, show_original=True) if starter else "?"
-        self.preview_starter.setText(encounter(starter, rich=True, show_original=True) if rich else name_text)
+        name_text = encounter(starter) if starter else "?"
+        self.preview_starter.setText(encounter(starter, rich=True) if rich else name_text)
         self.preview_starter.setAccessibleName(name_text)
-        portrait_row = dict(starter, national_dex=ids.get(str(starter["species"]), starter["species"])) if starter else {}
+        portrait_row = dict(starter, national_dex=self.national_dex(starter, data)) if starter else {}
         self.preview_portrait.setPixmap(self.window.preview_portrait(portrait_row, xd=True).pixmap(42, 42))
         self.preview_portrait.setAccessibleName(name_text)
-        self.preview_portrait.setToolTip(name_text)
+        self.preview_portrait.setToolTip(encounter(starter, show_original=True) if starter else "?")
+        self.preview_shiny_status.setText(self.window.shiny_status_text(self.current_options(), xd=True))
 
         tree = self.preview_details
         position = tree.verticalScrollBar().value()
@@ -726,7 +838,6 @@ class XDWorkspace(QWidget):
         shadows = data.get("decks", {}).get("Story", {}).get("shadows", ())
         spots = data.get("poke_spots", ())
         gifts = data.get("gifts", ())
-        query = search_key(self.preview_search.text().strip())
         def gift_origin(row, *, original=False):
             required_species = row.get("required_species")
             if required_species is not None:
@@ -743,7 +854,7 @@ class XDWorkspace(QWidget):
 
         rows = ()
         if tab == 1:
-            rows = [(row, f"#{row['shadow_id']:02d}", "") for row in shadows]
+            rows = [(row, f"{row['shadow_id']:02d}", "") for row in shadows]
         elif tab == 2:
             rows = []
             for row in gifts:
@@ -753,15 +864,19 @@ class XDWorkspace(QWidget):
                 rows.append((row, original_offer, suffix))
         elif tab == 3:
             rows = [(row, self.window.text(SPOT_LABELS.get(row["spot"], row["spot"])),
-                     f" · {row['chance']} %") for row in spots]
+                     f" · {row['chance']} %" if "chance" in row else "") for row in spots]
         for row, prefix, suffix in rows:
             original = name(row.get("original", row["species"]))
-            native = f"{prefix} · {original}" if prefix else original
+            native = (f"{original}\n{prefix}" if tab == 2 else f"{prefix} · {original}") if prefix else original
             result = f"{encounter(row)}{suffix}"
-            number = ids.get(str(row["species"]), row["species"])
-            if query and query not in search_key(f"{native} {result} #{number:03d}"):
-                continue
+            number = self.national_dex(row, data)
             child = QTreeWidgetItem(tree, [native, result])
+            words = [native, result, str(number or ""), str(row.get("shadow_id", ""))]
+            for national in (number, ids.get(str(row.get("original")), row.get("original"))):
+                if national:
+                    words.append(f"#{national:03d}")
+                    words.extend(names[national] for names in SPECIES_NAMES.values() if national in names)
+            child.setData(0, Qt.ItemDataRole.UserRole, search_key(" ".join(words)))
             child.setData(0, Qt.ItemDataRole.UserRole + 2, row)
             child.setSizeHint(0, QSize(0, 46))
             child.setToolTip(0, native)
@@ -769,11 +884,75 @@ class XDWorkspace(QWidget):
             child.setIcon(1, self.window.preview_portrait(dict(row, national_dex=number), xd=True))
             if row.get("shiny"):
                 child.setData(1, RICH_NAME_ROLE, f"{encounter(row, rich=True)}{escape(suffix)}")
-        self.preview_search.setVisible(ready and tab > 0)
-        tree.setVisible(tab > 0)
-        self.encounter_hint.setVisible(any(row.get("details") for row, _, _ in rows))
+        self.preview_search.setVisible(0 < tab < self.family_tab)
+        tree.setVisible(0 < tab < self.family_tab)
+        self.encounter_hint.setText(self.window.text("Calcul en cours…" if rolling else
+                                                    "Cliquez sur une ligne pour ouvrir sa fiche."))
+        self.encounter_hint.setVisible(0 < tab < self.family_tab and
+                                       (rolling or any(row.get("details") for row, _, _ in rows)))
         tree.scrollbar.setValue(position)
+        self.filter_encounters()
+
+    def filter_encounters(self):
+        query = search_key(self.preview_search.text().strip())
+        for index in range(self.preview_details.topLevelItemCount()):
+            item = self.preview_details.topLevelItem(index)
+            item.setHidden(query not in (item.data(0, Qt.ItemDataRole.UserRole) or ""))
         self.update_preview_count()
+
+    @staticmethod
+    def national_dex(row, data):
+        return row.get("national_dex", data.get("national_ids", {}).get(str(row["species"]), row["species"]))
+
+    def species_name(self, national):
+        if national is None:
+            return "?"
+        return SPECIES_NAMES[self.window.language].get(national, f"#{national}").capitalize()
+
+    def render_family_duplicates(self, data):
+        groups = data.get("family_duplicates", [])
+        self.encounter_tabs.setTabVisible(self.family_tab, bool(groups))
+        self.encounter_tabs.setTabText(self.family_tab, self.window.text("Doublons · {count}", count=len(groups)))
+        if not groups:
+            self.family_duplicates.clear()
+            return
+        name = lambda row: self.species_name(self.national_dex(row, data))
+        labels = {"starter": self.window.text("{name} (starter)", name=name(data["starter"]))}
+        labels.update({f"shadow:{row['shadow_id']}": self.window.text("{name} (obscur nº {number})",
+                       name=name(row), number=f"{row['shadow_id']:02d}")
+                       for row in data.get("decks", {}).get("Story", {}).get("shadows", ())})
+        labels.update({row["key"]: self.window.text("{name} (cadeau)", name=name(row)) for row in data.get("gifts", ())})
+        self.family_duplicates.setText("\n\n".join(" · ".join(labels[key] for key in group) for group in groups))
+
+    def load_roulette_faces(self, faces):
+        if self.roulette_timer.isActive():
+            self.roulette_faces = {dex: self.window.preview_portrait(dict(portrait_png=png), xd=True)
+                                   for dex, png in faces.items()}
+
+    def advance_roulette(self):
+        if not self.preview_running or not self.isVisible() or self.workspace_tabs.currentIndex() != 1:
+            return
+        self.roulette_index = (self.roulette_index + 1) % len(ROULETTE_SPECIES)
+
+        def sample(offset):
+            dex = ROULETTE_SPECIES[(self.roulette_index + offset * 7) % len(ROULETTE_SPECIES)]
+            return self.species_name(dex), self.roulette_faces.get(dex, self.window.xd_unknown_portrait)
+
+        if self.encounter_tabs.currentIndex() == 0:
+            if self.national_dex(baseline_rows(self.current_options())["starter"], {}) is None:
+                name, icon = sample(0)
+                self.preview_starter.setText(name)
+                self.preview_portrait.setPixmap(icon.pixmap(42, 42))
+            return
+        tree = self.preview_details
+        viewport = tree.viewport().rect()
+        for index in range(tree.topLevelItemCount()):
+            item = tree.topLevelItem(index)
+            row = item.data(0, Qt.ItemDataRole.UserRole + 2)
+            if row.get("species") is None and not item.isHidden() and viewport.intersects(tree.visualItemRect(item)):
+                name, icon = sample(index)
+                item.setText(1, name)
+                item.setIcon(1, icon)
 
     def open_starter_details(self):
         row = (self.preview_result or {}).get("starter")
@@ -819,6 +998,7 @@ class XDWorkspace(QWidget):
             self.format.setCurrentText(suffix[1:].upper())
             if not self.destination.text().strip():
                 self.destination.setText(str(source.with_name(f"xd-randomized{suffix}")))
+        self.source_conversion.setChecked(suffix == ".rvz")
         self.update_tool()
 
     def destination_changed(self, value):
@@ -856,6 +1036,8 @@ class XDWorkspace(QWidget):
         self.rule_category_changed()
         self.search_rules()
         self.render_preview()
+        self.log.setPlainText("\n".join(self.window.text(message) for message in self._log_messages))
+        self.window.render_report_rom_status(owner=self)
 
     def start(self):
         if self.window.busy:
@@ -892,10 +1074,14 @@ class XDWorkspace(QWidget):
         self.cancel_button.show()
         self.progress.setValue(0)
         self.progress.show()
+        self.last_stage = ""
+        self._log_messages.clear()
+        self.log.clear()
         self.set_status("Lecture de la ROM d’origine…")
         self.window.start_worker(
             dict(source=source, destination=destination, seed=self.seed.text(),
-                 dolphin_tool=tool_path, journal_language=self.window.language, xd_options=options),
+                 dolphin_tool=tool_path, journal_language=self.window.language, xd_options=options,
+                 prepared_patches=self.preview_plan),
             self.on_progress, self.succeeded, self.failed,
         )
         self.refresh_navigation()
@@ -904,6 +1090,11 @@ class XDWorkspace(QWidget):
     def on_progress(self, percent, message):
         self.progress.setValue(percent)
         self.set_status(message)
+        if message != self.last_stage:
+            self._log_messages.append(message)
+            self.log.appendPlainText(self.window.text(message))
+            self.last_stage = message
+            self.details.show()
 
     @Slot(dict)
     def succeeded(self, report):
@@ -916,8 +1107,11 @@ class XDWorkspace(QWidget):
 
     @Slot(object, bool)
     def failed(self, message, cancelled):
-        self.set_status(self.window.error_message(message) if isinstance(message, Exception) else message,
-                        error=not cancelled)
+        message = self.window.error_message(message) if isinstance(message, Exception) else message
+        self.set_status(message, error=not cancelled)
+        self._log_messages.append(message)
+        self.log.appendPlainText(self.window.text(message))
+        self.details.show()
 
     def cancelling(self):
         if self.preview_running:

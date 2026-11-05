@@ -27,8 +27,10 @@ a question mark represents a replacement not yet calculated.
 **Profiles**, beside language and audio, imports/exports portable JSON settings.
 Profiles belong to one game and contain no source/output paths. Reports can also
 restore settings but may contain local paths: review them before sharing.
-Fixed choices, exclusions and strict filters take priority over best-effort
-cross-group family diversity. Remaining duplicates appear in the report.
+After report import, the app compares your selected original with the report;
+input/output paths stay as you chose them. Fixed choices, exclusions and strict
+filters take priority over best-effort cross-group family diversity. Remaining
+duplicates appear in the preview's extra tab and in the report.
 
 ## Starters and evolutions
 

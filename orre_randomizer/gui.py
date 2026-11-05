@@ -49,6 +49,8 @@ from .ui_workspace import (DeliberateWheel, EncounterTable, RuleNavigation, conf
 from .settings_presentation import configuration_review, search_settings
 from .resources import application_icon, application_logo, interface_assets, music_track, menu_icon, xd_logo
 from .i18n import LANGUAGES, Message, is_translatable, language_preference, resolve_language, translate
+from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS,
+                             PRESET_EVOLUTIONS, PRESET_SHINIES, ROM_DESCRIPTION, STEP_HELP)
 
 
 class Worker(QObject):
@@ -81,13 +83,15 @@ class Worker(QObject):
 
 class PreviewWorker(QObject):
     succeeded = Signal(dict, object)
+    progress = Signal(int, object)
     roulette = Signal(object)
     failed = Signal(object, bool)
     finished = Signal()
 
-    def __init__(self, arguments):
+    def __init__(self, arguments, task=None):
         super().__init__()
         self.arguments = arguments
+        self.task = task or preview_starters
 
     @Slot()
     def run(self):
@@ -98,7 +102,8 @@ class PreviewWorker(QObject):
             prepared = plan
 
         try:
-            result = preview_starters(**self.arguments, roulette=self.roulette.emit, on_prepared=keep_plan)
+            result = self.task(**self.arguments, progress=self.progress.emit,
+                               roulette=self.roulette.emit, on_prepared=keep_plan)
             self.succeeded.emit(result, prepared)
         except Cancelled as error:
             self.failed.emit(error, True)
@@ -289,7 +294,7 @@ class MainWindow(QMainWindow):
         heading = self.label("Choisissez votre ROM")
         heading.setObjectName("section")
         source_layout.addWidget(heading)
-        source_layout.addWidget(self.note("Colosseum Europe, USA ou Japon (révision 0), sans modification. Le fichier d’origine est conservé."))
+        source_layout.addWidget(self.note(Message(ROM_DESCRIPTION, game="Pokémon Colosseum")))
         source_layout.addSpacing(16)
         self.source, self.source_button = file_field(
             source_layout, self, "ROM d’&origine", "ROM d’origine",
@@ -565,9 +570,9 @@ class MainWindow(QMainWindow):
         self.preset_description = QLabel()
         self.preset_description.setWordWrap(True)
         simple.addWidget(self.preset_description)
-        self.preset_common = self.note("Les évolutions sont adaptées à Colosseum et les pierres sont vendues à Phénacit et Pyrite. Les starters commencent sous leur forme de base, dans une famille à trois stades. Le tirage évite les familles en double entre starters, obscurs et cadeaux quand les règles le permettent.")
+        self.preset_common = self.note(PRESET_EVOLUTIONS)
         simple.addWidget(self.preset_common)
-        self.preset_shiny = self.note("Chaque Pokémon concerné a 5 % de chance d’être chromatique. La seed fixe le résultat.")
+        self.preset_shiny = self.note(PRESET_SHINIES)
         simple.addWidget(self.preset_shiny)
         simple.addStretch(1)
         self.configuration_pages.addWidget(scroll_area(self.simple_panel))
@@ -596,7 +601,8 @@ class MainWindow(QMainWindow):
         layout.setSpacing(6)
         (self.preview_tabs, self.preview_button, self.preview_cancel_button, self.preview_status,
          self.preview_progress) = preview_toolbar(
-            layout, self, ("Starters · 2", "Obscurs · 48", "Cadeaux · 4"), self.start_preview, self.cancel_preview)
+            layout, self, (Message("Starters · {count}", count=2), Message("Obscurs · {count}", count=48),
+                           Message("Cadeaux · {count}", count=4)), self.start_preview, self.cancel_preview)
         self.family_tab = self.preview_tabs.addTab("")
         self.preview_tabs.setTabVisible(self.family_tab, False)
         self.preview_hint = self.note("Calculez l’aperçu pour afficher le tirage de cette seed.")
@@ -757,7 +763,7 @@ class MainWindow(QMainWindow):
             return
         self.step = index
         self.status.setStyleSheet("")
-        self.set_status(("Choisissez la ROM d’origine.", "Le mode Avancé permet de modifier chaque option du choix sélectionné.", "Vérifiez la destination, puis créez la ROM.")[index])
+        self.set_status(STEP_HELP[index])
         self.refresh_settings_help()
         self.refresh_navigation()
 
@@ -774,23 +780,7 @@ class MainWindow(QMainWindow):
         self.art_note.hide()
 
     def build_rules(self):
-        descriptions = {
-            "Dresseurs": "Les obscurs sont réglés séparément des autres Pokémon.",
-            "Starters et cadeaux": "Réglez les deux starters et les Pokémon offerts.",
-            "Capacités": "Choisissez les capacités à changer et les protections à appliquer.",
-            "CT": "Les descriptions suivent les capacités tirées. Les CS restent inchangées.",
-            "Boss": "Ces réglages concernent les sept boss. Le choix de chaque obscur est conservé lors de ses réapparitions.",
-            "Pokémon autorisés": "Ces filtres s’appliquent aux Pokémon remplacés.",
-            "Talents": "Garde Mystik reste réservé à Munja.",
-            "Statistiques": "Les statistiques sont redistribuées pour chaque espèce. Munja garde 1 PV de base.",
-            "Types": "Les nouveaux types sont pris en compte pour les capacités du même type.",
-            "Objets tenus": "Les Pokémon sans objet restent sans objet.",
-            "Objets trouvés": "Les coffres gardent leur position et leur quantité d’objets. Les objets clés restent inchangés.",
-            "Niveaux et capture": "Ces réglages ne changent pas le niveau des starters ni des Pokémon offerts.",
-            "Évolutions": "Pour les évolutions par pierre, activez la vente de pierres dans « Boutiques ».",
-            "Boutiques": "Réglez les objets vendus et la disponibilité des pierres d’évolution.",
-            "Chromatiques": "La seed fixe les statuts chromatiques ; décochez l’option pour un tirage en jeu.",
-        }
+        descriptions = CATEGORY_HELP
         self.rule_groups = list(descriptions)
         for group, description in descriptions.items():
             scroll_page = QScrollArea()
@@ -1063,11 +1053,7 @@ class MainWindow(QMainWindow):
         self.create_button.setText(self.text("Créer la ROM" if self.current_options().has_changes
                                              else "Créer une copie à l’identique"))
         options = self.current_options()
-        descriptions = (
-            "Remplace les Pokémon des dresseurs, les obscurs, les starters et les cadeaux, avec une puissance proche de l’original.\nRandomise aussi les capacités de départ, les apprentissages par niveau, les CT et les objets des coffres et des boutiques.",
-            "Remplace les Pokémon des dresseurs, les obscurs, les starters et les cadeaux, avec une puissance proche de l’original.\nGarde les capacités de départ, les apprentissages par niveau et les CT. Les objets restent en place, sauf les pierres ajoutées en boutique.",
-            "Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/RVZ.",
-        )
+        descriptions = PRESET_DESCRIPTIONS
         selected = None
         for index, (button, constructor) in enumerate(self.presets):
             active = options == constructor()
@@ -1076,7 +1062,7 @@ class MainWindow(QMainWindow):
             if active:
                 selected = index
         self.preset_description.setText(self.text(descriptions[selected]) if selected is not None else
-                                        self.text("Réglages personnalisés : vos options ne correspondent plus à un choix prédéfini. Ouvrez Avancé pour les voir ou les modifier. Choisir un des trois modes ci-dessus remplacera ces réglages."))
+                                        self.text(CUSTOM_PRESET))
         self.preset_common.setVisible(selected in (0, 1))
         self.preset_shiny.setVisible(selected in (0, 1))
         self.refresh_review()
@@ -1096,7 +1082,7 @@ class MainWindow(QMainWindow):
         return source, self.seed.text(), self.current_options(), self.tool.text().strip(), identity
 
     def update_preview_controls(self):
-        running = self.preview_thread is not None
+        running = self.preview_thread is not None and getattr(self, 'preview_owner', self) is self
         ready = self.preview_result is not None and self.preview_key == self.preview_configuration()
         rolling = running and self.preview_key is not None and not ready and not self.preview_cancel_event.is_set()
         if rolling and not self.roulette_timer.isActive():
@@ -1105,7 +1091,7 @@ class MainWindow(QMainWindow):
             self.roulette_timer.stop()
         self.preview_button.setText(self.text(self._preview_action))
         self.preview_button.setVisible(not running and not ready)
-        self.preview_button.setEnabled(not self.busy and not running and not ready)
+        self.preview_button.setEnabled(not self.busy and self.preview_thread is None and not ready)
         self.preview_status.setVisible(ready)
         self.preview_hint.setVisible(not ready and not running and self._preview_action != "Calculer l’aperçu")
         self.preview_status.setToolTip(self.text(self._preview_message))
@@ -1217,19 +1203,22 @@ class MainWindow(QMainWindow):
                 item.setIcon(1, icon)
 
     def render_shiny_status(self):
-        options = self.current_options()
+        self.preview_shiny_status.setText(self.shiny_status_text(self.current_options()))
+
+    def shiny_status_text(self, options, *, xd=False):
         if not options.custom_shinies:
-            status = self.text("Avec les règles d’origine, les starters ont 0 % de chance d’être chromatiques. Pour les obscurs capturés, c’est environ 1 sur 8 192 (0,0122 %).")
+            status = self.text("Chromatiques : règles du jeu d’origine." if xd else
+                "Avec les règles d’origine, les starters ont 0 % de chance d’être chromatiques. Pour les obscurs capturés, c’est environ 1 sur 8 192 (0,0122 %).")
         elif options.shiny_chance_percent == 100:
             status = self.text("★ 100 % : starters chromatiques garantis.")
         elif options.shiny_chance_percent == 0:
             status = self.text("0 % : aucun starter chromatique.")
-        elif options.seeded_shinies:
+        elif xd or options.seeded_shinies:
             status = self.text("Statuts chromatiques fixés par la seed.")
         else:
             rate = QLocale(self.language).toString(options.shiny_chance_percent, 'f', 4).rstrip('0').rstrip('.,')
             status = self.text("{rate} % : statut chromatique tiré en jeu.", rate=rate)
-        self.preview_shiny_status.setText(status)
+        return status
 
     def preview_species_name(self, row):
         dex = row.get("national_dex")
@@ -1348,19 +1337,28 @@ class MainWindow(QMainWindow):
         self._preview_message = "Le tirage s’affichera à la fin du calcul…"
         self.roulette_faces.clear()
         self.roulette_index = 0
+        self.launch_preview(dict(source=source, seed=self.seed.text(), options=options,
+                                 dolphin_tool=tool, cancel=self.preview_cancel_event, cache=self.preview_cache),
+                            owner=self, succeeded=self.preview_succeeded, failed=self.preview_failed,
+                            roulette=self.load_roulette_faces)
+        self.render_preview()
+
+    def launch_preview(self, arguments, *, owner, succeeded, failed, roulette, progress=None, task=None):
+        """Both workspaces use the same responsive preview thread and lifetime."""
+        self.preview_owner = owner
         self.preview_thread = QThread(self)
-        self.preview_worker = PreviewWorker(dict(source=source, seed=self.seed.text(), options=options,
-                                                 dolphin_tool=tool, cancel=self.preview_cancel_event, cache=self.preview_cache))
+        self.preview_worker = PreviewWorker(arguments, task)
         self.preview_worker.moveToThread(self.preview_thread)
         self.preview_thread.started.connect(self.preview_worker.run)
-        self.preview_worker.succeeded.connect(self.preview_succeeded)
-        self.preview_worker.roulette.connect(self.load_roulette_faces)
-        self.preview_worker.failed.connect(self.preview_failed)
+        self.preview_worker.succeeded.connect(succeeded)
+        self.preview_worker.roulette.connect(roulette)
+        self.preview_worker.failed.connect(failed)
+        if progress is not None:
+            self.preview_worker.progress.connect(progress)
         self.preview_worker.finished.connect(self.preview_thread.quit)
         self.preview_worker.finished.connect(self.preview_worker.deleteLater)
         self.preview_thread.finished.connect(self.preview_finished)
         self.preview_thread.finished.connect(self.preview_thread.deleteLater)
-        self.render_preview()
         self.preview_thread.start()
 
     @Slot(dict, object)
@@ -1399,6 +1397,14 @@ class MainWindow(QMainWindow):
         if self.preview_thread is not None:
             self.preview_thread.wait()
         self.preview_thread = self.preview_worker = None
+        owner = self.preview_owner
+        self.preview_owner = None
+        if owner is self.xd:
+            self.xd.finished_preview()
+            self.update_preview_controls()
+            if self.close_after_cancel:
+                self.close()
+            return
         self.preview_running_key = None
         if self._preview_message == "Annulation de l’aperçu…":
             self._preview_message = "Aperçu annulé."
@@ -1408,6 +1414,9 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def cancel_preview(self):
+        if getattr(self, 'preview_owner', None) is self.xd:
+            self.xd.cancel_preview()
+            return
         self.preview_cancel_event.set()
         self.preview_key = self.preview_result = self.preview_plan = None
         self._preview_action = "Réessayer"
@@ -1457,46 +1466,51 @@ class MainWindow(QMainWindow):
         if path:
             self.import_creation_report(Path(path))
 
-    def schedule_report_rom_check(self):
-        self.report_rom_timer.stop()
-        if self.report_check is not None:
-            self.report_check.cancel.set()
-        if self.creation_report is None:
-            self.report_rom_message = ""
-        elif not self.source.text().strip():
-            self.report_rom_message = "Sélectionnez la ROM d’origine pour la comparer au rapport."
+    def schedule_report_rom_check(self, *, owner=None):
+        owner = owner or self
+        owner.report_rom_timer.stop()
+        if owner.report_check is not None:
+            owner.report_check.cancel.set()
+        if owner.creation_report is None:
+            owner.report_rom_message = ""
+        elif not owner.source.text().strip():
+            owner.report_rom_message = "Sélectionnez la ROM d’origine pour la comparer au rapport."
         else:
-            self.report_rom_message = "Comparaison de la ROM avec le rapport…"
-            self.report_rom_timer.start(250)
-        self.render_report_rom_status()
+            owner.report_rom_message = "Comparaison de la ROM avec le rapport…"
+            owner.report_rom_timer.start(250)
+        self.render_report_rom_status(owner=owner)
 
-    def render_report_rom_status(self):
-        self.report_rom_status.setText(self.text(self.report_rom_message))
-        self.report_rom_status.setVisible(bool(self.report_rom_message))
+    def render_report_rom_status(self, *, owner=None):
+        owner = owner or self
+        owner.report_rom_status.setText(self.text(owner.report_rom_message))
+        owner.report_rom_status.setVisible(bool(owner.report_rom_message))
 
     @Slot()
-    def check_report_rom(self):
-        if self.report_check is not None or self.close_after_cancel:
+    def check_report_rom(self, *, owner=None):
+        owner = owner or self
+        if owner.report_check is not None or owner.creation_report is None or self.close_after_cancel:
             return
-        tool = self.tool.text().strip()
-        self.report_check = ReportRomCheck(self, self.creation_report, Path(self.source.text().strip()),
-                                           Path(tool) if tool else None, self.preview_cache)
-        self.report_check.finished.connect(self.report_rom_checked)
-        self.report_check.start()
+        tool = owner.tool.text().strip()
+        owner.report_check = ReportRomCheck(self, owner.creation_report, Path(owner.source.text().strip()),
+                                            Path(tool) if tool else None, self.preview_cache)
+        owner.report_check.finished.connect(lambda: self.report_rom_checked(owner=owner))
+        owner.report_check.start()
 
     @Slot()
-    def report_rom_checked(self):
-        check = self.report_check
-        self.report_check = None
+    def report_rom_checked(self, *, owner=None):
+        owner = owner or self
+        check = owner.report_check
+        check.wait()
+        owner.report_check = None
         check.deleteLater()
         if self.close_after_cancel:
             self.close()
         elif check.cancel.is_set():
-            if not self.report_rom_timer.isActive() and self.creation_report is not None and self.source.text().strip():
-                self.report_rom_timer.start(0)
+            if not owner.report_rom_timer.isActive() and owner.creation_report is not None and owner.source.text().strip():
+                owner.report_rom_timer.start(0)
         else:
-            self.report_rom_message = check.message
-            self.render_report_rom_status()
+            owner.report_rom_message = check.message
+            self.render_report_rom_status(owner=owner)
 
     def export_profile(self, path: Path):
         if self.busy:
@@ -1760,8 +1774,11 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         self.report_rom_timer.stop()
+        self.xd.report_rom_timer.stop()
         if self.report_check is not None:
             self.report_check.cancel.set()
+        if self.xd.report_check is not None:
+            self.xd.report_check.cancel.set()
         if self.busy:
             self.close_after_cancel = True
             self.cancel()
@@ -1770,7 +1787,7 @@ class MainWindow(QMainWindow):
             self.close_after_cancel = True
             self.cancel_preview()
             event.ignore()
-        elif self.report_check is not None:
+        elif self.report_check is not None or self.xd.report_check is not None:
             self.close_after_cancel = True
             event.ignore()
         else:

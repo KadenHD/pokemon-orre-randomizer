@@ -15,12 +15,27 @@ historical evidence rather than the current feature specification.
   and skip those prerequisites on public runners.
 - Rust/Python codec output is compared. Archive audits check CRCs, hashes, paths,
   notices and the allowlisted interface pack.
-- Windows diagnostics cover 204 UI states, six languages and two sizes, including
+- Windows diagnostics cover 456 UI states, six languages and two sizes, including
   both games and home. Isolated smoke tests remove developer tools from PATH and
   use fresh application data. The installer is installed, checked and uninstalled.
 - Published asset sizes and SHA-256 digests are verified after release.
 
 Counts evolve; the Actions run for a release tag records that build's results.
+
+### Interface parity (v1.2.1)
+
+The local suite completed 527 tests with no failures (two platform skips).
+The frozen Windows executable passed 456 UI states with bundled images, sounds
+and music, using isolated preferences. Eleven dedicated parity regressions check
+shared labels, help, pending rosters, multilingual search, loading/cancellation,
+stale results, single-click sheets, report comparison and verified-plan reuse.
+
+Real read-only previews were computed from the European Colosseum and XD
+originals. XD's pending roster and internal/National Pokédex mapping were checked
+against all three regional data sets. For XD, recommended, Pokémon-only and copy
+preview plans matched freshly computed creation patches; copy produced zero
+patches. Originals remained unchanged. No new Dolphin gameplay check was needed
+for this presentation update; prior native-validation limits still apply.
 
 ## Native Dolphin checks
 

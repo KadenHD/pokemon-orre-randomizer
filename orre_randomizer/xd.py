@@ -60,9 +60,9 @@ def _shared(name, **overrides):
 
 @dataclass(frozen=True, slots=True)
 class XDOptions:
-    randomize_starter: bool = rule("Remplacer le Pokémon de départ", "Starters et cadeaux", "")
-    randomize_trainers: bool = rule("Randomiser les équipes adverses", "Dresseurs", "")
-    randomize_shadows: bool = rule("Remplacer les Pokémon obscurs", "Dresseurs",
+    randomize_starter: bool = _shared("starter_umbreon")
+    randomize_trainers: bool = _shared("randomize_trainers")
+    randomize_shadows: bool = _shared("randomize_shadows", description=
         "Change les obscurs ordinaires. Le premier obscur a son propre réglage.")
     randomize_tutorial_shadow: bool = rule("Remplacer Teddiursa dans le tutoriel", "Dresseurs",
         "Adapte les dialogues au premier obscur. Il garde le niveau 11 et son taux de capture d’origine.", False)
@@ -70,15 +70,18 @@ class XDOptions:
         "Change les rencontres des Poké Places. Doking demande le Pokémon de l’emplacement rare de chaque lieu.")
     poke_spots_full_pokedex: bool = rule("Piocher dans tout le Pokédex", "Poké Places",
         "Utilise tous les Pokémon autorisés par vos filtres. Désactivé : mélange les trois espèces d’origine de chaque lieu.", False)
-    accessible_evolutions: bool = rule("Rendre les évolutions accessibles", "Évolutions", "")
-    unique_shadow_families: bool = rule("Une famille par Pokémon obscur", "Dresseurs", "")
-    randomize_gifts: bool = rule("Remplacer les Pokémon offerts", "Starters et cadeaux", "")
+    accessible_evolutions: bool = rule("Rendre les évolutions accessibles", "Évolutions",
+        "Adapte les évolutions par échange et les conditions impossibles à réaliser dans le jeu. Les évolutions propres à XD, dont celles d’Évoli, sont conservées.")
+    unique_shadow_families: bool = _shared("unique_shadows")
+    randomize_gifts: bool = rule("Remplacer les Pokémon offerts", "Starters et cadeaux",
+        "Change les espèces des Pokémon offerts, en gardant leurs niveaux. Le Togepi obscur a son propre réglage.")
     randomize_hordel_gift: bool = rule("Remplacer le Togepi obscur", "Starters et cadeaux",
         "Le Pokémon offert peut être échangé après purification, même s’il a évolué.", False)
-    stone_shops: bool = rule("Ajouter les pierres d’évolution en boutique", "Boutiques", "")
-    starter_species: int = _shared("starter_umbreon_species", label="Pokémon de départ", description="")
+    stone_shops: bool = _shared("stones_phenac", label="Ajouter les pierres d’évolution en boutique")
+    starter_species: int = _shared("starter_umbreon_species", description=
+        "Tirage avec la seed, ou Pokémon choisi. Un choix manuel remplace les filtres de stade et de puissance individuelle ; les exclusions restent appliquées.")
     starter_stage: str = _shared("starter_stage")
-    starter_three_stage_families: bool = _shared("starter_three_stage_families", description="")
+    starter_three_stage_families: bool = _shared("starter_three_stage_families")
     diverse_story_families: bool = _shared("diverse_story_families", default=True)
     balance_species: bool = _shared("balance_species", default=True)
     allow_gen1: bool = _shared("allow_gen1")
@@ -87,16 +90,17 @@ class XDOptions:
     allow_legendaries: bool = _shared("allow_legendaries")
     excluded_species: tuple[int, ...] = _shared("excluded_species")
     excluded_types: tuple[int, ...] = _shared("excluded_types")
-    custom_shinies: bool = _shared("custom_shinies", description="")
+    custom_shinies: bool = _shared("custom_shinies", description=
+        "La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places gardent le taux d’origine.")
     custom_shadow_shinies: bool = rule("Appliquer le taux aux Pokémon obscurs", "Chromatiques",
         "Lève le verrouillage de XD. La seed fixe le statut de chaque obscur, conservé après capture et purification. Les Pokémon déjà générés restent inchangés.", False)
     shiny_chance_percent: float = _shared("shiny_chance_percent", default=5.0,
                                          description="La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places gardent le taux d’origine.")
     trainer_theme_mode: str = _shared("trainer_theme_mode")
-    trainer_force_evolved: bool = _shared("trainer_force_evolved", description="")
+    trainer_force_evolved: bool = _shared("trainer_force_evolved")
     trainer_evolution_level: int = _shared("trainer_evolution_level")
-    randomize_trainer_moves: bool = _shared("randomize_trainer_moves", description="")
-    randomize_starter_moves: bool = _shared("randomize_starter_moves", description="")
+    randomize_trainer_moves: bool = _shared("randomize_trainer_moves")
+    randomize_starter_moves: bool = _shared("randomize_starter_moves")
     randomize_gift_moves: bool = _shared("randomize_gift_moves")
     randomize_learnsets: bool = _shared("randomize_learnsets")
     ensure_damaging_move: bool = _shared("ensure_damaging_move")
@@ -105,7 +109,7 @@ class XDOptions:
     ban_self_destruct: bool = _shared("ban_self_destruct")
     ban_ohko: bool = _shared("ban_ohko")
     moves_mode: str = _shared("moves_mode")
-    randomize_abilities: bool = _shared("randomize_abilities", description="")
+    randomize_abilities: bool = _shared("randomize_abilities")
     abilities_family_consistent: bool = _shared("abilities_family_consistent")
     randomize_stats: bool = _shared("randomize_stats")
     preserve_stat_totals: bool = _shared("preserve_stat_totals")
@@ -114,23 +118,25 @@ class XDOptions:
     randomize_held_items: bool = _shared("randomize_held_items")
     useful_held_items_only: bool = _shared("useful_held_items_only")
     trainer_level_multiplier: float = _shared("trainer_level_multiplier")
-    progressive_levels: bool = _shared("progressive_levels", description="")
+    progressive_levels: bool = _shared("progressive_levels")
     early_level_multiplier: float = _shared("early_level_multiplier")
     mid_level_multiplier: float = _shared("mid_level_multiplier")
     late_level_multiplier: float = _shared("late_level_multiplier")
-    capture_rate_multiplier: float = _shared("capture_rate_multiplier", description="")
+    capture_rate_multiplier: float = _shared("capture_rate_multiplier")
     minimum_catch_rate: int = _shared("minimum_catch_rate")
     experience_multiplier: float = _shared("experience_multiplier")
-    purification_multiplier: int = _shared("purification_multiplier", description="")
-    randomize_tm_moves: bool = _shared("randomize_tm_moves", description="")
+    purification_multiplier: int = _shared("purification_multiplier", description=
+        "Multiplie les diminutions de la jauge obscure. ×1 conserve le jeu d’origine ; la purification finale reste nécessaire.")
+    randomize_tm_moves: bool = _shared("randomize_tm_moves")
     tm_compatibility_mode: str = _shared("tm_compatibility_mode")
     tm_ensure_offensive: bool = _shared("tm_ensure_offensive")
     randomize_field_items: bool = _shared("randomize_field_items")
-    randomize_shop_items: bool = _shared("randomize_shop_items", description="")
+    randomize_shop_items: bool = _shared("randomize_shop_items", description=
+        "Change les objets des boutiques prises en charge. Les autres listes, les monnaies spéciales et les pierres restent inchangées.")
     shop_keep_healing: bool = _shared("shop_keep_healing")
     items_similar_value: bool = _shared("items_similar_value")
     keep_capture_items: bool = _shared("keep_capture_items")
-    boss_stronger: bool = _shared("boss_stronger", label="Renforcer les boss de l’histoire")
+    boss_stronger: bool = _shared("boss_stronger")
     boss_team_variety: bool = _shared("boss_team_variety")
     boss_shadow_legendary_mode: str = _shared("boss_shadow_legendary_mode")
     boss_shadow_power_mode: str = _shared("boss_shadow_power_mode")
@@ -705,6 +711,13 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     dol, summary["battle_progression"] = apply_dol_battle_rules(original_dol, dol, region.game_id, options)
     if include_details:
         summary["detail_catalog"] = detail_catalog(new_rel, dol, symbols, region.game_id, edges, move_randomizer)
+    story_families = defaultdict(list)
+    story_families[families[summary["starter"]["species"]]].append("starter")
+    for row in summary["decks"]["Story"]["shadows"]:
+        story_families[families[row["species"]]].append(f"shadow:{row['shadow_id']}")
+    for row in summary["gifts"]:
+        story_families[families[row["species"]]].append(row["key"])
+    summary["family_duplicates"] = [keys for keys in story_families.values() if len(keys) > 1]
     progress(25, "Compression des données du jeu…")
     patches = [(dol_offset, dol)] if dol != original_dol else []
     # Preserve all declared files, the apploader, executable, and FST. When

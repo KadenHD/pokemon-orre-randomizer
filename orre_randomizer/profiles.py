@@ -276,7 +276,7 @@ def load_xd_creation_report(path: Path) -> Profile:
         return parse_xd_profile(stream.read(MAX_REPORT_BYTES + 1), report=True)
 
 
-def parse_creation_report(data: bytes) -> CreationReport:
+def parse_creation_report(data: bytes, *, is_xd=False) -> CreationReport:
     if len(data) > MAX_REPORT_BYTES:
         raise UserError("Rapport trop volumineux : la limite est de 32 Mio.")
     invalid = "Rapport JSON invalide. Sélectionnez le fichier .iso.json ou .rvz.json créé avec la ROM."
@@ -288,21 +288,22 @@ def parse_creation_report(data: bytes) -> CreationReport:
                 "source_sha256", "source_iso_sha256", "seed", "options"}
     if type(payload) is not dict or not required <= payload.keys():
         raise UserError(invalid)
-    region = next((item for item in REGIONS if item.game_id == payload["game_id"]), None)
+    regions = xd.REGIONS.values() if is_xd else REGIONS
+    region = next((item for item in regions if item.game_id == payload["game_id"]), None)
     digest = payload["source_sha256"]
     if (region is None or type(payload["revision"]) is not int or payload["revision"] != region.revision
             or payload["source_iso_sha256"] != region.iso_sha256
             or not isinstance(digest, str) or not re.fullmatch(r"[0-9a-f]{64}", digest)):
         raise UserError("La ROM indiquée dans le rapport ne correspond pas à une version prise en charge.")
-    profile = _parse_configuration(dict(app_version=payload["application_version"],
+    profile = parse_xd_profile(data, report=True) if is_xd else _parse_configuration(dict(app_version=payload["application_version"],
                                         engine_version=payload["engine_version"],
                                         seed=payload["seed"], options=payload["options"]), report_region=region)
     return CreationReport(profile, region, digest)
 
 
-def load_creation_report(path: Path) -> CreationReport:
+def load_creation_report(path: Path, *, is_xd=False) -> CreationReport:
     with Path(path).open("rb") as stream:
-        return parse_creation_report(stream.read(MAX_REPORT_BYTES + 1))
+        return parse_creation_report(stream.read(MAX_REPORT_BYTES + 1), is_xd=is_xd)
 
 
 def save_profile(path: Path, seed: str, options: Options | xd.XDOptions) -> dict:

@@ -1,5 +1,5 @@
 """Search and effective configuration summaries without ROM reads or RNG."""
-from dataclasses import fields
+from dataclasses import fields, replace
 from functools import lru_cache
 import re
 import unicodedata
@@ -8,10 +8,26 @@ from .detail_texts import detail_text
 from .i18n import LANGUAGES, translate
 from .locales.selection_names import SPECIES_NAMES
 from .options import Options
+from .workspace_copy import CATEGORY_ORDER
 
 _FIELDS = {item.name: item for item in fields(Options)}
 _SHINY_WORDS = ("chromatiques", "chromatique", "shinies", "shiny", "schillernde", "schillernd",
                 "variocolor", "cromatici", "cromatico", "色違い", "いろちがい")
+XD_TO_COMMON = {
+    'randomize_starter': 'starter_umbreon', 'starter_species': 'starter_umbreon_species',
+    'unique_shadow_families': 'unique_shadows', 'randomize_gifts': 'gift_plusle',
+    'accessible_evolutions': 'evolve_trade', 'stone_shops': 'stones_phenac',
+}
+
+
+def presentation_fields(options_type):
+    """Keep common controls in the same order without changing stored schemas."""
+    common_order = {name: index for index, name in enumerate(_FIELDS)}
+    items = fields(options_type)
+    order = {item.name: index for index, item in enumerate(items)}
+    return tuple(sorted(items, key=lambda item: (
+        CATEGORY_ORDER.index(item.metadata['group']),
+        common_order.get(XD_TO_COMMON.get(item.name, item.name), len(common_order) + order[item.name]))))
 
 
 def search_text(value):
@@ -25,7 +41,7 @@ def search_text(value):
 @lru_cache(maxsize=12)
 def _search_rows(language, options_type):
     rows = []
-    for ordinal, item in enumerate(fields(options_type)):
+    for ordinal, item in enumerate(presentation_fields(options_type)):
         meta = item.metadata
         translated = {key: translate(meta[key], language) for key in ('label', 'group', 'description')}
         all_text = []
@@ -96,8 +112,39 @@ def effective_setting_names(options):
     return [name for name in _FIELDS if name in selected]
 
 
-def _value(name, options, language):
-    value, meta = getattr(options,name), _FIELDS[name].metadata
+def effective_xd_setting_names(options):
+    """Use the shared dependency rules, mapping only XD's native controls."""
+    mapping = {
+        'unique_shadows': 'unique_shadow_families',
+        'starter_umbreon': 'randomize_starter', 'starter_umbreon_species': 'starter_species',
+        'gift_plusle': 'randomize_gifts',
+        **dict.fromkeys(('evolve_trade', 'evolve_trade_items', 'evolve_coquiperl',
+                         'evolve_day_night', 'evolve_beauty'), 'accessible_evolutions'),
+        'stones_phenac': 'stone_shops',
+    }
+    xd_fields = {item.name for item in fields(options)}
+    values = {name: getattr(options, name) for name in _FIELDS.keys() & xd_fields}
+    values.update({name: getattr(options, target) for name, target in mapping.items()})
+    selected = {mapping.get(name, name) for name in
+                effective_setting_names(replace(Options.none(), **values))} & xd_fields
+    for name in ('randomize_tutorial_shadow', 'randomize_hordel_gift', 'randomize_poke_spots'):
+        if getattr(options, name):
+            selected.add(name)
+    if options.randomize_poke_spots:
+        selected.add('poke_spots_full_pokedex')
+    if options.custom_shinies:
+        selected.add('custom_shadow_shinies')
+    # XD's tutorial, Hordel and wild slots also consult the species filters.
+    if options.randomize_tutorial_shadow or options.randomize_hordel_gift or options.randomize_poke_spots:
+        selected.update(('allow_gen1', 'allow_gen2', 'allow_gen3', 'allow_legendaries',
+                         'excluded_species', 'excluded_types'))
+    if options.randomize_hordel_gift or options.randomize_poke_spots and options.poke_spots_full_pokedex:
+        selected.add('balance_species')
+    return [item.name for item in presentation_fields(type(options)) if item.name in selected]
+
+
+def _value(name, options, language, metadata):
+    value, meta = getattr(options,name), metadata
     if meta.get('selector')=='species':
         if value<0:
             return translate('Choisissez un Pokémon de la liste pour {label}.',language).format(label=translate(meta['label'],language))
@@ -114,19 +161,22 @@ def _value(name, options, language):
 
 
 def configuration_review(options, language="fr"):
-    if not options.has_changes:
+    metadata = {item.name: item.metadata for item in fields(options)}
+    names = (effective_setting_names(options) if isinstance(options, Options)
+             else effective_xd_setting_names(options))
+    if not names or isinstance(options, Options) and not options.has_changes:
         return translate("Copie à l’identique : aucune donnée du jeu ne sera modifiée.", language)
     groups = {}
-    for name in effective_setting_names(options):
-        metadata = _FIELDS[name].metadata
-        label = translate(metadata["label"], language)
-        value = _value(name, options, language)
+    for name in names:
+        meta = metadata[name]
+        label = translate(meta["label"], language)
+        value = _value(name, options, language, meta)
         if name == "shiny_chance_percent":
             value += " %"
         elif name.endswith("_multiplier"):
             value = "×" + value
-        groups.setdefault(metadata["group"], []).append(f"• {label} : {value}")
+        groups.setdefault(meta["group"], []).append(f"• {label} : {value}")
     if not options.custom_shinies:
         groups.setdefault("Chromatiques", []).append(translate("Chromatiques : règles du jeu d’origine.", language))
-    return "\n\n".join(translate(group, language) + "\n" + "\n".join(rows)
-                       for group, rows in groups.items())
+    return "\n\n".join(translate(group, language) + "\n" + "\n".join(groups[group])
+                       for group in CATEGORY_ORDER if group in groups)

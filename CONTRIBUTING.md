@@ -44,7 +44,8 @@ Preserve evolution family graphs and synchronize every alias of a Shadow Pokémo
 ## Interface translations
 
 Follow the [interface writing conventions](docs/INTERFACE_COPY.md) for labels,
-help text, and messages.
+help text, and messages, and the [cross-game parity contract](docs/INTERFACE_PARITY.md)
+for shared wording, behavior and native exceptions.
 
 `i18n.py` resolves the system language and renders messages independently of Qt
 and engine state. The interface supports French, English, German, Spanish, Italian,
@@ -58,7 +59,10 @@ CLI defaults and imported profiles when changing desktop defaults.
 `feature_i18n.py` contains additional messages and options. `detail_texts.py`
 provides the Pokémon details and journal strings in all six languages.
 `settings_i18n.py` and `settings_presentation.py` handle settings search and review
-independently of the randomization engine. The fallback names in
+independently of the randomization engine. `workspace_copy.py` and
+`workspace_i18n.py` hold canonical shared messages; XD reuses common option
+metadata through `_shared`. Keep `tests/test_ui_parity.py` passing in all six
+languages when adding or changing a shared control. The fallback names in
 `locales/selection_names.py` and `locales/detail_names.py` are documented in
 `licenses/pokeapi-*.json` and `licenses/pokeapi.txt`. Game properties come from the
 final ROM.

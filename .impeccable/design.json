@@ -1,222 +1,444 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-02T11:20:08.987313Z",
+  "generatedAt": "2026-11-05T18:45:06.916912Z",
   "title": "Design System: Pokémon Orre Randomizer",
   "extensions": {
     "colorMeta": {
       "forest-panel": {
         "role": "neutral",
-        "displayName": "Forest green",
+        "displayName": "Forest panel",
+        "canonical": "#082b24",
         "tonalRamp": [
-          "oklch(15% 0.04170 176.91)",
-          "oklch(26% 0.04170 176.91)",
-          "oklch(38% 0.04170 176.91)",
-          "oklch(49% 0.04170 176.91)",
-          "oklch(61% 0.04170 176.91)",
-          "oklch(72% 0.04170 176.91)",
-          "oklch(84% 0.04170 176.91)",
-          "oklch(95% 0.04170 176.91)"
+          "oklch(15.00% 0.04170 176.91)",
+          "oklch(26.43% 0.04170 176.91)",
+          "oklch(37.86% 0.04170 176.91)",
+          "oklch(49.29% 0.04170 176.91)",
+          "oklch(60.71% 0.04170 176.91)",
+          "oklch(72.14% 0.04170 176.91)",
+          "oklch(83.57% 0.04170 176.91)",
+          "oklch(95.00% 0.04170 176.91)"
         ]
       },
       "indigo-background": {
         "role": "neutral",
-        "displayName": "Background indigo",
+        "displayName": "Indigo background",
+        "canonical": "#181b3b",
         "tonalRamp": [
-          "oklch(15% 0.06068 276.73)",
-          "oklch(26% 0.06068 276.73)",
-          "oklch(38% 0.06068 276.73)",
-          "oklch(49% 0.06068 276.73)",
-          "oklch(61% 0.06068 276.73)",
-          "oklch(72% 0.06068 276.73)",
-          "oklch(84% 0.06068 276.73)",
-          "oklch(95% 0.06068 276.73)"
+          "oklch(15.00% 0.06068 276.73)",
+          "oklch(26.43% 0.06068 276.73)",
+          "oklch(37.86% 0.06068 276.73)",
+          "oklch(49.29% 0.06068 276.73)",
+          "oklch(60.71% 0.06068 276.73)",
+          "oklch(72.14% 0.06068 276.73)",
+          "oklch(83.57% 0.06068 276.73)",
+          "oklch(95.00% 0.06068 276.73)"
         ]
       },
       "field-ink": {
         "role": "neutral",
         "displayName": "Field ink",
+        "canonical": "#0b1c20",
         "tonalRamp": [
-          "oklch(15% 0.02403 214.72)",
-          "oklch(26% 0.02403 214.72)",
-          "oklch(38% 0.02403 214.72)",
-          "oklch(49% 0.02403 214.72)",
-          "oklch(61% 0.02403 214.72)",
-          "oklch(72% 0.02403 214.72)",
-          "oklch(84% 0.02403 214.72)",
-          "oklch(95% 0.02403 214.72)"
+          "oklch(15.00% 0.02403 214.72)",
+          "oklch(26.43% 0.02403 214.72)",
+          "oklch(37.86% 0.02403 214.72)",
+          "oklch(49.29% 0.02403 214.72)",
+          "oklch(60.71% 0.02403 214.72)",
+          "oklch(72.14% 0.02403 214.72)",
+          "oklch(83.57% 0.02403 214.72)",
+          "oklch(95.00% 0.02403 214.72)"
         ]
       },
       "text-ivory": {
         "role": "neutral",
-        "displayName": "Ivory text",
+        "displayName": "Text ivory",
+        "canonical": "#f2f6f1",
         "tonalRamp": [
-          "oklch(15% 0.00783 139.44)",
-          "oklch(26% 0.00783 139.44)",
-          "oklch(38% 0.00783 139.44)",
-          "oklch(49% 0.00783 139.44)",
-          "oklch(61% 0.00783 139.44)",
-          "oklch(72% 0.00783 139.44)",
-          "oklch(84% 0.00783 139.44)",
-          "oklch(95% 0.00783 139.44)"
+          "oklch(15.00% 0.00783 139.44)",
+          "oklch(26.43% 0.00783 139.44)",
+          "oklch(37.86% 0.00783 139.44)",
+          "oklch(49.29% 0.00783 139.44)",
+          "oklch(60.71% 0.00783 139.44)",
+          "oklch(72.14% 0.00783 139.44)",
+          "oklch(83.57% 0.00783 139.44)",
+          "oklch(95.00% 0.00783 139.44)"
         ]
       },
       "text-mint": {
         "role": "neutral",
-        "displayName": "Mint text",
+        "displayName": "Text mint",
+        "canonical": "#c1d8cf",
         "tonalRamp": [
-          "oklch(15% 0.02752 170.18)",
-          "oklch(26% 0.02752 170.18)",
-          "oklch(38% 0.02752 170.18)",
-          "oklch(49% 0.02752 170.18)",
-          "oklch(61% 0.02752 170.18)",
-          "oklch(72% 0.02752 170.18)",
-          "oklch(84% 0.02752 170.18)",
-          "oklch(95% 0.02752 170.18)"
+          "oklch(15.00% 0.02752 170.18)",
+          "oklch(26.43% 0.02752 170.18)",
+          "oklch(37.86% 0.02752 170.18)",
+          "oklch(49.29% 0.02752 170.18)",
+          "oklch(60.71% 0.02752 170.18)",
+          "oklch(72.14% 0.02752 170.18)",
+          "oklch(83.57% 0.02752 170.18)",
+          "oklch(95.00% 0.02752 170.18)"
         ]
       },
       "silver-frame": {
         "role": "neutral",
         "displayName": "Silver frame",
+        "canonical": "#b6ccc4",
         "tonalRamp": [
-          "oklch(15% 0.02624 171.80)",
-          "oklch(26% 0.02624 171.80)",
-          "oklch(38% 0.02624 171.80)",
-          "oklch(49% 0.02624 171.80)",
-          "oklch(61% 0.02624 171.80)",
-          "oklch(72% 0.02624 171.80)",
-          "oklch(84% 0.02624 171.80)",
-          "oklch(95% 0.02624 171.80)"
+          "oklch(15.00% 0.02624 171.80)",
+          "oklch(26.43% 0.02624 171.80)",
+          "oklch(37.86% 0.02624 171.80)",
+          "oklch(49.29% 0.02624 171.80)",
+          "oklch(60.71% 0.02624 171.80)",
+          "oklch(72.14% 0.02624 171.80)",
+          "oklch(83.57% 0.02624 171.80)",
+          "oklch(95.00% 0.02624 171.80)"
         ]
       },
       "cyan-state": {
         "role": "primary",
-        "displayName": "Status cyan",
+        "displayName": "Cyan state",
+        "canonical": "#71e2e6",
         "tonalRamp": [
-          "oklch(15% 0.10324 198.48)",
-          "oklch(26% 0.10324 198.48)",
-          "oklch(38% 0.10324 198.48)",
-          "oklch(49% 0.10324 198.48)",
-          "oklch(61% 0.10324 198.48)",
-          "oklch(72% 0.10324 198.48)",
-          "oklch(84% 0.10324 198.48)",
-          "oklch(95% 0.10324 198.48)"
+          "oklch(15.00% 0.10324 198.48)",
+          "oklch(26.43% 0.10324 198.48)",
+          "oklch(37.86% 0.10324 198.48)",
+          "oklch(49.29% 0.10324 198.48)",
+          "oklch(60.71% 0.10324 198.48)",
+          "oklch(72.14% 0.10324 198.48)",
+          "oklch(83.57% 0.10324 198.48)",
+          "oklch(95.00% 0.10324 198.48)"
         ]
       },
       "teal-selected": {
         "role": "primary",
-        "displayName": "Selection teal",
+        "displayName": "Teal selected",
+        "canonical": "#125359",
         "tonalRamp": [
-          "oklch(15% 0.06259 204.26)",
-          "oklch(26% 0.06259 204.26)",
-          "oklch(38% 0.06259 204.26)",
-          "oklch(49% 0.06259 204.26)",
-          "oklch(61% 0.06259 204.26)",
-          "oklch(72% 0.06259 204.26)",
-          "oklch(84% 0.06259 204.26)",
-          "oklch(95% 0.06259 204.26)"
+          "oklch(15.00% 0.06259 204.26)",
+          "oklch(26.43% 0.06259 204.26)",
+          "oklch(37.86% 0.06259 204.26)",
+          "oklch(49.29% 0.06259 204.26)",
+          "oklch(60.71% 0.06259 204.26)",
+          "oklch(72.14% 0.06259 204.26)",
+          "oklch(83.57% 0.06259 204.26)",
+          "oklch(95.00% 0.06259 204.26)"
         ]
       },
       "button-face": {
         "role": "neutral",
         "displayName": "Button face",
+        "canonical": "#172c33",
         "tonalRamp": [
-          "oklch(15% 0.02981 221.35)",
-          "oklch(26% 0.02981 221.35)",
-          "oklch(38% 0.02981 221.35)",
-          "oklch(49% 0.02981 221.35)",
-          "oklch(61% 0.02981 221.35)",
-          "oklch(72% 0.02981 221.35)",
-          "oklch(84% 0.02981 221.35)",
-          "oklch(95% 0.02981 221.35)"
+          "oklch(15.00% 0.02981 221.35)",
+          "oklch(26.43% 0.02981 221.35)",
+          "oklch(37.86% 0.02981 221.35)",
+          "oklch(49.29% 0.02981 221.35)",
+          "oklch(60.71% 0.02981 221.35)",
+          "oklch(72.14% 0.02981 221.35)",
+          "oklch(83.57% 0.02981 221.35)",
+          "oklch(95.00% 0.02981 221.35)"
         ]
       },
       "field-edge": {
         "role": "neutral",
-        "displayName": "Field border",
+        "displayName": "Field edge",
+        "canonical": "#829e98",
         "tonalRamp": [
-          "oklch(15% 0.03248 180.83)",
-          "oklch(26% 0.03248 180.83)",
-          "oklch(38% 0.03248 180.83)",
-          "oklch(49% 0.03248 180.83)",
-          "oklch(61% 0.03248 180.83)",
-          "oklch(72% 0.03248 180.83)",
-          "oklch(84% 0.03248 180.83)",
-          "oklch(95% 0.03248 180.83)"
+          "oklch(15.00% 0.03248 180.83)",
+          "oklch(26.43% 0.03248 180.83)",
+          "oklch(37.86% 0.03248 180.83)",
+          "oklch(49.29% 0.03248 180.83)",
+          "oklch(60.71% 0.03248 180.83)",
+          "oklch(72.14% 0.03248 180.83)",
+          "oklch(83.57% 0.03248 180.83)",
+          "oklch(95.00% 0.03248 180.83)"
         ]
       },
       "action-gold": {
         "role": "secondary",
         "displayName": "Action gold",
+        "canonical": "#efd574",
         "tonalRamp": [
-          "oklch(15% 0.12082 94.71)",
-          "oklch(26% 0.12082 94.71)",
-          "oklch(38% 0.12082 94.71)",
-          "oklch(49% 0.12082 94.71)",
-          "oklch(61% 0.12082 94.71)",
-          "oklch(72% 0.12082 94.71)",
-          "oklch(84% 0.12082 94.71)",
-          "oklch(95% 0.12082 94.71)"
+          "oklch(15.00% 0.12082 94.71)",
+          "oklch(26.43% 0.12082 94.71)",
+          "oklch(37.86% 0.12082 94.71)",
+          "oklch(49.29% 0.12082 94.71)",
+          "oklch(60.71% 0.12082 94.71)",
+          "oklch(72.14% 0.12082 94.71)",
+          "oklch(83.57% 0.12082 94.71)",
+          "oklch(95.00% 0.12082 94.71)"
         ]
       },
       "action-face": {
         "role": "neutral",
         "displayName": "Action face",
+        "canonical": "#173e38",
         "tonalRamp": [
-          "oklch(15% 0.04542 181.90)",
-          "oklch(26% 0.04542 181.90)",
-          "oklch(38% 0.04542 181.90)",
-          "oklch(49% 0.04542 181.90)",
-          "oklch(61% 0.04542 181.90)",
-          "oklch(72% 0.04542 181.90)",
-          "oklch(84% 0.04542 181.90)",
-          "oklch(95% 0.04542 181.90)"
+          "oklch(15.00% 0.04542 181.90)",
+          "oklch(26.43% 0.04542 181.90)",
+          "oklch(37.86% 0.04542 181.90)",
+          "oklch(49.29% 0.04542 181.90)",
+          "oklch(60.71% 0.04542 181.90)",
+          "oklch(72.14% 0.04542 181.90)",
+          "oklch(83.57% 0.04542 181.90)",
+          "oklch(95.00% 0.04542 181.90)"
         ]
       },
       "action-hover": {
         "role": "neutral",
         "displayName": "Action hover",
+        "canonical": "#245d4f",
         "tonalRamp": [
-          "oklch(15% 0.06428 174.44)",
-          "oklch(26% 0.06428 174.44)",
-          "oklch(38% 0.06428 174.44)",
-          "oklch(49% 0.06428 174.44)",
-          "oklch(61% 0.06428 174.44)",
-          "oklch(72% 0.06428 174.44)",
-          "oklch(84% 0.06428 174.44)",
-          "oklch(95% 0.06428 174.44)"
+          "oklch(15.00% 0.06428 174.44)",
+          "oklch(26.43% 0.06428 174.44)",
+          "oklch(37.86% 0.06428 174.44)",
+          "oklch(49.29% 0.06428 174.44)",
+          "oklch(60.71% 0.06428 174.44)",
+          "oklch(72.14% 0.06428 174.44)",
+          "oklch(83.57% 0.06428 174.44)",
+          "oklch(95.00% 0.06428 174.44)"
+        ]
+      },
+      "xd-background": {
+        "role": "neutral",
+        "displayName": "Xd background",
+        "canonical": "#1d1112",
+        "tonalRamp": [
+          "oklch(15.00% 0.02027 13.60)",
+          "oklch(26.43% 0.02027 13.60)",
+          "oklch(37.86% 0.02027 13.60)",
+          "oklch(49.29% 0.02027 13.60)",
+          "oklch(60.71% 0.02027 13.60)",
+          "oklch(72.14% 0.02027 13.60)",
+          "oklch(83.57% 0.02027 13.60)",
+          "oklch(95.00% 0.02027 13.60)"
+        ]
+      },
+      "xd-panel": {
+        "role": "neutral",
+        "displayName": "Xd panel",
+        "canonical": "#24191a",
+        "tonalRamp": [
+          "oklch(15.00% 0.01771 12.47)",
+          "oklch(26.43% 0.01771 12.47)",
+          "oklch(37.86% 0.01771 12.47)",
+          "oklch(49.29% 0.01771 12.47)",
+          "oklch(60.71% 0.01771 12.47)",
+          "oklch(72.14% 0.01771 12.47)",
+          "oklch(83.57% 0.01771 12.47)",
+          "oklch(95.00% 0.01771 12.47)"
+        ]
+      },
+      "xd-field": {
+        "role": "neutral",
+        "displayName": "Xd field",
+        "canonical": "#181314",
+        "tonalRamp": [
+          "oklch(15.00% 0.00841 4.34)",
+          "oklch(26.43% 0.00841 4.34)",
+          "oklch(37.86% 0.00841 4.34)",
+          "oklch(49.29% 0.00841 4.34)",
+          "oklch(60.71% 0.00841 4.34)",
+          "oklch(72.14% 0.00841 4.34)",
+          "oklch(83.57% 0.00841 4.34)",
+          "oklch(95.00% 0.00841 4.34)"
+        ]
+      },
+      "xd-text": {
+        "role": "neutral",
+        "displayName": "Xd text",
+        "canonical": "#fff4e6",
+        "tonalRamp": [
+          "oklch(15.00% 0.02197 74.10)",
+          "oklch(26.43% 0.02197 74.10)",
+          "oklch(37.86% 0.02197 74.10)",
+          "oklch(49.29% 0.02197 74.10)",
+          "oklch(60.71% 0.02197 74.10)",
+          "oklch(72.14% 0.02197 74.10)",
+          "oklch(83.57% 0.02197 74.10)",
+          "oklch(95.00% 0.02197 74.10)"
+        ]
+      },
+      "xd-selection": {
+        "role": "primary",
+        "displayName": "Xd selection",
+        "canonical": "#66302a",
+        "tonalRamp": [
+          "oklch(15.00% 0.07903 27.89)",
+          "oklch(26.43% 0.07903 27.89)",
+          "oklch(37.86% 0.07903 27.89)",
+          "oklch(49.29% 0.07903 27.89)",
+          "oklch(60.71% 0.07903 27.89)",
+          "oklch(72.14% 0.07903 27.89)",
+          "oklch(83.57% 0.07903 27.89)",
+          "oklch(95.00% 0.07903 27.89)"
+        ]
+      },
+      "xd-focus": {
+        "role": "primary",
+        "displayName": "Xd focus",
+        "canonical": "#ffad93",
+        "tonalRamp": [
+          "oklch(15.00% 0.10359 38.34)",
+          "oklch(26.43% 0.10359 38.34)",
+          "oklch(37.86% 0.10359 38.34)",
+          "oklch(49.29% 0.10359 38.34)",
+          "oklch(60.71% 0.10359 38.34)",
+          "oklch(72.14% 0.10359 38.34)",
+          "oklch(83.57% 0.10359 38.34)",
+          "oklch(95.00% 0.10359 38.34)"
+        ]
+      },
+      "xd-action": {
+        "role": "secondary",
+        "displayName": "Xd action",
+        "canonical": "#ffc772",
+        "tonalRamp": [
+          "oklch(15.00% 0.12098 76.43)",
+          "oklch(26.43% 0.12098 76.43)",
+          "oklch(37.86% 0.12098 76.43)",
+          "oklch(49.29% 0.12098 76.43)",
+          "oklch(60.71% 0.12098 76.43)",
+          "oklch(72.14% 0.12098 76.43)",
+          "oklch(83.57% 0.12098 76.43)",
+          "oklch(95.00% 0.12098 76.43)"
+        ]
+      },
+      "home-background-start": {
+        "role": "neutral",
+        "displayName": "Home background start",
+        "canonical": "#090a0b",
+        "tonalRamp": [
+          "oklch(15.00% 0.00279 247.09)",
+          "oklch(26.43% 0.00279 247.09)",
+          "oklch(37.86% 0.00279 247.09)",
+          "oklch(49.29% 0.00279 247.09)",
+          "oklch(60.71% 0.00279 247.09)",
+          "oklch(72.14% 0.00279 247.09)",
+          "oklch(83.57% 0.00279 247.09)",
+          "oklch(95.00% 0.00279 247.09)"
+        ]
+      },
+      "home-background-middle": {
+        "role": "neutral",
+        "displayName": "Home background middle",
+        "canonical": "#191a1c",
+        "tonalRamp": [
+          "oklch(15.00% 0.00419 264.48)",
+          "oklch(26.43% 0.00419 264.48)",
+          "oklch(37.86% 0.00419 264.48)",
+          "oklch(49.29% 0.00419 264.48)",
+          "oklch(60.71% 0.00419 264.48)",
+          "oklch(72.14% 0.00419 264.48)",
+          "oklch(83.57% 0.00419 264.48)",
+          "oklch(95.00% 0.00419 264.48)"
+        ]
+      },
+      "home-background-end": {
+        "role": "neutral",
+        "displayName": "Home background end",
+        "canonical": "#34363a",
+        "tonalRamp": [
+          "oklch(15.00% 0.00754 264.47)",
+          "oklch(26.43% 0.00754 264.47)",
+          "oklch(37.86% 0.00754 264.47)",
+          "oklch(49.29% 0.00754 264.47)",
+          "oklch(60.71% 0.00754 264.47)",
+          "oklch(72.14% 0.00754 264.47)",
+          "oklch(83.57% 0.00754 264.47)",
+          "oklch(95.00% 0.00754 264.47)"
+        ]
+      },
+      "home-control": {
+        "role": "neutral",
+        "displayName": "Home control",
+        "canonical": "#202327",
+        "tonalRamp": [
+          "oklch(15.00% 0.00874 255.59)",
+          "oklch(26.43% 0.00874 255.59)",
+          "oklch(37.86% 0.00874 255.59)",
+          "oklch(49.29% 0.00874 255.59)",
+          "oklch(60.71% 0.00874 255.59)",
+          "oklch(72.14% 0.00874 255.59)",
+          "oklch(83.57% 0.00874 255.59)",
+          "oklch(95.00% 0.00874 255.59)"
+        ]
+      },
+      "home-selected": {
+        "role": "neutral",
+        "displayName": "Home selected",
+        "canonical": "#30343a",
+        "tonalRamp": [
+          "oklch(15.00% 0.01201 258.37)",
+          "oklch(26.43% 0.01201 258.37)",
+          "oklch(37.86% 0.01201 258.37)",
+          "oklch(49.29% 0.01201 258.37)",
+          "oklch(60.71% 0.01201 258.37)",
+          "oklch(72.14% 0.01201 258.37)",
+          "oklch(83.57% 0.01201 258.37)",
+          "oklch(95.00% 0.01201 258.37)"
+        ]
+      },
+      "home-focus": {
+        "role": "primary",
+        "displayName": "Home focus",
+        "canonical": "#cbd0d8",
+        "tonalRamp": [
+          "oklch(15.00% 0.01235 259.82)",
+          "oklch(26.43% 0.01235 259.82)",
+          "oklch(37.86% 0.01235 259.82)",
+          "oklch(49.29% 0.01235 259.82)",
+          "oklch(60.71% 0.01235 259.82)",
+          "oklch(72.14% 0.01235 259.82)",
+          "oklch(83.57% 0.01235 259.82)",
+          "oklch(95.00% 0.01235 259.82)"
         ]
       }
     },
     "typographyMeta": {
       "display": {
-        "displayName": "App name",
-        "purpose": "En-tête ; retour à la ligne autorisé."
+        "displayName": "Display",
+        "purpose": "Application title."
       },
       "headline": {
-        "displayName": "Section title",
-        "purpose": "Titre du panneau de travail."
+        "displayName": "Headline",
+        "purpose": "Current page heading."
+      },
+      "subheading": {
+        "displayName": "Subheading",
+        "purpose": "Section and Pokémon identity."
       },
       "body": {
-        "displayName": "Controls",
-        "purpose": "Champs, commandes, catégories et cases."
+        "displayName": "Body",
+        "purpose": "Controls and working content."
       },
       "note": {
-        "displayName": "Help text",
-        "purpose": "Sous-libellés, descriptions et légendes."
+        "displayName": "Note",
+        "purpose": "Help, status legends and secondary descriptions."
       }
     },
     "shadows": [],
-    "motion": [],
+    "motion": [
+      {
+        "name": "preview-cycle-interval",
+        "value": "115ms",
+        "purpose": "Cosmetic pending encounter cycling; never the seeded draw."
+      }
+    ],
     "breakpoints": [
       {
         "name": "category-sidebar-min-width",
         "value": "900px"
+      },
+      {
+        "name": "minimum-window-width",
+        "value": "680px"
       }
     ]
   },
   "components": [
     {
-      "name": "Bouton",
+      "name": "Secondary button",
       "kind": "button",
       "refersTo": "button",
       "description": "Native secondary button in its default, hover, and keyboard focus states.",
@@ -224,7 +446,7 @@
       "css": ".ds-button{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif;}.ds-button:hover{background:#24483f;border-color:#bce9de}.ds-button:focus-visible{outline:none;border:2px solid #71e2e6;padding:3px 11px}.ds-button:active{background:#0a3935}.ds-button:disabled{color:#9dafa9;background:#1b292c;border-color:#40534f}"
     },
     {
-      "name": "Action principale",
+      "name": "Primary action",
       "kind": "button",
       "refersTo": "button-primary",
       "description": "Gold border by default, cyan on keyboard focus.",
@@ -232,7 +454,7 @@
       "css": ".ds-primary{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif;background:#173e38;border:2px solid #efd574;font-weight:600;padding:3px 17px}.ds-primary:hover{background:#245d4f}.ds-primary:focus-visible{outline:none;border-color:#71e2e6}.ds-primary:active{background:#0a3935}.ds-primary:disabled{color:#9dafa9;border-color:#53615a;background:#1b292c}"
     },
     {
-      "name": "Champ de saisie",
+      "name": "Text field",
       "kind": "input",
       "refersTo": "input",
       "description": "Ink background and cyan focus border with a consistent field width.",
@@ -240,7 +462,7 @@
       "css": ".ds-field-label{color:#f2f6f1;font:14px \"Segoe UI\",sans-serif;display:flex;align-items:center;gap:12px;background:#082b24;padding:12px}.ds-input{background:#0b1c20;color:#f2f6f1;border:1px solid #829e98;border-radius:4px;min-height:24px;padding:5px 8px;font:14px \"Segoe UI\",sans-serif;}.ds-input:focus-visible{outline:none;border:2px solid #71e2e6;padding:4px 7px}.ds-input:hover:not(:focus-visible){border-color:#bce9de}.ds-input:disabled{color:#9dafa9;border-color:#40534f}"
     },
     {
-      "name": "Étapes",
+      "name": "Wizard steps",
       "kind": "nav",
       "refersTo": "selection",
       "description": "Three adjoining steps. The active step uses the cursor, a distinct fill, and a contrasting border.",
@@ -248,22 +470,14 @@
       "css": ".ds-steps{display:flex;gap:0}.ds-steps button{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif;border-radius:0;flex:1;min-height:30px;white-space:nowrap}.ds-steps button[aria-current]{background:#125359;border:2px solid #71e2e6;padding:3px 11px}.ds-steps button:hover{background:#24483f}.ds-steps button:focus-visible{outline:none;border:2px solid #71e2e6;padding:3px 11px}.ds-steps button:active{background:#0a3935}.ds-steps svg{height:15px;width:15px;vertical-align:-2px;margin-right:6px}"
     },
     {
-      "name": "Commande audio cochée",
-      "kind": "button",
-      "refersTo": "selection",
-      "description": "Both independent audio controls use the same visual states.",
-      "html": "<button class=\"ds-toggle\" aria-pressed=\"true\">Sounds</button>",
-      "css": ".ds-toggle{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif;}.ds-toggle[aria-pressed=true]{background:#125359;border:2px solid #71e2e6;padding:3px 11px}.ds-toggle:hover{background:#24483f}.ds-toggle:focus-visible{outline:none;border:2px solid #71e2e6;padding:3px 11px}.ds-toggle:active{background:#0a3935}.ds-toggle:disabled{color:#9dafa9;background:#1b292c;border-color:#40534f}"
-    },
-    {
-      "name": "Case à cocher",
+      "name": "Checkbox",
       "kind": "input",
       "description": "A dark check mark on cyan, with a separate text label.",
       "html": "<label class=\"ds-check\"><input type=\"checkbox\" checked /><span>Replace Espeon</span></label>",
       "css": ".ds-check{display:flex;align-items:center;gap:9px;background:#082b24;color:#f2f6f1;padding:6px;font:14px \"Segoe UI\",sans-serif;}.ds-check input{appearance:none;width:17px;height:17px;margin:0;border:1px solid #a3bdb1;border-radius:2px;background:#0b1c20;position:relative}.ds-check input:checked{background:#60d4d9;border:2px solid #d6faf1}.ds-check input:checked:after{content:\"\";position:absolute;left:3px;top:1px;width:5px;height:9px;border:solid #082b24;border-width:0 2px 2px 0;transform:rotate(45deg)}.ds-check input:focus-visible{outline:2px solid #71e2e6;outline-offset:2px}.ds-check:hover{color:#8be8e7}.ds-check input:disabled{background:#40564d;border-color:#50665b}"
     },
     {
-      "name": "Panneau de menu",
+      "name": "Menu panel",
       "kind": "card",
       "refersTo": "menu-panel",
       "description": "Two angular vector outlines frame a text panel.",
@@ -271,66 +485,83 @@
       "css": ".ds-panel{position:relative;width:340px;max-width:100%;min-height:150px;color:#f2f6f1;font:14px \"Segoe UI\",sans-serif;}.ds-panel>svg{position:absolute;inset:0;width:100%;height:100%}.ds-panel>div{position:relative;padding:20px 24px}.ds-panel h3{font-size:23px;font-weight:650;margin:0 0 12px}.ds-panel p{font-size:13px;color:#c1d8cf;margin:0}"
     },
     {
-      "name": "Liste d’exclusions",
-      "kind": "custom",
-      "description": "Checked rows are excluded. The count and confirmation buttons sit below the list.",
-      "html": "<section class=\"ds-exclusions\"><label class=\"ds-exclusion-search\">Excluded Pokémon<input placeholder=\"Search by name or number…\" /></label><div class=\"ds-exclusion-results\"><label><input type=\"checkbox\" checked /><span>#133  Eevee</span></label><label><input type=\"checkbox\" /><span>#134  Vaporeon</span></label></div><div class=\"ds-exclusion-actions\"><button>Exclude results</button><button>Allow results</button></div><footer><span>Selected (1)</span><button>OK</button><button>Cancel</button></footer></section>",
-      "css": ".ds-exclusions{color:#f2f6f1;font:14px \"Segoe UI\",sans-serif;padding:16px 20px;display:grid;gap:12px}.ds-exclusion-search{display:grid;gap:12px}.ds-exclusion-search>input{background:#0b1c20;color:#f2f6f1;border:1px solid #829e98;border-radius:4px;padding:5px 8px;min-height:24px;font:inherit}.ds-exclusion-search>input:focus-visible{outline:none;border:2px solid #71e2e6;padding:4px 7px}.ds-exclusion-results{background:#09271f;overflow:auto}.ds-exclusion-results>label{display:flex;align-items:center;gap:6px;padding:8px 6px;border-bottom:1px solid #294f41}.ds-exclusion-results>label:hover{background:#173f32}.ds-exclusion-results input{appearance:none;width:14px;height:14px;margin:0;border:1px solid #b6ccc4;background:#0b1c20;position:relative}.ds-exclusion-results input:checked{background:#71e2e6;border-color:#d9f4eb}.ds-exclusion-results input:checked:after{content:\"\";position:absolute;left:3px;top:1px;width:4px;height:7px;border:solid #082b24;border-width:0 2px 2px 0;transform:rotate(45deg)}.ds-exclusion-results input:focus-visible{outline:2px solid #71e2e6;outline-offset:2px}.ds-exclusion-actions,.ds-exclusions footer{display:flex;gap:12px;align-items:center}.ds-exclusion-actions>button{flex:1}.ds-exclusions footer>span{flex:1;color:#c1d8cf;font-size:13px}.ds-exclusions button{background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:inherit}.ds-exclusions button:hover{background:#24483f;border-color:#bce9de}.ds-exclusions button:focus-visible{outline:none;border:2px solid #71e2e6;padding:3px 11px}.ds-exclusions button:active{background:#0a3935}.ds-exclusions button:disabled{color:#9dafa9;background:#1b292c;border-color:#40534f}"
-    },
-    {
-      "name": "Réglage dépendant",
+      "name": "Dependent shiny setting",
       "kind": "custom",
       "description": "The checkbox enables the next numeric field. Disabled values stay visible with reduced emphasis.",
-      "html": "<section class=\"ds-dependent\"><label class=\"ds-dependent-toggle\"><input type=\"checkbox\" checked /><span>Customize Shiny odds</span></label><label class=\"ds-dependent-rate\">Shiny chance (%)<input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" value=\"1.0000\" aria-label=\"Shiny chance (%)\" /></label><p>At 0% none are Shiny. At 100% all are Shiny. Existing Pokémon keep their status.</p></section>",
+      "html": "<section class=\"ds-dependent\"><label class=\"ds-dependent-toggle\"><input type=\"checkbox\" checked /><span>Customize shinies</span></label><label class=\"ds-dependent-rate\">Shiny chance (%)<input type=\"number\" min=\"0\" max=\"100\" step=\"0.1\" value=\"5.0000\" aria-label=\"Shiny chance (%)\" /></label><p>At 0% none are Shiny. At 100% all are Shiny. Existing Pokémon keep their status.</p></section>",
       "css": ".ds-dependent{background:#082b24;color:#f2f6f1;font:14px \"Segoe UI\",sans-serif;display:grid;gap:12px;padding:16px}.ds-dependent-toggle{display:flex;align-items:center;gap:9px;padding:6px 0}.ds-dependent-toggle>input{appearance:none;width:17px;height:17px;margin:0;border:1px solid #a3bdb1;border-radius:2px;background:#0b1c20;position:relative}.ds-dependent-toggle>input:checked{background:#60d4d9;border:2px solid #d6faf1}.ds-dependent-toggle>input:checked:after{content:\"\";position:absolute;left:3px;top:1px;width:5px;height:9px;border:solid #082b24;border-width:0 2px 2px 0;transform:rotate(45deg)}.ds-dependent-toggle>input:focus-visible{outline:2px solid #71e2e6;outline-offset:2px}.ds-dependent-toggle:hover{color:#8be8e7}.ds-dependent-rate{display:flex;align-items:center;gap:8px;flex-wrap:wrap}.ds-dependent-rate>input{flex:1;min-width:100px;background:#0b1c20;color:#f2f6f1;border:1px solid #829e98;border-radius:4px;padding:5px 8px;min-height:24px;font:inherit}.ds-dependent-rate>input:focus-visible{outline:none;border:2px solid #71e2e6;padding:4px 7px}.ds-dependent-rate>input:disabled{color:#9dafa9;border-color:#40534f}.ds-dependent>p{margin:0;color:#c1d8cf;font-size:13px}"
     },
     {
-      "name": "Onglets de travail",
+      "name": "Workspace tabs",
       "kind": "nav",
       "refersTo": "selection",
       "description": "The selected view uses a teal fill and cyan border.",
       "html": "<nav class=\"ds-tabs\" aria-label=\"Settings views\"><button aria-selected=\"true\">Configuration</button><button>Pokémon preview</button></nav>",
       "css": ".ds-tabs{display:flex;gap:0}.ds-tabs button{flex:1;background:#172c33;color:#f2f6f1;border:1px solid #69877a;border-radius:0;padding:6px 13px;font:14px \"Segoe UI\",sans-serif}.ds-tabs button[aria-selected=true]{background:#125359;border-bottom:2px solid #71e2e6}.ds-tabs button:hover{background:#24483f}.ds-tabs button:focus-visible{outline:1px solid #71e2e6;outline-offset:0}"
+    },
+    {
+      "name": "XD menu panel",
+      "kind": "card",
+      "refersTo": "menu-panel-xd",
+      "description": "The same cut-corner template in the observed XD palette.",
+      "html": "<section class=\"ds-panel\"><svg aria-hidden=\"true\" viewBox=\"0 0 340 150\" preserveAspectRatio=\"none\"><path d=\"M12 1H328L339 12V138L328 149H12L1 138V12Z\" fill=\"#24191a\" stroke=\"#c5b6a9\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\"/><path d=\"M13 5H327L335 13V137L327 145H13L5 137V13Z\" fill=\"none\" stroke=\"#6c4945\" vector-effect=\"non-scaling-stroke\"/></svg><div><h3>Choose your settings</h3><p>The controls use native widgets and localized labels.</p></div></section>",
+      "css": ".ds-panel{position:relative;width:340px;max-width:100%;min-height:150px;color:#fff4e6;font:14px \"Segoe UI\",sans-serif;}.ds-panel>svg{position:absolute;inset:0;width:100%;height:100%}.ds-panel>div{position:relative;padding:20px 24px}.ds-panel h3{font-size:23px;font-weight:650;margin:0 0 12px}.ds-panel p{font-size:13px;color:#e2c9bb;margin:0}"
+    },
+    {
+      "name": "Home audio control",
+      "kind": "button",
+      "refersTo": "button-home",
+      "description": "Neutral home-header colors; independent checked preference.",
+      "html": "<button class=\"ds-home-audio\" aria-pressed=\"true\">Music</button>",
+      "css": ".ds-home-audio{background:#202327;color:#e5e7eb;border:1px solid #727782;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif}.ds-home-audio[aria-pressed=true]{background:#30343a;color:#f2f3f5;border:2px solid #cbd0d8;padding:3px 11px}.ds-home-audio:hover{background:#30343a;border-color:#cbd0d8}.ds-home-audio:focus-visible{outline:2px solid #cbd0d8;outline-offset:2px}.ds-home-audio:active{background:#17191c}.ds-home-audio:disabled{background:#202327;color:#969ba5;border-color:#626772}"
     }
   ],
   "narrative": {
-    "northStar": "Les menus de Colosseum",
-    "overview": "Le système reprend les panneaux verts, les cadres argentés à angles coupés et\nla sélection cyan du jeu original. Le fond indigo et les petits portraits donnent\nle contexte ; les champs et les boutons restent des contrôles Qt lisibles.\n\nLes images et l’audio appartiennent au pack d’interface embarqué. L’apparence\nne dépend pas d’une ROM sélectionnée, d’un téléchargement ou d’un cache utilisateur.\nLa police du système, les sélecteurs natifs et les noms accessibles des contrôles\nrestent les conventions de l’application de bureau.",
+    "northStar": "The menus of Colosseum",
+    "overview": "The desktop interface keeps the original menu character: angular frames, dark\npanels, small Pokémon portraits and a visible selection cursor. Native Qt fields,\nbuttons and lists handle the work. The Colosseum palette is the baseline; XD uses\nthe same composition with charcoal, red and gold. The game-selection screen uses\na neutral black-to-gray background and neutral header controls.\n\nThe bundled interface pack supplies logos, background artwork, music and menu\nsounds before a ROM is selected. Content stays readable without an available\naudio device. System fonts and accessible Qt controls remain the desktop convention.",
     "keyCharacteristics": [
-      "Panneaux vert forêt sur un fond indigo tiré du jeu.",
-      "Cadres argentés anguleux, sans ombre portée ajoutée.",
-      "Sélection et focus cyan ; action principale bordée d’or pâle.",
-      "Petits portraits authentiques et textes rendus par Qt.",
-      "Contrôles audio indépendants, activés au premier lancement si disponibles, avec choix mémorisé."
+      "One shared three-step wizard and Pokémon-sheet template for both games.",
+      "Colosseum green/indigo and XD charcoal/red themes, with neutral home controls.",
+      "Cut-corner frames and tonal surfaces without decorative shadows.",
+      "Small authentic portraits beside localized, accessible text.",
+      "Persistent navigation, visible scrolling and explicit loading states.",
+      "Shared wording and behavior across all six interface languages."
     ],
     "rules": [
       {
-        "name": "The State Rule.",
-        "body": "Le cyan indique le focus ou la sélection. Il accompagne\nune coche, un état de bouton, un curseur ou une position ; aucune information\ncritique ne repose uniquement sur la couleur.",
+        "name": "The Theme Rule",
+        "body": "A theme changes the palette and artwork, not the shared controls, wording or workflow. Native game differences keep their own accurate help. ",
         "section": "colors"
       },
       {
-        "name": "The Native Text Rule.",
-        "body": "Les textes utiles restent des widgets Qt, traduits\net exposés aux technologies d’assistance. Les images ne remplacent pas les\nlibellés, les descriptions ou les commandes.",
+        "name": "The Native Text Rule",
+        "body": "Useful text remains localized Qt content. Artwork does not replace labels, help, search, progress or keyboard focus. ",
         "section": "typography"
       },
       {
-        "name": "The Frame Rule.",
-        "body": "Le cadre argenté appartient au panneau de travail. Les\nchamps, listes et boutons gardent leurs traits plus fins pour préserver la hiérarchie.",
+        "name": "The Frame Rule",
+        "body": "The double frame belongs to the work panel. Controls use finer borders so the panel, content and current action remain distinct. ",
         "section": "elevation"
+      },
+      {
+        "name": "The Shared Template Rule",
+        "body": "Common controls have the same order, words and behavior in both games. Do not create a separate XD synonym or omit a shared feature to fit its theme.",
+        "section": "components"
       }
     ],
     "dos": [
-      "**Do** conserver les vrais petits visuels du pack embarqué et leurs proportions.",
-      "**Do** réserver le cyan aux états interactifs et l’or au contour de l’action principale.",
-      "**Do** garder les textes traduisibles, le focus clavier et les noms accessibles des contrôles.",
-      "**Do** faire défiler le contenu actif et garder les actions de navigation visibles sur une petite fenêtre."
+      "**Do** reuse shared Qt templates, copy and option metadata for both games.",
+      "**Do** retain each game's logo, palette and bundled interface media.",
+      "**Do** keep localized text, keyboard focus and accessible control names.",
+      "**Do** keep navigation visible and scrolling confined to the active content.",
+      "**Do** distinguish pending, loading, cancelled, failed and current previews."
     ],
     "donts": [
-      "**Don't** remettre l’ancienne palette bleue ou supprimer les ressources du jeu du système choisi.",
-      "**Don't** agrandir les portraits jusqu’à en faire l’élément dominant de la zone de travail.",
-      "**Don't** rasteriser les libellés ou transformer les captures de maquette en interface cliquable.",
-      "**Don't** faire dépendre le démarrage visuel et sonore d’une première ROM ou d’un cache à remplir."
+      "**Don't** change shared wording or behavior merely because the theme changes.",
+      "**Don't** present a cosmetic loading sample as a final seeded result.",
+      "**Don't** show a known species or shiny status when the preview cannot establish it.",
+      "**Don't** make the visual/audio startup depend on selecting a ROM or downloading a cache.",
+      "**Don't** replace native controls with rasterized text or distribute proprietary fonts."
     ]
   }
 }

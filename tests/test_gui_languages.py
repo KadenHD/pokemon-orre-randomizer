@@ -88,7 +88,7 @@ class GuiLanguageTests(unittest.TestCase):
         self.assertEqual([field.text() for field in (self.window.source, self.window.destination, self.window.tool)], paths)
         self.assertEqual(self.window.format.currentText(), "ISO")
         self.assertEqual(self.window.rule_nav.currentRow(), 4)
-        self.assertEqual(self.window.rule_checks["starter_umbreon"].text(), "ブラッキーを変更")
+        self.assertEqual(self.window.rule_checks["starter_umbreon"].text(), "最初の1匹目を変更")
         self.assertEqual(self.window.rule_fields["moves_mode"].currentText(), "適性に合わせる")
         self.assertEqual(self.window.create_button.text(), "ROMを作成")
 
@@ -143,7 +143,7 @@ class GuiLanguageTests(unittest.TestCase):
         self.assertEqual(self.window.log.toPlainText(), "Shops: step 3/5…")
         self.assertEqual(self.window.rule_fields["boss_shadow_power_mode"].currentData(), "free")
         self.assertEqual(self.window.rule_fields["boss_shadow_power_mode"].currentText(), "No power matching")
-        self.assertEqual(self.window.rule_checks["starter_umbreon"].text(), "Replace Umbreon")
+        self.assertEqual(self.window.rule_checks["starter_umbreon"].text(), "Replace the first starter")
         self.assertIn("1.25", self.window.rule_fields["trainer_level_multiplier"].text())
         self.select_language("fr")
         self.assertEqual(self.window.status.text(), str(message))
@@ -162,13 +162,16 @@ class GuiLanguageTests(unittest.TestCase):
                 self.assertTrue(item.accessibleName())
                 self.assertTrue(item.toolTip())
             for _, source in self.window._text_bindings:
-                self.assertIn(source, CATALOGS["en"])
+                self.assertIn(source.template if isinstance(source, Message) else source, CATALOGS["en"])
             # Every explanatory paragraph is checked, including dynamically
             # created category descriptions that source AST scans cannot see.
             self.assertTrue(self.window.report_rom_status.isHidden())
+            bound_text = {translate(source, language) for _, source in self.window._text_bindings}
+            allowed = set(CATALOGS[language].values() if language != "fr" else CATALOGS["en"]) | bound_text
             for label in self.window.findChildren(QLabel):
-                if label.objectName() == "note" and label is not self.window.report_rom_status:
-                    self.assertIn(label.text(), CATALOGS[language].values() if language != "fr" else CATALOGS["en"])
+                if label.objectName() == "note" and label not in (self.window.report_rom_status,
+                                                                 self.window.xd.report_rom_status):
+                    self.assertIn(label.text(), allowed)
 
     def test_all_six_languages_available_without_rom_and_keep_configuration(self):
         self.window.seed.setText("étoile/{seed}/🌟")

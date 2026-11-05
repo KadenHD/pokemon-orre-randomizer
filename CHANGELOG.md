@@ -1,5 +1,21 @@
 # Changelog
 
+## 1.2.1
+
+- Unify shared Colosseum/XD wording, preset explanations, category help,
+  starter labels, preview actions and applied-settings summaries in all six
+  interface languages. Shared copy and metadata now have parity regressions.
+- Show XD's native Shadow, gift and Poké Spot rosters before calculation, with
+  unknown replacements where appropriate. Keep multilingual search available
+  before calculation, and use the same loading animation, retry/cancel states,
+  seeded shiny legend and single-click Pokémon sheets as Colosseum.
+- Add XD's duplicate-family warning, original-ROM comparison after report
+  import, creation-stage log and safe reuse of a verified preview patch plan.
+  Both previews run through the same background worker and reject stale results.
+- Preserve game-specific explanations for XD's protected Lugia, Poké Spots,
+  tutorial and trade encounters, and Colosseum's starter pair and event gifts.
+  These interface changes do not change the seeded randomization rules.
+
 ## 1.2.0
 
 - Both XD desktop presets now replace Hordel's Shadow Togepi by default.

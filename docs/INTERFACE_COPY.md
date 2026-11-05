@@ -1,60 +1,82 @@
-# Interface text
+# Interface writing conventions
 
-The tool is intended for players who choose their ROM and settings. Texts should explain the effect
-of an option or the next action.
+Write for players choosing a ROM, settings and a destination. A label names the
+action or option; its help explains the effect and any useful limit. Use the same
+words for the same behavior in both games and in all six interface languages.
+See [shared interface behavior](INTERFACE_PARITY.md) for implementation sources
+and the intentional differences between Colosseum and XD.
 
-The three choices of Simple mode are starting points, not custom settings.
+## Presets
 
-| French | English | Japanese | Scope |
-| --- | --- | --- | --- |
-| Pokémon + moves | Pokémon + moves | ポケモン＋わざ | Pokémon of near power, abilities and learnings, TM, chests and shops |
-| Pokémon only | Pokémon only | ポケモンのみ | Pokémon replaced without balancing. Capabilities, learnings and TM preserved |
-| Unchanged copy | Unchanged copy | そのままコピー | Game data unchanged, ISO/RVZ conversion possible |
-
-The descriptions specify the Pokémon involved and the aids common to the two randomized modes:
-evolutions, sale of stones and different families of Shadow Pokémon. The text "Custom settings" appears
-when the options differ from the three predefined choices. It indicates how to view them in Advanced
-and select a predefined choice replaces them. The values of the three sets of options are unchanged.
-
-"View the starters" is an explicit action to reveal the print. Before the calculation, the legend
-names the original portraits. After the calculation, it confirms the correspondence with the seed
-and the settings. An amendment replaces the result with the originals with an invitation to
-recalculate. A change of language translates the result already calculated without restarting the
-print. The Japanese names of the 386 species come from the PokéAPI data set, under its license held
-in `licenses/pokeapi.txt`. The selection and the print are in `licenses/pokeapi-names.json`. The
-French and English names and the portraits are read in the selected ROM. No external service is
-called during the preview.
-
-| French | English | Usage |
+| French | English | Effect |
 | --- | --- | --- |
-| Original ROM | Original ROM | File selected by the player, always kept |
-| New ROM | New ROM | File created by tool |
-| Settings | Settings | Choices that determine the party |
-| Profil | Profile | File containing the seed and settings |
-| Moves | Moves | Use the term Pokémon, including for offensive capability |
-| Abilities | Abilities | Not to be confused with capabilities |
-| Pokémon offered | Gift Pokémon | Pokémon received as a gift or reward |
-| Family of evolution | Evolution family | Species linked by evolution |
+| Pokémon + capacités | Pokémon + moves | Replaces Pokémon with similar strength; also randomizes moves, learnsets, TMs, chest items and shop items |
+| Pokémon seuls | Pokémon only | Uses the same Pokémon selection and balance; keeps moves, learnsets, TMs and ordinary items |
+| Copie à l’identique | Unchanged copy | Keeps all game data; can convert ISO/RVZ |
 
-- The buttons name the action: "Create ROM", "Open Report".
-- The boxes describe their effect: "Replace Umbreon", "Keep the care in store".
-- The aids explain the behaviour of the present. They retain the useful limits: level 40, stone
-  prices, threshold of statistics, etc.
-- The entry entries are in one or two sentences and do not repeat the list of options.
-- An error indicates what blocks and how to resume. Internal details do not replace this
-  explanation.
-- Avoid slogans, repetitions and internal terms such as "identified routine", "native bytes" or
-  "markers" in the current course.
-- The settings names, translation parameters, profile values, and seed are distinct. A reformulation
-  does not change the hashes.
+Both randomizing presets enable accessible evolutions, Evolution stones in shops,
+family diversity, base starters from three-stage families and a seeded 5% shiny
+chance for supported encounters. Explain native exceptions beside these shared
+defaults. Do not imply that wild Poké Spots use the custom shiny rate.
 
-The French wording is in `options.py` and `gui.py`The English and Japanese catalogues are in
-`locales/en.py` and `locales/ja.py`. Any changes must remain consistent in all three languages and
-retain the meaning of the options.
+**Custom settings** means that the current options differ from every preset.
+Explain how to inspect them in Advanced and that selecting a preset replaces
+them. Switching Simple/Advanced alone preserves the current options.
 
-In Japanese: for abilities, for talents, for basic statistics, and for Shadow Pokémon, according to
-[official Japanese presentation](https://www.pokemon.co.jp/game/other/colosseum/). The purification
-is [リライブ](https://www.nintendo.co.jp/ngc/gxxj/snatch/index.html). File names, seeds, settings
-identifiers and formatting fields are kept literally. Japanese texts use system fonts with folding
-on Yu Gothic UI, Meiryo and Noto Without CJK JP. No proprietary font file is distributed with the
-application.
+## Vocabulary
+
+| French | English | Meaning |
+| --- | --- | --- |
+| ROM d’origine | Original ROM | Player-supplied image, preserved by the app |
+| Nouvelle ROM | New ROM | Separate generated image |
+| Réglages | Settings | Options used for generation |
+| Profil | Profile | Portable seed and settings |
+| Capacités | Moves | Pokémon moves, including non-damaging moves |
+| Talents | Abilities | Species abilities; separate from moves |
+| Pokémon obscurs | Shadow Pokémon | The game's Shadow encounters |
+| Cadeaux | Gifts | Pokémon received as gifts, trades or rewards |
+| Famille d’évolution | Evolution family | Species linked by evolution |
+| Chromatique | Shiny | Use a small red star beside a shiny Pokémon's name |
+| Réglages appliqués | Applied settings | Effective values, grouped by category, before creation |
+
+Keep the labels for common settings in shared metadata. Avoid alternating
+“change”, “replace” and “randomize” for the same control in different workspaces.
+French uses *chromatique* consistently; other languages use their own catalog.
+The first/second starter labels describe a slot, so they remain valid when the
+original species is replaced.
+
+## Preview states
+
+- **Calculate preview** starts the first calculation.
+- **Update preview** appears after the ROM, seed or settings change.
+- **Cancel preview** remains available while calculating.
+- **Try again** follows cancellation or failure.
+- **Preview up to date** confirms a completed, current result.
+
+Before calculation, show known original species in the original column and `?`
+for unknown replacements. A retained or manually selected species may already be
+named. Cosmetic cycling during loading never represents a final draw. Explain
+that a preview creates no ROM and applies to a new game.
+
+Use sentence case for Pokémon names, keeping the first letter capitalized. Mark
+known shiny encounters with the shared small red star instead of adding “shiny”
+or “not shiny” to every row. Retain accessible names and status descriptions.
+Changing interface language translates an existing result without recalculating.
+
+## Help, errors and localization
+
+- Name actions directly: **Create ROM**, **Open report**, **Cancel preview**.
+- Describe checkbox effects: **Replace the first starter**, **Keep shop healing items**.
+- Explain relevant limits such as evolution levels, stone prices and stat thresholds.
+- Report what blocked the action and how to recover. Internal offsets, patch
+  routines and implementation details belong in diagnostics, not ordinary help.
+- Keep seeds, file paths, Pokémon IDs, profile values and format parameters
+  literal. Rewording interface text must not change a seeded result.
+- Translate complete messages with structured parameters. Keep interface language
+  independent of ROM language; in-game names and dialogues follow the ROM.
+- Check all six languages at both supported window sizes. Japanese uses installed
+  system fonts; no proprietary font is bundled.
+
+Preview properties and portraits come from the verified original and the final
+patch plan. Fallback names are licensed under the notices in `licenses/`. The
+preview requires no external service.

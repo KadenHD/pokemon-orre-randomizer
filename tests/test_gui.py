@@ -24,6 +24,12 @@ class GuiTests(unittest.TestCase):
                                                    QSettings.Format.IniFormat), system_languages=["fr-FR"])
 
     def tearDown(self):
+        from PySide6.QtTest import QTest
+        self.window.cancel_preview()
+        for _ in range(100):
+            if self.window.preview_thread is None:
+                break
+            QTest.qWait(10)
         self.window.close()
         self.window.deleteLater()
         QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
@@ -53,14 +59,14 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(xd.format.currentText(), "RVZ")
         self.assertEqual(Path(xd.destination.text()).name, "xd-randomized.rvz")
         self.assertFalse(xd.source_conversion.isHidden())
-        self.assertTrue(xd.tool_block.isHidden())
-        xd.source_conversion.click()
         self.assertFalse(xd.tool_block.isHidden())
+        xd.source_conversion.click()
+        self.assertTrue(xd.tool_block.isHidden())
         self.assertFalse(xd.output_tool_block.isHidden())
         xd.tool.setText("C:/DolphinTool.exe")
         self.assertEqual(xd.output_tool.text(), xd.tool.text())
         xd.format.setCurrentText("ISO")
-        self.assertFalse(xd.tool_block.isHidden())
+        self.assertTrue(xd.tool_block.isHidden())
         self.assertTrue(xd.output_tool_block.isHidden())
         xd.source.setText("C:/original.iso")
         self.assertTrue(xd.tool_block.isHidden())
@@ -132,7 +138,7 @@ class GuiTests(unittest.TestCase):
         xd.rules["randomize_shadows"].setChecked(False)
         xd.rules["randomize_starter"].setChecked(False)
 
-        panel.search.setText("remplacer le pokemon de depart")
+        panel.search.setText("remplacer le premier starter")
         self.assertEqual(panel.content.currentIndex(), 1)
         panel.search.returnPressed.emit()
         self.assertEqual(panel.content.currentIndex(), 0)
@@ -171,13 +177,14 @@ class GuiTests(unittest.TestCase):
         with patch("orre_randomizer.preview.preview_xd", side_effect=fake_preview) as calculate:
             xd.start_preview()
             for _ in range(100):
-                if not window.busy:
+                if window.preview_thread is None:
                     break
                 QTest.qWait(10)
             self.assertFalse(window.busy)
             self.assertIsNot(started_on[0], self.app.thread())
             self.assertTrue(xd.preview_button.isHidden())
-            self.assertIn("Évoli → Gobou", xd.preview_starter.text())
+            self.assertIn("Gobou", xd.preview_starter.text())
+            self.assertIn("Évoli → Gobou", xd.preview_portrait.toolTip())
             xd.encounter_tabs.setCurrentIndex(2)
             self.assertEqual(xd.preview_details.topLevelItemCount(), 2)
             self.assertIn("Échange contre Togepi ou Togetic", xd.preview_details.topLevelItem(1).text(0))
@@ -185,7 +192,7 @@ class GuiTests(unittest.TestCase):
             self.assertEqual(xd.encounter_tabs.currentIndex(), 2)
             self.assertIn("Trade for Pikachu", xd.preview_details.topLevelItem(0).text(1))
             self.assertIn("Trade for Pikachu or Raichu", xd.preview_details.topLevelItem(1).text(1))
-            self.assertIn("Eevee → Mudkip", xd.preview_starter.text())
+            self.assertIn("Mudkip", xd.preview_starter.text())
             xd.start_preview()
             calculate.assert_called_once()
 
@@ -215,11 +222,14 @@ class GuiTests(unittest.TestCase):
 
         with patch("orre_randomizer.preview.preview_xd", side_effect=fake_preview):
             xd.start_preview()
-            self.assertTrue(window.busy)
+            self.assertTrue(xd.preview_running)
+            self.assertFalse(window.busy)
+            xd.step = 2
+            xd.refresh_navigation()
             self.assertFalse(xd.create_button.isEnabled())
             xd.seed.setText("changed while loading")
             for _ in range(100):
-                if not window.busy:
+                if window.preview_thread is None:
                     break
                 QTest.qWait(10)
 

@@ -64,11 +64,11 @@ class PreparedPatches:
     source_sha256: str
     iso_sha256: str
     seed: str
-    options: Options
+    options: Options | xd.XDOptions
     patches: tuple[tuple[int, bytes], ...]
     summary: dict
 
-    def matches(self, source: Path, source_sha256: str, iso_sha256: str, seed: str, options: Options) -> bool:
+    def matches(self, source: Path, source_sha256: str, iso_sha256: str, seed: str, options: Options | xd.XDOptions) -> bool:
         return (self.source, self.source_sha256, self.iso_sha256, self.seed, self.options) == (
             source, source_sha256, iso_sha256, seed, options)
 
@@ -681,7 +681,8 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
         region = check_disc_identity(boot, iso_hash, is_xd=is_xd)
         timings["input_validation"] = round(time.monotonic() - started, 4)
         phase = time.monotonic()
-        reused = not is_xd and prepared_patches is not None and prepared_patches.matches(source, source_hash, iso_hash, seed, options)
+        reused = prepared_patches is not None and prepared_patches.matches(
+            source, source_hash, iso_hash, seed, xd_options if is_xd else options)
         if reused:
             checkpoint(cancel)
             progress(20, "Réutilisation du calcul de l’aperçu…")

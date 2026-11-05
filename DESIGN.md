@@ -15,6 +15,19 @@ colors:
   action-gold: "#efd574"
   action-face: "#173e38"
   action-hover: "#245d4f"
+  xd-background: "#1d1112"
+  xd-panel: "#24191a"
+  xd-field: "#181314"
+  xd-text: "#fff4e6"
+  xd-selection: "#66302a"
+  xd-focus: "#ffad93"
+  xd-action: "#ffc772"
+  home-background-start: "#090a0b"
+  home-background-middle: "#191a1c"
+  home-background-end: "#34363a"
+  home-control: "#202327"
+  home-selected: "#30343a"
+  home-focus: "#cbd0d8"
 typography:
   display:
     fontFamily: "Segoe UI"
@@ -24,6 +37,10 @@ typography:
     fontFamily: "Segoe UI"
     fontSize: "23px"
     fontWeight: 650
+  subheading:
+    fontFamily: "Segoe UI"
+    fontSize: "16px"
+    fontWeight: 600
   body:
     fontFamily: "Segoe UI"
     fontSize: "14px"
@@ -65,6 +82,14 @@ components:
   menu-panel:
     backgroundColor: "{colors.forest-panel}"
     textColor: "{colors.text-ivory}"
+  menu-panel-xd:
+    backgroundColor: "{colors.xd-panel}"
+    textColor: "{colors.xd-text}"
+  button-home:
+    backgroundColor: "{colors.home-control}"
+    textColor: "{colors.text-ivory}"
+    typography: "{typography.body}"
+    rounded: "{rounded.control}"
 ---
 
 # Design System: Pokémon Orre Randomizer
@@ -73,250 +98,189 @@ components:
 
 **Creative North Star: "The menus of Colosseum"**
 
-The system takes over the green panels, the silver frames with cut angles and the cyan selection of
-the original game. The indigo background and the small portraits give the context. The fields and
-buttons remain readable Qt controls.
+The desktop interface keeps the original menu character: angular frames, dark
+panels, small Pokémon portraits and a visible selection cursor. Native Qt fields,
+buttons and lists handle the work. The Colosseum palette is the baseline; XD uses
+the same composition with charcoal, red and gold. The game-selection screen uses
+a neutral black-to-gray background and neutral header controls.
 
-The images and audio belong to the embedded interface package. The appearance does not depend on a
-selected ROM, download or user cache. The system font, native selectors and accessible control names
-remain the convention of the desktop application.
+The bundled interface pack supplies logos, background artwork, music and menu
+sounds before a ROM is selected. Content stays readable without an available
+audio device. System fonts and accessible Qt controls remain the desktop convention.
 
 **Key Characteristics:**
 
-- Green forest panels on an indigo background drawn from the game.
-- Angular silver frames, without added shadow.
-- Selection and cyan focus. Main action bordered with pale gold.
-- Small authentic portraits and texts rendered by Qt.
-- Independent audio controls, activated at the first launch if available, with stored choice.
+- One shared three-step wizard and Pokémon-sheet template for both games.
+- Colosseum green/indigo and XD charcoal/red themes, with neutral home controls.
+- Cut-corner frames and tonal surfaces without decorative shadows.
+- Small authentic portraits beside localized, accessible text.
+- Persistent navigation, visible scrolling and explicit loading states.
+- Shared wording and behavior across all six interface languages.
 
 ## Colors
 
-The green occupies the work surface. The indigo bears the background image. The accents express a
-state or an action, with the values of the frontmatter.
+The frontmatter records observed values from `ui_theme.py`. The Colosseum tokens
+describe the baseline controls; the `xd-*` and `home-*` tokens describe the theme
+changes. The complete XD substitutions remain in `xd_stylesheet()`.
 
 ### Primary
 
-- **State Cyan**: keyboard focus, button selection and active category.
-- **Selection scarf**: background of checked checks and selected lines.
+- **Cyan state / teal selection:** focus, checked controls and the active view in Colosseum.
+- **Warm focus / red selection:** the same states in XD.
+- **Neutral silver focus:** home header controls, independent of either game's palette.
 
 ### Secondary
 
-- **Or d’action**: contour of the main action. Its focus remains cyan.
+- **Action gold:** the primary action's border, adapted to each game.
 
 ### Neutral
 
-- **Green forest**: central panel and pallet of windows and Qt children.
-- **Indigo de fond**: backset and support of the title texture.
-- **Field ink**: seizures, boxes and progression.
-- **Text**: wording and current content.
-- **Text mint**: notes and secondary descriptions.
-- **Argent de cadre**: external contour of the cut-angle panel.
-- **Button face** and **edge of the fields**: checks available at rest.
+- **Forest panel / indigo background:** Colosseum work surface and surrounding artwork.
+- **Charcoal panel / dark red background:** XD work surface and angular background bands.
+- **Black-to-gray background:** the home screen's diagonal gradient.
+- **Ivory text / tinted secondary text:** common hierarchy with game-specific tints.
+- **Field ink / silver frame:** recessed inputs and the outer work panel.
 
-**The State Rule.** The cyan indicates the focus or selection. It accompanies a check mark, button
-state, cursor or position. No critical information rests solely on the color.
+**The Theme Rule.** A theme changes the palette and artwork, not the shared
+controls, wording or workflow. Native game differences keep their own accurate help.
 
 ## Typography
 
-**Display Font:** Segoe UI on Windows. No serif font of the system on other platforms. No game font
-is embedded.
+Segoe UI is the Windows baseline. Other platforms use an available system
+sans-serif font. Japanese uses Yu Gothic UI, Meiryo, Noto Sans CJK JP or Noto Sans
+JP; the app title retains Segoe UI. No proprietary font is bundled.
 
-**Body Font:** the same family as the titles. Real sizes and fat are defined in the frontmatter.
-Controls inherit the application font.
+The observed hierarchy is display, section heading, subheading, body and note.
+The frontmatter records their sizes and weights. Names use an initial capital;
+known shiny Pokémon have a small raised red star beside the name. Accessible
+descriptions retain the status in words.
 
-### Hierarchy
-
-- **Display**: the name of the tool in the header, with a return to the authorized line.
-- **Headline** : titre de la zone de travail courante.
-- **Body**: buttons, fields, categories and boxes.
-- **Note**: sub-labelled presets, aids and legends.
-
-**The Native Text Rule.** Useful texts remain Qt widgets, translated and exposed to assistive
-technologies. Images do not replace labels, descriptions or commands.
+**The Native Text Rule.** Useful text remains localized Qt content. Artwork does
+not replace labels, help, search, progress or keyboard focus.
 
 ## Layout
 
-The window uses a compact header, horizontal navigation, a dominant work panel and actions anchored
-under this panel. The preferred dimensions are limited by the screen. The minimum implemented is 680
-× 540. The content areas scroll and the main actions remain outside.
+The header contains the logo/title, music, sounds, profiles and language. Home
+offers Colosseum and XD. Each game follows **ROM → Settings → Create** with the
+same persistent navigation outside the scrolling content.
 
-The external margins are 24 px horizontally and 18 px vertically. The groups are separated by 12 px.
-The frame reserves 8 px around the pages. These add 16 px horizontally and 12 px vertically. The
-content of the pages is centered and limited to 1,200 px wide. The fixed rows of the settings and
-preview are spaced by 6 px to reserve the height of the active content.
+The minimum window is 680 × 540. Diagnostics also exercise 1040 × 800. Outer
+margins are 24 px horizontally and 18 px vertically. The main panel reserves
+8 px around pages; page margins are 16 px horizontally and 12 px vertically.
+Content is bounded to 1,200 px. Fixed settings/preview rows use 6 px spacing.
 
-In Japanese, the controls use Yu Gothic UI, Meiryo or Noto Without CJK JP according to the installed
-fonts. The name of the app keeps Segoe UI. The sizes, colors and states remain those of the theme.
-The Japanese text returns to the line.
+Settings separates Configuration and Pokémon preview, keeping the seed above
+both views. Simple/Advanced switches preserve values. Advanced categories use
+a 192 px sidebar only when the window is at least 900 px wide and every category
+fits vertically; otherwise a compact selector replaces it. The selected form
+scrolls independently of the footer.
 
-The settings separate Configuration and Pokémon Preview. The Seed and Profiles menu remain in a
-common row, above the content of each view. Changing view keeps the rules and the valid result.
-Common preset details are folded by default.
-
-In advance, the categories occupy a 192 px column when the window is at least 900 px wide and the
-fifteen categories stand in height. Otherwise, a compact selector replaces the column. The active
-choice and values are retained. The active form scrolls without scrolling including the step.
-
-The preview has its own result area, with no fixed maximum height. The starters' portraits accompany
-the names and levels. The dark ones and the gifts occupy a native list. The Back/Continue foot
-remains outside these areas and remains visible in the small window of 680 × 540.
+Encounter lists fill the remaining height. Their vertical scrollbar is 15 px
+wide with a handle of at least 44 px. Only active content scrolls; navigation
+actions stay visible. Japanese and long translated help wrap instead of
+requiring a larger window.
 
 ## Elevation & Depth
 
-The depth comes from the tones and the two contours of the panel. The texture of the game is
-darkened before drawing the controls. The implementation does not add any shadow or decorative blur.
-The changes of state are immediate.
+Depth comes from darker fields, tonal panels and two angular outlines. The app
+adds no decorative shadows or blur. The Colosseum artwork is darkened behind
+controls; XD uses painted angular bands; home uses a neutral gradient.
 
-**The Frame Rule.** The silver frame belongs to the work panel. The fields, lists and buttons keep
-their strokes sharper to preserve the hierarchy.
+**The Frame Rule.** The double frame belongs to the work panel. Controls use
+finer borders so the panel, content and current action remain distinct.
 
 ## Shapes
 
-The panel is an eight-top polygon: 11 px cut outer corners, 2 px outer contour and finer internal
-contour, 5 px offset. The fields and buttons use small rounded corners. The steps are jointed and
-square.
-
-The portraits remain small: original pixels of 42 × 42, centered in a 48 × 48 position. The logo of
-96 × 32 is a badge in the header. The main name of the tool remains text.
+The work panel is an eight-sided polygon: outer corners cut by 11 px, a 2 px
+outer contour, and a finer inset outline at 5 px. Controls use a 4 px radius.
+Step buttons have square corners and no gaps. Pokémon portraits are 42 × 42 px
+inside 48 × 48 px slots. Preserve logo proportions and the existing Poké Ball
+cursor spacing.
 
 ## Components
 
-### Buttons
+### Buttons and inputs
 
-- **Repos**: dark face, fine silver line and ivory text.
-- **Principal**: green face, 2 px gold border and reinforced fat.
-- **Survol**: clarification of face and contour.
-- **Focus and selection**: cyan border of 2 px, with padding compensation.
-- **Off**: face, border and attenuated text. The command remains recognizable.
-- **Preset**: buttons aligned with a short sub-label to compare choices.
+Secondary buttons use a dark face and a fine border; hover lightens both.
+Checked/focused controls use the theme's state border. The primary action has
+a gold border. Disabled controls retain their label and saved value with reduced
+emphasis. Focus-border changes compensate padding to avoid layout movement.
+The search field's clear button keeps its compact native geometry.
 
-### Inputs / Fields
+### Navigation and shared copy
 
-The fields are dark, with a fine line and a minimum height of content of 24 px. The focus thickens
-the line and compensates for the padding. The width of the content does not jump. The boxes display
-a drawn check mark, in addition to the cyan background.
+The active step combines position, checked state and the Poké Ball cursor.
+Category icons describe functions rather than arbitrary Pokémon. Profiles stays
+beside language and audio; import/export does not add permanent form rows.
+Use `workspace_copy.py`, `workspace_i18n.py` and shared option metadata for common
+labels and help. Follow `docs/INTERFACE_PARITY.md` and `docs/INTERFACE_COPY.md`.
 
-The wheel does not change a number or list of choices without focus: it is transmitted to the parent
-scrolling area when it exists. A field with focus retains its native modification behavior.
+**The Shared Template Rule.** Common controls have the same order, words and
+behavior in both games. Do not create a separate XD synonym or omit a shared
+feature to fit its theme.
 
-### Encounter Preview
+### Presets and dependent controls
 
-The Pokémon Preview view contains three Qt tabs: Starters · 2, Shadow Pokémon · 48 and Gifts · 4. "Compute
-Overview" explicitly launches the common engine for all three groups. The tab change reuses the
-valid result. During the calculation, an animated bar, an explanation and cancellation remain
-available. After calculation, the check mark and "Update Preview" replace the command in the tab
-row. The detail of the result remains accessible by its tooltips.
+The three presets are **Pokémon + moves**, **Pokémon only** and **Unchanged copy**.
+Their explanations appear directly below the choices. Custom values are identified
+and remain available in Advanced. Both randomizing presets use the same common
+balance policy and a seeded 5% shiny rate for supported encounters. Imported
+profiles retain their saved values. XD's native exceptions remain explicit.
 
-The native list presents two columns named "Pokémon d'originale" and "With this Seed", under a dark
-header. Each tab presents a flat list. Each row combines the original name with the replacement,
-with its small portrait of ROM (42 × 42) and its level when it is available. Names, columns and tabs
-are translated into all six languages. The selection retains the existing one. No new accent is
-added.
+Dependent controls stay visible and retain their values when disabled. Shiny
+customization enables the rate; Colosseum also offers seeded/in-game draws, while
+XD has a separate Shadow unlock. Wild Poké Spots keep their native rate.
 
-The search accepts the names in the six languages and the Pokédex numbers. A status filter is
-available when the Shiny result is known. The counter indicates the range of lines visible among the
-filtered results. An empty search for results the announcement explicitly. The list only scrolls,
-with a bar of 15 px and a clear handle of at least 44 px.
+### Encounter preview
 
-Changing the ROM, seed or rules removes the old lines and invites to update. Event gifts indicate
-the localized donor and the purification threshold when their access is activated. Otherwise, they
-keep the mention of external event. The foot recalls the active conditions in the Gifts tab. In
-other groups, it specifies the scope "new part" and the absence of created ROM.
+Colosseum shows two starters, 48 Shadows and four gifts. XD shows one starter,
+83 Shadows, seven gifts and nine Poké Spot slots. Both use **Calculate preview**,
+**Update preview**, **Cancel preview**, **Try again** and **Preview up to date**
+for the same states. The original and replacement columns use shared labels.
 
-### Dependent Settings
+Before calculation, known original species appear on the left and unknown
+replacements use question marks. Retained/manual species may already be named.
+Search works before and after calculation using names in all six languages and
+National Pokédex numbers. The counter reports the visible range or no results.
 
-A box can activate the digital field that follows it. The field remains visible and retains its
-value when the box is unchecked. Its text and contour are attenuated by the native deactivated
-state. The help remains legible under both controls.
+During calculation, a cosmetic cycle updates eligible portraits/names every
+115 ms. It does not determine the draw. Progress, loading text and cancellation
+remain available while the production engine works off the interface thread.
+Changes invalidate stale results and open sheets. Ready results reuse the same
+seeded decisions; a duplicate-family tab appears when needed.
 
-In "Shiny Pokémon", the box "Customize shinies" precedes the box "Linking the Shiny to the seed",
-then the percentage rate of 0 to 100, displayed with four decimal places. Customization is unchecked
-at the first launch. The proposed rate of 1% and the link remain visible but inactive. The link is
-checked by default and retains its value when it is disabled. A permanent note explains the two
-extremes. The texts remain localized, with the decimal separator of the chosen language.
+### Pokémon sheets and creation
 
-With the active customization and binding, the line visible before the calculation announces "Shiny
-status fixed by the seed." at intermediate rates. The preview uses the exact decisions of the engine
-for a new part: each starter, obscure and gift receives his or her authentic normal or Shiny
-portrait. The name also bears the translated mention "Shiny" or "non-Shiny". The color of the
-portrait is therefore not the only information. The same species can appear in both forms according
-to the encounter. The legend specifies the scope "new part" and does not promise any minimum number
-of Shiny ones.
+A single click opens the shared Pokémon sheet: Summary, Moves and Evolutions.
+Evolution routes show portraits and actual final requirements. Known shiny
+status selects matching evolution portraits. The red star replaces repeated
+shiny/non-shiny labels beside individual names.
 
-Without a link, the caption keeps the explanation of the draw in play at intermediate rates and uses
-ordinary portraits. The 0 and 100% specific messages remain visible before calculation when
-customization is enabled. Change the rate, customization or link removes the outdated results in
-both views. Names and status remain legible if a portrait cannot be decoded. These states take back
-the frames, colors and actions of the existing C composition.
+Create shows **Applied settings**, grouped by category with values and units.
+Inactive remembered values are omitted. RVZ output exposes its DolphinTool field
+and shares the path selected in ROM. Both games provide progress, cancellation,
+a stage log and links to the output folder, JSON report and offline journal.
 
-### Exclusion Selectors
+### Home and audio
 
-A setting line combines a summary ("No exclusion" or a number) with "Choose...". The dialog keeps
-the dark fields, Qt texts and the green list of the existing system. The title and help precede the
-search. The counter and OK / Cancel buttons remain below the scrolling list.
+Home keeps neutral music/sound/language controls and game-specific selection
+tiles. Both music and menu sounds start enabled when available and remember
+independent preferences. Audio availability never blocks randomization.
 
-A check mark always means "excluded". Its dark mark on cyan background takes over the settings,
-without replacing the accessible state of native control. The search accepts localized names and
-numbers. Group actions only concern visible results. OK applies the selection. Cancel closes the
-dialog without changing the setting value.
-
-### Navigation
-
-The application icon is **Clip**. The two black/gold and lilac/red crescents form a common
-silhouette. The master PNG and ICO 16–256 px are in `assets/app/`, regardless of the game pack. It
-is used for executable, windows and local shortcut.
-
-The steps are checkable buttons aligned without spacing. The active step combines the root, cyan
-contour and Poké Ball cursor. The categories use a native list with discrete separators and a cyan
-selection. The fifteen categories have semantic pictograms with a 20 px line, mint at rest and cyan
-in selection: team, gift, flash, disk TM, crown, filter, talent, graphic, label, hand holding an
-object, safe, capture and level, tree of evolution, shop, Poké Star ball for Shiny Pokémon. These
-icons are designed by the application and remain available without the pack of the game. The active
-line remains in the visible part of the list after a resizing or a language change. The compact
-selector represents the same category.
-
-The tabs take back the dark faces of the buttons and the root bottom for the selection, underlined
-in cyan. Their padding is 6 px vertically and 13 px horizontally. The Profiles menu uses the same
-colors and combines import and export without adding a permanent row of commands.
-
-### Panel Menu
-
-The panel is drawn by `QPainter`, with its accessible Qt children. Scrolling pages retain a
-transparent background to stay in the same green surface. The background of the title, logo and
-portraits come from the validated local pack.
-
-### Audio Controls
-
-"Music" and "Sounds" are two checkable buttons in the header. Their checked state uses the same cyan
-selection as other commands. Preferences are stored independently of the game settings. The music
-and browsing channels are separated. An unavailable audio output does not block the creation.
-
-## Do's and Gift'ts
-
-In "Starters and Gifts", access to event gifts commands four fields: two purification thresholds and
-two reception levels. The values remain stored but disabled without this option. The descriptions
-specify that the introduction scenes must be completed, even with a zero threshold. The game
-dialogues follow the five PAL languages, regardless of the six languages of the interface. The
-preview retains the same species and status as the engine.
+## Do's and Don'ts
 
 ### Do:
 
-- **Do** keep the real small visuals of the package and their proportions.
-- **Do** reserve the cyan to the interactive states and the gold to the contour of the main action.
-- **Do** keep the translated text, keyboard focus and accessible control names.
-- **Do** scroll the active content and keep the navigation actions visible on a small window.
+- **Do** reuse shared Qt templates, copy and option metadata for both games.
+- **Do** retain each game's logo, palette and bundled interface media.
+- **Do** keep localized text, keyboard focus and accessible control names.
+- **Do** keep navigation visible and scrolling confined to the active content.
+- **Do** distinguish pending, loading, cancelled, failed and current previews.
 
-### Gift't:
+### Don't:
 
-- **Gift't** re-establish the old blue palette or remove the resources from the game of the chosen
-  system.
-- **Gift't** enlarge portraits until they become the dominant element of the work area.
-- **Gift't** Raster wording or transform model captures into a clickable interface.
-- **Gift't** make the visual and audible start depend on a first ROM or cache to be filled.
-
-## Theme scope
-
-Both games use the same wizard and Pokémon-sheet templates. The color values
-above describe the Colosseum baseline; `ui_theme.py` defines XD and neutral-home
-variants. The shared layout is specified in `ui_workspace.py`. Changing a theme
-must not remove audio, profiles, previews or navigation from either game.
+- **Don't** change shared wording or behavior merely because the theme changes.
+- **Don't** present a cosmetic loading sample as a final seeded result.
+- **Don't** show a known species or shiny status when the preview cannot establish it.
+- **Don't** make the visual/audio startup depend on selecting a ROM or downloading a cache.
+- **Don't** replace native controls with rasterized text or distribute proprietary fonts.

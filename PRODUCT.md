@@ -31,6 +31,11 @@ six interface languages. Switching views does not reset settings. Preview and
 creation use the same patch plan off the interface thread. Creation verifies
 the result and writes a portable-settings report and offline journal.
 
+Common wording and behavior follow the [interface parity contract](docs/INTERFACE_PARITY.md).
+Both games show pending rosters, multilingual encounter search, loading states,
+single-click sheets and effective-settings summaries. Native mechanics retain
+their own accurate explanations within the shared workflow.
+
 ## Product constraints
 
 Validate the entire original image and preserve source files and saves. Never
