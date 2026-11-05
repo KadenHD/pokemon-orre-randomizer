@@ -40,6 +40,10 @@ portraits, shiny markers, visible-range counts and duplicate-family warnings.
 Report import restores settings without replacing input/output paths and compares
 the selected original to the report. Creation exposes progress, cancellation, a
 stage log, and links to the resulting folder, JSON report and offline journal.
+The **Details** disclosure belongs to that creation log. It stays hidden during
+preflight errors, appears on Create once generation starts, and remains available
+there after success, failure or cancellation. Returning to ROM/Settings hides it;
+a new creation attempt clears the previous log and starts collapsed.
 
 ## Intentional native differences
 

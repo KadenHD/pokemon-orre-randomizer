@@ -33,7 +33,7 @@ unsupported system languages fall back to English.
 | Pokémon sheets | Single-click access; shared Summary, Moves and Evolutions tabs, portraits and raised red shiny star |
 | Creation | Applied settings with values/units, ISO/RVZ output, shared DolphinTool path and original preservation |
 | Report import | Restores seed/rules without replacing paths and compares the selected original |
-| Progress and results | Cancellation, stage log, output folder, JSON report and offline journal |
+| Progress and results | Shared creation-only Details disclosure, cancellation, stage log, output folder, JSON report and offline journal |
 
 Both randomizing presets use the same common balance policy and a seeded 5%
 shiny rate for supported encounters. XD's Shadow unlock is a separate control;
@@ -49,3 +49,6 @@ See docs/INTERFACE_PARITY.md for the shared behavior and intentional exceptions.
 Verification covers all six languages, both sizes, pending/loading/ready/error
 states, search, cancellation, preserved values, report comparison and sheets.
 Native ROM and save files remain outside the interface-maintenance workflow.
+Validation errors must not reveal the creation log. Details becomes available
+only after generation starts and only on Create, including its resulting failure
+or cancellation. A new attempt clears the old log and resets the disclosure.

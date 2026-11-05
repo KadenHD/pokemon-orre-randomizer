@@ -22,7 +22,7 @@ from PySide6.QtCore import QLibraryInfo, QLocale, QObject, QPoint, QSettings, QS
 from PySide6.QtGui import QDesktopServices, QColor, QFont, QIcon, QKeySequence, QPainter, QPalette, QPixmap, QShortcut
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                                QDoubleSpinBox, QFormLayout, QFrame, QHBoxLayout, QLabel, QLineEdit,
-                               QMainWindow, QMenu, QPlainTextEdit, QProgressBar, QPushButton,
+                               QMainWindow, QMenu, QProgressBar, QPushButton,
                                QScrollArea, QSpinBox, QStackedWidget, QTabBar, QToolButton, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from . import APP_NAME, __version__
@@ -43,7 +43,7 @@ from .ui_exclusions import ExcludedSelection, search_key
 from .ui_pokemon_details import PokemonSheet
 from .ui_home import GameSelection
 from .ui_pokemon_names import RICH_NAME_ROLE, shiny_name_html
-from .ui_workspace import (DeliberateWheel, EncounterTable, RuleNavigation, configuration_workspace, file_field,
+from .ui_workspace import (CreationLog, DeliberateWheel, EncounterTable, RuleNavigation, configuration_workspace, file_field,
                            preset_buttons, preview_toolbar, scroll_area, search_field, settings_workspace,
                            starter_slot, wizard_frame, wizard_page)
 from .settings_presentation import configuration_review, search_settings
@@ -154,7 +154,6 @@ class MainWindow(QMainWindow):
         self.language = resolve_language(self.language_preference, self.system_languages)
         self._text_bindings = []
         self._status_message = "Choisissez la ROM d’origine."
-        self._log_messages = []
         self._qt_translator = None
         self.setWindowTitle(f"{APP_NAME} · {__version__}")
         app_icon = application_icon()
@@ -182,7 +181,6 @@ class MainWindow(QMainWindow):
         self._preview_message = "Calculez l’aperçu pour afficher le tirage de cette seed."
         self.busy = self.close_after_cancel = False
         self.cancel_event = threading.Event()
-        self.last_stage = ""
         self.result = None
         self.step = 0
         icon = menu_icon()
@@ -380,18 +378,8 @@ class MainWindow(QMainWindow):
         self.bind(self.progress_bar.setAccessibleName, "Progression de la création")
         self.progress_bar.hide()
         outer.addWidget(self.progress_bar)
-        self.details = QToolButton()
-        self.bind(self.details.setText, "Détails")
-        self.details.setCheckable(True)
-        self.details.hide()
-        outer.addWidget(self.details, 0, Qt.AlignmentFlag.AlignLeft)
-        self.log = QPlainTextEdit()
-        self.log.setReadOnly(True)
-        self.log.setMaximumBlockCount(200)
-        self.log.setMaximumHeight(90)
-        self.log.hide()
-        outer.addWidget(self.log)
-        self.details.toggled.connect(self.log.setVisible)
+        self.creation_log = CreationLog(outer, self)
+        self.details, self.log = self.creation_log.toggle, self.creation_log.view
         footer = QHBoxLayout()
         self.back_button = self.button("Retour")
         self.back_button.setProperty("menuSound", "back")
@@ -701,6 +689,7 @@ class MainWindow(QMainWindow):
 
     def refresh_navigation(self):
         self.settings.setCurrentIndex(self.step)
+        self.creation_log.set_step(self.step)
         for index, button in enumerate(self.step_buttons):
             button.setChecked(index == self.step)
             button.setIcon(self.cursor_icon if index == self.step else QIcon())
@@ -745,14 +734,15 @@ class MainWindow(QMainWindow):
             if index > self.step:
                 source = Path(self.source.text().strip())
                 if not self.source.text().strip() or not source.is_file():
-                    raise UserError("Choisissez un fichier ISO ou RVZ existant.")
+                    raise UserError("Sélectionnez un fichier ISO ou RVZ existant.")
                 if source.suffix.lower() not in (".iso", ".rvz"):
-                    raise UserError("Choisissez un fichier ISO ou RVZ existant.")
+                    raise UserError("Sélectionnez un fichier ISO ou RVZ existant.")
                 if source.suffix.lower() == ".iso":
                     check_header(source)
                 elif not self.tool.text().strip() or not Path(self.tool.text().strip()).is_file():
                     self.advanced_toggle.setChecked(True)
-                    raise UserError("Indiquez DolphinTool à l’étape ROM pour lire cette RVZ.")
+                    self.tool.setFocus()
+                    raise RVZToolRequired("Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.")
                 self.suggest_destination()
                 if index == 2:
                     validate_seed(self.seed.text())
@@ -777,7 +767,6 @@ class MainWindow(QMainWindow):
         if "logo" in assets:
             self.logo.setPixmap(QPixmap(str(assets["logo"])))
             self.logo.show()
-        self.art_note.hide()
 
     def build_rules(self):
         descriptions = CATEGORY_HELP
@@ -945,8 +934,7 @@ class MainWindow(QMainWindow):
         self.status.setText(self.text(self._status_message))
 
     def append_log(self, message: str):
-        self._log_messages = [*self._log_messages[-199:], message]
-        self.log.appendPlainText(self.text(message))
+        self.creation_log.append(message)
 
     def error_message(self, error) -> str:
         if isinstance(error, OSError):
@@ -983,7 +971,7 @@ class MainWindow(QMainWindow):
                      for index in range(self.language_combo.count()))
         self.language_combo.setMinimumWidth(widest + 36)
         self.status.setText(self.text(self._status_message))
-        self.log.setPlainText("\n".join(self.text(message) for message in self._log_messages))
+        self.creation_log.retranslate()
         self.rules_changed()
         self.refresh_review()
         self.render_preview()
@@ -1629,6 +1617,7 @@ class MainWindow(QMainWindow):
     def start(self):
         if self.busy or self.preview_thread is not None:
             return
+        self.creation_log.reset()
         self.sync_format()
         self.invalidate_preview()
         source_text, dest_text = self.source.text().strip(), self.destination.text().strip()
@@ -1648,7 +1637,7 @@ class MainWindow(QMainWindow):
         self.step = 2
         self.refresh_navigation()
         self.progress_bar.show()
-        self.details.show()
+        self.creation_log.begin()
         self.cancel_button.show()
         self.settings.setEnabled(False)
         self.create_button.setEnabled(False)
@@ -1656,11 +1645,9 @@ class MainWindow(QMainWindow):
         self.open_folder.hide()
         self.open_report.hide()
         self.open_journal.hide()
-        self.log.clear()
-        self._log_messages.clear()
-        self.last_stage = ""
         self.status.setStyleSheet("")
         self.progress_bar.setValue(0)
+        self.set_status("Lecture de la ROM d’origine…")
         arguments = dict(source=source, destination=destination, seed=self.seed.text(),
                          options=options,
                          dolphin_tool=tool, prepared_patches=self.preview_plan)
@@ -1687,9 +1674,7 @@ class MainWindow(QMainWindow):
     def on_progress(self, percent, message):
         self.progress_bar.setValue(percent)
         self.set_status(message)
-        if message != self.last_stage:
-            self.append_log(message)
-            self.last_stage = message
+        self.append_log(message)
 
     @Slot(dict)
     def succeeded(self, report):
@@ -1707,7 +1692,8 @@ class MainWindow(QMainWindow):
         self.status.setStyleSheet("" if cancelled else f"color: {color};")
         message = self.error_message(message) if isinstance(message, Exception) else message
         self.set_status(message)
-        self.append_log(message)
+        if self.creation_log.started and self.busy:
+            self.append_log(message)
 
     @Slot()
     def finished(self):

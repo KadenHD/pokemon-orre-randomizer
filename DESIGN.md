@@ -260,6 +260,9 @@ Create shows **Applied settings**, grouped by category with values and units.
 Inactive remembered values are omitted. RVZ output exposes its DolphinTool field
 and shares the path selected in ROM. Both games provide progress, cancellation,
 a stage log and links to the output folder, JSON report and offline journal.
+The shared **Details** disclosure stays hidden during input validation. It appears
+only on Create after generation starts, retains the resulting log, and is hidden
+on other steps. Each new attempt clears the previous log and starts collapsed.
 
 ### Home and audio
 

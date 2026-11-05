@@ -5,13 +5,67 @@ from PySide6.QtCore import QEvent, QObject, QPointF, QSize, QTimer, Qt
 from PySide6.QtGui import QWheelEvent
 from PySide6.QtWidgets import (
     QApplication, QComboBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
-    QListWidget, QListWidgetItem, QProgressBar, QScrollArea, QScrollBar,
-    QStackedWidget, QTabBar, QTreeWidget, QVBoxLayout, QWidget,
+    QListWidget, QListWidgetItem, QPlainTextEdit, QProgressBar, QScrollArea, QScrollBar,
+    QStackedWidget, QTabBar, QToolButton, QTreeWidget, QVBoxLayout, QWidget,
 )
 
 from .ui_icons import category_icon
 from .ui_pokemon_names import PreviewNameDelegate
 from .ui_theme import MenuPanel
+
+
+class CreationLog(QObject):
+    """The shared, collapsible log of an actual creation, confined to step 3."""
+    def __init__(self, layout, window):
+        super().__init__(layout.parentWidget())
+        self.window = window
+        self.started = False
+        self.step = 0
+        self.messages = []
+        self.toggle = QToolButton()
+        window.bind(self.toggle.setText, "Détails")
+        self.toggle.setCheckable(True)
+        self.toggle.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
+        layout.addWidget(self.toggle, 0, Qt.AlignmentFlag.AlignLeft)
+        self.view = QPlainTextEdit()
+        self.view.setReadOnly(True)
+        self.view.setMaximumBlockCount(200)
+        self.view.setMaximumHeight(90)
+        layout.addWidget(self.view)
+        self.toggle.toggled.connect(self.refresh_visibility)
+        self.refresh_visibility()
+
+    def set_step(self, step):
+        self.step = step
+        self.refresh_visibility()
+
+    def refresh_visibility(self):
+        visible = self.started and self.step == 2
+        self.toggle.setVisible(visible)
+        self.toggle.setArrowType(Qt.ArrowType.DownArrow if self.toggle.isChecked() else Qt.ArrowType.RightArrow)
+        self.view.setVisible(visible and self.toggle.isChecked())
+
+    def reset(self):
+        self.started = False
+        self.messages.clear()
+        self.view.clear()
+        self.toggle.setChecked(False)
+        self.refresh_visibility()
+
+    def begin(self):
+        self.reset()
+        self.started = True
+        self.append("Lecture de la ROM d’origine…")
+        self.refresh_visibility()
+
+    def append(self, message):
+        if self.messages and self.messages[-1] == message:
+            return
+        self.messages = [*self.messages[-199:], message]
+        self.view.appendPlainText(self.window.text(message))
+
+    def retranslate(self):
+        self.view.setPlainText("\n".join(self.window.text(message) for message in self.messages))
 
 
 def bounded(widget, width=1200):

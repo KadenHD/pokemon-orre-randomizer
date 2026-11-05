@@ -9,7 +9,7 @@ from PySide6.QtCore import QSignalBlocker, QSize, Qt, QTimer, Slot
 from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
     QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
-    QPlainTextEdit, QProgressBar, QSpinBox, QToolButton, QTreeWidgetItem,
+    QProgressBar, QSpinBox, QToolButton, QTreeWidgetItem,
     QVBoxLayout, QWidget,
 )
 
@@ -24,7 +24,7 @@ from .settings_presentation import (configuration_review, effective_xd_setting_n
 from .ui_pokemon_names import RICH_NAME_ROLE, shiny_name_html
 from .ui_species import SpeciesChoice
 from .ui_theme import MenuCheckBox
-from .ui_workspace import (EncounterTable, RuleNavigation, configuration_workspace, file_field, preset_buttons,
+from .ui_workspace import (CreationLog, EncounterTable, RuleNavigation, configuration_workspace, file_field, preset_buttons,
                            preview_toolbar, scroll_area, search_field, settings_workspace, starter_slot,
                            wizard_frame, wizard_page)
 from .xd import XDOptions, validate_options
@@ -79,8 +79,6 @@ class XDWorkspace(QWidget):
         self.report_rom_timer = QTimer(self)
         self.report_rom_timer.setSingleShot(True)
         self.report_rom_timer.timeout.connect(lambda: window.check_report_rom(owner=self))
-        self._log_messages = []
-        self.last_stage = ""
         self.preview_result = None
         self.preview_plan = None
         self.preview_key = None
@@ -192,18 +190,8 @@ class XDWorkspace(QWidget):
         window.bind(self.progress.setAccessibleName, "Progression de la création")
         self.progress.hide()
         layout.addWidget(self.progress)
-        self.details = QToolButton()
-        window.bind(self.details.setText, "Détails")
-        self.details.setCheckable(True)
-        self.details.hide()
-        layout.addWidget(self.details, 0, Qt.AlignmentFlag.AlignLeft)
-        self.log = QPlainTextEdit()
-        self.log.setReadOnly(True)
-        self.log.setMaximumBlockCount(200)
-        self.log.setMaximumHeight(90)
-        self.log.hide()
-        self.details.toggled.connect(self.log.setVisible)
-        layout.addWidget(self.log)
+        self.creation_log = CreationLog(layout, window)
+        self.details, self.log = self.creation_log.toggle, self.creation_log.view
 
         footer = QHBoxLayout()
         self.home_button = window.button("Accueil")
@@ -392,6 +380,7 @@ class XDWorkspace(QWidget):
 
     def refresh_navigation(self):
         text = self.window.text
+        self.creation_log.set_step(self.step)
         for index, button in enumerate(self.step_buttons):
             button.setChecked(index == self.step)
             button.setIcon(self.window.cursor_icon if index == self.step else QIcon())
@@ -1036,7 +1025,7 @@ class XDWorkspace(QWidget):
         self.rule_category_changed()
         self.search_rules()
         self.render_preview()
-        self.log.setPlainText("\n".join(self.window.text(message) for message in self._log_messages))
+        self.creation_log.retranslate()
         self.window.render_report_rom_status(owner=self)
 
     def start(self):
@@ -1045,6 +1034,7 @@ class XDWorkspace(QWidget):
         if self.window.preview_thread is not None:
             self.set_status("Un calcul est déjà en cours. Réessayez dans un instant.")
             return
+        self.creation_log.reset()
         source, destination, tool = (field.text().strip() for field in (self.source, self.destination, self.tool))
         tool_path = Path(tool) if tool else None
         try:
@@ -1063,6 +1053,10 @@ class XDWorkspace(QWidget):
             self.failed(error, False)
             return
         self.refresh_preview_identity()
+        self.step = 2
+        self.pages.setCurrentIndex(2)
+        self.creation_log.set_step(2)
+        self.creation_log.begin()
         self.result = None
         self.folder_button.hide()
         self.report_button.hide()
@@ -1074,9 +1068,6 @@ class XDWorkspace(QWidget):
         self.cancel_button.show()
         self.progress.setValue(0)
         self.progress.show()
-        self.last_stage = ""
-        self._log_messages.clear()
-        self.log.clear()
         self.set_status("Lecture de la ROM d’origine…")
         self.window.start_worker(
             dict(source=source, destination=destination, seed=self.seed.text(),
@@ -1090,11 +1081,7 @@ class XDWorkspace(QWidget):
     def on_progress(self, percent, message):
         self.progress.setValue(percent)
         self.set_status(message)
-        if message != self.last_stage:
-            self._log_messages.append(message)
-            self.log.appendPlainText(self.window.text(message))
-            self.last_stage = message
-            self.details.show()
+        self.creation_log.append(message)
 
     @Slot(dict)
     def succeeded(self, report):
@@ -1109,9 +1096,8 @@ class XDWorkspace(QWidget):
     def failed(self, message, cancelled):
         message = self.window.error_message(message) if isinstance(message, Exception) else message
         self.set_status(message, error=not cancelled)
-        self._log_messages.append(message)
-        self.log.appendPlainText(self.window.text(message))
-        self.details.show()
+        if self.creation_log.started and self.window.busy:
+            self.creation_log.append(message)
 
     def cancelling(self):
         if self.preview_running:

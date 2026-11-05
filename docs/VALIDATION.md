@@ -37,6 +37,14 @@ preview plans matched freshly computed creation patches; copy produced zero
 patches. Originals remained unchanged. No new Dolphin gameplay check was needed
 for this presentation update; prior native-validation limits still apply.
 
+### Creation-details follow-up (v1.2.2)
+
+Additional regressions exercise both games' actual Qt worker callbacks and the
+shared creation log. They check that validation errors never reveal Details,
+including in all six languages, while genuine generation exposes it before the
+first progress event. Success, failure, cancellation, navigation, translation and
+a new invalid attempt preserve the intended visibility and reset behavior.
+
 ## Native Dolphin checks
 
 Colosseum reports cover selected battles, starters, shinies and regional gifts:

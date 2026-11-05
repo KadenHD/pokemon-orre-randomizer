@@ -1,6 +1,22 @@
 # Changelog
 
+## 1.2.2
+
+- Keep creation details hidden after input-validation errors in both games.
+  A shared creation-log component now controls initialization, collapsing,
+  translation and visibility. It appears only on Create after a real generation
+  starts, and keeps its log after completion, failure or cancellation.
+- Reset the previous log for a new creation attempt and hide it on ROM/Settings.
+  Both games expose details before the first worker progress update.
+- Align the invalid-input message and restore the same ROM-page footer help
+  when the Colosseum interface pack is available.
+- Add regressions for both games, all six languages, preflight validation,
+  creation progress, failure, cancellation and navigation.
+
 ## 1.2.1
+
+Development tag; publication was held for the creation-details correction and
+is superseded by v1.2.2. Its interface changes are included in v1.2.2.
 
 - Unify shared Colosseum/XD wording, preset explanations, category help,
   starter labels, preview actions and applied-settings summaries in all six

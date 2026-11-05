@@ -286,3 +286,84 @@ class WorkspaceParityTests(unittest.TestCase):
         self.assertIsNone(w.detail_window)
         self.assertFalse(xd.encounter_tabs.isTabVisible(xd.family_tab))
         self.assertIsNone(xd.preview_result)
+
+    def test_preflight_errors_never_expose_creation_details_in_either_game(self):
+        w = self.window
+        for language in LANGUAGES:
+            w.language_combo.setCurrentIndex(w.language_combo.findData(language))
+            statuses = []
+            for owner in (w, w.xd):
+                owner.step = 0
+                owner.refresh_navigation()
+                owner.go_step(2)
+                self.assertEqual(owner.step, 0)
+                self.assertTrue(owner.details.isHidden(), (language, type(owner).__name__))
+                self.assertTrue(owner.log.isHidden())
+                self.assertFalse(owner.creation_log.started)
+                statuses.append(owner.status.text())
+                owner.start()
+                self.assertTrue(owner.details.isHidden())
+                self.assertEqual(owner.log.toPlainText(), "")
+                self.assertFalse(w.busy)
+            self.assertEqual(statuses[0], statuses[1])
+        self.assertFalse(w.art_note.isHidden())
+
+    def test_real_creations_share_details_before_first_progress_and_hide_them_on_other_steps(self):
+        w = self.window
+        source = self.root / "creation-source.iso"
+        source.write_bytes(b"owned synthetic input; creation service mocked")
+        for owner in (w, w.xd):
+            (w.show_colosseum if owner is w else w.show_xd)()
+            owner.source.setText(str(source))
+            owner.destination.setText(str(self.root / ("col-new.iso" if owner is w else "xd-new.iso")))
+            entered, proceed = threading.Event(), threading.Event()
+            def create(**arguments):
+                entered.set()
+                proceed.wait(3)
+                arguments["progress"](50, "Application des réglages…")
+                return {"output": str(arguments["destination"])}
+            with patch("orre_randomizer.gui.randomize", side_effect=create):
+                owner.start()
+                self.pump_until(entered.is_set)
+                self.assertTrue(w.busy)
+                self.assertEqual(owner.step, 2)
+                self.assertFalse(owner.details.isHidden())
+                self.assertTrue(owner.log.isHidden())
+                self.assertEqual(owner.log.toPlainText(), w.text("Lecture de la ROM d’origine…"))
+                owner.details.click()
+                self.assertFalse(owner.log.isHidden())
+                w.language_combo.setCurrentIndex(w.language_combo.findData("en"))
+                self.assertEqual(owner.log.toPlainText(), w.text("Lecture de la ROM d’origine…"))
+                proceed.set()
+                self.pump_until(lambda: w.thread is None)
+            self.assertFalse(owner.details.isHidden())
+            self.assertIn(w.text("Application des réglages…"), owner.log.toPlainText())
+            owner.go_step(0)
+            self.assertTrue(owner.details.isHidden())
+            self.assertTrue(owner.log.isHidden())
+            owner.source.clear()
+            owner.start()
+            self.assertFalse(owner.creation_log.started)
+            self.assertTrue(owner.details.isHidden())
+            self.assertEqual(owner.log.toPlainText(), "")
+
+    def test_creation_failure_and_cancellation_keep_details_only_on_create(self):
+        from orre_randomizer.service import Cancelled, UserError
+        w = self.window
+        source = self.root / "failure-source.iso"
+        source.write_bytes(b"owned synthetic input; creation service mocked")
+        for owner in (w, w.xd):
+            (w.show_colosseum if owner is w else w.show_xd)()
+            owner.source.setText(str(source))
+            owner.destination.setText(str(self.root / "unused-output.iso"))
+            for error in (UserError("La création a échoué. Relancez l’application, puis réessayez."),
+                          Cancelled("Annulation…")):
+                with patch("orre_randomizer.gui.randomize", side_effect=error):
+                    owner.start()
+                    self.pump_until(lambda: w.thread is None)
+                self.assertTrue(owner.creation_log.started)
+                self.assertFalse(owner.details.isHidden())
+                self.assertIn(w.text(error.args[0]), owner.log.toPlainText())
+                owner.go_step(0)
+                self.assertTrue(owner.details.isHidden())
+                self.assertTrue(owner.log.isHidden())
