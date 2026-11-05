@@ -446,6 +446,14 @@ the massage and returned control normally. Read-only RAM inspection confirmed
 that the appended code remained present after startup. Native function hashes
 and arena-floor signatures were checked against all three regional DOLs.
 
+The EXP comparison used the same Pyrite Duel Square trainer and identical QA
+cards: level-39 Kadabra and level-10 Horsea faced level-16 Poliwag and Ledyba.
+After Poliwag fainted, the native award shown for Kadabra was 165 EXP at ×1 and
+248 EXP at ×1.5, confirming nearest-integer rounding of 247.5 upward. Both
+runs then completed the native level-up to 40. These
+trainer runs used no live data edits; exploratory Poké Spot fixtures were
+excluded from the comparison because their encounters fled before an award.
+
 ROMs, input QA cards, the emulator executable, and personal Dolphin data are
 hash-checked before and after the isolated runs. A second physical Windows PC
 and a complete playthrough remain outside this RC2 validation scope.
