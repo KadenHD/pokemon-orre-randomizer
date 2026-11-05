@@ -19,6 +19,10 @@
     "pokemon-sheet.png": {
       "bytes": 45088,
       "sha256": "15b9523dbba64da7e75b6ddb454dd2aaf8e8bc85664eb612ef74fb604965c8ce"
+    },
+    "shadow-pokemon.png": {
+      "bytes": 116899,
+      "sha256": "db3667741bea69b64b6b3f03860ebb0cd20ff98dda253fbb619ff2b784d372df"
     }
   }
 }

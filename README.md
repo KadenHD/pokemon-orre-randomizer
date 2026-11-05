@@ -65,6 +65,11 @@ Selecting a preset applies the current defaults.
 
 ![Colosseum settings and starter preview](docs/images/colosseum-settings.png)
 
+Preview all 48 Colosseum Shadow Pokémon and their replacements before creating
+the ROM. Each row opens the replacement's Pokémon sheet with a single click.
+
+![Randomized Shadow Pokémon: original species and replacements](docs/images/shadow-pokemon.png)
+
 ## What you can customize
 
 - **Pokémon:** species, evolution stages, generations, legendary restrictions,
