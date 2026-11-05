@@ -73,6 +73,7 @@ def main():
         assert not data["rom_opened"] and not data["personal_preferences_opened"]
         assert len(data["images"]) == 5 and len(data["sounds"]) == 3 and data["music_available"]
         assert data["game_cursor_available"] and data["application_logo_available"]
+        assert data["home_logo_dimensions"] == {"colosseum": [1280, 543], "xd": [1280, 565]}
         assert not any((work/"AppData").rglob("*.ini"))
         evidence = args.report.with_suffix("")
         evidence.mkdir()

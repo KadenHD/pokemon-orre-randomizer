@@ -761,7 +761,8 @@ class MainWindow(QMainWindow):
         if not assets:
             return
         self.artwork = assets
-        self.home.colosseum.set_logo(QPixmap(str(assets["logo"])) if "logo" in assets else QPixmap())
+        if "colosseum" not in self.home.logo_assets:
+            self.home.colosseum.set_logo(QPixmap(str(assets["logo"])) if "logo" in assets else QPixmap())
         self.surface.set_background(assets.get("background"))
         self.render_preview()
         if "logo" in assets:

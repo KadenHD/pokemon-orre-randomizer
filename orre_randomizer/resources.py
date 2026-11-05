@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib
 import json
+import struct
 import wave
 import zlib
 from .artwork import ArtworkError, _png_pixels, load_cached_artwork
@@ -34,6 +35,38 @@ def interface_assets() -> tuple[dict[str, Path], dict[str, Path]]:
     except MenuSoundError:
         sounds = {}
     return images, sounds
+
+
+def home_logos() -> dict[str, Path]:
+    """Verified English artwork for the large home choices, entirely offline."""
+    root = bundle_root() / "interface"
+    try:
+        metadata = root / "home-logos.json"
+        if metadata.stat().st_size > 16 * 1024:
+            return {}
+        manifest = json.loads(metadata.read_text("utf-8"))
+        if manifest["language"] != "en" or manifest["version"] != 1:
+            return {}
+        records = manifest["logos"]
+    except (OSError, ValueError, TypeError, KeyError, RecursionError):
+        return {}
+    result = {}
+    for game, dimensions in (("colosseum", (1280, 543)), ("xd", (1280, 565))):
+        try:
+            record = records[game]
+            path = root / f"{game}-logo-en-hd.png"
+            if path.is_symlink() or not 33 <= path.stat().st_size <= 2 * 1024**2:
+                continue
+            data = path.read_bytes()
+            if (len(data) != record["bytes"] or hashlib.sha256(data).hexdigest() != record["sha256"]
+                    or data[:16] != b"\x89PNG\r\n\x1a\n\0\0\0\rIHDR"
+                    or struct.unpack(">II", data[16:24]) != dimensions
+                    or data[24:29] != bytes((8, 6, 0, 0, 0))):
+                continue
+            result[game] = path
+        except (OSError, ValueError, TypeError, KeyError, RecursionError):
+            continue
+    return result
 
 
 def xd_logo() -> Path | None:

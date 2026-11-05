@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "language": "en",
+  "usage": "home game choices",
+  "rights": "Pokemon game logos belong to their respective owners and are not covered by the application's MIT license.",
+  "logos": {
+    "colosseum": {
+      "file": "colosseum-logo-en-hd.png",
+      "bytes": 381157,
+      "sha256": "8ed2b91ad422db5e3195ea691c7318b53b2dcc702973cb8d85cd2628d2636054",
+      "width": 1280,
+      "height": 543,
+      "source_url": "https://archives.bulbagarden.net/media/upload/1/18/Pok%C3%A9mon_Colosseum_logo.png",
+      "source_page": "https://archives.bulbagarden.net/wiki/File:Pok%C3%A9mon_Colosseum_logo.png",
+      "retrieved": "2026-11-05",
+      "transformation": "none; original transparent PNG, byte-identical to source"
+    },
+    "xd": {
+      "file": "xd-logo-en-hd.png",
+      "bytes": 631787,
+      "sha256": "cc79b2b3881d9e12e7ccb18b62dd8763cee9af58a7a043267cdc1941ccac4fa1",
+      "width": 1280,
+      "height": 565,
+      "source_url": "https://archives.bulbagarden.net/media/upload/c/cb/Pok%C3%A9mon_XD_logo_English.png",
+      "source_page": "https://archives.bulbagarden.net/wiki/File:Pok%C3%A9mon_XD_logo_English.png",
+      "retrieved": "2026-11-05",
+      "transformation": "none; original transparent PNG, byte-identical to source"
+    }
+  }
+}

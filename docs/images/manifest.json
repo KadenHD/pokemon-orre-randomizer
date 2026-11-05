@@ -5,8 +5,12 @@
   "description": "Real application captures with isolated demo preferences, plus earlier native gameplay examples with per-file provenance. No personal paths or saves.",
   "files": {
     "home.png": {
-      "bytes": 138261,
-      "sha256": "0013bf33b8591a018b60f7a5c63f2544cfa010f293ff74259621e6e73a4a8015"
+      "bytes": 142952,
+      "sha256": "68b3a82f8e7cb6efa0f808199f254e9a6de30c5f7e3ee6b64a63e4bf73c2516a",
+      "kind": "application",
+      "app_version": "1.2.3",
+      "language": "en",
+      "description": "Home with original high-resolution English game logos, captured with isolated preferences and no ROM or saves opened."
     },
     "colosseum-settings.png": {
       "bytes": 82576,

@@ -106,3 +106,14 @@ This project is independent and is not an official Nintendo product.
 ROM and the English XD logo exported from the supplied XD disc. These game resources are not covered by the MIT license
 of the application code. Their hashes, source identifiers and transformations are
 recorded in `orre_randomizer/assets/game/provenance.json`. No ROM, BIOS or saved game is included.
+
+The home screen additionally uses the original transparent English game logos
+hosted by Bulbagarden Archives, copied without pixel changes:
+
+- [Pokémon Colosseum logo](https://archives.bulbagarden.net/wiki/File:Pok%C3%A9mon_Colosseum_logo.png)
+- [Pokémon XD: Gale of Darkness logo](https://archives.bulbagarden.net/wiki/File:Pok%C3%A9mon_XD_logo_English.png)
+
+These logos remain the property of their respective owners and are separate
+from the application's MIT license. Retrieval date, source URLs, dimensions and
+SHA-256 hashes are recorded in `orre_randomizer/assets/game/interface/home-logos.json`.
+They are bundled for offline display; the application does not contact these sites.

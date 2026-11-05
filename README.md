@@ -23,10 +23,8 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.2** aligns shared interface text and preview behavior across both games
-in all six languages. It retains the XD defaults and shiny options described below.
-Imported profiles keep their saved choices; select a preset to adopt the new
-defaults. See the [release notes](docs/releases/v1.2.2.md) for this update.
+**Version 1.2.3** brings high-resolution English game logos to the home screen.
+Both logos are bundled for offline use. See the [release notes](docs/releases/v1.2.3.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)

@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.3
+
+- Replace enlarged 96 × 32 disc banners on Home with unchanged, transparent
+  English game logos: 1280 × 543 for Colosseum and 1280 × 565 for XD.
+  Bundle the verified originals and source metadata for offline use, preserve
+  their proportions at normal and high display scaling, and keep the small
+  disc banners for workspace headers and as fallbacks.
+- Refresh the README's game selection screenshot with the 1.2.3 home screen.
+
 ## 1.2.2
 
 - Keep creation details hidden after input-validation errors in both games.

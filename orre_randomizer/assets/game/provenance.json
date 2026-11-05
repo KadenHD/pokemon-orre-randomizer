@@ -269,8 +269,8 @@
       "sha256": "0a5b87a50dd4156bbb1c0ca845b29c21775d5740abf874c0c9669c2dbf05d53c"
     },
     "README.md": {
-      "bytes": 672,
-      "sha256": "556d692f0fb8e45e3732e9cf52e2eb696cae09aec423665db6cefbd06d0affc0"
+      "bytes": 930,
+      "sha256": "7da37a051734b91a53e1f873d2011b5bbab5ed45c42dab8f56a34cd144630ac8"
     },
     "interface/xd-logo-en.png": {
       "bytes": 3570,
@@ -279,6 +279,18 @@
     "interface/xd-logo-en.json": {
       "bytes": 465,
       "sha256": "3ce7f346186756c999f5be2bd234c32500adbd702eba3bdf719ea905917afd96"
+    },
+    "interface/colosseum-logo-en-hd.png": {
+      "bytes": 381157,
+      "sha256": "8ed2b91ad422db5e3195ea691c7318b53b2dcc702973cb8d85cd2628d2636054"
+    },
+    "interface/xd-logo-en-hd.png": {
+      "bytes": 631787,
+      "sha256": "cc79b2b3881d9e12e7ccb18b62dd8763cee9af58a7a043267cdc1941ccac4fa1"
+    },
+    "interface/home-logos.json": {
+      "bytes": 1274,
+      "sha256": "66d73cd1656defc4e5d231a0e1e8efadaeced844d13623155ae80e7eeac1916f"
     }
   },
   "additional_sources": [
@@ -289,5 +301,6 @@
       "resource": "English Pokémon XD logo from opening.bnr"
     }
   ],
-  "exported_locally": true
+  "exported_locally": true,
+  "home_logos_metadata": "interface/home-logos.json"
 }

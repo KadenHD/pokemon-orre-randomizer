@@ -53,6 +53,10 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
         try:
             assert not window.windowIcon().pixmap(16, 16).isNull()
             assert not window.windowIcon().pixmap(256, 256).isNull()
+            data["home_logo_dimensions"] = {
+                game: [button.logo.width(), button.logo.height()]
+                for game, button in (("colosseum", window.home.colosseum), ("xd", window.home.xd))
+            }
             data["application_icon_sizes"] = sorted(size.width() for size in window.windowIcon().availableSizes())
             assert {16, 256} <= set(data["application_icon_sizes"])
             window.seed.setText("diagnostic-étoile-42")

@@ -4,6 +4,7 @@ from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen, QPixmap, 
 from PySide6.QtWidgets import QBoxLayout, QPushButton, QSizePolicy, QStyle, QStyleOptionButton, QVBoxLayout, QWidget
 
 from .ui_workspace import bounded
+from .resources import home_logos
 
 
 class GameChoice(QPushButton):
@@ -95,7 +96,8 @@ class GameChoice(QPushButton):
             description = QRectF(218, 58, self.width() - 242, 40)
             action = QRectF(218, self.height() - 58, self.width() - 242, 36)
         else:
-            brand = QRectF(36, self.height() * 0.18, self.width() - 72, 116)
+            brand = QRectF(36, self.height() * 0.18, self.width() - 72,
+                          min(116, self.height() * 0.33 - 16))
             identity = QRectF(24, self.height() * 0.51, self.width() - 48, 32)
             description = QRectF(24, identity.bottom() + 8, self.width() - 48, 48)
             action = QRectF(24, self.height() - 78, self.width() - 48, 48)
@@ -108,7 +110,7 @@ class GameChoice(QPushButton):
             painter.setFont(font)
             painter.drawText(brand, Qt.AlignmentFlag.AlignCenter, "XD" if self.xd else "COLOSSEUM")
         else:
-            available = brand.size().toSize().boundedTo(QSize(240, 80))
+            available = brand.size().toSize().boundedTo(QSize(240, 116))
             size = self.logo.size().scaled(available, Qt.AspectRatioMode.KeepAspectRatio)
             target = QRectF(0, 0, size.width(), size.height())
             target.moveCenter(brand.center())
@@ -164,7 +166,9 @@ class GameSelection(QWidget):
         self.choices.setSpacing(16)
         self.colosseum = GameChoice()
         self.xd = GameChoice(xd=True)
-        self.xd.set_logo(window.xd_logo)
+        self.logo_assets = home_logos()
+        self.colosseum.set_logo(QPixmap(str(self.logo_assets["colosseum"])) if "colosseum" in self.logo_assets else QPixmap())
+        self.xd.set_logo(QPixmap(str(self.logo_assets["xd"])) if "xd" in self.logo_assets else window.xd_logo)
         for button, name, description, action, callback in (
             (self.colosseum, "Pokémon Colosseum", "Deux starters · 48 Pokémon obscurs",
              "Ouvrir Colosseum", window.show_colosseum),

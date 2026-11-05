@@ -7,7 +7,7 @@ import struct
 from pathlib import Path
 from unittest.mock import patch
 from orre_randomizer.artwork import _png
-from orre_randomizer.resources import application_icon, application_logo, bundle_root, interface_assets, menu_icon, music_track, xd_logo
+from orre_randomizer.resources import application_icon, application_logo, bundle_root, home_logos, interface_assets, menu_icon, music_track, xd_logo
 
 
 class ResourceTests(unittest.TestCase):
@@ -51,6 +51,7 @@ class ResourceTests(unittest.TestCase):
         self.assertEqual(set(sounds), {"move", "confirm", "back"})
         self.assertIsNotNone(music_track())
         self.assertIsNotNone(menu_icon())
+        self.assertEqual(set(home_logos()), {"colosseum", "xd"})
 
     def test_public_edition_starts_with_no_game_pack(self):
         with tempfile.TemporaryDirectory() as folder, patch("orre_randomizer.resources.bundle_root", return_value=Path(folder)):
@@ -58,6 +59,7 @@ class ResourceTests(unittest.TestCase):
             self.assertIsNone(music_track())
             self.assertIsNone(menu_icon())
             self.assertIsNone(xd_logo())
+            self.assertEqual(home_logos(), {})
             self.assertIsNotNone(application_icon())
             self.assertIsNotNone(application_logo())
 
@@ -90,6 +92,22 @@ class ResourceTests(unittest.TestCase):
             path.write_bytes(png + b"changed")
             self.assertIsNone(xd_logo())
 
+    def test_home_logos_fall_back_independently_when_a_bundled_image_is_damaged(self):
+        import shutil
+        original = bundle_root() / "interface"
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder) / "interface"
+            root.mkdir()
+            for name in ("home-logos.json", "colosseum-logo-en-hd.png", "xd-logo-en-hd.png"):
+                shutil.copyfile(original / name, root / name)
+            with patch("orre_randomizer.resources.bundle_root", return_value=Path(folder)):
+                self.assertEqual(set(home_logos()), {"colosseum", "xd"})
+                path = root / "colosseum-logo-en-hd.png"
+                path.write_bytes(path.read_bytes() + b"changed")
+                self.assertEqual(set(home_logos()), {"xd"})
+                (root / "xd-logo-en-hd.png").unlink()
+                self.assertEqual(home_logos(), {})
+
     def test_malformed_optional_metadata_is_ignored(self):
         with tempfile.TemporaryDirectory() as folder, patch("orre_randomizer.resources.bundle_root", return_value=Path(folder)):
             root = Path(folder)
@@ -99,9 +117,10 @@ class ResourceTests(unittest.TestCase):
             (root/"interface/pokeball.png").write_bytes(bytes(44))
             for value in ("{broken", "[]", "null", "3", '{"bytes": null}', '{"bytes": 44}'):
                 for directory, filename in (("music", "track.json"), ("interface", "icon.json"),
-                                             ("interface", "xd-logo-en.json")):
+                                             ("interface", "xd-logo-en.json"), ("interface", "home-logos.json")):
                     (root/directory/filename).write_text(value, encoding="utf-8")
                 with self.subTest(value=value):
                     self.assertIsNone(music_track())
                     self.assertIsNone(menu_icon())
                     self.assertIsNone(xd_logo())
+                    self.assertEqual(home_logos(), {})

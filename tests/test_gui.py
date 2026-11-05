@@ -46,6 +46,8 @@ class GuiTests(unittest.TestCase):
 
         window = self.window
         window.show_home()
+        self.assertEqual(window.home.colosseum.logo.width(), 1280)
+        self.assertEqual(window.home.xd.logo.width(), 1280)
         window.open_xd.click()
         xd = window.xd
         self.assertIs(window.game_views.currentWidget(), xd)

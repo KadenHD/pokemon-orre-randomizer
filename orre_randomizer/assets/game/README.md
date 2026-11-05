@@ -1,7 +1,11 @@
 # Game interface pack
 
 Images, cursor, menu sounds and music exported from verified European Colosseum
-game data, plus the original English XD banner. Both release editions include
+game data, plus the original English XD banner. The larger home-screen logos
+use unchanged transparent English PNGs from Bulbagarden Archives, each 1280 pixels
+wide; their original URLs and hashes are in `interface/home-logos.json`.
+The small disc banners remain as fallbacks and workspace-header artwork.
+Both release editions include
 this pack so the interface works before a ROM is selected, without downloading
 media at startup. The selected ROM is used only to create a new game.
 
