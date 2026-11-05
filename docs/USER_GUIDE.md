@@ -61,17 +61,27 @@ requirements. Dialogue follows the ROM language.
 
 ## XD encounters and trades
 
-Shadow Lugia remains protected. Tutorial Teddiursa and Hordel's Shadow Togepi
-have separate advanced controls, both disabled in the presets. If enabled, the
-tutorial replacement retains level 11 and the original catch rate; its dialogue
-names the replacement. Hordel accepts the purified replacement even if it has
-evolved within its family.
+Shadow Lugia remains protected. Both randomizing presets replace tutorial
+Teddiursa by default. Its advanced control can retain the original species.
+The tutorial replacement retains level 11 and the original catch rate; its
+dialogue names the replacement. Hordel's Shadow Togepi has a separate advanced
+control, disabled in the presets. Hordel accepts the purified replacement even
+if it has evolved within its family. Imported profiles retain their saved choices.
 
-Poké Spot randomization shuffles each location's three native species rather
-than drawing arbitrary species. Duking requests the new rare-slot species.
-The two special encounters retain native rules. The gifts preview shows the
-requirements for Duking and Hordel's trades. Mt. Battle prizes retain their
-native requirements.
+Both randomizing presets draw the nine regular Poké Spot encounters from XD's
+full supported generation-I–III Pokédex. Generation, species/type exclusions,
+legendary restrictions and similar-strength matching still apply. The three
+rare slots use different species, so Duking has three distinct, obtainable
+requests. Each location has three different species; all nine are different
+when the pool is large enough. Levels and encounter rates remain native.
+
+Duking's species checks, dialogue and the gifts preview follow those rare slots,
+including when gift rewards themselves are kept unchanged. Dialogue uses the
+ROM's own languages. Disable **Draw from the full Pokédex** in Advanced to keep
+the original three-species shuffle. Profiles from earlier engines retain that
+older shuffle when imported. At least three allowed species are needed for the
+full draw. The two special encounters and Mt. Battle prize requirements retain
+their native rules.
 
 ## Advanced rules
 
@@ -92,8 +102,14 @@ See [validation](VALIDATION.md) for measured results.
 The presets use a seeded 5% probability per supported encounter key, not a quota
 on the preview. Nature, IVs and the full game RNG remain native. Colosseum
 supports starter, gift, trainer and Shadow decisions, plus an optional unlinked
-mode that leaves the draw to the game. XD customization covers its starter and
-ordinary gifts; Shadow encounters retain XD's native shiny policy.
+mode that leaves the draw to the game. XD customization covers its starter,
+ordinary gifts and, with **Apply the rate to Shadow Pokémon**, all 83 Shadow
+IDs. Both randomizing presets enable this unlock. The seed fixes each Shadow's
+status, which is retained after capture and purification. Disable the separate
+Shadow option to keep XD's native lock. Wild Poké Spots keep native odds.
+Previously generated Shadow Pokémon retain their saved PID; use a new game
+for the preview to match every encounter. Shadow Lugia keeps its special dark
+appearance until purification.
 Disabling customization preserves native rules. The original generation-III
 probability is 1/8192, approximately 0.0122%, where that game's encounter rules
 permit shinies. See [shiny behavior](SHINIES.md).

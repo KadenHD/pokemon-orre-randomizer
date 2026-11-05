@@ -1,8 +1,8 @@
 # Validation scope
 
-This is the current validation index for v1.0.0. Dated reports in `docs/` describe
-their named versions and scenarios; they are historical evidence rather than
-the current feature specification.
+This index records the v1.0.0 foundation and subsequent validation follow-ups.
+Dated reports in `docs/` describe their named versions and scenarios; they are
+historical evidence rather than the current feature specification.
 
 ## Automated and packaged checks
 
@@ -47,6 +47,34 @@ Both battles and the purification flow returned normally. Original ROMs,
 personal saves and personal Dolphin settings were preserved. The v1 preset
 alignment changes which existing options are selected; it does not change these
 native hooks.
+
+## Full-Pokédex Poké Spots (v1.1.0)
+
+The local suite ran 510 tests, with 508 passing and two Windows-specific skips.
+The full encounter draw and Duking request synchronization were checked against
+the European, US and Japanese originals, including all native text-bank patches.
+The same seed produced the same nine species across regions. A separate European
+ISO passed full output-byte verification and DolphinTool's disc verification;
+its encounters matched the preview. Keeping gift rewards unchanged still updated
+the requests. Both preview lists were checked in all six interface languages.
+
+The published RC2 source archive supplied an independent v6 reference. Its two
+exported XD presets produced identical ISO patch bytes under v6 and v7 when
+imported with the native Poké Spot shuffle. New full-pool draws have separate
+keys; the older draw domains remain unchanged.
+
+These checks validate data, text, previews and disc construction. A newly played
+Duking exchange and full campaign for each possible draw are not claimed here.
+
+## XD Shadow shiny unlock (v1.2.0)
+
+The [dedicated report](XD_SHADOW_SHINIES_VALIDATION.md) records guarded patches
+for all three regions at 0%, 5% and 100%, 83 preview decisions and portraits,
+and controlled native Dolphin calls. Native PID generation, player ownership,
+capture metadata and the purification state transition retained the expected
+shiny status. This is function-level runtime evidence, not a newly played
+capture-to-purification sequence. The current suite and relocated Windows app
+passed 516 tests (two platform skips) and 204 UI states respectively.
 
 ## Limits
 

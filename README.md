@@ -54,9 +54,10 @@ your input. The app does not launch Dolphin or manage your saves.
 
 Both presets retain native opponent levels, battle EXP, purification speed and
 catch rates. Colosseum also balances its two starters as a pair, with distinct
-families and complementary types. XD has one starter. Its Shadow encounters
-retain XD's native shiny policy; the custom rate covers its starter and ordinary
-gifts. Family diversity is best effort when fixed Pokémon or strict filters
+families and complementary types. XD has one starter. Its custom rate covers
+the starter, ordinary gifts and Shadow Pokémon; the Shadow unlock can be
+disabled separately. Wild Poké Spots retain their native shiny odds.
+Family diversity is best effort when fixed Pokémon or strict filters
 leave no alternative.
 
 **Unchanged copy** preserves game data and can convert ISO ↔ RVZ. Imported
@@ -69,6 +70,19 @@ Preview all 48 Colosseum Shadow Pokémon and their replacements before creating
 the ROM. Each row opens the replacement's Pokémon sheet with a single click.
 
 ![Randomized Shadow Pokémon: original species and replacements](docs/images/shadow-pokemon.png)
+
+## In game
+
+Real starter screens from earlier Dolphin playtests, with the games in French.
+These are examples of custom runs; the current presets are described above.
+
+| Pokémon Colosseum | Pokémon XD |
+| --- | --- |
+| ![Randomized starting party: Seadra and Electabuzz](docs/images/colosseum-starters-ingame.png) | ![Randomized starter: shiny Horsea](docs/images/xd-starter-ingame.png) |
+| Seadra, level 26, and Electabuzz, level 25. | Horsea, level 10, from a 100% shiny test. |
+
+The [Colosseum](docs/DOLPHIN_VALIDATION_2026-10-31.md) and
+[XD](docs/reverse-engineering/XD.md) validation notes record their test scope.
 
 ## What you can customize
 
@@ -90,12 +104,21 @@ The interface pack is included, so these work before you select a ROM.
 | Starters | Two, originally Umbreon and Espeon | One, originally Eevee |
 | Shadow roster | 48 synchronized Shadow groups | 83 Shadow encounters; Shadow Lugia is protected |
 | Gifts and trades | Plusle, Ho-Oh, Pikachu and Celebi | Duking's trades, Hordel's trade and Mt. Battle prizes |
-| Special encounters | Event gifts can be earned from Eagun after purification milestones | Separate options for tutorial Teddiursa and Hordel's Shadow Togepi, off by default |
-| Poké Spots | — | Shuffle each location's three native species; Duking's requests follow the new rare slots |
+| Special encounters | Event gifts can be earned from Eagun after purification milestones | Tutorial Teddiursa is randomized by default; Hordel's Shadow Togepi remains optional and off by default |
+| Poké Spots | — | Draw from the full supported Pokédex, subject to filters and power matching; Duking's requests follow the new rare slots |
 
 The [user guide](docs/USER_GUIDE.md) explains these rules and their limits.
 Pokémon sheets read the final patched game data, including evolution routes,
 moves and TM compatibility.
+
+### Advanced settings
+
+Choose a category or search for an option. Each category can be reset on its
+own; switching between Simple and Advanced keeps your settings.
+
+| Colosseum · move rules | XD · shiny rules |
+| --- | --- |
+| ![Colosseum advanced settings: moves, learnsets and battle safeguards](docs/images/colosseum-advanced.png) | ![XD advanced settings: custom shiny rate and optional Shadow unlock](docs/images/xd-advanced.png) |
 
 ![XD settings](docs/images/xd-settings.png)
 

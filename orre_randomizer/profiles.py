@@ -18,6 +18,8 @@ XD_PROFILE_FORMAT = "pokemon-xd-randomizer-profile"
 LEGACY_XD_ENGINE = "xd-story-sha256-v3"
 PREVIOUS_XD_ENGINE = "xd-story-sha256-v4"
 PREVIOUS_XD_QOL_ENGINE = "xd-story-sha256-v5"
+PREVIOUS_XD_SHUFFLE_ENGINE = "xd-story-sha256-v6"
+PREVIOUS_XD_FULL_SPOT_ENGINE = "xd-story-sha256-v7"
 XD_SPOT_MIGRATION = "Réglages XD chargés. Les Poké Places utilisent le nouveau tirage."
 SCHEMA_VERSION = 1
 MAX_PROFILE_BYTES = 64 * 1024
@@ -50,7 +52,7 @@ DETAILS_ENGINE_VERSION = "details-and-progression-v15"
 DETAILS_APP_VERSIONS = frozenset(("0.15.0", "0.16.0", "0.16.1", "0.17.0", "0.17.1", "0.17.2", "0.17.3", "0.17.4"))
 V15_FIELDS = frozenset(("starter_umbreon_species", "starter_espeon_species", "progressive_levels",
     "early_level_multiplier", "mid_level_multiplier", "late_level_multiplier", "experience_multiplier", "purification_multiplier"))
-CURRENT_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", "0.20.0", "0.21.0rc1", "0.21.0rc2", __version__)
+CURRENT_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", "0.20.0", "0.21.0rc1", "0.21.0rc2", "1.0.0", "1.0.1", "1.1.0", __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -233,7 +235,8 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
     try:
         payload = _decode_json(data)
         if type(payload) is not dict or payload.get("engine_version") not in (
-            xd.VERSION, PREVIOUS_XD_QOL_ENGINE, PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE,
+            xd.VERSION, PREVIOUS_XD_FULL_SPOT_ENGINE, PREVIOUS_XD_SHUFFLE_ENGINE,
+            PREVIOUS_XD_QOL_ENGINE, PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE,
         ):
             raise ValueError
         legacy = payload["engine_version"] == LEGACY_XD_ENGINE
@@ -252,6 +255,10 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         options = payload["options"]
         seed = payload["seed"]
         expected = {item.name for item in fields(xd.XDOptions)}
+        if payload["engine_version"] != xd.VERSION:
+            expected.remove("custom_shadow_shinies")
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_FULL_SPOT_ENGINE):
+            expected.remove("poke_spots_full_pokedex")
         if payload["engine_version"] in (PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE):
             expected.remove("randomize_hordel_gift")
         if legacy:

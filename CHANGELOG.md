@@ -1,5 +1,41 @@
 # Changelog
 
+## 1.2.0
+
+- Added an optional XD Shadow shiny unlock using the chosen rate and a stable
+  seeded decision for each of the 83 Shadow IDs. Both randomizing presets
+  enable it at 5%. The starter and ordinary gifts retain their existing draws;
+  wild Poké Spot odds remain native.
+- Use the player SID/TID for Shadow ownership before capture so capture and
+  purification retain shiny status. Previously generated Shadow PIDs remain
+  unchanged. Preview portraits and sheets use the seeded status.
+- Added the option and scope explanations in all six interface languages.
+  XD engines v3–v7 import without enabling the new unlock. The XD engine is
+  now `xd-story-sha256-v8`.
+
+## 1.1.0
+
+- Both XD desktop presets draw regular Poké Spot encounters from the full
+  supported Pokédex, respecting species filters and power matching. Slots keep
+  their native levels and encounter rates. Duking's three rare-slot requests
+  remain distinct and obtainable.
+- Synchronize Duking's checks, dialogue and preview with those requests, even
+  when gift rewards are preserved. Handle localized species-name swaps without
+  accidentally rewriting names already replaced.
+- Added a six-language advanced toggle for the full Pokédex pool. Older XD
+  profiles retain their native three-species shuffle and saved choices. The
+  engine is now `xd-story-sha256-v7`; the existing draw domains are preserved
+  for configurations using the older shuffle.
+
+## 1.0.1
+
+- Enabled tutorial Teddiursa randomization in both XD desktop presets. The
+  advanced toggle, unchanged-copy mode, legacy CLI defaults and imported
+  profiles retain their existing behavior. Tutorial safety checks still apply.
+- Updated the user guide and README to distinguish the enabled tutorial
+  replacement from the optional Hordel gift replacement. Poké Spots continue
+  to shuffle the three native species within each location.
+
 ## 1.0.0
 
 - First stable release for Colosseum and XD, with the shared three-step desktop

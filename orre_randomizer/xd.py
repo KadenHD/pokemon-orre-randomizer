@@ -24,12 +24,13 @@ from .xd_gifts import (DUKING_TRADES, GIFT_BASELINES, GIFT_TRADE_REQUIREMENTS, H
                        TOGEPI, patch_gifts, patch_hordel_gift)
 from .xd_item_rules import apply_field_items, apply_shop_items
 from .xd_shiny_rules import apply_shiny_rules
+from .xd_shadow_shinies import apply_shadow_shiny_rules
 from .xd_shops import patch_stone_names, patch_stone_price, patch_stone_stock
 from .xd_species_gameplay import XDMoveRandomizer, detail_catalog, patch_species_gameplay, patch_tm_gameplay
 from .xd_story import (STARTER_DIALOGUE_ARCHIVE, TEDDIURSA, TUTORIAL_SHADOW, hordel_candidates,
                        patch_starter_dialogue, patch_tutorial, tutorial_candidates)
 
-VERSION = "xd-story-sha256-v6"
+VERSION = "xd-story-sha256-v8"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -66,7 +67,9 @@ class XDOptions:
     randomize_tutorial_shadow: bool = rule("Remplacer Teddiursa dans le tutoriel", "Dresseurs",
         "Adapte les dialogues au premier obscur. Il garde le niveau 11 et son taux de capture d’origine.", False)
     randomize_poke_spots: bool = rule("Randomiser les Poké Places", "Poké Places",
-        "Mélange les trois espèces de chaque lieu. Doking demande le Pokémon devenu rare dans chaque Poké Place.")
+        "Change les rencontres des Poké Places. Doking demande le Pokémon de l’emplacement rare de chaque lieu.")
+    poke_spots_full_pokedex: bool = rule("Piocher dans tout le Pokédex", "Poké Places",
+        "Utilise tous les Pokémon autorisés par vos filtres. Désactivé : mélange les trois espèces d’origine de chaque lieu.", False)
     accessible_evolutions: bool = rule("Rendre les évolutions accessibles", "Évolutions", "")
     unique_shadow_families: bool = rule("Une famille par Pokémon obscur", "Dresseurs", "")
     randomize_gifts: bool = rule("Remplacer les Pokémon offerts", "Starters et cadeaux", "")
@@ -85,8 +88,10 @@ class XDOptions:
     excluded_species: tuple[int, ...] = _shared("excluded_species")
     excluded_types: tuple[int, ...] = _shared("excluded_types")
     custom_shinies: bool = _shared("custom_shinies", description="")
+    custom_shadow_shinies: bool = rule("Appliquer le taux aux Pokémon obscurs", "Chromatiques",
+        "Lève le verrouillage de XD. La seed fixe le statut de chaque obscur, conservé après capture et purification. Les Pokémon déjà générés restent inchangés.", False)
     shiny_chance_percent: float = _shared("shiny_chance_percent", default=5.0,
-                                         description="La seed fixe le statut chromatique du Pokémon de départ et des cadeaux de XD.")
+                                         description="La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places gardent le taux d’origine.")
     trainer_theme_mode: str = _shared("trainer_theme_mode")
     trainer_force_evolved: bool = _shared("trainer_force_evolved", description="")
     trainer_evolution_level: int = _shared("trainer_evolution_level")
@@ -140,7 +145,8 @@ class XDOptions:
         return cls(randomize_trainer_moves=True, randomize_starter_moves=True, randomize_gift_moves=True,
                    randomize_learnsets=True, randomize_tm_moves=True, tm_compatibility_mode="type",
                    randomize_field_items=True, randomize_shop_items=True, custom_shinies=True,
-                   boss_team_variety=True)
+                   boss_team_variety=True, randomize_tutorial_shadow=True,
+                   poke_spots_full_pokedex=True, custom_shadow_shinies=True)
 
     @classmethod
     def species_only(cls) -> XDOptions:
@@ -415,17 +421,45 @@ def _deck(deck: bytes, name: str, shadow_slots, seed: str, species, families,
                            "shadows": shadow_report}
 
 
+def _poke_spot_species(seed, species, eligible, options):
+    """Draw rare slots first so Duking always has three distinct requests."""
+    pool = set(eligible) & species.keys()
+    if len(pool) < 3:
+        raise FormatError("Autorisez au moins trois Pokémon pour randomiser les Poké Places.")
+    picks = {spot: [None, None, None] for spot in SPOT_SPECIES}
+    used, rare = set(), set()
+    for slot in (2, 0, 1):
+        for spot, native in SPOT_SPECIES.items():
+            candidates = pool - set(picks[spot])
+            if slot == 2:
+                candidates -= rare
+            candidates = candidates - used or candidates
+            original = native[slot]
+            chosen = (original if candidates == {original} else
+                      _pick(seed, f"poke-spot-species-v1:{spot}:{slot + 1}", species,
+                            original, candidates=candidates, balance=options.balance_species))
+            picks[spot][slot] = chosen
+            used.add(chosen)
+            if slot == 2:
+                rare.add(chosen)
+    return picks
+
+
 def _rel(rel, seed, species, edges, symbols, options, eligible=None):
     result = bytearray(rel)
     spots, evolutions = [], []
     eligible = species if eligible is None else eligible
+    full_draw = (_poke_spot_species(seed, species, eligible, options)
+                 if options.randomize_poke_spots and options.poke_spots_full_pokedex else None)
     for spot, symbol in (("rock", 12), ("oasis", 15), ("cave", 18)):
         start = _table(rel, symbols, symbol, 3, 0xC)
         native = tuple(u16(rel, start + slot * 0xC + 2) for slot in range(3))
         if native != SPOT_SPECIES[spot] or any(index not in species for index in native):
             raise FormatError("unexpected native XD Poké Spot roster")
         picked = native
-        if options.randomize_poke_spots:
+        if full_draw is not None:
+            picked = full_draw[spot]
+        elif options.randomize_poke_spots:
             supported = [order for order in permutations(native) if order[2] != native[2]
                          and all(old == new or new in eligible for old, new in zip(native, order, strict=True))]
             if supported:
@@ -498,6 +532,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     summary["national_ids"] = {str(index): row[0] for index, row in species.items()}
     original_dol = dol
     dol, summary["shinies"] = apply_shiny_rules(original_dol, dol, region.game_id, seed, options)
+    dol, summary["shadow_shinies"] = apply_shadow_shiny_rules(original_dol, dol, region.game_id, seed, options)
     new_rel, summary["poke_spots"], summary["evolutions"] = _rel(rel, seed, species, edges, symbols, options, eligible)
     trade_requirements = dict(GIFT_TRADE_REQUIREMENTS)
     trade_requirements.update(zip(DUKING_TRADES, (row["species"] for row in summary["poke_spots"] if row["slot"] == 3),
@@ -661,6 +696,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         summary["starter"]["shiny"] = statuses["starter"]
         for row in summary["gifts"]:
             row["shiny"] = statuses[row["key"]]
+    shadow_status = summary["shadow_shinies"].get("statuses", {})
+    if shadow_status:
+        for deck in summary["decks"].values():
+            for row in deck["shadows"]:
+                row["shiny"] = shadow_status[str(row["shadow_id"])]
     dol, summary["battle_progression"] = apply_dol_battle_rules(original_dol, dol, region.game_id, options)
     if include_details:
         summary["detail_catalog"] = detail_catalog(new_rel, dol, symbols, region.game_id, edges, move_randomizer)

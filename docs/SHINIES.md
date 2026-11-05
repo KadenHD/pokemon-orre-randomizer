@@ -9,12 +9,18 @@ shinies and can add others. Customization does not require changing species.
 | Game | Custom-rate scope | Seed behavior |
 | --- | --- | --- |
 | Colosseum | Starters, ordinary/event gifts, trainer and Shadow generation calls | Stable decision per encounter/Shadow ID, or optional native RNG draw |
-| XD | Starter and ordinary gifts | Stable decision from the seed; Shadow encounters retain native XD shiny policy |
+| XD | Starter, ordinary gifts and optionally all 83 Shadow IDs | Stable decision per key/Shadow ID; enabled in both presets |
 
 The original generation-III test has probability 1/8192 (about 0.0122%) where
 the encounter permits it. Game-specific shiny restrictions still matter.
 Unchecking customization preserves native behavior. At 0%, supported newly
 generated encounters cannot be shiny; at 100%, they are guaranteed shiny.
+
+In XD, **Apply the rate to Shadow Pokémon** removes the native Shadow lock
+when customization is enabled. Both randomizing presets select it. Disabling
+this option keeps the lock without changing the starter or gift policy. Wild
+Poké Spots still use their native odds. Shadow Lugia retains its special dark
+model until purification; the underlying shiny status is preserved.
 
 ## Preview and saves
 
@@ -41,6 +47,11 @@ from legacy low-level Colosseum/CLI defaults; use a profile for exact reproducti
 The Colosseum seeded draw uses the `seeded-shiny-status-v1` SHA-256 domain and an
 encounter key. Wrappers select native always/never-shiny modes while preserving
 the game's personality constraints. XD uses its own guarded starter/gift paths.
+Its Shadow wrappers use the `xd-shadow-shiny-status-v1:<Shadow ID>` draw domain,
+select the native always/never-shiny PID generator and align the Shadow's owner
+with the player's full SID/TID before capture. Capture and purification preserve
+that personality and therefore its shiny status. The enemy-owner override runs
+after the native anti-shiny loop, with no loop back into PID generation.
 Every supported region has its own checked addresses and original instructions.
 Current engine identities are recorded in creation reports.
 

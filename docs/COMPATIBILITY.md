@@ -31,6 +31,14 @@ Imports restore recorded values rather than applying current preset defaults.
 RC1 and RC2 profiles remain accepted in v1.0.0. Earlier migrations are documented
 in the changelog and historical notes.
 
+In v1.2.0, XD profiles from engines v3–v7 retain their native Shadow shiny lock.
+The new Shadow unlock is disabled during import, preserving their previous
+draws and saved rate. Selecting a current randomizing preset enables it at 5%.
+
+In v1.1.0, XD profiles from engines v3–v6 retain the original three-species
+Poké Spot shuffle. The new full-Pokédex option is disabled during import and
+can be explicitly enabled, or selected through either current desktop preset.
+
 The six originals have independently identified layouts and guarded patch plans.
 That does not imply complete playthroughs of every route, region and seed.
 See [validation scope](VALIDATION.md) for static, automated and native evidence.

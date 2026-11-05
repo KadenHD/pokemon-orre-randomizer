@@ -21,8 +21,9 @@ One main action per step, visible progress and recoverable errors take priority.
 The two randomizing modes share balance, family diversity, base starters from
 three-stage families and a seeded 5% shiny chance for supported encounters.
 Pokémon-only preserves moves, TMs and items while retaining evolution access.
-Native game mechanics determine the exceptions, especially XD Shadow shinies,
-Lugia, Poké Spots and optional tutorial/Hordel replacements. Imports preserve
+XD Shadow shinies use the chosen rate with an optional unlock, enabled in both
+presets. Wild Poké Spots retain native shiny odds. Shadow Lugia, full-Pokédex
+Poké Spots and tutorial/Hordel controls have their own rules. Imports preserve
 saved values. Detailed behavior belongs in the [user guide](docs/USER_GUIDE.md).
 
 Advanced settings use stable field identifiers and metadata, searchable in all

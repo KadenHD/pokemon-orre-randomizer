@@ -349,7 +349,7 @@ def _purification_stub(address, continuation, multiplier):
     return payload + struct.pack(">ff", 0.0, multiplier) + bytes(24)
 
 
-def append_xd_dol_text(original, current, game_id, hooks):
+def append_xd_dol_text(original, current, game_id, hooks, *, link=False):
     """Reserve or extend text2 and apply preimage-checked inline hooks.
 
     Each hook is a native RAM address, its displaced instruction, and a
@@ -396,7 +396,7 @@ def append_xd_dol_text(original, current, game_id, hooks):
         if not payload or len(payload) % 32:
             raise FormatError("invalid XD DOL stub alignment")
         code.extend(payload)
-        struct.pack_into(">I", output, hook_offset, branch(address, stub))
+        struct.pack_into(">I", output, hook_offset, branch(address, stub, link=link))
         report.append({"hook_address": address, "stub_address": stub, "stub_size": len(payload),
                        "continuation": address + 4})
     reserved_end = section_ram + len(code)

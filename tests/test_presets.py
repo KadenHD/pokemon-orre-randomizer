@@ -46,8 +46,17 @@ class PresetTests(unittest.TestCase):
             self.assertTrue(colosseum.starter_balance_pair)
             self.assertTrue(colosseum.starter_distinct_families)
             self.assertTrue(colosseum.starter_complementary_types)
-            self.assertFalse(xd.randomize_tutorial_shadow)
+            self.assertTrue(xd.randomize_tutorial_shadow)
+            self.assertTrue(xd.poke_spots_full_pokedex)
+            self.assertTrue(xd.custom_shadow_shinies)
             self.assertFalse(xd.randomize_hordel_gift)
+
+    def test_tutorial_default_changes_only_randomizing_desktop_presets(self):
+        self.assertTrue(XDOptions.recommended().randomize_tutorial_shadow)
+        self.assertTrue(XDOptions.species_only().randomize_tutorial_shadow)
+        self.assertFalse(XDOptions.unchanged().randomize_tutorial_shadow)
+        self.assertFalse(XDOptions().randomize_tutorial_shadow)
+        self.assertFalse(XDOptions().poke_spots_full_pokedex)
 
     def test_published_rc2_exports_keep_every_original_option(self):
         for game in ("colosseum", "xd"):
@@ -55,7 +64,11 @@ class PresetTests(unittest.TestCase):
                 path = FIXTURES / f"rc2-{game}-{mode}.json"
                 payload = json.loads(path.read_text("utf-8"))
                 profile = load_profile(path, is_xd=game == "xd")
-                self.assertEqual(json.loads(json.dumps(asdict(profile.options))), payload["options"])
+                expected = dict(payload["options"])
+                if game == "xd":
+                    expected["poke_spots_full_pokedex"] = False
+                    expected["custom_shadow_shinies"] = False
+                self.assertEqual(json.loads(json.dumps(asdict(profile.options))), expected)
                 self.assertEqual(profile.seed, "rc2-preset-compatibility")
                 # New presets must never be substituted for imported RC values.
                 if game == "colosseum" and mode == "species":
@@ -63,15 +76,18 @@ class PresetTests(unittest.TestCase):
                     self.assertFalse(profile.options.starter_balance_pair)
                 if game == "xd":
                     self.assertFalse(profile.options.boss_team_variety)
+                    self.assertFalse(profile.options.randomize_tutorial_shadow)
 
     def test_rc1_profile_version_and_previous_xd_engine_remain_accepted(self):
         for game in ("colosseum", "xd"):
             payload = json.loads((FIXTURES / f"rc2-{game}-species.json").read_text("utf-8"))
-            expected = payload["options"]
+            expected = dict(payload["options"])
             if game == "colosseum":
                 payload["app_version"] = "0.21.0rc1"
             if game == "xd":
                 payload["engine_version"] = PREVIOUS_XD_QOL_ENGINE
+                expected["poke_spots_full_pokedex"] = False
+                expected["custom_shadow_shinies"] = False
             payload.pop("configuration_sha256")
             payload["configuration_sha256"] = hashlib.sha256(json.dumps(
                 payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
@@ -79,3 +95,14 @@ class PresetTests(unittest.TestCase):
             parser = parse_xd_profile if game == "xd" else parse_profile
             actual = parser(json.dumps(payload).encode("utf-8"))
             self.assertEqual(json.loads(json.dumps(asdict(actual.options))), expected)
+
+    def test_v100_colosseum_profile_keeps_its_saved_values(self):
+        payload = json.loads((FIXTURES / "rc2-colosseum-species.json").read_text("utf-8"))
+        payload["app_version"] = "1.0.0"
+        expected = payload["options"]
+        payload.pop("configuration_sha256")
+        payload["configuration_sha256"] = hashlib.sha256(json.dumps(
+            payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"),
+            allow_nan=False).encode("utf-8")).hexdigest()
+        actual = parse_profile(json.dumps(payload).encode("utf-8"))
+        self.assertEqual(json.loads(json.dumps(asdict(actual.options))), expected)

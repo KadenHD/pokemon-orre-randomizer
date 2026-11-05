@@ -2,7 +2,7 @@
   "app_version": "1.0.0",
   "language": "en",
   "seed": "orre-v1-demo",
-  "description": "Real application captures with isolated demo preferences; no personal paths or saves.",
+  "description": "Real application captures with isolated demo preferences, plus earlier native gameplay examples with per-file provenance. No personal paths or saves.",
   "files": {
     "home.png": {
       "bytes": 138261,
@@ -23,6 +23,46 @@
     "shadow-pokemon.png": {
       "bytes": 116899,
       "sha256": "db3667741bea69b64b6b3f03860ebb0cd20ff98dda253fbb619ff2b784d372df"
+    },
+    "colosseum-starters-ingame.png": {
+      "bytes": 75387,
+      "sha256": "1c7352218473738a3e30f76c75d2529f65364749c40716c8462b90de81006088",
+      "game": "colosseum",
+      "kind": "native-gameplay",
+      "language": "fr",
+      "description": "Earlier new-game playtest: Seadra level 26 and Electabuzz level 25. Native party, no injected Pokemon.",
+      "validation": "docs/DOLPHIN_VALIDATION_2026-10-31.md",
+      "iso_sha256": "648cc8c0744c87fce40a7d4dbdd3f6f95f8df29bc48415ee33507cb5d1894b35"
+    },
+    "xd-starter-ingame.png": {
+      "bytes": 125696,
+      "sha256": "47164149ba96dfe9e15d5aacf198aff59908e8220ba8bb3ea72ffa29f3821efc",
+      "game": "xd",
+      "kind": "native-gameplay",
+      "language": "fr",
+      "seed": "xd-story-check",
+      "description": "Earlier native new-game save/reload playtest: Horsea level 10 with a 100 percent shiny test rate.",
+      "validation": "docs/reverse-engineering/XD.md"
+    },
+    "colosseum-advanced.png": {
+      "bytes": 89168,
+      "sha256": "a2b6f2408efdad2fa762db06031a61078c89d364bd6d347318aac951b5e060e4",
+      "kind": "application",
+      "app_version": "1.2.0",
+      "language": "en",
+      "game": "colosseum",
+      "description": "Actual advanced settings screen, isolated preferences, no ROM or personal data.",
+      "category": "Moves"
+    },
+    "xd-advanced.png": {
+      "bytes": 48403,
+      "sha256": "8731b13b8bbad380ce30357505ed68761fb4154702db4258e579eada1beec46c",
+      "kind": "application",
+      "app_version": "1.2.0",
+      "language": "en",
+      "game": "xd",
+      "description": "Actual advanced settings screen, isolated preferences, no ROM or personal data.",
+      "category": "Shinies"
     }
   }
 }

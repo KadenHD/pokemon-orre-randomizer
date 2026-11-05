@@ -6,11 +6,53 @@ import unittest
 from orre_randomizer.engine.analyze_game import FormatError, parse_fsys, u32
 from orre_randomizer.engine.rebuild_iso import decoded_member
 from orre_randomizer.xd_gifts import (_duking_script, _hordel_dialogue, _hordel_offer_script,
-                                          _patch_duking, _patch_messages, _prize_label)
+                                          _patch_duking, _patch_messages, _prize_label, replace_species_names)
 from tests.test_formats import fsys_fixture
 
 
 class XDGiftTextTests(unittest.TestCase):
+    def test_duking_names_can_swap_without_overwriting_new_names_in_any_game_language(self):
+        names = {"UK": ("TRAPINCH", "SURSKIT", "WOOPER"),
+                 "US": ("TRAPINCH", "SURSKIT", "WOOPER"),
+                 "FR": ("KRAKNOIX", "ARAKDO", "AXOLOTO"),
+                 "GE": ("KNACKLION", "GEHWEIHER", "FELINO"),
+                 "IT": ("TRAPINCH", "SURSKIT", "WOOPER"),
+                 "SP": ("TRAPINCH", "SURSKIT", "WOOPER"),
+                 "JP": ("ナックラー", "アメタマ", "ウパー")}
+        prefix, suffix = b"\xff\xff\x59", b"\xff\xff\x4e\0\0"
+        for language, originals in names.items():
+            with self.subTest(language=language):
+                chosen = (*originals[1:], originals[0])
+                original = prefix + " / ".join(originals).encode("utf-16-be") + suffix
+                expected = prefix + " / ".join(chosen).encode("utf-16-be") + suffix
+                self.assertEqual(replace_species_names(original, language, zip(originals, chosen)), expected)
+        original = "Le KRAKNOIX / l'ARAKDO / l'AXOLOTO".encode("utf-16-be")
+        expected = "L'ARAKDO / l'AXOLOTO / le KRAKNOIX".encode("utf-16-be")
+        self.assertEqual(replace_species_names(original, "FR", zip(names["FR"], ("ARAKDO", "AXOLOTO", "KRAKNOIX"))), expected)
+
+    def test_duking_updates_all_species_checks_and_prompt_arguments_for_arbitrary_species(self):
+        script = bytearray(b"\xfe" * 0x1800)
+        names = ((0xD30, 1307, 1328, 1653), (0xD74, 1213, 1283, 1654), (0xDB8, 1246, 1194, 1655))
+        checks = ((0xB48, 0xD1C), (0xB98, 0xD60), (0xBE8, 0xDA4))
+        script[0x16F0:0x16F4] = b"ARRY"
+        for slot, (offset, name, required, flag) in enumerate(names):
+            struct.pack_into(">9I", script, offset - 4, 0x02010000, name, 0x02010000, required,
+                             0x02010000, flag, 0x0301FFFB, 0x0700031B, 0x06040000)
+            for position in checks[slot]:
+                struct.pack_into(">II", script, position - 4, 0x02010000, (332, 311, 194)[slot])
+            struct.pack_into(">II", script, 0x1750 + 8 * slot, 0x00010000, required)
+        expected = bytearray(script)
+        requested = ((1, 1001), (150, 1150), (382, 1304))
+        rewards = (1004, 1007, 1025)
+        for slot, (offset, *_rest) in enumerate(names):
+            species, name = requested[slot]
+            for position in checks[slot]:
+                struct.pack_into(">I", expected, position, species)
+            struct.pack_into(">I", expected, offset, rewards[slot])
+            struct.pack_into(">I", expected, offset + 8, name)
+            struct.pack_into(">I", expected, 0x1754 + 8 * slot, name)
+        self.assertEqual(_duking_script(bytes(script), list(rewards), list(requested)), bytes(expected))
+
     def test_hordel_retargets_both_forms_and_keeps_other_trade_instructions(self):
         script = bytearray(b"\xFE" * 0x1900)
         expected = bytearray(script)

@@ -228,6 +228,23 @@ def replace_species_name(original, language, old, chosen):
     return original.replace(encoded, chosen.encode("utf-16-be"), 1)
 
 
+def replace_species_names(original, language, replacements):
+    """Replace names together, including swaps, without rewriting new names."""
+    updated = original
+    pending = []
+    for index, (old, chosen) in enumerate(replacements):
+        encoded = old.encode("utf-16-be")
+        token = f"\ue000{index}\ue001"
+        marker = token.encode("utf-16-be")
+        if original.count(encoded) != 1 or marker in original:
+            raise FormatError("unexpected localized XD trade species names")
+        updated = updated.replace(encoded, marker, 1)
+        pending.append((token, chosen))
+    for token, chosen in pending:
+        updated = replace_species_name(updated, language, token, chosen)
+    return updated
+
+
 def _hordel_offer_script(original, base, evolved):
     updated = bytearray(original)
     for (expected, offsets), chosen in zip(_HORDEL_OFFER_WORDS, (base, evolved), strict=True):
@@ -338,13 +355,10 @@ def patch_gifts(
                 for message in _HORDEL_MESSAGES}
 
     def spot_edits(language, message_ids):
-        def edit(before):
-            for key in DUKING_TRADES:
-                old = _native_name(name_banks, language, species[GIFT_TRADE_REQUIREMENTS[key]][0])
-                new = _native_name(name_banks, language, species[trade_requirements[key]][0])
-                before = replace_species_name(before, language, old, new)
-            return before
-        return dict.fromkeys(message_ids, edit)
+        names = [(_native_name(name_banks, language, species[GIFT_TRADE_REQUIREMENTS[key]][0]),
+                  _native_name(name_banks, language, species[trade_requirements[key]][0]))
+                 for key in DUKING_TRADES]
+        return dict.fromkeys(message_ids, partial(replace_species_names, language=language, replacements=names))
 
     crater = "D2_crater_colo.fsys"
     pyrite = "M2_guild_1F_2.fsys"

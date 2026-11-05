@@ -32,6 +32,7 @@ from .xd_gifts import GIFT_TRADE_REQUIREMENTS, TOGETIC
 RULES = fields(XDOptions)
 MOVE_RULES = ("randomize_trainer_moves", "randomize_starter_moves", "randomize_gift_moves", "randomize_learnsets")
 DEPENDENCIES = {
+    "poke_spots_full_pokedex": ("randomize_poke_spots",),
     "unique_shadow_families": ("randomize_shadows",),
     "boss_shadow_legendary_mode": ("randomize_shadows",),
     "boss_shadow_power_mode": ("randomize_shadows",),
@@ -40,6 +41,7 @@ DEPENDENCIES = {
     "starter_stage": ("randomize_starter",),
     "starter_three_stage_families": ("randomize_starter",),
     "shiny_chance_percent": ("custom_shinies",),
+    "custom_shadow_shinies": ("custom_shinies",),
     "trainer_theme_mode": ("randomize_trainers",),
     "trainer_evolution_level": ("trainer_force_evolved",),
     "abilities_family_consistent": ("randomize_abilities",),
@@ -206,7 +208,7 @@ class XDWorkspace(QWidget):
             "Les échanges de Doking suivent les Poké Places. Le tirage évite les familles en double dans l’histoire.")
         simple_layout.addWidget(self.preset_common)
         self.preset_shiny = window.note(
-            "Le starter et les cadeaux ont 5 % de chance d’être chromatiques. La seed fixe le résultat.")
+            "Le starter, les cadeaux et les obscurs ont 5 % de chance d’être chromatiques. La seed fixe le résultat.")
         simple_layout.addWidget(self.preset_shiny)
         simple_layout.addStretch(1)
         self.configuration_pages.addWidget(scroll_area(simple))

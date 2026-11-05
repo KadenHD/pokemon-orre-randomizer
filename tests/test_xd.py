@@ -24,15 +24,31 @@ def boot_for(game_id):
 
 
 class XDTests(unittest.TestCase):
+    def test_v7_profiles_keep_full_spots_without_enabling_shadow_shinies(self):
+        from dataclasses import asdict
+        from orre_randomizer.profiles import PREVIOUS_XD_FULL_SPOT_ENGINE
+        region = xd.REGIONS["GXXP01"]
+        options = replace(xd.XDOptions.recommended(), custom_shadow_shinies=False)
+        payload = {"engine_version": PREVIOUS_XD_FULL_SPOT_ENGINE, "game_id": region.game_id,
+                   "revision": 0, "source_iso_sha256": region.iso_sha256,
+                   "seed": "v7-full-pool", "options": asdict(options)}
+        payload["options"].pop("custom_shadow_shinies")
+        profile = parse_xd_profile(json.dumps(payload).encode(), report=True)
+        self.assertEqual(profile.options, options)
+        self.assertTrue(profile.options.poke_spots_full_pokedex)
+        self.assertFalse(profile.options.custom_shadow_shinies)
+
     def test_rc1_profile_keeps_all_options_after_runtime_hook_fix(self):
         from dataclasses import asdict
         from orre_randomizer.profiles import PREVIOUS_XD_QOL_ENGINE
         region = xd.REGIONS["GXXP01"]
-        options = replace(xd.XDOptions.recommended(), randomize_hordel_gift=True,
+        options = replace(xd.XDOptions.recommended(), poke_spots_full_pokedex=False, custom_shadow_shinies=False, randomize_hordel_gift=True,
                           experience_multiplier=1.5, purification_multiplier=3)
         data = {"engine_version": PREVIOUS_XD_QOL_ENGINE, "game_id": region.game_id,
                 "revision": 0, "source_iso_sha256": region.iso_sha256,
                 "seed": "old-runtime", "options": asdict(options)}
+        data["options"].pop("poke_spots_full_pokedex")
+        data["options"].pop("custom_shadow_shinies")
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
         self.assertEqual(profile.options, options)
         self.assertFalse(profile.xd_spot_migration)
@@ -43,6 +59,8 @@ class XDTests(unittest.TestCase):
             payload = json.loads(path.read_text("utf-8"))
             payload.pop("configuration_sha256")
             payload["engine_version"] = PREVIOUS_XD_QOL_ENGINE
+            payload["options"].pop("poke_spots_full_pokedex")
+            payload["options"].pop("custom_shadow_shinies")
             canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
             payload["configuration_sha256"] = hashlib.sha256(canonical).hexdigest()
             path.write_text(json.dumps(payload), encoding="utf-8")
@@ -120,6 +138,8 @@ class XDTests(unittest.TestCase):
 
         region = xd.REGIONS["GXXP01"]
         options = asdict(xd.XDOptions())
+        options.pop("poke_spots_full_pokedex")
+        options.pop("custom_shadow_shinies")
         options.pop("randomize_hordel_gift")
         options.pop("randomize_tutorial_shadow")
         data = {"engine_version": LEGACY_XD_ENGINE, "game_id": region.game_id, "revision": region.revision,
@@ -135,6 +155,8 @@ class XDTests(unittest.TestCase):
 
         region = xd.REGIONS["GXXP01"]
         options = asdict(replace(xd.XDOptions(), randomize_tutorial_shadow=True))
+        options.pop("poke_spots_full_pokedex")
+        options.pop("custom_shadow_shinies")
         options.pop("randomize_hordel_gift")
         data = {"engine_version": PREVIOUS_XD_ENGINE, "game_id": region.game_id, "revision": region.revision,
                 "source_iso_sha256": region.iso_sha256, "seed": "previous", "options": options}
