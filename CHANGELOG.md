@@ -15,9 +15,9 @@
 - Added the option and scope explanations in all six interface languages.
   XD engines v3–v7 import without enabling the new unlock. The XD engine is
   now `xd-story-sha256-v8`.
-
-## 1.1.0
-
+- Enabled tutorial Teddiursa randomization in both XD desktop presets. The
+  advanced toggle, unchanged-copy mode, legacy CLI defaults and imported
+  profiles retain their existing behavior. Tutorial safety checks still apply.
 - Both XD desktop presets draw regular Poké Spot encounters from the full
   supported Pokédex, respecting species filters and power matching. Slots keep
   their native levels and encounter rates. Duking's three rare-slot requests
@@ -26,18 +26,13 @@
   when gift rewards are preserved. Handle localized species-name swaps without
   accidentally rewriting names already replaced.
 - Added a six-language advanced toggle for the full Pokédex pool. Older XD
-  profiles retain their native three-species shuffle and saved choices. The
-  engine is now `xd-story-sha256-v7`; the existing draw domains are preserved
-  for configurations using the older shuffle.
+  profiles retain their native three-species shuffle and saved choices. Existing
+  draw domains remain unchanged when importing these profiles.
+- Added authentic gameplay examples and advanced-setting screenshots to the
+  README, with provenance and checked packaging allowlists.
 
-## 1.0.1
-
-- Enabled tutorial Teddiursa randomization in both XD desktop presets. The
-  advanced toggle, unchanged-copy mode, legacy CLI defaults and imported
-  profiles retain their existing behavior. Tutorial safety checks still apply.
-- Updated the user guide and README to distinguish the enabled tutorial
-  replacement from the optional Hordel gift replacement. Poké Spots continue
-  to shuffle the three native species within each location.
+Development builds 1.0.1 and 1.1.0 were not published as separate releases;
+their changes are included in 1.2.0 above.
 
 ## 1.0.0
 

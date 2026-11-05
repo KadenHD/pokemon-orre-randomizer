@@ -28,7 +28,7 @@ reward dialogue use the ROM's available text banks. Unchanged copies preserve te
 Profiles belong to one game but are portable across its supported regions.
 Exact reproduction requires the same original, seed, options and engine version.
 Imports restore recorded values rather than applying current preset defaults.
-RC1 and RC2 profiles remain accepted in v1.0.0. Earlier migrations are documented
+Profiles from v1.0.0, RC1 and RC2 remain accepted. Earlier migrations are documented
 in the changelog and historical notes.
 
 In v1.2.0, XD profiles from engines v3–v7 retain their native Shadow shiny lock.

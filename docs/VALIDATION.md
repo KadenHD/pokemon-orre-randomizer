@@ -80,5 +80,5 @@ passed 516 tests (two platform skips) and 204 UI states respectively.
 
 Selected scenes and synthetic fixtures do not prove a complete playthrough or
 balance across all seeds. No full campaign or second physical Windows PC is
-claimed for v1.0.0. These are additional coverage opportunities, not completed
+claimed for v1.2.0. These are additional coverage opportunities, not completed
 checks. Distinguish observed game failures from limitations of prepared QA scenes.
