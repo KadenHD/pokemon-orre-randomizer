@@ -1,14 +1,14 @@
 # Building and verifying a release
 
-The local edition in `dist/` uses the interface pack exported from the game. The
-public edition in `dist/public/` uses the same engine and profile formats. Its
-panels are drawn by the app, and unavailable audio controls are disabled. The
-public build starts without a ROM and skips the local interface pack.
+The local edition in `dist/` and public edition in `dist/public/` include the
+same verified interface pack. Logos, menu sounds and music work before a ROM is
+selected. Game-media provenance and licenses remain separate from the MIT code.
 
-Both editions include the Eclipse icon from `assets/app/`. The sources include
+Both editions include the Eclipse icon and approved Orre logo from `assets/app/`. The sources include
 the PNG master and the Qt generator. The executable uses the ICO and its provenance
-manifest. The archive audit allows the app icon and excludes the game pack from the
-public edition. Run `python scripts/build_app_icon.py` to regenerate all nine sizes.
+manifest. The logo's transparent PNG and generation provenance are included in both
+source and Windows archives. The archive audit checks the recorded hashes of the
+application assets and interface pack. Run `python scripts/build_app_icon.py` to regenerate all nine sizes.
 
 ## Build
 
@@ -22,12 +22,12 @@ python scripts/verify_release.py --edition public
 python scripts/smoke_desktop.py --edition public --report build/public-smoke.json
 ```
 
-Omit `--edition public` to build the local edition with its verified interface pack.
+Omit `--edition public` to place the local edition directly under `dist/`.
 Use `--source-only` for a source ZIP. Move existing ZIPs aside before rebuilding
 the same version.
 
 The audit checks hashes, ZIP CRCs, and archive paths. It rejects ROMs, save files,
-and emulator binaries. The public audit also rejects game media. The Windows ZIP
+and emulator binaries. It also rejects media outside the declared interface pack. The Windows ZIP
 includes the application sources, notices, and corresponding Qt sources.
 
 ## Executable diagnostics
@@ -48,11 +48,11 @@ accents, removes Python and developer tools from `PATH`, changes the working dir
 and isolates AppData and Temp. It writes the report and screenshots under `build/`.
 
 Run **Package Windows release** manually on GitHub Actions for test artifacts from
-a hosted Windows runner. The public runner uses no ROM or local interface pack.
+a hosted Windows runner. The public runner uses the committed interface pack and no ROM.
 
 ## Publish a release
 
-Check that `pyproject.toml` and `colosseum_randomizer/__init__.py` declare the same
+Check that `pyproject.toml` and `orre_randomizer/__init__.py` declare the same
 version. Push a Git tag named `v<version>` on the release commit. The workflow checks
 the version, tests the public build, and publishes the Windows setup EXE, the
 portable Windows ZIP, the source ZIP, and `SHA256SUMS.json` for the ZIPs.

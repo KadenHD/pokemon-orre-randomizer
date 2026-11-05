@@ -5,8 +5,8 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from colosseum_randomizer.detail_texts import LANGUAGES
-from colosseum_randomizer.journal import render_journal, save_journal
+from orre_randomizer.detail_texts import LANGUAGES
+from orre_randomizer.journal import render_journal, save_journal
 from test_pokemon_details import catalog_fixture
 
 

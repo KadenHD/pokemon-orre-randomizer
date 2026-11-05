@@ -10,13 +10,21 @@ python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[build]"
 python -m unittest discover -s tests -v
-python -m colosseum_randomizer
+python -m orre_randomizer
 ```
 
-The game engine lives in `colosseum_randomizer/engine`, ISO and RVZ orchestration in
-`service.py`, and the Qt interface in `gui.py`. The older scripts delegate to the
-same engine. The CLI and GUI both call `service.randomize` directly with the disc
-image, seed, and settings.
+The `orre_randomizer` package hosts both games. `service.py` orchestrates ISO and
+RVZ operations for the CLI and GUI. `engine/` contains disc-format utilities and
+Colosseum patch rules. The `xd*.py` modules contain XD patch rules, options and
+its workspace. Game-specific names identify the game whose data they change.
+
+`ui_workspace.py` and `ui_pokemon_details.py` supply the shared wizard layouts
+and Pokémon sheets. Each workspace supplies its own options, preview data and
+theme. `resources.py`, `preferences.py` and the `native/` Rust codec belong to
+the application as a whole. New shared modules use the Orre namespace.
+
+The older scripts delegate to the same engine. The CLI and GUI both call
+`service.randomize` directly with the disc image, seed, and settings.
 
 Format and safety tests run without a ROM. Integration tests that need a dump or
 a regional image declare the prerequisite and skip when it is unavailable.
@@ -83,8 +91,9 @@ python scripts/build_desktop.py
 The Windows build puts an executable with replaceable DLLs, a Windows ZIP, a source
 ZIP, and their SHA-256 hashes in `dist/`. An allowlist keeps `game`, `build`, and
 `Dolphin-x64` out of the source archive. Use `--source-only` on other platforms.
-Add `--edition public` to build in `dist/public/` without reading or bundling the
-local interface pack. Move existing ZIPs aside before rebuilding the same version.
+Add `--edition public` to build in `dist/public/`. Both editions bundle only the
+interface assets listed and verified in the pack manifest. Move existing ZIPs
+aside before rebuilding the same version.
 
 Before publishing, audit the archives and test the extracted app on Windows
 without Python. Include the exact sources and notices for the Qt libraries in

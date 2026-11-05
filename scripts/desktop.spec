@@ -5,21 +5,21 @@ import sys
 
 root = Path(SPECPATH).resolve().parent
 sys.path.insert(0, str(root))
-from colosseum_randomizer import APP_EXECUTABLE, __version__
+from orre_randomizer import APP_EXECUTABLE, __version__
 
-native_codec = root / 'colosseum_randomizer/_native/colosseum_lzss.dll'
-interface_pack = 'colosseum_randomizer/assets/game'
-app_assets = root / 'colosseum_randomizer/assets/app'
+native_codec = root / 'orre_randomizer/_native/orre_lzss.dll'
+interface_pack = 'orre_randomizer/assets/game'
+app_assets = root / 'orre_randomizer/assets/app'
 if not native_codec.is_file():
     raise RuntimeError('Build the Rust codec first: python scripts/build_native.py')
 if not (app_assets / 'icon.ico').is_file():
     raise RuntimeError('Build the application icon first: python scripts/build_app_icon.py')
-data_files = [(str(app_assets / name), 'colosseum_randomizer/assets/app')
-              for name in ('icon.ico', 'provenance.json')]
-if os.environ.get('COLOSSEUM_BUNDLE_GAME_ASSETS', '1') == '1':
+data_files = [(str(app_assets / name), 'orre_randomizer/assets/app')
+              for name in ('icon.ico', 'provenance.json', 'logo.png', 'logo.json')]
+if os.environ.get('ORRE_BUNDLE_GAME_ASSETS', os.environ.get('COLOSSEUM_BUNDLE_GAME_ASSETS', '1')) == '1':
     data_files.append((str(root / interface_pack), interface_pack))
 a = Analysis([str(root / 'scripts/desktop_entry.py')], pathex=[str(root)],
-             binaries=[(str(native_codec), 'colosseum_randomizer/_native')],
+             binaries=[(str(native_codec), 'orre_randomizer/_native')],
              datas=data_files,
              hiddenimports=[], hookspath=[], hooksconfig={},
              runtime_hooks=[], excludes=['PySide6.QtQml', 'PySide6.QtQuick',

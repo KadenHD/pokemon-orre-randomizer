@@ -10,7 +10,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from colosseum_randomizer import APP_EXECUTABLE, REPOSITORY_NAME
+from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME
 
 FORBIDDEN = {".iso", ".rvz", ".gcm", ".fsys", ".dol", ".rel", ".raw", ".gci", ".sav"}
 SOURCE_ROOT = f"{REPOSITORY_NAME}/"
@@ -18,8 +18,8 @@ BINARY_ROOT = f"{APP_EXECUTABLE}/_internal/"
 
 
 def application_media_allowed(name: str, binary: bool) -> bool:
-    prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "colosseum_randomizer/assets/app/"
-    allowed = {prefix + "icon.ico"}
+    prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/assets/app/"
+    allowed = {prefix + "icon.ico", prefix + "logo.png"}
     if not binary:
         allowed.add(prefix + "icon.png")
     return name in allowed
@@ -42,6 +42,9 @@ def main():
             raise RuntimeError("Archive hash mismatch")
         with zipfile.ZipFile(path) as archive:
             binary = filename.endswith("-windows-x64.zip")
+            prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/assets/game/"
+            pack = json.loads(archive.read(prefix + "provenance.json"))
+            game_assets = {prefix + relative for relative in pack["files"]}
             for item in archive.infolist():
                 name = Path(item.filename)
                 if (PurePosixPath(item.filename).is_absolute() or PureWindowsPath(item.filename).drive or
@@ -51,38 +54,39 @@ def main():
                     raise RuntimeError("Dolphin was bundled")
                 parts = [part.lower() for part in name.parts]
                 if any(part in {"build", "analysis", "dolphin-x64"} or
-                       part == "game" and not (index > 1 and parts[index-2:index] == ["colosseum_randomizer", "assets"])
+                       part == "game" and not (index > 1 and parts[index-2:index] == ["orre_randomizer", "assets"])
                        for index, part in enumerate(parts)):
                     raise RuntimeError(f"Local data folder in release: {name}")
-                if public and ("assets/game/" in item.filename.lower() or
-                               name.suffix.lower() in {".wav", ".png", ".jpg", ".jpeg", ".mp3", ".ogg", ".flac", ".ico"}
-                               and not application_media_allowed(item.filename, binary)):
-                    raise RuntimeError("Game media in public release: " + item.filename)
+                if item.filename.startswith(prefix) and item.filename not in game_assets | {prefix + "provenance.json"}:
+                    raise RuntimeError("Unlisted interface asset: " + item.filename)
+                if (name.suffix.lower() in {".wav", ".png", ".jpg", ".jpeg", ".mp3", ".ogg", ".flac", ".ico"}
+                        and not application_media_allowed(item.filename, binary) and item.filename not in game_assets):
+                    raise RuntimeError("Unlisted release media: " + item.filename)
             if archive.testzip() is not None:
                 raise RuntimeError("ZIP integrity check failed")
-            app_prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "colosseum_randomizer/assets/app/"
-            icon = json.loads(archive.read(app_prefix + "provenance.json"))
-            for relative in (("icon.ico",) if binary else ("icon.ico", "icon.png")):
-                payload = archive.read(app_prefix + relative)
-                expected_icon = icon["files"][relative]
-                if (len(payload) != expected_icon["bytes"] or
-                        hashlib.sha256(payload).hexdigest() != expected_icon["sha256"]):
-                    raise RuntimeError("Invalid application icon: " + relative)
-            prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "colosseum_randomizer/assets/game/"
-            if not public:
-                pack = json.loads(archive.read(prefix + "provenance.json"))
-                for relative, record in pack["files"].items():
-                    if PureWindowsPath(relative).drive or "\\" in relative or Path(relative).is_absolute() or ".." in Path(relative).parts:
-                        raise RuntimeError("Unsafe interface asset name")
-                    payload = archive.read(prefix + relative)
-                    if len(payload) != record["bytes"] or hashlib.sha256(payload).hexdigest() != record["sha256"]:
-                        raise RuntimeError("Invalid packaged interface asset: " + relative)
+            app_prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/assets/app/"
+            for asset_manifest_name, assets in (("provenance.json", ("icon.ico",) if binary else ("icon.ico", "icon.png")),
+                                     ("logo.json", ("logo.png",))):
+                manifest_assets = json.loads(archive.read(app_prefix + asset_manifest_name))
+                for relative in assets:
+                    payload = archive.read(app_prefix + relative)
+                    expected_asset = manifest_assets["files"][relative]
+                    if (len(payload) != expected_asset["bytes"] or
+                            hashlib.sha256(payload).hexdigest() != expected_asset["sha256"]):
+                        raise RuntimeError("Invalid application asset: " + relative)
+            for relative, record in pack["files"].items():
+                if (PureWindowsPath(relative).drive or "\\" in relative or Path(relative).is_absolute()
+                        or ".." in Path(relative).parts or Path(relative).suffix not in {".png", ".wav", ".json", ".md"}):
+                    raise RuntimeError("Unsafe interface asset name")
+                payload = archive.read(prefix + relative)
+                if len(payload) != record["bytes"] or hashlib.sha256(payload).hexdigest() != record["sha256"]:
+                    raise RuntimeError("Invalid packaged interface asset: " + relative)
             checks.append({"archive": filename, "entries": len(archive.infolist()), "integrity_ok": True,
                            "no_rom_saves_or_emulator_files": True,
                            "application_icon_verified": True,
-                           "game_assets_included": not public})
-            if not public:
-                checks[-1]["interface_pack_at_runtime_location"] = True
+                           "application_logo_verified": True,
+                           "game_assets_included": True,
+                           "interface_pack_at_runtime_location": True})
             if filename.endswith("-source.zip"):
                 # A fresh owned directory, with paths verified above.
                 with tempfile.TemporaryDirectory(prefix="source-test-", dir=ROOT / "build") as temp:

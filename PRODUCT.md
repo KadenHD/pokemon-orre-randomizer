@@ -10,13 +10,13 @@ this surface, without transposing a web page into a window.
 
 ## Users
 
-Players who have a blank image of Pokémon Colossium and want to create their own randomized game,
+Players who have an unmodified image of Pokémon Colosseum or XD and want to create their own randomized game,
 without extracting the game or using commands.
 
 ## Product Purpose
 
 Choose a game on the home screen, then an ISO or RVZ, a seed, rules and a destination. Produce a new image
-verified with its reproduction report. Colosseum is available. XD is planned.
+verified with its reproduction report. Colosseum and XD are available, with shared navigation and game-specific rules.
 
 ## Capabilities and Constraints
 

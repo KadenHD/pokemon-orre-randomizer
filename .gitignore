@@ -15,7 +15,6 @@
 # Reproducible local analysis, including extracted original resources
 /analysis/
 /docs/reverse-engineering/*-validation.json
-/colosseum_randomizer/assets/game/
 /.impeccable/mocks/
 *.rvz.json
 *.gcm.json
@@ -30,11 +29,12 @@ colosseum-profile.json
 *.dol
 *.rel
 /build/
+/assets/branding/logo-concepts-*/
 __pycache__/
 *.pyc
 *.lnk
 /native/target/
-/colosseum_randomizer/_native/
+/orre_randomizer/_native/
 /dist/
 /.venv/
 *.egg-info/

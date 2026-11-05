@@ -5,12 +5,12 @@ from pathlib import Path
 from string import Formatter
 import unittest
 
-from colosseum_randomizer.i18n import (CATALOGS, LANGUAGES, Message, language_preference,
+from orre_randomizer.i18n import (CATALOGS, LANGUAGES, Message, language_preference,
                                        resolve_language, translate)
-from colosseum_randomizer.locales.en import OPTION_TEXTS
-from colosseum_randomizer.locales import de, en, es, it, ja
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.service import UserError, validate_options
+from orre_randomizer.locales.en import OPTION_TEXTS
+from orre_randomizer.locales import de, en, es, it, ja
+from orre_randomizer.options import Options
+from orre_randomizer.service import UserError, validate_options
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -57,9 +57,9 @@ class TranslationTests(unittest.TestCase):
 
     def test_static_ui_and_recoverable_pipeline_messages_have_no_catalog_gaps(self):
         messages = set()
-        for filename in ("gui.py", "xd_ui.py", "service.py", "profiles.py", "preview.py",
+        for filename in ("gui.py", "ui_home.py", "xd_ui.py", "service.py", "profiles.py", "preview.py",
                          "ui_exclusions.py", "engine/trainer_policies.py"):
-            tree = ast.parse((ROOT / "colosseum_randomizer" / filename).read_text("utf-8"))
+            tree = ast.parse((ROOT / "orre_randomizer" / filename).read_text("utf-8"))
             for node in ast.walk(tree):
                 if not isinstance(node, ast.Call):
                     continue

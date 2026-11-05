@@ -1,11 +1,11 @@
 ---
 version: 1
 slug: "colosseum-randomizer-gui-py"
-primary_target: "colosseum_randomizer/gui.py"
-related_targets: ["colosseum_randomizer/ui_theme.py", "colosseum_randomizer/ui_workspace.py"]
+primary_target: "orre_randomizer/gui.py"
+related_targets: ["orre_randomizer/ui_theme.py", "orre_randomizer/ui_workspace.py"]
 ---
 
-# Surface : colosseum_randomizer/gui.py
+# Surface : orre_randomizer/gui.py
 
 Mode: Operate. The composition C takes over a compact assistant close to the original Colosseum
 menus. Approved composition: `.impeccable/mocks/c-assistant-compact.png`.

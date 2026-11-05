@@ -8,7 +8,7 @@ import unittest
 from unittest.mock import patch
 import wave
 
-from colosseum_randomizer import menu_sounds as sounds
+from orre_randomizer import menu_sounds as sounds
 
 
 class DSPMenuTests(unittest.TestCase):

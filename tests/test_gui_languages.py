@@ -12,14 +12,14 @@ try:
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings
     from PySide6.QtTest import QTest
     from PySide6.QtWidgets import QApplication, QLabel
-    from colosseum_randomizer.gui import MainWindow
+    from orre_randomizer.gui import MainWindow
 except ImportError:
     MainWindow = None
 
-from colosseum_randomizer.i18n import CATALOGS, LANGUAGES, Message, translate
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.profiles import profile_data
-from colosseum_randomizer.service import Cancelled, UserError
+from orre_randomizer.i18n import CATALOGS, LANGUAGES, Message, translate
+from orre_randomizer.options import Options
+from orre_randomizer.profiles import profile_data
+from orre_randomizer.service import Cancelled, UserError
 
 
 @unittest.skipIf(MainWindow is None, "requires optional Qt desktop dependencies")
@@ -99,7 +99,7 @@ class GuiLanguageTests(unittest.TestCase):
         preferences = QSettings(self.settings_path, QSettings.Format.IniFormat)
         preferences.setValue("interface/music", True)
         preferences.sync()
-        with patch("colosseum_randomizer.resources.bundle_root", return_value=Path(self.folder.name)/"missing-pack"):
+        with patch("orre_randomizer.resources.bundle_root", return_value=Path(self.folder.name)/"missing-pack"):
             self.window = self.make_window(["fr-FR"])
         self.assertFalse(self.window.music_toggle.isEnabled())
         self.assertFalse(self.window.music_toggle.isChecked())
@@ -220,11 +220,11 @@ class GuiLanguageTests(unittest.TestCase):
 
     def test_file_dialog_captions_and_filters_follow_the_manual_language(self):
         self.select_language("en")
-        with patch("colosseum_randomizer.gui.QFileDialog.getOpenFileName", return_value=("", "")) as dialog:
+        with patch("orre_randomizer.gui.QFileDialog.getOpenFileName", return_value=("", "")) as dialog:
             self.window.choose_source()
             self.assertEqual(dialog.call_args.args[1], "Choose the original ROM")
             self.assertEqual(dialog.call_args.args[3], "GameCube ROM (*.iso *.rvz)")
-        with patch("colosseum_randomizer.gui.QFileDialog.getSaveFileName", return_value=("", "")) as dialog:
+        with patch("orre_randomizer.gui.QFileDialog.getSaveFileName", return_value=("", "")) as dialog:
             self.window.choose_destination()
             self.assertEqual(dialog.call_args.args[1], "Choose where to save the ROM")
             self.assertEqual(dialog.call_args.args[3], "ISO image (*.iso)")
@@ -248,7 +248,7 @@ class GuiLanguageTests(unittest.TestCase):
             while not predicate() and time.monotonic() < deadline:
                 QTest.qWait(10)
             self.assertTrue(predicate())
-        with patch("colosseum_randomizer.gui.randomize", side_effect=job):
+        with patch("orre_randomizer.gui.randomize", side_effect=job):
             try:
                 self.window.start()
                 until(lambda: started.is_set() and self.window.progress_bar.value() == 23)

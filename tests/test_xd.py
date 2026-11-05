@@ -7,13 +7,13 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer import xd
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.journal import render_journal
-from colosseum_randomizer.preview import preview_xd
-from colosseum_randomizer.profiles import LEGACY_XD_ENGINE, PREVIOUS_XD_ENGINE, load_profile, parse_xd_profile, save_profile
-from colosseum_randomizer.service import UserError, check_disc_identity
-from colosseum_randomizer.xd_shops import STONE_PRICE, patch_stone_price
+from orre_randomizer import xd
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.journal import render_journal
+from orre_randomizer.preview import preview_xd
+from orre_randomizer.profiles import LEGACY_XD_ENGINE, PREVIOUS_XD_ENGINE, load_profile, parse_xd_profile, save_profile
+from orre_randomizer.service import UserError, check_disc_identity
+from orre_randomizer.xd_shops import STONE_PRICE, patch_stone_price
 
 
 def boot_for(game_id):
@@ -132,9 +132,9 @@ class XDTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             source = Path(directory) / "source.iso"
             source.write_bytes(boot)
-            with (patch("colosseum_randomizer.service.check_header", return_value=boot),
-                  patch("colosseum_randomizer.service.check_disc_identity", return_value=region),
-                  patch("colosseum_randomizer.service.build_xd_patches",
+            with (patch("orre_randomizer.service.check_header", return_value=boot),
+                  patch("orre_randomizer.service.check_disc_identity", return_value=region),
+                  patch("orre_randomizer.service.build_xd_patches",
                         return_value=([], {"gifts": [{"species": 25}]})) as build):
                 result = preview_xd(source, "seed", options)
             self.assertEqual(result["gifts"], [{"species": 25}])

@@ -1,4 +1,4 @@
-# Clip
+# Application branding
 
 Eclipse application icon. Abstract creation generated with the built-in tool `image_gen`, included
 under the MIT license of the project. This image does not come from a ROM.
@@ -6,9 +6,13 @@ under the MIT license of the project. This image does not come from a ROM.
 - `icon.png`: transparent master image, preserved without retouching.
 - `icon.ico`: nine RGBA sizes, from 16 to 256 px, with transparent margins.
 - `provenance.json`: origin, formats and hashes of both files.
+- `logo.png`: approved horizontal Pokémon Orre Randomizer logo, concept A,
+  generated from the Eclipse icon and used on the game selection screen.
+- `logo.json`: the logo's generation prompt, selection and source-image hash.
 
 The ICO file is used for Windows executable and Qt windows. It is present in local and public
 editions. The Poké Menu Selection Ball icon belongs separately to the game pack.
+The application logo is included in both editions and uses a transparent background.
 
 To regenerate the ICO file with Qt dependencies already used by the project.
 

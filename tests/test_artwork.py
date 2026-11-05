@@ -12,8 +12,8 @@ import unittest
 from unittest.mock import patch
 import zlib
 
-from colosseum_randomizer import artwork
-from colosseum_randomizer.artwork import ArtworkError, extract_artwork, load_cached_artwork
+from orre_randomizer import artwork
+from orre_randomizer.artwork import ArtworkError, extract_artwork, load_cached_artwork
 
 ROOT = Path(__file__).resolve().parents[1]
 ORIGINAL = ROOT / "Pokemon Colosseum (Europe) (En,Fr,De,Es,It).iso"

@@ -5,13 +5,13 @@ import struct
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer.engine import boss_rules
-from colosseum_randomizer.engine.evolution_rules import evolution_families
-from colosseum_randomizer.engine.gameplay_rules import MOVE_FIELDS, apply_rel_rules, damaging, expanded_layout, move_catalog
-from colosseum_randomizer.engine.inspect_tables import u16
-from colosseum_randomizer.engine.randomize_trainers import original_common
-from colosseum_randomizer.engine.species_rules import species_catalog
-from colosseum_randomizer.options import Options
+from orre_randomizer.engine import boss_rules
+from orre_randomizer.engine.evolution_rules import evolution_families
+from orre_randomizer.engine.gameplay_rules import MOVE_FIELDS, apply_rel_rules, damaging, expanded_layout, move_catalog
+from orre_randomizer.engine.inspect_tables import u16
+from orre_randomizer.engine.randomize_trainers import original_common
+from orre_randomizer.engine.species_rules import species_catalog
+from orre_randomizer.options import Options
 
 
 @dataclass(frozen=True)
@@ -190,7 +190,7 @@ class PalBossRuleTests(unittest.TestCase):
                     self.assertEqual(result[pos:pos + 0x50], self.original[pos:pos + 0x50])
 
     def test_advanced_composition_preserves_48_shadow_families_and_move_guards(self):
-        from colosseum_randomizer.service import transform_rel
+        from orre_randomizer.service import transform_rel
         choices = options(boss_stronger=True, boss_team_variety=True,
             randomize_trainer_moves=True, randomize_types=True, randomize_abilities=True,
             randomize_stats=True, balance_species=True, allow_gen1=False, allow_gen2=False,

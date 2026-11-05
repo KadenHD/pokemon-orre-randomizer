@@ -669,7 +669,7 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
         check_header(source, is_xd=is_xd)
     source_hash = file_hash(source, cancel, progress, 0, 8, "Vérification de la ROM d’origine…")
     # TemporaryDirectory owns only a fresh random directory, under the selected parent.
-    with tempfile.TemporaryDirectory(prefix=".colosseum-", dir=destination.parent) as temp:
+    with tempfile.TemporaryDirectory(prefix=".orre-", dir=destination.parent) as temp:
         work = Path(temp)
         iso = source
         if source.suffix.lower() == ".rvz":

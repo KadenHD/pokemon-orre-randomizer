@@ -1,0 +1,17 @@
+{
+  "name": "Pokémon Orre Randomizer",
+  "selection": "A",
+  "date": "2026-11-05",
+  "origin": "Original logo generated with built-in image_gen from the approved Eclipse application icon.",
+  "license": "MIT",
+  "reference": "icon.png",
+  "prompt": "Use case: logo-brand. Create ONE finished horizontal logo lockup on a truly transparent background for the desktop app named exactly \"Pokémon Orre Randomizer\". The supplied reference is the already approved application icon and the main invariant. Preserve that exact emblem's recognisable silhouette, two intertwined thick crescent lozenges, charcoal-black left form with broad pale-gold arc, muted lavender right form with tiny red diamond, diamond-shaped central opening, silver edgework. Reproduce the emblem faithfully as the symbol at the left of the lockup. Develop original lettering at its right inspired by precise GameCube-era console-menu typography and the sculpted silver edges of the reference, with restrained shallow metallic bevel, silver-ivory letter faces, dark crisp outlines, an extremely subtle lavender edge and small muted-gold accents. Lettering should be purposeful and readable, mildly oblique geometric forms, substantial and clean rather than an ornate fantasy font. Exact text hierarchy: small \"POKÉMON\" above, large dominant \"ORRE\" below it, and \"RANDOMIZER\" clearly legible on its own line below ORRE. Spell ORRE with precisely four letters O R R E, RANDOMIZER correctly with ten letters. Emblem and lettering form a single balanced compact wide silhouette, symbol about the same total height as the three-line wordmark. Strong readability as a desktop-app header. Palette inherited from the reference, suited to a charcoal black background. This is ONE logo asset, not a board or mockup. No labels, no A, no captions, no slogans, no second logo, no Nintendo logo, no creatures, no Poké Balls, no hexagonal shields, no particle effects, no neon glow, no heavy cast shadow. Full logo uncropped, generous clear transparent margins. Landscape composition about 3:1.",
+  "files": {
+    "logo.png": {
+      "bytes": 1816898,
+      "sha256": "aa9e9bc839a393bbb09b405a1735309f20d0495577425d28b18adfc14b576ef9",
+      "width": 2172,
+      "height": 724
+    }
+  }
+}

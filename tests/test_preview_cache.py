@@ -7,11 +7,11 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer import service
-from colosseum_randomizer.engine.regions import REGIONS
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.preview import preview_starters
-from colosseum_randomizer.preview_cache import PreviewCache
+from orre_randomizer import service
+from orre_randomizer.engine.regions import REGIONS
+from orre_randomizer.options import Options
+from orre_randomizer.preview import preview_starters
+from orre_randomizer.preview_cache import PreviewCache
 
 
 class PreviewCacheTests(unittest.TestCase):
@@ -40,7 +40,7 @@ class PreviewCacheTests(unittest.TestCase):
             stack.enter_context(patch.object(service, 'check_disc_identity', return_value=REGIONS[0]))
             build = stack.enter_context(patch.object(service, 'build_patches', return_value=([], self.summary)))
             conversion = stack.enter_context(patch.object(service, 'convert', side_effect=convert))
-            stack.enter_context(patch('colosseum_randomizer.preview.extract_portraits', return_value={}))
+            stack.enter_context(patch('orre_randomizer.preview.extract_portraits', return_value={}))
             yield build, conversion
 
     def preview(self, cache, seed='seed', cancel=None):

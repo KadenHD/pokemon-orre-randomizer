@@ -15,11 +15,11 @@ except ImportError:
 @unittest.skipIf(QApplication is None, "requires optional Qt desktop dependencies")
 class DiagnosticTests(unittest.TestCase):
     def test_public_window_in_all_languages_and_sizes_without_personal_settings(self):
-        from colosseum_randomizer.diagnostics import run_checks
+        from orre_randomizer.diagnostics import run_checks
         self.app = QApplication.instance() or QApplication([])
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            with patch("colosseum_randomizer.resources.bundle_root", return_value=root/"missing-pack"):
+            with patch("orre_randomizer.resources.bundle_root", return_value=root/"missing-pack"):
                 report = run_checks(root/"diagnostics.json")
             self.assertTrue(report["successful"])
             self.assertEqual(report["images"], [])

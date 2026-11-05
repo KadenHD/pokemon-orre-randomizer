@@ -8,13 +8,13 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError, parse_dol
-from colosseum_randomizer.engine.gameplay_rules import (
+from orre_randomizer.engine.analyze_game import FormatError, parse_dol
+from orre_randomizer.engine.gameplay_rules import (
     MOVE_FIELDS, OHKO, SELF_DESTRUCT, USEFUL_ITEMS, apply_dol_rules, apply_rel_rules,
     choose_moves, damaging, expanded_layout, move_catalog)
-from colosseum_randomizer.engine.species_rules import LEGENDARY_NATIONAL, species_catalog
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.service import UserError, validate_options
+from orre_randomizer.engine.species_rules import LEGENDARY_NATIONAL, species_catalog
+from orre_randomizer.options import Options
+from orre_randomizer.service import UserError, validate_options
 
 
 def synthetic_moves():
@@ -116,8 +116,8 @@ GAME = ROOT / "game"
 class PalGameplayIntegrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        from colosseum_randomizer.engine.randomize_trainers import original_common, randomize_rel
-        from colosseum_randomizer.service import transform_rel, transform_dol
+        from orre_randomizer.engine.randomize_trainers import original_common, randomize_rel
+        from orre_randomizer.service import transform_rel, transform_dol
         cls.original = original_common(GAME)[2]
         cls.dol = (GAME / "sys/main.dol").read_bytes()
         cls.seed = "qa-colosseum-v1"
@@ -186,7 +186,7 @@ class PalGameplayIntegrationTests(unittest.TestCase):
                 self.assertTrue(any(damaging(self.moves[i]) and self.moves[i]["type"] in meta["types"] for i in window))
 
     def test_restricted_species_pool_and_unique_shadow_families(self):
-        from colosseum_randomizer.engine.evolution_rules import evolution_families
+        from orre_randomizer.engine.evolution_rules import evolution_families
         families = evolution_families(self.original, self.tables)[0]
         for row in self.rows:
             index = struct.unpack_from(">H", self.result, row["offset"] + 0xA)[0]
@@ -214,7 +214,7 @@ class PalGameplayIntegrationTests(unittest.TestCase):
         self.assertTrue(any(self.result[row["offset"] + 4] == 100 for row in self.rows))
 
     def test_starting_moves_and_gift_hooks_use_final_species_and_preserve_exp(self):
-        from colosseum_randomizer.engine.randomize_story import SPECIALS, experience_at_level
+        from orre_randomizer.engine.randomize_story import SPECIALS, experience_at_level
         result, summary = apply_dol_rules(self.dol, self.base_dol, self.original, self.result,
                                           self.seed, self.options)
         self.assertGreater(len(result), len(self.dol))
@@ -233,7 +233,7 @@ class PalGameplayIntegrationTests(unittest.TestCase):
                 self.assertEqual(actual_exp, experience_at_level(self.original[species["offset"]], target["level"]))
 
     def test_gift_moves_off_does_not_inherit_randomized_global_learnsets(self):
-        from colosseum_randomizer.engine.randomize_story import SPECIALS
+        from orre_randomizer.engine.randomize_story import SPECIALS
         options = replace(self.options, randomize_gift_moves=False)
         result, summary = apply_dol_rules(self.dol, self.base_dol, self.original, self.result, self.seed, options)
         hooks = {row["key"]: row for row in summary["gift_move_hooks"]["gift_hooks"]}
@@ -255,7 +255,7 @@ class PalGameplayIntegrationTests(unittest.TestCase):
             self.assertEqual(hooks[target["key"]]["moves"], expected)
 
     def test_accessible_event_gift_levels_keep_met_level_and_only_change_two_pairs(self):
-        from colosseum_randomizer.engine.randomize_story import SPECIALS
+        from orre_randomizer.engine.randomize_story import SPECIALS
         options = replace(Options.none(), accessible_event_gifts=True,
                           event_pikachu_level=17, event_celebi_level=63)
         result, summary = apply_dol_rules(self.dol, self.dol, self.original,

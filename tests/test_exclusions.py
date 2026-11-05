@@ -8,11 +8,11 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer.i18n import LANGUAGES
-from colosseum_randomizer.locales.selection_names import SPECIES_NAMES, TYPE_NAMES
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.profiles import NEW_POLICY_FIELDS, SHINY_FIELDS, EVENT_GIFT_FIELDS, V15_FIELDS, LEGACY_GAME, parse_profile, profile_data
-from colosseum_randomizer.service import UserError, validate_options
+from orre_randomizer.i18n import LANGUAGES
+from orre_randomizer.locales.selection_names import SPECIES_NAMES, TYPE_NAMES
+from orre_randomizer.options import Options
+from orre_randomizer.profiles import NEW_POLICY_FIELDS, SHINY_FIELDS, EVENT_GIFT_FIELDS, V15_FIELDS, LEGACY_GAME, parse_profile, profile_data
+from orre_randomizer.service import UserError, validate_options
 
 
 class ExclusionValidationTests(unittest.TestCase):
@@ -52,7 +52,7 @@ class ExclusionValidationTests(unittest.TestCase):
         for language in LANGUAGES:
             self.assertEqual(set(SPECIES_NAMES[language]), set(range(1, 387)))
             self.assertEqual(set(TYPE_NAMES[language]), set(range(18)) - {9})
-        from colosseum_randomizer.locales.species_ja import SPECIES_NAMES as previous_ja
+        from orre_randomizer.locales.species_ja import SPECIES_NAMES as previous_ja
         self.assertEqual(SPECIES_NAMES["ja"], previous_ja)
 
 
@@ -64,7 +64,7 @@ class ExclusionGuiTests(unittest.TestCase):
 
     def setUp(self):
         from PySide6.QtCore import QSettings
-        from colosseum_randomizer.gui import MainWindow
+        from orre_randomizer.gui import MainWindow
         self.folder = tempfile.TemporaryDirectory()
         settings = QSettings(str(Path(self.folder.name) / "settings.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
@@ -79,7 +79,7 @@ class ExclusionGuiTests(unittest.TestCase):
         self.folder.cleanup()
 
     def dialog(self, kind, values=()):
-        from colosseum_randomizer.ui_exclusions import ExclusionDialog
+        from orre_randomizer.ui_exclusions import ExclusionDialog
         return ExclusionDialog(kind, values, self.window.language, self.window.text, self.window)
 
     def test_search_enter_does_not_accept_and_explicit_buttons_keep_their_roles(self):
@@ -127,14 +127,14 @@ class ExclusionGuiTests(unittest.TestCase):
             dialog.search.setText("133")
             dialog.set_visible(True)
             return QDialog.DialogCode.Rejected
-        with patch("colosseum_randomizer.ui_exclusions.ExclusionDialog.exec", cancel):
+        with patch("orre_randomizer.ui_exclusions.ExclusionDialog.exec", cancel):
             control.open_dialog()
         self.assertEqual(control.value(), (25,))
         def accept(dialog):
             dialog.search.setText("133")
             dialog.set_visible(True)
             return QDialog.DialogCode.Accepted
-        with patch("colosseum_randomizer.ui_exclusions.ExclusionDialog.exec", accept):
+        with patch("orre_randomizer.ui_exclusions.ExclusionDialog.exec", accept):
             control.open_dialog()
         self.assertEqual(control.value(), (25, 133))
 

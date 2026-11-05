@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "sha256": "2f612ffcdd06faa2b814e69fb9704d0acea6b0cc4f00f1ef3d596f365c695fc6",
+  "bytes": 17507778,
+  "duration_seconds": 99.25,
+  "sample_rate": 44100,
+  "channels": 2,
+  "sample_bytes": 2,
+  "source_game": "GC6P01 revision 0",
+  "source_song_id": 1130,
+  "source_member": "bgm_archive.fsys/title_song",
+  "transform": "Dolphin DSP render; highpass 20 Hz; gain 0.15; 44100 Hz PCM16 stereo; 40ms fade-in and 150ms fade-out"
+}

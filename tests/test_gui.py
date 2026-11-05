@@ -7,7 +7,7 @@ import tempfile
 try:
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings
     from PySide6.QtWidgets import QApplication
-    from colosseum_randomizer.gui import MainWindow, recommended_preset
+    from orre_randomizer.gui import MainWindow, recommended_preset
 except ImportError:
     MainWindow = None
 
@@ -44,7 +44,7 @@ class GuiTests(unittest.TestCase):
         xd = window.xd
         self.assertIs(window.game_views.currentWidget(), xd)
         self.assertTrue(window.surface.xd)
-        self.assertFalse(window.logo.isHidden())
+        self.assertEqual(window.logo.isHidden(), window.xd_logo.isNull())
         self.assertFalse(window.profile_menu.isHidden())
         self.assertEqual(xd.pages.currentIndex(), 0)
         xd.create_button.click()
@@ -101,7 +101,7 @@ class GuiTests(unittest.TestCase):
             arguments["progress"](50, "Création de la nouvelle ISO…")
             return {"output": str(arguments["destination"])}
 
-        with patch("colosseum_randomizer.gui.randomize", side_effect=fake_randomize):
+        with patch("orre_randomizer.gui.randomize", side_effect=fake_randomize):
             xd.start()
             for _ in range(100):
                 if not window.busy:
@@ -115,6 +115,31 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(xd.progress.value(), 100)
         self.assertTrue(xd.create_button.isEnabled())
         self.assertIsNone(window.result)
+
+    def test_xd_advanced_search_and_reset_use_the_selected_category(self):
+        window = self.window
+        window.resize(680, 540)
+        window.show_xd()
+        window.show()
+        xd = window.xd
+        xd.step = 1
+        xd.pages.setCurrentIndex(1)
+        xd.set_advanced_mode(True)
+        self.app.processEvents()
+        panel = xd.rule_panel
+        self.assertTrue(panel.categories.isHidden())
+        self.assertFalse(panel.selector.isHidden())
+        xd.rules["randomize_shadows"].setChecked(False)
+        xd.rules["randomize_starter"].setChecked(False)
+
+        panel.search.setText("remplacer le pokemon de depart")
+        self.assertEqual(panel.content.currentIndex(), 1)
+        panel.search.returnPressed.emit()
+        self.assertEqual(panel.content.currentIndex(), 0)
+        self.assertEqual(xd.rule_groups[panel.categories.currentRow()], "Starters et cadeaux")
+        panel.reset.click()
+        self.assertTrue(xd.rules["randomize_starter"].isChecked())
+        self.assertFalse(xd.rules["randomize_shadows"].isChecked())
 
     def test_xd_preview_keeps_the_same_result_across_language_changes(self):
         from unittest.mock import patch
@@ -143,7 +168,7 @@ class GuiTests(unittest.TestCase):
             arguments["progress"](20, "Application des réglages…")
             return summary
 
-        with patch("colosseum_randomizer.preview.preview_xd", side_effect=fake_preview) as calculate:
+        with patch("orre_randomizer.preview.preview_xd", side_effect=fake_preview) as calculate:
             xd.start_preview()
             for _ in range(100):
                 if not window.busy:
@@ -166,7 +191,8 @@ class GuiTests(unittest.TestCase):
 
         xd.seed.setText("changed")
         self.assertIsNone(xd.preview_result)
-        self.assertTrue(xd.preview_starter.isHidden())
+        self.assertEqual(xd.preview_starter.text(), "?")
+        self.assertTrue(xd.starter_details.isHidden())
         self.assertFalse(xd.preview_button.isHidden())
         self.assertIsNone(window.result)
         self.assertEqual(list(source.parent.glob("*.iso")), [source])
@@ -187,7 +213,7 @@ class GuiTests(unittest.TestCase):
             observed_cancellation.append(arguments["cancel"].wait(2))
             return {"starter": {"original": 133, "species": 25, "level": 10}}
 
-        with patch("colosseum_randomizer.preview.preview_xd", side_effect=fake_preview):
+        with patch("orre_randomizer.preview.preview_xd", side_effect=fake_preview):
             xd.start_preview()
             self.assertTrue(window.busy)
             self.assertFalse(xd.create_button.isEnabled())
@@ -200,7 +226,8 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(observed_cancellation, [True])
         self.assertFalse(window.busy)
         self.assertIsNone(xd.preview_result)
-        self.assertTrue(xd.preview_starter.isHidden())
+        self.assertEqual(xd.preview_starter.text(), "?")
+        self.assertTrue(xd.starter_details.isHidden())
         self.assertFalse(xd.preview_button.isHidden())
         self.assertTrue(xd.create_button.isEnabled())
 
@@ -252,7 +279,7 @@ class GuiTests(unittest.TestCase):
                     self.assertEqual(self.window.rule_fields[name].value(), value)
 
     def test_safe_defaults_and_rvz_configuration(self):
-        from colosseum_randomizer.options import Options
+        from orre_randomizer.options import Options
         self.assertEqual(len(self.window.rule_fields), 83)
         self.assertEqual(self.window.current_options(), recommended_preset())
         self.window.source.setText("/example/source.iso")
@@ -289,7 +316,7 @@ class GuiTests(unittest.TestCase):
         from unittest.mock import patch
         from PySide6.QtCore import QMimeData, QPointF, Qt, QUrl
         from PySide6.QtGui import QDropEvent
-        with patch("colosseum_randomizer.gui.QFileDialog.getOpenFileName", return_value=("C:/partie.rvz", "")):
+        with patch("orre_randomizer.gui.QFileDialog.getOpenFileName", return_value=("C:/partie.rvz", "")):
             self.window.choose_source()
         self.assertFalse(self.window.advanced.isHidden())
         for filename in ("partie.iso", "partie.RVZ", "autre.iso"):
@@ -340,7 +367,7 @@ class GuiTests(unittest.TestCase):
         self.window.step = 2
         self.window.refresh_navigation()
         self.window.show()
-        with patch("colosseum_randomizer.gui.QFileDialog.getOpenFileName") as dialog:
+        with patch("orre_randomizer.gui.QFileDialog.getOpenFileName") as dialog:
             self.window.start()
         dialog.assert_not_called()
         self.assertTrue(self.window.output_tool.isVisible())
@@ -352,7 +379,7 @@ class GuiTests(unittest.TestCase):
         self.assertFalse(source.with_name("output.rvz").exists())
 
     def test_none_preset_and_shadow_dependency(self):
-        from colosseum_randomizer.options import Options
+        from orre_randomizer.options import Options
         self.window.set_options(Options.none())
         self.assertEqual(self.window.current_options(), Options.none())
         self.assertFalse(self.window.rule_checks["unique_shadows"].isEnabled())
@@ -394,7 +421,7 @@ class GuiTests(unittest.TestCase):
         self.assertFalse(self.window.cancel_button.isEnabled())
 
     def test_profile_import_export_restores_rules_seed_and_preserves_paths(self):
-        from colosseum_randomizer.options import Options
+        from orre_randomizer.options import Options
         original = self.window.current_options()
         self.window.source.setText("/user/original.iso")
         self.window.destination.setText("/user/randomized.iso")
@@ -441,7 +468,7 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(self.window.rule_fields["starter_stage"].currentData(), "base")
 
     def test_interface_assets_available_before_selecting_any_rom(self):
-        from colosseum_randomizer.resources import interface_assets
+        from orre_randomizer.resources import interface_assets
         images, sounds = interface_assets()
         self.assertEqual(self.window.source.text(), "")
         self.assertEqual(self.window.artwork, images)
@@ -460,7 +487,7 @@ class GuiTests(unittest.TestCase):
 
     def test_simple_advanced_preserve_custom_options_and_seed(self):
         from dataclasses import replace
-        from colosseum_randomizer.options import Options
+        from orre_randomizer.options import Options
         custom = replace(Options.recommended(), trainer_level_multiplier=1.35, starter_stage="base")
         self.window.set_options(custom)
         self.window.seed.setText("étoile")
@@ -484,7 +511,7 @@ class GuiTests(unittest.TestCase):
             self.window.source.setText(str(source))
             self.window.seed.setText("reproducible")
             original = self.window.current_options()
-            with patch("colosseum_randomizer.gui.check_header"):
+            with patch("orre_randomizer.gui.check_header"):
                 self.window.go_step(1)
                 self.assertEqual(self.window.step, 1)
                 self.window.seed.setText(" ")

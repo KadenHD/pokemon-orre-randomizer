@@ -8,15 +8,15 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError, parse_dol
-from colosseum_randomizer.engine.gift_move_hooks import patch_gift_moves, SECTION_RAM, _arena_guard
-from colosseum_randomizer.engine.shiny_rules import (COIN_RANGE, NATIVE_RNG, OT_EXIT,
+from orre_randomizer.engine.analyze_game import FormatError, parse_dol
+from orre_randomizer.engine.gift_move_hooks import patch_gift_moves, SECTION_RAM, _arena_guard
+from orre_randomizer.engine.shiny_rules import (COIN_RANGE, NATIVE_RNG, OT_EXIT,
     PID_GENERATOR, PID_CALLS, PLAYER_POINTER, TEXT_TO_RAM, chance_threshold,
     TRAINER_INDEX_HOOK, TRAINER_INDEX_WORD, TRAINER_SLOT_COUNT, SHADOW_COUNT,
     seeded_coin, seeded_status, _index_trampoline, _seeded_trainer_wrapper,
     _pid_wrapper, _ot_wrapper, apply_shiny_rules)
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.service import UserError, validate_options
+from orre_randomizer.options import Options
+from orre_randomizer.service import UserError, validate_options
 
 MASK=0xFFFFFFFF
 

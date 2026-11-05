@@ -1,6 +1,6 @@
 # TM and compatibility — PAL GC6P01, 31 October 2026
 
-This survey and the module `colosseum_randomizer/engine/tm_rules.py` concerning the original DOL
+This survey and the module `orre_randomizer/engine/tm_rules.py` concerning the original DOL
 SHA-256 `a788176a45eb88dbd227246a7205ab9856bc79f3cca7e4a0f5376cf466664df5` and `common_rel` original
 SHA-256 `ee2677af555dc59626f978e743235831a76cb23bae93f3fdd1060d808f749d0b`. The originals are read,
 never written. The observations below are static.

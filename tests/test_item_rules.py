@@ -4,14 +4,14 @@ from pathlib import Path
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer.engine import item_rules
-from colosseum_randomizer.engine.analyze_game import parse_fsys
-from colosseum_randomizer.engine.gameplay_rules import apply_rel_rules
-from colosseum_randomizer.engine.inspect_tables import u16
-from colosseum_randomizer.engine.randomize_trainers import layout, original_common
-from colosseum_randomizer.engine.rebuild_iso import decoded_member
-from colosseum_randomizer.engine.shop_stones import ARCHIVE_NAMES, STONE_IDS, patch_rel, read_shops
-from colosseum_randomizer.options import Options
+from orre_randomizer.engine import item_rules
+from orre_randomizer.engine.analyze_game import parse_fsys
+from orre_randomizer.engine.gameplay_rules import apply_rel_rules
+from orre_randomizer.engine.inspect_tables import u16
+from orre_randomizer.engine.randomize_trainers import layout, original_common
+from orre_randomizer.engine.rebuild_iso import decoded_member
+from orre_randomizer.engine.shop_stones import ARCHIVE_NAMES, STONE_IDS, patch_rel, read_shops
+from orre_randomizer.options import Options
 
 
 def synthetic_catalog():
@@ -169,7 +169,7 @@ class PalItemRuleTests(unittest.TestCase):
                     self.assertEqual(u16(result, pos), u16(self.original, pos))
 
     def test_composed_rel_preserves_prior_gameplay_changes_and_disabled_identity(self):
-        from colosseum_randomizer.service import transform_rel
+        from orre_randomizer.service import transform_rel
         settings = replace(Options.recommended(), randomize_types=True)
         base = transform_rel(self.original, self.seed, settings)[0]
         current = apply_rel_rules(self.original, base, self.seed, settings)[0]

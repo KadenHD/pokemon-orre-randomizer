@@ -8,7 +8,7 @@ describes what changes. The Advanced mode displays the 60 parameters in 14 categ
 profiles remain accessible in a drawer. The choices are kept when changing mode or language. The
 navigation and creation actions remain visible at 680 × 540.
 
-The `colosseum_randomizer/assets/game/` pack contains the background, logo, portraits, a Poké Ball
+The `orre_randomizer/assets/game/` pack contains the background, logo, portraits, a Poké Ball
 cursor, three menu effects and the title theme. It is embedded in the executable and in the sources
 of this local construction. The start of the interface reads no ROM and does not depend on a user
 cache.
@@ -40,4 +40,4 @@ Dolphin report. They do not constitute a new complete game played with this vers
 
 Local evidence in `build/v07-qa/`: interface captures, native audio tests, compatibility of old
 profiles, creation report and conservation audit. The sources and transformations of embedded
-resources are recorded in the manifest `colosseum_randomizer/assets/game/provenance.json`.
+resources are recorded in the manifest `orre_randomizer/assets/game/provenance.json`.

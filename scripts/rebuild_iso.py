@@ -6,6 +6,6 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 if __name__ == "__main__":
     import runpy
-    runpy.run_module("colosseum_randomizer.engine.rebuild_iso", run_name="__main__")
+    runpy.run_module("orre_randomizer.engine.rebuild_iso", run_name="__main__")
 else:
-    from colosseum_randomizer.engine.rebuild_iso import *  # noqa: F401,F403
+    from orre_randomizer.engine.rebuild_iso import *  # noqa: F401,F403

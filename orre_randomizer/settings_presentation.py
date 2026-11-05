@@ -22,10 +22,10 @@ def search_text(value):
     return ' '.join(re.sub(r'[^\w]+', ' ', value.replace('_', ' '), flags=re.UNICODE).split())
 
 
-@lru_cache(maxsize=6)
-def _search_rows(language):
+@lru_cache(maxsize=12)
+def _search_rows(language, options_type):
     rows = []
-    for ordinal, item in enumerate(fields(Options)):
+    for ordinal, item in enumerate(fields(options_type)):
         meta = item.metadata
         translated = {key: translate(meta[key], language) for key in ('label', 'group', 'description')}
         all_text = []
@@ -37,11 +37,11 @@ def _search_rows(language):
     return rows
 
 
-def search_settings(query, language='fr'):
+def search_settings(query, language='fr', *, options_type=Options):
     tokens = search_text(query).split()
     if not tokens:
         return []
-    matches = [row for row in _search_rows(language) if all(token in row['indexed'] for token in tokens)]
+    matches = [row for row in _search_rows(language, options_type) if all(token in row['indexed'] for token in tokens)]
     matches.sort(key=lambda row: (not all(token in row['title'] for token in tokens), row['ordinal']))
     return [{key: row[key] for key in ('name', 'label', 'group', 'description')} for row in matches]
 

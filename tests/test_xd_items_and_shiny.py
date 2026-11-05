@@ -5,12 +5,12 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer.engine.analyze_game import u32
-from colosseum_randomizer.engine.shop_stones import pack_shop_lists, read_shops
-from colosseum_randomizer.xd_item_rules import (
+from orre_randomizer.engine.analyze_game import u32
+from orre_randomizer.engine.shop_stones import pack_shop_lists, read_shops
+from orre_randomizer.xd_item_rules import (
     CASH_SHOPS, ITEM_COUNT, ITEM_SIZE, TREASURE_SIZE, apply_field_items, apply_shop_items,
 )
-from colosseum_randomizer.xd_shiny_rules import GIFT_KEYS, encounter_shiny
+from orre_randomizer.xd_shiny_rules import GIFT_KEYS, encounter_shiny
 
 
 class XDItemRulesTests(unittest.TestCase):
@@ -32,7 +32,7 @@ class XDItemRulesTests(unittest.TestCase):
         for index, item in enumerate(original):
             pos = self.treasure + index * TREASURE_SIZE
             struct.pack_into(">BB5HI3I", self.rel, pos, 0x24, 3, 4, 5, 6, 7, 0, item, 9, 10, 11)
-        with patch("colosseum_randomizer.xd_item_rules._table_offsets", return_value=(self.treasure, self.items)):
+        with patch("orre_randomizer.xd_item_rules._table_offsets", return_value=(self.treasure, self.items)):
             result, report = apply_field_items(self.rel, self.rel, "seed", self.options)
             self.options.keep_capture_items = False
             unrestricted, _ = apply_field_items(self.rel, self.rel, "seed", self.options)
@@ -52,8 +52,8 @@ class XDItemRulesTests(unittest.TestCase):
         struct.pack_into(f">{len(array)}H", shop, 0x300, *array)
         for index, start in enumerate(starts):
             struct.pack_into(">BBH", shop, 0x1C8 + 4 * index, 0 if index in CASH_SHOPS else 1, 0, start)
-        with (patch("colosseum_randomizer.xd_item_rules._table_offsets", return_value=(self.treasure, self.items)),
-              patch("colosseum_randomizer.xd_item_rules.shop_layout", return_value=layout)):
+        with (patch("orre_randomizer.xd_item_rules._table_offsets", return_value=(self.treasure, self.items)),
+              patch("orre_randomizer.xd_item_rules.shop_layout", return_value=layout)):
             result, report = apply_shop_items(self.rel, shop, "GXXE01", "seed", self.options)
         self.assertEqual(report["changed_records"], len(CASH_SHOPS))
         self.assertEqual(result[:0x300], shop[:0x300])

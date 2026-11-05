@@ -14,16 +14,16 @@ from unittest.mock import patch
 try:
     from PySide6.QtCore import QBuffer, QCoreApplication, QEvent, QIODevice, QSettings, Qt
     from PySide6.QtWidgets import QApplication
-    from colosseum_randomizer.gui import MainWindow
-    from colosseum_randomizer.ui_pokemon_names import RICH_NAME_ROLE
+    from orre_randomizer.gui import MainWindow
+    from orre_randomizer.ui_pokemon_names import RICH_NAME_ROLE
 except ImportError:
     MainWindow = None
 
-from colosseum_randomizer import __version__
-from colosseum_randomizer.engine.regions import REGIONS
-from colosseum_randomizer.service import Cancelled, ENGINE_VERSION, UserError
-from colosseum_randomizer.preview import baseline_rows
-from colosseum_randomizer.i18n import translate
+from orre_randomizer import __version__
+from orre_randomizer.engine.regions import REGIONS
+from orre_randomizer.service import Cancelled, ENGINE_VERSION, UserError
+from orre_randomizer.preview import baseline_rows
+from orre_randomizer.i18n import translate
 
 RESULT = {"starters": [
     {"key": "umbreon", "national_dex": 252, "name_fr": "Arcko", "name_en": "Treecko",
@@ -65,7 +65,7 @@ class GuiPreviewTests(unittest.TestCase):
 
     def test_completion_preserves_configuration_and_retranslates_result(self):
         options = self.window.current_options()
-        with patch("colosseum_randomizer.gui.preview_starters", return_value=deepcopy(RESULT)) as preview:
+        with patch("orre_randomizer.gui.preview_starters", return_value=deepcopy(RESULT)) as preview:
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
         self.assertEqual(preview.call_args.kwargs["seed"], "été-🌟")
@@ -78,7 +78,7 @@ class GuiPreviewTests(unittest.TestCase):
         self.assertEqual(self.window.preview_status.text(), "✓ Aperçu à jour")
         self.assertTrue(self.window.preview_progress.isHidden())
         # Direct invocation must also avoid the expensive calculation for the same inputs.
-        with patch("colosseum_randomizer.gui.preview_starters") as duplicate:
+        with patch("orre_randomizer.gui.preview_starters") as duplicate:
             self.window.start_preview()
             duplicate.assert_not_called()
         for language, name in (("en", "Treecko"), ("de", "Geckarbor"), ("es", "Treecko"),
@@ -99,7 +99,7 @@ class GuiPreviewTests(unittest.TestCase):
         result["shadows"][0]["national_dex"] = 2
         result["gifts"][0]["national_dex"] = 3
         result["family_duplicates"] = [["umbreon", "shadow:1", "plusle"]]
-        with patch("colosseum_randomizer.gui.preview_starters", return_value=result):
+        with patch("orre_randomizer.gui.preview_starters", return_value=result):
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
         tabs = self.window.preview_tabs
@@ -126,7 +126,7 @@ class GuiPreviewTests(unittest.TestCase):
             game_id=region.game_id, revision=region.revision, source_sha256=region.iso_sha256,
             source_iso_sha256=region.iso_sha256, seed="restored", options=asdict(options),
             source="ignored", output="ignored")), encoding="utf-8")
-        with patch("colosseum_randomizer.gui.report_rom_matches",
+        with patch("orre_randomizer.gui.report_rom_matches",
                    side_effect=lambda _report, source, *_: source == self.source):
             w.import_creation_report(report)
             self.assertEqual((w.source.text(), w.destination.text()), (str(self.source), str(destination)))
@@ -148,12 +148,12 @@ class GuiPreviewTests(unittest.TestCase):
             arguments["on_prepared"](plan)
             return deepcopy(RESULT)
 
-        with patch("colosseum_randomizer.gui.preview_starters", side_effect=completed):
+        with patch("orre_randomizer.gui.preview_starters", side_effect=completed):
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
         self.assertIs(self.window.preview_plan, plan)
         self.window.destination.setText(str(self.source.with_name("output.iso")))
-        with patch("colosseum_randomizer.gui.randomize", return_value={"output": "output.iso"}) as create:
+        with patch("orre_randomizer.gui.randomize", return_value={"output": "output.iso"}) as create:
             self.window.start()
             self.pump_until(lambda: self.window.thread is None)
             self.assertIs(create.call_args.kwargs["prepared_patches"], plan)
@@ -204,7 +204,7 @@ class GuiPreviewTests(unittest.TestCase):
         for row in result["starters"]:
             row["shiny"] = True
         self.window.set_options(replace(self.window.current_options(), custom_shinies=True, shiny_chance_percent=100))
-        with patch("colosseum_randomizer.gui.preview_starters", return_value=result):
+        with patch("orre_randomizer.gui.preview_starters", return_value=result):
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
         self.assertIn("★", self.window.preview_names["umbreon"].text())
@@ -261,7 +261,7 @@ class GuiPreviewTests(unittest.TestCase):
         result = deepcopy(RESULT)
         result["shiny_policy"] = "in-game"
         self.window.set_options(replace(self.window.current_options(), custom_shinies=True, seeded_shinies=False, shiny_chance_percent=1))
-        with patch("colosseum_randomizer.gui.preview_starters", return_value=result):
+        with patch("orre_randomizer.gui.preview_starters", return_value=result):
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
         self.assertIn("tiré en jeu", self.window.preview_hint.text())
@@ -292,7 +292,7 @@ class GuiPreviewTests(unittest.TestCase):
         result["gifts"] = [dict(result["starters"][0], original=result["starters"][1], event=True)]
         self.window.set_options(replace(self.window.current_options(), custom_shinies=True,
                                         seeded_shinies=True, shiny_chance_percent=1))
-        with patch("colosseum_randomizer.gui.preview_starters", return_value=result) as preview:
+        with patch("orre_randomizer.gui.preview_starters", return_value=result) as preview:
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
             for language in ("fr", "en", "de", "es", "it", "ja"):
@@ -337,7 +337,7 @@ class GuiPreviewTests(unittest.TestCase):
         self.assertEqual(self.window.workspace_pages.currentIndex(), 0)
         self.window.workspace_tabs.setCurrentIndex(1)
         self.window.preview_tabs.setCurrentIndex(1)
-        with patch("colosseum_randomizer.gui.preview_starters", return_value=result) as preview:
+        with patch("orre_randomizer.gui.preview_starters", return_value=result) as preview:
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
             tree = self.window.encounters_tree
@@ -378,7 +378,7 @@ class GuiPreviewTests(unittest.TestCase):
             release.wait(3)
             return deepcopy(RESULT)
 
-        with patch("colosseum_randomizer.gui.preview_starters", side_effect=delayed) as preview:
+        with patch("orre_randomizer.gui.preview_starters", side_effect=delayed) as preview:
             try:
                 self.window.start_preview()
                 self.pump_until(entered.is_set)
@@ -417,7 +417,7 @@ class GuiPreviewTests(unittest.TestCase):
             release.wait(3)
             return deepcopy(RESULT)
 
-        with patch("colosseum_randomizer.gui.preview_starters", side_effect=delayed):
+        with patch("orre_randomizer.gui.preview_starters", side_effect=delayed):
             try:
                 self.window.start_preview()
                 self.pump_until(entered.is_set)
@@ -437,7 +437,7 @@ class GuiPreviewTests(unittest.TestCase):
         self.assertTrue(self.window.preview_button.isEnabled())
 
     def test_failure_clears_loading_and_offers_retry(self):
-        with patch("colosseum_randomizer.gui.preview_starters", side_effect=UserError("Choisissez la ROM d’origine.")):
+        with patch("orre_randomizer.gui.preview_starters", side_effect=UserError("Choisissez la ROM d’origine.")):
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
         self.assertIsNone(self.window.preview_result)
@@ -458,7 +458,7 @@ class GuiPreviewTests(unittest.TestCase):
             release.wait(3)
             return deepcopy(RESULT)  # Deliberately ignore cancellation to test UI rejection.
 
-        with patch("colosseum_randomizer.gui.preview_starters", side_effect=delayed):
+        with patch("orre_randomizer.gui.preview_starters", side_effect=delayed):
             try:
                 self.window.start_preview()
                 self.pump_until(entered.is_set)
@@ -484,7 +484,7 @@ class GuiPreviewTests(unittest.TestCase):
             raise Cancelled("cancelled")
 
         self.window.show()
-        with patch("colosseum_randomizer.gui.preview_starters", side_effect=waiting):
+        with patch("orre_randomizer.gui.preview_starters", side_effect=waiting):
             self.window.start_preview()
             self.pump_until(entered.is_set)
             self.window.close()

@@ -8,11 +8,11 @@ import threading
 import unittest
 from unittest.mock import call, patch
 
-from colosseum_randomizer import artwork, service
-from colosseum_randomizer.preview import preview_starters
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.locales.species_ja import SPECIES_NAMES
-from colosseum_randomizer.engine.regions import REGIONS
+from orre_randomizer import artwork, service
+from orre_randomizer.preview import preview_starters
+from orre_randomizer.options import Options
+from orre_randomizer.locales.species_ja import SPECIES_NAMES
+from orre_randomizer.engine.regions import REGIONS
 from tests.test_artwork import fsys, portrait, texture
 
 
@@ -38,7 +38,7 @@ class StarterPreviewTests(unittest.TestCase):
         stack.enter_context(patch.object(service, "ISO_SHA256", hashlib.sha256(self.source.read_bytes()).hexdigest()))
         stack.enter_context(patch.object(service, "check_disc_identity", return_value=REGIONS[0]))
         build = stack.enter_context(patch.object(service, "build_patches", return_value=([], self.summary)))
-        stack.enter_context(patch("colosseum_randomizer.preview.extract_portraits", return_value={277: b"PNG277", 196: b"PNG196"}))
+        stack.enter_context(patch("orre_randomizer.preview.extract_portraits", return_value={277: b"PNG277", 196: b"PNG196"}))
         return build
 
     def test_exact_production_result_and_internal_portrait_ids_without_output(self):
@@ -126,7 +126,7 @@ class StarterPreviewTests(unittest.TestCase):
     def test_missing_portrait_keeps_exact_species_names(self):
         with ExitStack() as stack:
             self.pipeline(stack)
-            stack.enter_context(patch("colosseum_randomizer.preview.extract_portraits", side_effect=artwork.ArtworkError("unavailable")))
+            stack.enter_context(patch("orre_randomizer.preview.extract_portraits", side_effect=artwork.ArtworkError("unavailable")))
             result = preview_starters(self.source, "seed", Options())
         self.assertEqual(result["starters"][0]["name_en"], "Treecko")
         self.assertEqual(result["starters"][0]["portrait_png"], b"")
@@ -142,7 +142,7 @@ class StarterPreviewTests(unittest.TestCase):
         self.summary["special_gameplay"]["specials"].append(gift)
         with ExitStack() as stack:
             self.pipeline(stack)
-            extract = stack.enter_context(patch("colosseum_randomizer.preview.extract_portraits", return_value={277: b"A", 196: b"B"}))
+            extract = stack.enter_context(patch("orre_randomizer.preview.extract_portraits", return_value={277: b"A", 196: b"B"}))
             result = preview_starters(self.source, "encounters", replace(Options(), accessible_event_gifts=False,
                 custom_shinies=True, seeded_shinies=False, shiny_chance_percent=100))
         self.assertEqual([row["shadow_id"] for row in result["shadows"]], [21])
@@ -236,7 +236,7 @@ class StarterPreviewTests(unittest.TestCase):
                                         (True, 1, "in-game"), (True, 100, "always")):
             with self.subTest(enabled=enabled, chance=chance), ExitStack() as stack:
                 self.pipeline(stack)
-                extract = stack.enter_context(patch("colosseum_randomizer.preview.extract_portraits", return_value={}))
+                extract = stack.enter_context(patch("orre_randomizer.preview.extract_portraits", return_value={}))
                 options = replace(Options.recommended(), custom_shinies=enabled, seeded_shinies=False, shiny_chance_percent=chance)
                 result = preview_starters(self.source, "fixed", options)
                 self.assertEqual(result["shiny_policy"], policy)
@@ -256,7 +256,7 @@ class StarterPreviewTests(unittest.TestCase):
 
         with ExitStack() as stack:
             self.pipeline(stack)
-            extract = stack.enter_context(patch("colosseum_randomizer.preview.extract_portraits", side_effect=faces))
+            extract = stack.enter_context(patch("orre_randomizer.preview.extract_portraits", side_effect=faces))
             result = preview_starters(self.source, "fixed", replace(Options(), custom_shinies=True,
                                                                     seeded_shinies=True, shiny_chance_percent=1))
         self.assertEqual(result["shiny_policy"], "seeded")
@@ -286,7 +286,7 @@ class StarterPreviewTests(unittest.TestCase):
         self.summary["final_shadow_picks"].append(dict(sample, species_index=1, shadow_id=98))
         with ExitStack() as stack:
             self.pipeline(stack)
-            extract = stack.enter_context(patch("colosseum_randomizer.preview.extract_portraits", return_value={}))
+            extract = stack.enter_context(patch("orre_randomizer.preview.extract_portraits", return_value={}))
             result = preview_starters(self.source, "fixed", Options())
         batches = [item.args[1] for item in extract.call_args_list]
         self.assertEqual([len(batch) for batch in batches], [64, 35])

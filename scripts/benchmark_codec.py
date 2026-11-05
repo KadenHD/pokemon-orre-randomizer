@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from colosseum_randomizer import native_codec
-from colosseum_randomizer.engine.rebuild_iso import repack_fsys
-from colosseum_randomizer.engine.shop_stones import ARCHIVE_NAMES
+from orre_randomizer import native_codec
+from orre_randomizer.engine.rebuild_iso import repack_fsys
+from orre_randomizer.engine.shop_stones import ARCHIVE_NAMES
 
 
 def main():

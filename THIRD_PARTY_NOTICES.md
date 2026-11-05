@@ -3,14 +3,17 @@
 The project's own source code is licensed under MIT (see LICENSE). That license
 does not cover Nintendo game software, user-supplied images, or third-party libraries.
 No ROM, saved game or Dolphin executable is included. The local interface pack
-contains exported game images and audio, as described below.
-The separate `dist/public/` edition excludes that pack. Its panels and controls
-are drawn by application code and work without game media.
+contains exported game images and audio, as described below. The public and local
+editions include that verified pack. Its provenance and rights are separate
+from the application's MIT license.
 
-The **Eclipse** application icon in `colosseum_randomizer/assets/app/` is original
+The **Eclipse** application icon in `orre_randomizer/assets/app/` is original
 abstract artwork generated with the built-in image_gen tool and selected for this
 project. It is included under the project's MIT license. Its master PNG, ICO,
 prompt and file hashes accompany the sources; it is not extracted from a game.
+The approved Orre wordmark uses the same original icon and is included under the
+same license. Its transparent PNG, generation prompt and hash are recorded in
+`orre_randomizer/assets/app/logo.json`.
 
 ## Qt for Python / Qt / Shiboken
 
@@ -34,7 +37,8 @@ The `third-party-sources` directory contains the corresponding unmodified QtBase
 QtSvg and PySide/Shiboken source archives for 6.11.2. Their upstream URLs and
 SHA-256 hashes are recorded in `licenses/qt/upstream-manifest.json`. Keep these
 sources and all upstream notices with a published binary distribution.
-The local build is not an Internet publication.
+Public releases include this verified interface pack; its contents remain separate
+from the MIT license of the application code.
 Official licensing reference: https://www.qt.io/development/open-source-lgpl-obligations
 
 ## Windows installer
@@ -67,7 +71,7 @@ items, in the same six languages. The source tables are:
 - https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/ability_names.csv
 - https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/item_names.csv
 
-These selections are stored in `colosseum_randomizer/locales/detail_names.py`.
+These selections are stored in `orre_randomizer/locales/detail_names.py`.
 Their source SHA-256 hashes, language IDs, item-ID mapping and generated-file hash
 are recorded in `licenses/pokeapi-details.json`. They use the same BSD 3-Clause
 terms and copyright notice reproduced in `licenses/pokeapi.txt`; retain that file
@@ -96,9 +100,9 @@ documentation. Their code and game data are not copied into release archives.
 Pokémon, Nintendo and their associated names belong to their respective owners.
 This project is independent and is not an official Nintendo product.
 
-## Local game interface pack
+## Game interface pack
 
-`colosseum_randomizer/assets/game/` contains images and audio exported from the user-supplied Colosseum
-ROM for this local build. These game resources are not covered by the MIT license
+`orre_randomizer/assets/game/` contains images and audio exported from the user-supplied Colosseum
+ROM and the English XD logo exported from the supplied XD disc. These game resources are not covered by the MIT license
 of the application code. Their hashes, source identifiers and transformations are
-recorded in `colosseum_randomizer/assets/game/provenance.json`. No ROM, BIOS or saved game is included.
+recorded in `orre_randomizer/assets/game/provenance.json`. No ROM, BIOS or saved game is included.

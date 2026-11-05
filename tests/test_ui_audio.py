@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import Mock, patch
 try:
     from PySide6.QtWidgets import QApplication, QWidget
-    from colosseum_randomizer.ui_audio import MenuAudio
+    from orre_randomizer.ui_audio import MenuAudio
 except ImportError:
     MenuAudio = None
 
@@ -22,7 +22,7 @@ class MenuAudioTests(unittest.TestCase):
         backend = Mock(SND_FILENAME=1, SND_ASYNC=2, SND_NODEFAULT=4)
         audio = MenuAudio(window, backend=backend)
         audio.set_paths({"move": Path("cached-move.wav")})
-        with patch("colosseum_randomizer.ui_audio.time.monotonic", side_effect=[10, 10.01, 10.2]):
+        with patch("orre_randomizer.ui_audio.time.monotonic", side_effect=[10, 10.01, 10.2]):
             audio.play("move")
             audio.play("move")
             self.assertEqual(backend.PlaySound.call_count, 1)

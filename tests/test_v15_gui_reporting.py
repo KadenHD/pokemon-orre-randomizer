@@ -9,16 +9,16 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer import service
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.pokemon_details import encounter_details
+from orre_randomizer import service
+from orre_randomizer.options import Options
+from orre_randomizer.pokemon_details import encounter_details
 from tests.test_pokemon_details import catalog_fixture
 
 try:
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings, Qt
     from PySide6.QtTest import QTest
     from PySide6.QtWidgets import QApplication, QLabel, QProgressBar
-    from colosseum_randomizer.gui import MainWindow
+    from orre_randomizer.gui import MainWindow
 except ImportError:
     MainWindow = None
 
@@ -71,7 +71,7 @@ class V15GuiTests(unittest.TestCase):
         self.directory.cleanup()
 
     def load_preview(self):
-        with patch('colosseum_randomizer.gui.preview_starters', return_value=final_preview()):
+        with patch('orre_randomizer.gui.preview_starters', return_value=final_preview()):
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
 
@@ -100,7 +100,7 @@ class V15GuiTests(unittest.TestCase):
         self.app.processEvents()
         self.assertEqual(self.window.current_options().starter_umbreon_species, -1,
                          'unmatched edit must be rejected instead of silently using the old choice')
-        with patch('colosseum_randomizer.gui.preview_starters') as worker:
+        with patch('orre_randomizer.gui.preview_starters') as worker:
             self.window.start_preview()
             worker.assert_not_called()
         self.assertIsNone(self.window.preview_thread)
@@ -207,7 +207,7 @@ class JournalPublicationTests(unittest.TestCase):
         self.assertEqual(report['journal'], str(self.html_path))
         self.assertIn('lang="ja"', self.html_path.read_text('utf8'))
         self.assertNotIn(str(self.source), self.html_path.read_text('utf8'))
-        self.assertFalse(list(self.root.glob('.colosseum-*')))
+        self.assertFalse(list(self.root.glob('.orre-*')))
 
     def test_preexisting_journal_is_preserved_before_any_work(self):
         self.html_path.write_bytes(b'preexisting journal')
@@ -229,7 +229,7 @@ class JournalPublicationTests(unittest.TestCase):
         self.assertEqual(self.html_path.read_bytes(), b'journal created by another process')
         self.assertFalse(self.json_path.exists())
         self.assertFalse(self.output.exists())
-        self.assertFalse(list(self.root.glob('.colosseum-*')))
+        self.assertFalse(list(self.root.glob('.orre-*')))
 
     def test_racing_rom_is_preserved_and_owned_json_html_rolled_back(self):
         original_publish = service.publish_new
@@ -243,7 +243,7 @@ class JournalPublicationTests(unittest.TestCase):
         self.assertFalse(self.json_path.exists())
         self.assertFalse(self.html_path.exists())
         self.assertEqual(self.source.read_bytes(), bytes(range(64)))
-        self.assertFalse(list(self.root.glob('.colosseum-*')))
+        self.assertFalse(list(self.root.glob('.orre-*')))
 
 
 if __name__ == '__main__':

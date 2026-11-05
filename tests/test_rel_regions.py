@@ -8,17 +8,17 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError, parse_fsys, u32
-from colosseum_randomizer.engine.boss_rules import boss_inventory
-from colosseum_randomizer.engine.gameplay_rules import expanded_layout
-from colosseum_randomizer.engine.inspect_tables import localized_names, u16
-from colosseum_randomizer.engine.item_rules import apply_field_items, patch_item_archive
-from colosseum_randomizer.engine.item_text import apply_item_name_spacing
-from colosseum_randomizer.engine.randomize_trainers import layout, randomize_rel
-from colosseum_randomizer.engine.rebuild_iso import decoded_member
-from colosseum_randomizer.engine.rel_regions import COMMON_COUNTS, region_for_rel, shop_archive_names
-from colosseum_randomizer.engine.tm_rules import apply_tm_rules
-from colosseum_randomizer.options import Options
+from orre_randomizer.engine.analyze_game import FormatError, parse_fsys, u32
+from orre_randomizer.engine.boss_rules import boss_inventory
+from orre_randomizer.engine.gameplay_rules import expanded_layout
+from orre_randomizer.engine.inspect_tables import localized_names, u16
+from orre_randomizer.engine.item_rules import apply_field_items, patch_item_archive
+from orre_randomizer.engine.item_text import apply_item_name_spacing
+from orre_randomizer.engine.randomize_trainers import layout, randomize_rel
+from orre_randomizer.engine.rebuild_iso import decoded_member
+from orre_randomizer.engine.rel_regions import COMMON_COUNTS, region_for_rel, shop_archive_names
+from orre_randomizer.engine.tm_rules import apply_tm_rules
+from orre_randomizer.options import Options
 
 
 def text_bank(language: str, text: str) -> bytes:

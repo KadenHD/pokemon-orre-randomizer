@@ -104,13 +104,13 @@ pub fn decompress(data: &[u8], capacity: usize) -> Option<Vec<u8>> {
 }
 
 #[unsafe(no_mangle)]
-pub extern "C" fn colosseum_codec_version() -> u32 { 1 }
+pub extern "C" fn orre_codec_version() -> u32 { 1 }
 
 /// # Safety
 /// Input must address `len` readable bytes, output `capacity` writable bytes.
 /// Buffers must not overlap. They remain owned by the caller.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn colosseum_compress(input: *const u8, len: usize,
+pub unsafe extern "C" fn orre_compress(input: *const u8, len: usize,
                                           output: *mut u8, capacity: usize) -> isize {
     if input.is_null() || output.is_null() || len > u32::MAX as usize { return -1; }
     let data = unsafe { std::slice::from_raw_parts(input, len) };
@@ -121,12 +121,12 @@ pub unsafe extern "C" fn colosseum_compress(input: *const u8, len: usize,
 }
 
 /// # Safety
-/// Same buffers as `colosseum_compress`; `cancelled`, when provided, must remain
+/// Same buffers as `orre_compress`; `cancelled`, when provided, must remain
 /// callable until return. It runs synchronously on this caller's thread. A
 /// nonzero callback result cancels without writing any bytes to `output`.
 /// Returns -2 for cancellation and -1 for invalid arguments/capacity.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn colosseum_compress_cancellable(
+pub unsafe extern "C" fn orre_compress_cancellable(
     input: *const u8, len: usize, output: *mut u8, capacity: usize,
     cancelled: Option<extern "C" fn() -> i32>,
 ) -> isize {
@@ -140,9 +140,9 @@ pub unsafe extern "C" fn colosseum_compress_cancellable(
 }
 
 /// # Safety
-/// Same buffer ownership and validity requirements as `colosseum_compress`.
+/// Same buffer ownership and validity requirements as `orre_compress`.
 #[unsafe(no_mangle)]
-pub unsafe extern "C" fn colosseum_decompress(input: *const u8, len: usize,
+pub unsafe extern "C" fn orre_decompress(input: *const u8, len: usize,
                                             output: *mut u8, capacity: usize) -> isize {
     if input.is_null() || output.is_null() { return -1; }
     let data = unsafe { std::slice::from_raw_parts(input, len) };
@@ -180,8 +180,8 @@ mod tests {
     fn ffi_rejects_invalid_pointers_and_small_buffers() {
         let mut buffer = [0u8; 8];
         unsafe {
-            assert_eq!(colosseum_compress(std::ptr::null(), 0, buffer.as_mut_ptr(), 8), -1);
-            assert_eq!(colosseum_compress(b"abc".as_ptr(), 3, buffer.as_mut_ptr(), 8), -1);
+            assert_eq!(orre_compress(std::ptr::null(), 0, buffer.as_mut_ptr(), 8), -1);
+            assert_eq!(orre_compress(b"abc".as_ptr(), 3, buffer.as_mut_ptr(), 8), -1);
         }
     }
     #[test]
@@ -194,7 +194,7 @@ mod tests {
         extern "C" fn stop() -> i32 { 1 }
         let mut buffer = vec![0x55u8; data.len() + data.len() / 8 + 16];
         unsafe {
-            assert_eq!(colosseum_compress_cancellable(data.as_ptr(), data.len(),
+            assert_eq!(orre_compress_cancellable(data.as_ptr(), data.len(),
                 buffer.as_mut_ptr(), buffer.len(), Some(stop)), -2);
         }
         assert!(buffer.iter().all(|&value| value == 0x55));

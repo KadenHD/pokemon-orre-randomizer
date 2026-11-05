@@ -7,7 +7,7 @@ import unittest
 from unittest.mock import Mock
 try:
     from PySide6.QtWidgets import QApplication, QWidget
-    from colosseum_randomizer.ui_music import MenuMusic
+    from orre_randomizer.ui_music import MenuMusic
 except ImportError:
     MenuMusic = None
 

@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pokemon-orre-randomizer"
-version = "0.21.0rc1"
-description = "Offline randomizer for the Pokémon games set in Orre, starting with Pokémon Colosseum"
+version = "0.21.0rc2"
+description = "Offline randomizer for Pokémon Colosseum and Pokémon XD"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
@@ -16,19 +16,20 @@ dependencies = ["PySide6-Essentials>=6.8,<7"]
 build = ["pyinstaller>=6.11,<7"]
 
 [project.gui-scripts]
-orre-randomizer = "colosseum_randomizer.gui:main"
-colosseum-randomizer = "colosseum_randomizer.gui:main"
+orre-randomizer = "orre_randomizer.gui:main"
+colosseum-randomizer = "orre_randomizer.gui:main"
 
 [project.scripts]
-colosseum-randomizer-cli = "colosseum_randomizer.cli:main"
+orre-randomizer-cli = "orre_randomizer.cli:main"
+colosseum-randomizer-cli = "orre_randomizer.cli:main"
 
 [tool.setuptools.packages.find]
-include = ["colosseum_randomizer*"]
+include = ["orre_randomizer*"]
 
 [tool.setuptools]
 include-package-data = false
 
 [tool.setuptools.package-data]
-colosseum_randomizer = ["assets/app/*.ico", "assets/app/*.png", "assets/app/*.json", "assets/app/*.md", "assets/game/*/*.png", "assets/game/*/*.wav", "assets/game/*/*.json", "assets/game/*.json", "assets/game/*.md"]
+orre_randomizer = ["assets/app/*.ico", "assets/app/*.png", "assets/app/*.json", "assets/app/*.md", "assets/game/*/*.png", "assets/game/*/*.wav", "assets/game/*/*.json", "assets/game/*.json", "assets/game/*.md"]
 
 

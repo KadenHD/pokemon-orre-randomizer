@@ -4,12 +4,12 @@ from unittest.mock import patch
 
 import test_gift_move_hooks as gift_model
 import test_shiny_rules as shiny_model
-from colosseum_randomizer.engine.dol_regions import LAYOUTS, dol_layout
-from colosseum_randomizer.engine.gift_move_hooks import _arena_guard, _gift_stub
-from colosseum_randomizer.engine.shiny_rules import (
+from orre_randomizer.engine.dol_regions import LAYOUTS, dol_layout
+from orre_randomizer.engine.gift_move_hooks import _arena_guard, _gift_stub
+from orre_randomizer.engine.shiny_rules import (
     _pid_wrapper, _seeded_trainer_wrapper, _ot_wrapper, _index_trampoline,
     chance_threshold)
-from colosseum_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.analyze_game import FormatError
 
 
 class RegionalHookExecutionTests(unittest.TestCase):

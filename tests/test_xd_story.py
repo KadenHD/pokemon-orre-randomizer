@@ -1,7 +1,7 @@
 from types import SimpleNamespace
 import unittest
 
-from colosseum_randomizer.xd_story import hordel_candidates, tutorial_candidates
+from orre_randomizer.xd_story import hordel_candidates, tutorial_candidates
 
 
 class XDHordelTests(unittest.TestCase):

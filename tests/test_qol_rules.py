@@ -6,14 +6,14 @@ import math
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.dol_regions import LAYOUTS
-from colosseum_randomizer.engine.gift_move_hooks import patch_gift_moves
-from colosseum_randomizer.engine.shiny_rules import apply_shiny_rules
-from colosseum_randomizer.engine.qol_rules import (
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.dol_regions import LAYOUTS
+from orre_randomizer.engine.gift_move_hooks import patch_gift_moves
+from orre_randomizer.engine.shiny_rules import apply_shiny_rules
+from orre_randomizer.engine.qol_rules import (
     CONTRACTS, HOOKS, _experience_stub, _purification_stub,
     apply_qol_rules, experience_numerator)
-from colosseum_randomizer.options import Options
+from orre_randomizer.options import Options
 
 MASK = 0xFFFFFFFF
 

@@ -3,8 +3,8 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError, u32
-from colosseum_randomizer.engine import item_text
+from orre_randomizer.engine.analyze_game import FormatError, u32
+from orre_randomizer.engine import item_text
 
 
 def bank_fixture(*, donor_text="Duplicate native description", alias_donor=False, alias_stone=False):
@@ -140,8 +140,8 @@ class RelocationBoundaryTests(unittest.TestCase):
 @unittest.skipUnless(Path("game/files/common.fsys").is_file(), "local original PAL game is unavailable")
 class LocalPALNameTests(unittest.TestCase):
     def test_native_languages_every_other_plain_id_and_exact_whitelist(self):
-        from colosseum_randomizer.engine.randomize_trainers import original_common, layout
-        from colosseum_randomizer.engine.inspect_tables import localized_names
+        from orre_randomizer.engine.randomize_trainers import original_common, layout
+        from orre_randomizer.engine.inspect_tables import localized_names
         original = original_common(Path("game"))[2]
         current = bytearray(original)
         # An unrelated upstream engine edit must survive byte-for-byte.

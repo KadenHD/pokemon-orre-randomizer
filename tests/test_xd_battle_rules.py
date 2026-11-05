@@ -4,10 +4,10 @@ from types import SimpleNamespace
 
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.inspect_tables import u16
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.xd_battle_rules import (
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.inspect_tables import u16
+from orre_randomizer.options import Options
+from orre_randomizer.xd_battle_rules import (
     ARENA,
     DOL_CONTRACTS,
     DPKM_MOVES,

@@ -2,10 +2,10 @@
 from dataclasses import dataclass, replace
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.starter_rules import apply_starter_tables
-from colosseum_randomizer.engine.level_curve import encounter_level
-from colosseum_randomizer.options import Options
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.starter_rules import apply_starter_tables
+from orre_randomizer.engine.level_curve import encounter_level
+from orre_randomizer.options import Options
 from tests.test_starter_rules import StageRules, fixture
 
 

@@ -4,9 +4,9 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.evolution_rules import evolution_families
-from colosseum_randomizer.engine.species_rules import (
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.evolution_rules import evolution_families
+from orre_randomizer.engine.species_rules import (
     LEGENDARY_NATIONAL, STAT_OFFSETS, apply_species_rules, candidate_species, species_catalog)
 
 
@@ -158,7 +158,7 @@ class SpeciesPropertyTests(unittest.TestCase):
 @unittest.skipUnless(Path("game/files/common.fsys").is_file(), "requires original local PAL dump")
 class PalSpeciesIntegrationTests(unittest.TestCase):
     def test_all_real_species_bounds_totals_and_graph(self):
-        from colosseum_randomizer.engine.randomize_trainers import layout, original_common
+        from orre_randomizer.engine.randomize_trainers import layout, original_common
         original = original_common(Path("game"))[2]
         tables = layout(original)[0]
         rules = replace(Rules(), randomize_types=True, randomize_abilities=True, randomize_stats=True)

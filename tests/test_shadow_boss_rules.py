@@ -5,12 +5,12 @@ import struct
 from types import SimpleNamespace
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError, u32
-from colosseum_randomizer.engine.evolution_rules import evolution_families
-from colosseum_randomizer.engine.inspect_tables import u16
-from colosseum_randomizer.engine import shadow_boss_rules as rules
-from colosseum_randomizer.engine.species_rules import LEGENDARY_NATIONAL, STAT_OFFSETS, species_catalog
-from colosseum_randomizer.options import Options
+from orre_randomizer.engine.analyze_game import FormatError, u32
+from orre_randomizer.engine.evolution_rules import evolution_families
+from orre_randomizer.engine.inspect_tables import u16
+from orre_randomizer.engine import shadow_boss_rules as rules
+from orre_randomizer.engine.species_rules import LEGENDARY_NATIONAL, STAT_OFFSETS, species_catalog
+from orre_randomizer.options import Options
 
 
 def options(**changes):
@@ -201,8 +201,8 @@ class ShadowBossTests(unittest.TestCase):
 class PalShadowBossTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        from colosseum_randomizer.engine.randomize_trainers import original_common
-        from colosseum_randomizer.engine.boss_rules import boss_inventory
+        from orre_randomizer.engine.randomize_trainers import original_common
+        from orre_randomizer.engine.boss_rules import boss_inventory
         cls.original = original_common(Path("game"))[2]
         cls.tables, cls.bosses = boss_inventory(cls.original)
 

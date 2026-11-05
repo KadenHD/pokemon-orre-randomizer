@@ -25,7 +25,7 @@ jobs:
         if: github.ref_type == 'tag'
         shell: pwsh
         run: |
-          $version = python -c "import tomllib; from pathlib import Path; from colosseum_randomizer import __version__; assert tomllib.loads(Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'] == __version__; print(__version__)"
+          $version = python -c "import tomllib; from pathlib import Path; from orre_randomizer import __version__; assert tomllib.loads(Path('pyproject.toml').read_text(encoding='utf-8'))['project']['version'] == __version__; print(__version__)"
           if ($LASTEXITCODE -ne 0 -or $env:GITHUB_REF_NAME -ne "v$version") {
             throw 'The tag must match the application version.'
           }

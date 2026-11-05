@@ -12,7 +12,7 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from colosseum_randomizer import APP_EXECUTABLE
+from orre_randomizer import APP_EXECUTABLE
 
 
 def main():
@@ -71,10 +71,8 @@ def main():
         assert len(data["preview_states"]) == 24
         assert {state["language"] for state in data["states"]} == {"fr", "en", "de", "es", "it", "ja"}
         assert not data["rom_opened"] and not data["personal_preferences_opened"]
-        if args.edition == "public":
-            assert not data["images"] and not data["sounds"] and not data["music_available"]
-        else:
-            assert len(data["images"]) == 5 and len(data["sounds"]) == 3 and data["music_available"]
+        assert len(data["images"]) == 5 and len(data["sounds"]) == 3 and data["music_available"]
+        assert data["game_cursor_available"] and data["application_logo_available"]
         assert not any((work/"AppData").rglob("*.ini"))
         evidence = args.report.with_suffix("")
         evidence.mkdir()

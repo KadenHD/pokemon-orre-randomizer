@@ -14,38 +14,39 @@ from __future__ import annotations
 
 from pathlib import Path
 from dataclasses import asdict, fields, replace
-import secrets
 import sys
 import threading
 import traceback
 
-from PySide6.QtCore import QEvent, QLibraryInfo, QLocale, QObject, QPoint, QSettings, QSize, QThread, QTimer, QTranslator, QUrl, Signal, Slot, Qt
+from PySide6.QtCore import QLibraryInfo, QLocale, QObject, QPoint, QSettings, QSize, QThread, QTimer, QTranslator, QUrl, Signal, Slot, Qt
 from PySide6.QtGui import QDesktopServices, QColor, QFont, QIcon, QKeySequence, QPainter, QPalette, QPixmap, QShortcut
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
-                               QDoubleSpinBox, QFormLayout, QFrame, QHBoxLayout, QHeaderView, QLabel, QLineEdit, QListWidget, QListWidgetItem,
+                               QDoubleSpinBox, QFormLayout, QFrame, QHBoxLayout, QLabel, QLineEdit,
                                QMainWindow, QMenu, QPlainTextEdit, QProgressBar, QPushButton,
-                               QScrollArea, QScrollBar, QSpinBox, QStackedWidget, QTabBar, QToolButton, QTreeWidget, QTreeWidgetItem, QVBoxLayout, QWidget)
+                               QScrollArea, QSpinBox, QStackedWidget, QTabBar, QToolButton, QTreeWidgetItem, QVBoxLayout, QWidget)
 
 from . import APP_NAME, __version__
 from .engine.analyze_game import FormatError
 from .service import Cancelled, Options, RVZToolRequired, UserError, find_dolphin_tool, randomize, validate_options, validate_paths, check_header
 from .profiles import load_creation_report, load_profile, save_profile, validate_seed
+from .preferences import application_preferences
 from .preview import baseline_rows, preview_starters, report_rom_matches, ROULETTE_SPECIES
 from .preview_cache import PreviewCache
 from .ui_species import SpeciesChoice
 from .locales.selection_names import SPECIES_NAMES
-from .ui_theme import GameSurface, MenuPanel, MenuCheckBox, STYLE, XD_STYLE, JAPANESE_FONT_STYLE
-from .xd_artwork import xd_emblem
+from .ui_theme import GameSurface, MenuPanel, MenuCheckBox, STYLE, XD_STYLE, HOME_STYLE, JAPANESE_FONT_STYLE
 from .xd_ui import XDWorkspace
-from .ui_icons import category_icon
 from .ui_audio import MenuAudio
 from .ui_music import MenuMusic
 from .ui_exclusions import ExcludedSelection, search_key
 from .ui_pokemon_details import PokemonSheet
-from .ui_pokemon_names import PreviewNameDelegate, RICH_NAME_ROLE, shiny_name_html
-from .ui_workspace import bounded, scroll_area, DeliberateWheel
+from .ui_home import GameSelection
+from .ui_pokemon_names import RICH_NAME_ROLE, shiny_name_html
+from .ui_workspace import (DeliberateWheel, EncounterTable, RuleNavigation, configuration_workspace, file_field,
+                           preset_buttons, preview_toolbar, scroll_area, search_field, settings_workspace,
+                           starter_slot, wizard_frame, wizard_page)
 from .settings_presentation import configuration_review, search_settings
-from .resources import application_icon, interface_assets, music_track, menu_icon
+from .resources import application_icon, application_logo, interface_assets, music_track, menu_icon, xd_logo
 from .i18n import LANGUAGES, Message, is_translatable, language_preference, resolve_language, translate
 
 
@@ -133,13 +134,6 @@ class ReportRomCheck(QThread):
                                    region=Message(region))
 
 
-def line() -> QFrame:
-    widget = QFrame()
-    widget.setFrameShape(QFrame.Shape.HLine)
-    widget.setFrameShadow(QFrame.Shadow.Sunken)
-    return widget
-
-
 _DESKTOP_RANDOM_RULES = dict(custom_shinies=True, shiny_chance_percent=5.0, diverse_story_families=True)
 
 
@@ -158,9 +152,7 @@ class MainWindow(QMainWindow):
         self.rule_visibility_timer = QTimer(self)
         self.rule_visibility_timer.setSingleShot(True)
         self.rule_visibility_timer.timeout.connect(self.keep_rule_visible)
-        self.preferences = settings if settings is not None else QSettings(
-            QSettings.Format.IniFormat, QSettings.Scope.UserScope,
-            "ColosseumRandomizer", "ColosseumRandomizer")
+        self.preferences = settings if settings is not None else application_preferences()
         self.preferences.setFallbacksEnabled(False)
         self.system_languages = tuple(QLocale.system().uiLanguages() if system_languages is None else system_languages)
         self.language_preference = language_preference(self.preferences.value("interface/language", "system"))
@@ -213,7 +205,8 @@ class MainWindow(QMainWindow):
                 painter.end()
                 self.cursor_icon = QIcon(canvas)
         self.artwork = {}
-        self.xd_logo = xd_emblem()
+        xd_logo_path = xd_logo()
+        self.xd_logo = QPixmap(str(xd_logo_path)) if xd_logo_path else QPixmap()
         self.roulette_faces = {}
         self.roulette_index = 0
         self.roulette_timer = QTimer(self)
@@ -228,6 +221,14 @@ class MainWindow(QMainWindow):
         outer.setSpacing(12)
         header = QHBoxLayout()
         header.setSpacing(6)
+        brand_path = application_logo()
+        self.brand_pixmap = QPixmap(str(brand_path)) if brand_path else QPixmap()
+        self.brand_logo = QLabel()
+        self.brand_logo.setAccessibleName(APP_NAME)
+        self.brand_logo.setAlignment(Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+        self.brand_logo.hide()
+        header.addWidget(self.brand_logo, 1)
+        self.refresh_brand_logo()
         self.logo = QLabel()
         self.logo.hide()
         header.addWidget(self.logo)
@@ -235,6 +236,7 @@ class MainWindow(QMainWindow):
         self.title.setObjectName("title")
         header.addWidget(self.title, 1)
         self.language_combo = QComboBox()
+        self.language_combo.setObjectName("languageSelector")
         self.language_combo.addItem("", "system")
         for code, name in LANGUAGES.items():
             self.language_combo.addItem(name, code)
@@ -291,45 +293,17 @@ class MainWindow(QMainWindow):
         self.colosseum = QWidget()
         self.game_views.addWidget(self.colosseum)
         self.game_views.setCurrentWidget(self.colosseum)
-        outer = QVBoxLayout(self.colosseum)
-        outer.setContentsMargins(0, 0, 0, 0)
-        outer.setSpacing(12)
-        self.step_buttons = []
-        step_row = QHBoxLayout()
-        step_row.setSpacing(0)
-        for index, message in enumerate(("1. ROM", "2. Réglages", "3. Créer")):
-            button = self.button(message)
-            button.setObjectName("step")
-            button.setCheckable(True)
-            button.clicked.connect(lambda checked=False, index=index: self.go_step(index))
-            step_row.addWidget(button, 1)
-            self.step_buttons.append(button)
-        outer.addLayout(step_row)
-        panel = MenuPanel()
-        panel_layout = QVBoxLayout(panel)
-        panel_layout.setContentsMargins(8, 8, 8, 8)
-        self.settings = QStackedWidget()
-        panel_layout.addWidget(self.settings)
-        outer.addWidget(panel, 1)
+        outer, self.settings, self.step_buttons = wizard_frame(self.colosseum, self, self.go_step)
 
-        source_layout = self.add_page()
+        source_layout = wizard_page(self.settings)
         heading = self.label("Choisissez votre ROM")
         heading.setObjectName("section")
         source_layout.addWidget(heading)
         source_layout.addWidget(self.note("Colosseum Europe, USA ou Japon (révision 0), sans modification. Le fichier d’origine est conservé."))
         source_layout.addSpacing(16)
-        self.source = QLineEdit()
-        self.bind(self.source.setPlaceholderText, "Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici")
-        self.bind(self.source.setAccessibleName, "ROM d’origine")
-        self.source_button = self.button("Parcourir…")
-        self.source_button.clicked.connect(self.choose_source)
-        source_row = QHBoxLayout()
-        source_row.addWidget(self.source, 1)
-        source_row.addWidget(self.source_button)
-        source_label = self.label("ROM d’&origine")
-        source_label.setBuddy(self.source)
-        source_layout.addWidget(source_label)
-        source_layout.addLayout(source_row)
+        self.source, self.source_button = file_field(
+            source_layout, self, "ROM d’&origine", "ROM d’origine",
+            "Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici", "Parcourir…", self.choose_source)
         source_layout.addWidget(self.note("La ROM sera vérifiée avant la création. Aucun fichier existant ne sera remplacé."))
         self.source.editingFinished.connect(self.suggest_destination)
         self.advanced_toggle = QToolButton()
@@ -352,28 +326,19 @@ class MainWindow(QMainWindow):
 
         self.build_settings_workspace()
 
-        output_layout = self.add_page()
+        output_layout = wizard_page(self.settings)
         output_layout.setSpacing(8)
         self.output_scroll = self.settings.widget(self.settings.count() - 1)
         heading = self.label("Créez votre ROM")
         heading.setObjectName("section")
         output_layout.addWidget(heading)
-        self.destination = QLineEdit()
-        self.bind(self.destination.setAccessibleName, "Nouvelle ROM")
-        self.bind(self.destination.setPlaceholderText, "Choisissez où enregistrer la nouvelle ROM")
+        self.destination, _ = file_field(
+            output_layout, self, "&Nouvelle ROM", "Nouvelle ROM",
+            "Choisissez où enregistrer la nouvelle ROM", "Enregistrer sous…", self.choose_destination)
         self.destination.editingFinished.connect(self.sync_format)
         self.format = QComboBox()
         self.format.addItems(["ISO", "RVZ"])
         self.bind(self.format.setAccessibleName, "Format de sortie")
-        save_button = self.button("Enregistrer sous…")
-        save_button.clicked.connect(self.choose_destination)
-        output_label = self.label("&Nouvelle ROM")
-        output_label.setBuddy(self.destination)
-        output_layout.addWidget(output_label)
-        output_row = QHBoxLayout()
-        output_row.addWidget(self.destination, 1)
-        output_row.addWidget(save_button)
-        output_layout.addLayout(output_row)
         format_row = QHBoxLayout()
         format_row.addWidget(self.label("Format de sortie"))
         format_row.addWidget(self.format)
@@ -529,58 +494,17 @@ class MainWindow(QMainWindow):
         self.preferences.sync()
 
     def build_home(self):
-        panel = MenuPanel()
-        frame = QVBoxLayout(panel)
-        frame.setContentsMargins(8, 8, 8, 8)
-        content = QWidget()
-        layout = QVBoxLayout(content)
-        layout.setContentsMargins(16, 16, 16, 16)
-        layout.setSpacing(8)
-        heading = self.label("Choisissez un jeu")
-        heading.setObjectName("section")
-        layout.addWidget(heading)
-        layout.addSpacing(12)
-
-        colosseum_row = QHBoxLayout()
-        colosseum_text = QVBoxLayout()
-        colosseum = self.label("Pokémon Colosseum")
-        colosseum.setObjectName("subheading")
-        colosseum_text.addWidget(colosseum)
-        colosseum_text.addWidget(self.note("ISO ou RVZ · Europe, USA et Japon"))
-        colosseum_row.addLayout(colosseum_text, 1)
-        self.open_colosseum = self.button("Ouvrir Colosseum")
-        self.open_colosseum.setObjectName("primary")
-        self.open_colosseum.clicked.connect(self.show_colosseum)
-        colosseum_row.addWidget(self.open_colosseum)
-        layout.addLayout(colosseum_row)
-        layout.addSpacing(8)
-        layout.addWidget(line())
-        layout.addSpacing(8)
-
-        xd_row = QHBoxLayout()
-        badge = QLabel()
-        badge.setPixmap(self.xd_logo)
-        xd_row.addWidget(badge)
-        xd_text = QVBoxLayout()
-        xd = self.label("Pokémon XD")
-        xd.setObjectName("subheading")
-        xd_text.addWidget(xd)
-        xd_text.addWidget(self.note("ISO ou RVZ · Europe, USA et Japon"))
-        xd_row.addLayout(xd_text, 1)
-        self.open_xd = self.button("Ouvrir XD")
-        self.open_xd.setObjectName("primary")
-        self.open_xd.clicked.connect(self.show_xd)
-        xd_row.addWidget(self.open_xd)
-        layout.addLayout(xd_row)
-        layout.addStretch(1)
-        frame.addWidget(scroll_area(content))
-        return panel
+        home = GameSelection(self)
+        self.open_colosseum, self.open_xd = home.colosseum, home.xd
+        return home
 
     def show_home(self):
         if self.busy:
             return
         self.game_views.setCurrentWidget(self.home)
         self.logo.hide()
+        self.brand_logo.setVisible(not self.brand_pixmap.isNull())
+        self.title.setVisible(self.brand_pixmap.isNull())
         self.title.setText("ORRE RANDOMIZER")
         self.title.setAccessibleName(APP_NAME)
         self.profile_menu.hide()
@@ -591,6 +515,8 @@ class MainWindow(QMainWindow):
         if self.busy:
             return
         self.game_views.setCurrentWidget(self.colosseum)
+        self.brand_logo.hide()
+        self.title.show()
         self.logo.setPixmap(QPixmap(str(self.artwork["logo"])) if "logo" in self.artwork else QPixmap())
         self.logo.setVisible("logo" in self.artwork)
         self.title.setText("RANDOMIZER" if "logo" in self.artwork else "COLOSSEUM")
@@ -603,9 +529,11 @@ class MainWindow(QMainWindow):
         if self.busy:
             return
         self.game_views.setCurrentWidget(self.xd)
+        self.brand_logo.hide()
+        self.title.show()
         self.logo.setPixmap(self.xd_logo)
-        self.logo.show()
-        self.title.setText("RANDOMIZER")
+        self.logo.setVisible(not self.xd_logo.isNull())
+        self.title.setText("RANDOMIZER" if not self.xd_logo.isNull() else "POKÉMON XD")
         self.title.setAccessibleName("Pokémon XD")
         self.profile_menu.show()
         if not self.xd.tool.text() and self.tool.text():
@@ -615,9 +543,17 @@ class MainWindow(QMainWindow):
         self.xd.focus_current_step()
 
     def apply_game_style(self):
+        home = self.game_views.currentWidget() is self.home
         xd = self.game_views.currentWidget() is self.xd
+        self.surface.set_home(home)
         self.surface.set_xd(xd)
-        self.setStyleSheet((XD_STYLE if xd else STYLE) + (JAPANESE_FONT_STYLE if self.language == "ja" else ""))
+        if home:
+            style = HOME_STYLE
+        elif xd:
+            style = XD_STYLE
+        else:
+            style = STYLE
+        self.setStyleSheet(style + (JAPANESE_FONT_STYLE if self.language == "ja" else ""))
 
     def go_back(self):
         if self.step == 0:
@@ -625,79 +561,17 @@ class MainWindow(QMainWindow):
         else:
             self.go_step(self.step - 1)
 
-    def add_page(self, *, scrolling=True):
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(16, 12, 16, 12)
-        layout.setSpacing(12)
-        host = bounded(page)
-        self.settings.addWidget(scroll_area(host) if scrolling else host)
-        return layout
-
     def build_settings_workspace(self):
-        layout = self.add_page(scrolling=False)
-        layout.setSpacing(6)
-        self.workspace_tabs = QTabBar()
-        self.workspace_tabs.setObjectName("workspaceTabs")
-        self.bind(self.workspace_tabs.setAccessibleName, "Vues des réglages")
-        for message in ("Configuration", "Aperçu des Pokémon"):
-            index = self.workspace_tabs.addTab("")
-            self.bind(lambda text, i=index: self.workspace_tabs.setTabText(i, text), message)
-        layout.addWidget(self.workspace_tabs)
-        seed_row = QHBoxLayout()
-        self.seed = QLineEdit(secrets.token_hex(8))
-        self.seed.setMaxLength(256)
-        self.seed.setMaximumWidth(520)
-        self.bind(self.seed.setAccessibleName, "Seed")
-        label = self.label("&Seed")
-        label.setBuddy(self.seed)
-        seed_row.addWidget(label)
-        seed_row.addWidget(self.seed, 1)
-        new_seed = self.button("Nouvelle seed")
-        new_seed.clicked.connect(lambda: self.seed.setText(secrets.token_hex(8)))
-        seed_row.addWidget(new_seed)
-        seed_row.addStretch(1)
-        layout.addLayout(seed_row)
-        self.workspace_pages = QStackedWidget()
-        layout.addWidget(self.workspace_pages, 1)
+        layout = wizard_page(self.settings, scrolling=False)
+        self.workspace_tabs, self.seed, self.workspace_pages = settings_workspace(layout, self)
         self.workspace_tabs.currentChanged.connect(self.change_workspace_view)
-
-        configuration = QWidget()
-        config = QVBoxLayout(configuration)
-        config.setContentsMargins(0, 0, 0, 0)
-        mode_row = QHBoxLayout()
-        title = self.label("Choisissez ce qui change")
-        title.setObjectName("subheading")
-        mode_row.addWidget(title, 1)
-        self.simple_mode = self.button("Simple")
-        self.advanced_mode = self.button("Avancé")
-        for button, value in ((self.simple_mode, False), (self.advanced_mode, True)):
-            button.setCheckable(True)
-            button.clicked.connect(lambda checked=False, value=value: self.set_advanced_mode(value))
-            mode_row.addWidget(button)
-        config.addLayout(mode_row)
-        self.configuration_pages = QStackedWidget()
-        config.addWidget(self.configuration_pages, 1)
-        self.workspace_pages.addWidget(configuration)
+        self.configuration_pages, (self.simple_mode, self.advanced_mode) = configuration_workspace(
+            self, self.workspace_pages, self.set_advanced_mode)
         self.simple_panel = QWidget()
         simple = QVBoxLayout(self.simple_panel)
         simple.setContentsMargins(0, 8, 0, 0)
-        self.presets = []
-        preset_row = QHBoxLayout()
-        for title, subtitle, constructor in (("Pokémon + capacités", "CT et objets aussi", recommended_preset),
-                                            ("Pokémon seuls", "Capacités et CT conservées", species_preset),
-                                            ("Copie à l’identique", "Aucune randomisation", Options.none)):
-            button = self.button(title)
-            self.bind(button.setAccessibleDescription, subtitle)
-            button.setObjectName("preset")
-            button.setCheckable(True)
-            button.clicked.connect(lambda checked=False, constructor=constructor: self.set_options(constructor()))
-            column = QVBoxLayout()
-            column.addWidget(button)
-            column.addWidget(self.note(subtitle))
-            preset_row.addLayout(column, 1)
-            self.presets.append((button, constructor))
-        simple.addLayout(preset_row)
+        self.presets = preset_buttons(self, simple, (recommended_preset, species_preset, Options.none),
+                                      self.set_options)
         self.preset_description = QLabel()
         self.preset_description.setWordWrap(True)
         simple.addWidget(self.preset_description)
@@ -708,64 +582,18 @@ class MainWindow(QMainWindow):
         simple.addStretch(1)
         self.configuration_pages.addWidget(scroll_area(self.simple_panel))
 
-        self.rule_panel = QWidget()
-        rules = QVBoxLayout(self.rule_panel)
-        rules.setContentsMargins(0, 0, 0, 0)
-        search_row = QHBoxLayout()
-        self.rule_search = QLineEdit()
-        self.rule_search.setClearButtonEnabled(True)
-        self.rule_search.setMaxLength(160)
-        self.bind(self.rule_search.setPlaceholderText, "Rechercher un réglage…")
-        self.bind(self.rule_search.setAccessibleName, "Rechercher un réglage…")
-        search_row.addWidget(self.rule_search, 1)
-        self.rule_reset = self.button("Valeurs conseillées")
-        self.rule_reset.clicked.connect(self.reset_rule_category)
-        search_row.addWidget(self.rule_reset)
-        rules.addLayout(search_row)
-        self.rule_search_note = QLabel()
-        self.rule_search_note.setWordWrap(True)
-        self.rule_search_note.setTextFormat(Qt.TextFormat.PlainText)
-        self.rule_search_note.hide()
-        rules.addWidget(self.rule_search_note)
-        self.category_selector = QComboBox()
-        self.bind(self.category_selector.setAccessibleName, "Catégorie de réglages")
-        self.category_selector.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
-        self.category_selector.setMaximumWidth(245)
-        search_row.insertWidget(0, self.category_selector)
-        self.setTabOrder(self.category_selector, self.rule_search)
-        self.setTabOrder(self.rule_search, self.rule_reset)
-        self.rule_content = QStackedWidget()
-        self.rule_form = QWidget()
-        row = QHBoxLayout(self.rule_form)
-        row.setContentsMargins(0, 0, 0, 0)
-        self.rule_nav = QListWidget()
-        self.rule_nav.setObjectName("ruleNavigation")
-        self.rule_nav.setIconSize(QSize(20, 20))
-        self.rule_nav.setFixedWidth(192)
-        self.rule_nav.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.rule_nav.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.bind(self.rule_nav.setAccessibleName, "Catégories de réglages")
-        self.rule_pages = QStackedWidget()
-        row.addWidget(self.rule_nav)
-        row.addWidget(self.rule_pages, 1)
-        self.rule_content.addWidget(self.rule_form)
-        self.rule_results = QListWidget()
-        self.rule_results.setWordWrap(True)
-        self.rule_results.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.bind(self.rule_results.setAccessibleName, "Résultats des réglages")
-        self.rule_content.addWidget(self.rule_results)
-        rules.addWidget(self.rule_content, 1)
+        self.rule_panel = panel = RuleNavigation(self, self.reset_rule_category)
+        self.rule_search, self.rule_reset = panel.search, panel.reset
+        self.rule_search_note, self.category_selector = panel.notice, panel.selector
+        self.rule_content = panel.content
+        self.rule_nav, self.rule_pages, self.rule_results = panel.categories, panel.pages, panel.results
         self.rule_checks, self.rule_fields = {}, {}
         self.build_rules()
-        self.category_selector.currentIndexChanged.connect(self.rule_nav.setCurrentRow)
-        self.rule_nav.currentRowChanged.connect(self.category_selector.setCurrentIndex)
         self.rule_nav.currentRowChanged.connect(self.rule_category_changed)
         self.rule_search.textChanged.connect(self.search_rules)
         self.rule_search.returnPressed.connect(lambda: self.open_rule_result(self.rule_results.currentItem()))
         self.rule_results.itemClicked.connect(self.open_rule_result)
         self.rule_results.itemActivated.connect(self.open_rule_result)
-        self.rule_search.installEventFilter(self)
-        self.rule_results.installEventFilter(self)
         self.rule_category_changed()
         self.configuration_pages.addWidget(self.rule_panel)
 
@@ -776,44 +604,15 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout(page)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(6)
-        toolbar = QHBoxLayout()
-        self.preview_tabs = QTabBar()
-        self.preview_tabs.setObjectName("previewTabs")
-        self.preview_tabs.setUsesScrollButtons(False)
-        self.preview_tabs.setElideMode(Qt.TextElideMode.ElideRight)
-        self.bind(self.preview_tabs.setAccessibleName, "Groupes de Pokémon")
-        for message in ("Starters · 2", "Obscurs · 48", "Cadeaux · 4"):
-            index = self.preview_tabs.addTab("")
-            self.bind(lambda text, i=index: self.preview_tabs.setTabText(i, text), message)
+        (self.preview_tabs, self.preview_button, self.preview_cancel_button, self.preview_status,
+         self.preview_progress) = preview_toolbar(
+            layout, self, ("Starters · 2", "Obscurs · 48", "Cadeaux · 4"), self.start_preview, self.cancel_preview)
         self.family_tab = self.preview_tabs.addTab("")
         self.preview_tabs.setTabVisible(self.family_tab, False)
-        toolbar.addWidget(self.preview_tabs, 1)
-        self.preview_button = self.button("Calculer l’aperçu")
-        self.preview_button.clicked.connect(self.start_preview)
-        toolbar.addWidget(self.preview_button)
-        self.preview_cancel_button = self.button("Annuler l’aperçu")
-        self.preview_cancel_button.clicked.connect(self.cancel_preview)
-        self.preview_cancel_button.hide()
-        toolbar.addWidget(self.preview_cancel_button)
-        layout.addLayout(toolbar)
-        self.preview_status = QLabel()
-        self.preview_status.setObjectName("previewStatus")
-        self.preview_status.setTextFormat(Qt.TextFormat.PlainText)
-        toolbar.addWidget(self.preview_status)
-        self.preview_progress = QProgressBar()
-        self.preview_progress.setRange(0, 0)
-        self.preview_progress.setObjectName("previewProgress")
-        self.preview_progress.setTextVisible(False)
-        self.preview_progress.setFixedHeight(6)
-        self.preview_progress.hide()
-        layout.addWidget(self.preview_progress)
         self.preview_hint = self.note("Calculez l’aperçu pour afficher le tirage de cette seed.")
         self.preview_hint.setTextFormat(Qt.TextFormat.PlainText)
         layout.addWidget(self.preview_hint)
-        self.preview_search = QLineEdit()
-        self.preview_search.setClearButtonEnabled(True)
-        self.bind(self.preview_search.setPlaceholderText, "Rechercher un Pokémon…")
-        self.bind(self.preview_search.setAccessibleName, "Rechercher un Pokémon…")
+        self.preview_search = search_field(self, "Rechercher un Pokémon…")
         layout.addWidget(self.preview_search)
         self.preview_pages = QStackedWidget()
         layout.addWidget(self.preview_pages, 1)
@@ -823,31 +622,8 @@ class MainWindow(QMainWindow):
         preview_pair = QHBoxLayout()
         self.portraits, self.preview_names, self.starter_detail_buttons = {}, {}, {}
         for key, message in (("umbreon", "Premier starter"), ("espeon", "Second starter")):
-            slot = QVBoxLayout()
-            identity = QHBoxLayout()
-            portrait = QLabel()
-            portrait.setFixedSize(48, 48)
-            portrait.setAlignment(Qt.AlignmentFlag.AlignCenter)
-            portrait.setObjectName("previewPortrait")
-            identity.addWidget(portrait)
-            self.portraits[key] = portrait
-            slot_identity = QVBoxLayout()
-            slot_identity.setSpacing(2)
-            slot_identity.addWidget(self.note(message))
-            name = QLabel()
-            name.setObjectName("subheading")
-            name.setWordWrap(True)
-            name.setTextFormat(Qt.TextFormat.PlainText)
-            slot_identity.addWidget(name)
-            identity.addLayout(slot_identity, 1)
-            slot.addLayout(identity)
-            self.preview_names[key] = name
-            detail_button = self.button("Fiche du Pokémon")
-            self.bind(detail_button.setToolTip, "Consultez ses statistiques, ses capacités et ses évolutions.")
-            detail_button.hide()
-            detail_button.clicked.connect(lambda checked=False, key=key: self.show_starter_detail(key))
-            slot.addWidget(detail_button, 0, Qt.AlignmentFlag.AlignLeft)
-            self.starter_detail_buttons[key] = detail_button
+            slot, self.portraits[key], self.preview_names[key], self.starter_detail_buttons[key] = starter_slot(
+                self, message, lambda checked=False, key=key: self.show_starter_detail(key))
             preview_pair.addLayout(slot, 1)
         party.addLayout(preview_pair)
         self.preview_shiny_status = QLabel()
@@ -857,32 +633,10 @@ class MainWindow(QMainWindow):
         party.addWidget(self.preview_shiny_status)
         party.addStretch(1)
         self.preview_pages.addWidget(scroll_area(self.party_strip))
-        placeholder = QPixmap(42, 42)
-        placeholder.fill(QColor("#172c33"))
-        painter = QPainter(placeholder)
-        painter.setPen(QColor("#8be8e7"))
-        painter.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
-        painter.drawText(placeholder.rect(), Qt.AlignmentFlag.AlignCenter, "?")
-        painter.end()
-        self.unknown_portrait = QIcon(placeholder)
-        self.encounters_tree = QTreeWidget()
-        # Python owns these wrappers throughout the window's lifetime. Reusing
-        # Qt-created item/scrollbar wrappers after deferred window destruction
-        # can otherwise return a stale, unrelated Shiboken wrapper.
-        self.encounters_scrollbar = QScrollBar(Qt.Orientation.Vertical, self.encounters_tree)
-        self.encounters_tree.setVerticalScrollBar(self.encounters_scrollbar)
-        self.encounters_tree.setObjectName("encountersPreview")
-        self.encounters_tree.setColumnCount(2)
-        self.encounter_name_delegate = PreviewNameDelegate(self.encounters_tree)
-        self.encounters_tree.setItemDelegateForColumn(1, self.encounter_name_delegate)
-        self.encounters_tree.setIconSize(QSize(42, 42))
-        self.encounters_tree.setRootIsDecorated(False)
-        self.encounters_tree.setIndentation(0)
-        self.encounters_tree.setWordWrap(True)
-        self.encounters_tree.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.encounters_tree.header().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.bind(self.encounters_tree.setAccessibleName, "Tirage des Pokémon obscurs et offerts")
-        self.bind(self.encounters_tree.setAccessibleDescription, "Cliquez sur une ligne ou appuyez sur Entrée pour ouvrir la fiche du Pokémon obtenu.")
+        self.unknown_portrait = self.placeholder_portrait("#172c33", "#8be8e7")
+        self.xd_unknown_portrait = self.placeholder_portrait("#382527", "#ffb384")
+        self.encounters_tree = EncounterTable(self, "Tirage des Pokémon obscurs et offerts")
+        self.encounters_scrollbar = self.encounters_tree.scrollbar
         self.preview_pages.addWidget(self.encounters_tree)
         family_page = QWidget()
         family_layout = QVBoxLayout(family_page)
@@ -1021,6 +775,7 @@ class MainWindow(QMainWindow):
         if not assets:
             return
         self.artwork = assets
+        self.home.colosseum.set_logo(QPixmap(str(assets["logo"])) if "logo" in assets else QPixmap())
         self.surface.set_background(assets.get("background"))
         self.render_preview()
         if "logo" in assets:
@@ -1103,29 +858,26 @@ class MainWindow(QMainWindow):
                 page_layout.addWidget(self.note("0 % : aucun ; 100 % : tous. Les Pokémon déjà générés gardent leur tirage."))
             page_layout.addStretch(1)
             scroll_page.setWidget(page)
-            self.rule_pages.addWidget(scroll_page)
-            navigation = QListWidgetItem(group)
-            self.rule_nav.addItem(navigation)
-            navigation.setIcon(category_icon(group))
-            self.bind(navigation.setText, group)
-            index = self.category_selector.count()
-            self.category_selector.addItem(category_icon(group), "")
-            self.bind(lambda text, i=index: self.category_selector.setItemText(i, text), group)
-        self.rule_nav.currentRowChanged.connect(self.rule_pages.setCurrentIndex)
+            self.rule_panel.add_category(group, scroll_page)
         self.rule_nav.currentRowChanged.connect(lambda _row: self.keep_rule_visible())
         self.rule_nav.setCurrentRow(0)
 
     def keep_rule_visible(self):
         if hasattr(self, "rule_nav") and self.rule_nav.currentItem() is not None:
-            needed = sum(max(28, self.rule_nav.sizeHintForRow(i)) for i in range(self.rule_nav.count())) + 8
-            compact = self.width() < 900 or self.rule_form.height() - 8 < needed
-            self.rule_nav.setVisible(not compact)
-            self.category_selector.setVisible(compact and not self.rule_search.text().strip())
+            self.rule_panel.fit()
         if hasattr(self, "preview_count"):
             self.update_preview_count()
 
+    def refresh_brand_logo(self):
+        height = 88 if self.width() >= 900 and self.height() >= 700 else 48
+        self.brand_logo.setFixedHeight(height)
+        if not self.brand_pixmap.isNull():
+            self.brand_logo.setPixmap(self.brand_pixmap.scaledToHeight(height, Qt.TransformationMode.SmoothTransformation))
+
     def resizeEvent(self, event):
         super().resizeEvent(event)
+        if hasattr(self, "brand_logo"):
+            self.refresh_brand_logo()
         if hasattr(self, "title"):
             compact = event.size().width() < 820
             if self.title.property("compact") != compact:
@@ -1148,29 +900,11 @@ class MainWindow(QMainWindow):
 
     def search_rules(self, _text=None):
         query = self.rule_search.text().strip()
-        self.rule_results.clear()
-        self._setting_result_items = []
-        self.rule_content.setCurrentIndex(1 if query else 0)
-        self.rule_reset.setEnabled(not query and not self.busy)
-        self.rule_search_note.hide()
-        if query:
-            matches = search_settings(query, self.language)
-            self.rule_search_note.setText(self.text("Résultats : {count}", count=len(matches)) if matches
-                else self.text("Aucun réglage trouvé. Essayez un autre mot."))
-            self.rule_search_note.setVisible(not matches)
-            self.rule_results.setAccessibleDescription(self.rule_search_note.text())
-            if matches:
-                self.set_status("Résultats : {count}", count=len(matches))
-            for row in matches:
-                item = QListWidgetItem(row["label"] + "\n" + row["group"])
-                item.setData(Qt.ItemDataRole.UserRole, row["name"])
-                item.setToolTip(row["description"])
-                item.setSizeHint(QSize(0, 60))
-                self.rule_results.addItem(item)
-                self._setting_result_items.append(item)
-            if matches:
-                self.rule_results.setCurrentRow(0)
-        elif self.step == 1 and _text is not None:
+        matches = search_settings(query, self.language)
+        self._setting_result_items = self.rule_panel.show_results(matches, busy=self.busy)
+        if matches:
+            self.set_status("Résultats : {count}", count=len(matches))
+        elif not query and self.step == 1 and _text is not None:
             self.refresh_settings_help()
         self.keep_rule_visible()
 
@@ -1202,18 +936,6 @@ class MainWindow(QMainWindow):
         values = {item.name: getattr(reference, item.name) for item in fields(Options) if item.metadata["group"] == group}
         self.set_options(replace(self.current_options(), **values))
         self.set_status("Catégorie « {category} » : valeurs conseillées rétablies.", category=self.text(group))
-
-    def eventFilter(self, watched, event):
-        if event.type() == QEvent.Type.KeyPress:
-            if watched is self.rule_search and event.key() == Qt.Key.Key_Down and self.rule_results.count():
-                self.rule_results.setFocus(Qt.FocusReason.OtherFocusReason)
-                self.rule_results.setCurrentRow(0)
-                return True
-            if watched in (self.rule_search, self.rule_results) and event.key() == Qt.Key.Key_Escape:
-                self.rule_search.clear()
-                self.rule_search.setFocus(Qt.FocusReason.OtherFocusReason)
-                return True
-        return super().eventFilter(watched, event)
 
     def text(self, message: str, **parameters) -> str:
         return translate(Message(message, **parameters) if parameters else message, self.language)
@@ -1452,13 +1174,26 @@ class MainWindow(QMainWindow):
         label.setTextFormat(Qt.TextFormat.RichText if markup else Qt.TextFormat.PlainText)
         label.setText(markup or name)
 
-    def preview_portrait(self, row):
+    @staticmethod
+    def placeholder_portrait(background, foreground):
+        placeholder = QPixmap(42, 42)
+        placeholder.fill(QColor(background))
+        painter = QPainter(placeholder)
+        painter.setPen(QColor(foreground))
+        painter.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
+        painter.drawText(placeholder.rect(), Qt.AlignmentFlag.AlignCenter, "?")
+        painter.end()
+        return QIcon(placeholder)
+
+    def preview_portrait(self, row, *, xd=False):
         image = QPixmap()
         if row.get("portrait_png"):
             image.loadFromData(row["portrait_png"])
-        elif (key := {197: "umbreon", 196: "espeon", 25: "pikachu"}.get(row.get("national_dex"))) in self.artwork:
+        elif not xd and (key := {197: "umbreon", 196: "espeon", 25: "pikachu"}.get(row.get("national_dex"))) in self.artwork:
             image.load(str(self.artwork[key]))
-        return self.unknown_portrait if image.isNull() else QIcon(image)
+        if image.isNull():
+            return self.xd_unknown_portrait if xd else self.unknown_portrait
+        return QIcon(image)
 
     @Slot(object)
     def load_roulette_faces(self, faces):
@@ -1577,16 +1312,7 @@ class MainWindow(QMainWindow):
         if self.preview_tabs.currentIndex() not in (1, 2):
             self.preview_count.clear()
             return
-        tree = self.encounters_tree
-        items = [tree.topLevelItem(i) for i in range(tree.topLevelItemCount()) if not tree.topLevelItem(i).isHidden()]
-        visible = [i + 1 for i, item in enumerate(items) if tree.visualItemRect(item).intersects(tree.viewport().rect())]
-        if not items:
-            self.preview_count.setText(self.text("Aucun résultat"))
-        elif not visible:
-            self.preview_count.setText(self.text("{count} résultats", count=len(items)))
-        else:
-            self.preview_count.setText(self.text("{first}–{last} sur {count}", first=min(visible),
-                                                last=max(visible), count=len(items)))
+        self.preview_count.setText(self.encounters_tree.visible_count(self.text))
 
     def invalidate_preview(self):
         cache_source_key = (self.source.text().strip(), self.tool.text().strip())
@@ -2035,8 +1761,9 @@ class MainWindow(QMainWindow):
             return
         if self.detail_window is not None:
             self.detail_window.close()
-        dialog = PokemonSheet(self, row, self.preview_species_name(row), self.preview_portrait(row),
-                              self.language, xd=self.game_views.currentWidget() is self.xd)
+        xd = self.game_views.currentWidget() is self.xd
+        dialog = PokemonSheet(self, row, self.preview_species_name(row), self.preview_portrait(row, xd=xd),
+                              self.language, xd=xd)
         dialog.finished.connect(lambda _result: setattr(self, "detail_window", None))
         self.detail_window = dialog
         dialog.show()

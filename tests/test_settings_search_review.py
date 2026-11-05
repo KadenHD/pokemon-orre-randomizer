@@ -6,15 +6,15 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from colosseum_randomizer.i18n import LANGUAGES,translate
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.settings_presentation import configuration_review,effective_setting_names,search_settings
+from orre_randomizer.i18n import LANGUAGES,translate
+from orre_randomizer.options import Options
+from orre_randomizer.settings_presentation import configuration_review,effective_setting_names,search_settings
 
 try:
     from PySide6.QtCore import QCoreApplication,QEvent,QSettings,Qt
     from PySide6.QtTest import QTest
     from PySide6.QtWidgets import QApplication
-    from colosseum_randomizer.gui import MainWindow, recommended_preset
+    from orre_randomizer.gui import MainWindow, recommended_preset
 except ImportError:
     MainWindow=None
 

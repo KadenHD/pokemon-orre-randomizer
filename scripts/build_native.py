@@ -12,9 +12,9 @@ def main():
     manifest = ROOT / "native/Cargo.toml"
     subprocess.run(["cargo", "test", "--offline", "--manifest-path", str(manifest)], check=True)
     subprocess.run(["cargo", "build", "--release", "--offline", "--manifest-path", str(manifest)], check=True)
-    filename = "colosseum_lzss.dll" if sys.platform == "win32" else (
-        "libcolosseum_lzss.dylib" if sys.platform == "darwin" else "libcolosseum_lzss.so")
-    destination = ROOT / "colosseum_randomizer/_native" / filename
+    filename = "orre_lzss.dll" if sys.platform == "win32" else (
+        "liborre_lzss.dylib" if sys.platform == "darwin" else "liborre_lzss.so")
+    destination = ROOT / "orre_randomizer/_native" / filename
     destination.parent.mkdir(exist_ok=True)
     compiled = ROOT / "native/target/release" / filename
     # Windows locks loaded DLLs. An identical codec already in use needs no

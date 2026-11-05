@@ -3,16 +3,16 @@ from dataclasses import replace
 from pathlib import Path
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.evolution_rules import evolution_families
-from colosseum_randomizer.engine.gameplay_rules import (MOVE_FIELDS, apply_dol_rules,
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.evolution_rules import evolution_families
+from orre_randomizer.engine.gameplay_rules import (MOVE_FIELDS, apply_dol_rules,
     apply_rel_rules, damaging, expanded_layout, move_catalog)
-from colosseum_randomizer.engine.inspect_tables import u16
-from colosseum_randomizer.engine.randomize_story import SPECIALS, experience_at_level
-from colosseum_randomizer.engine.randomize_trainers import original_common
-from colosseum_randomizer.engine.species_rules import LEGENDARY_NATIONAL, species_catalog
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.service import (UserError, final_report_summary, transform_dol,
+from orre_randomizer.engine.inspect_tables import u16
+from orre_randomizer.engine.randomize_story import SPECIALS, experience_at_level
+from orre_randomizer.engine.randomize_trainers import original_common
+from orre_randomizer.engine.species_rules import LEGENDARY_NATIONAL, species_catalog
+from orre_randomizer.options import Options
+from orre_randomizer.service import (UserError, final_report_summary, transform_dol,
                                           transform_rel, validate_options)
 
 ROOT = Path(__file__).resolve().parents[1]

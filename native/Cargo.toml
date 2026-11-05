@@ -1,11 +1,11 @@
 [package]
-name = "colosseum-lzss"
+name = "orre-lzss"
 version = "0.1.0"
 edition = "2024"
 license = "MIT"
 
 [lib]
-name = "colosseum_lzss"
+name = "orre_lzss"
 crate-type = ["cdylib", "rlib"]
 
 [profile.release]

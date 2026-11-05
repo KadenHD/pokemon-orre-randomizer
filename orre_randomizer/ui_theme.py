@@ -1,6 +1,6 @@
 """Code-owned Colosseum menu frames. Game pictures come from the exported local interface pack."""
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QColor, QPainter, QPen, QPixmap, QPolygonF
+from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPen, QPixmap, QPolygonF
 from PySide6.QtWidgets import QCheckBox, QFrame, QStyle, QStyleOptionButton, QWidget
 
 
@@ -24,9 +24,14 @@ class GameSurface(QWidget):
         super().__init__()
         self.background = QPixmap()
         self.xd = False
+        self.home = False
 
     def set_xd(self, enabled):
         self.xd = enabled
+        self.update()
+
+    def set_home(self, enabled):
+        self.home = enabled
         self.update()
 
     def set_background(self, path):
@@ -35,6 +40,13 @@ class GameSurface(QWidget):
 
     def paintEvent(self, event):
         painter = QPainter(self)
+        if self.home:
+            gradient = QLinearGradient(0, 0, self.width(), self.height())
+            gradient.setColorAt(0, QColor("#090a0b"))
+            gradient.setColorAt(0.5, QColor("#191a1c"))
+            gradient.setColorAt(1, QColor("#34363a"))
+            painter.fillRect(self.rect(), gradient)
+            return
         if self.xd:
             painter.fillRect(self.rect(), QColor("#1d1112"))
             painter.setPen(Qt.PenStyle.NoPen)
@@ -188,7 +200,35 @@ def xd_stylesheet():
         "#294f41": "#654641",
     }.items():
         style = style.replace(original, replacement)
-    return style + '\nQLabel#xdStatus, QLabel#xdReview { color: #e2c9bb; font-size: 13px; }\n'
+    return style
 
 
 XD_STYLE = xd_stylesheet()
+
+HOME_STYLE = STYLE + """
+QToolButton#headerControl {
+    background: #202327; color: #e5e7eb; border: 1px solid #727782;
+}
+QToolButton#headerControl:checked {
+    background: #30343a; color: #f2f3f5; border: 2px solid #cbd0d8;
+}
+QToolButton#headerControl:hover {
+    background: #30343a; border-color: #cbd0d8;
+}
+QToolButton#headerControl:focus { border: 2px solid #cbd0d8; }
+QToolButton#headerControl:pressed { background: #17191c; }
+QToolButton#headerControl:disabled {
+    background: #202327; color: #969ba5; border-color: #626772;
+}
+QComboBox#languageSelector {
+    background: #191b1e; color: #eceef2; border-color: #727782;
+    selection-background-color: #30343a;
+}
+QComboBox#languageSelector:focus, QComboBox#languageSelector:hover {
+    border-color: #cbd0d8;
+}
+QComboBox#languageSelector QAbstractItemView {
+    background: #202327; color: #eceef2; border: 1px solid #727782;
+    selection-background-color: #30343a; selection-color: #f2f3f5;
+}
+"""

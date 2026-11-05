@@ -36,14 +36,14 @@ def main():
              for language, code in LANGUAGES.items()}
     assert all(set(values) == set(range(1, 387)) for values in names.values())
     types = {language: dict(zip(TYPE_IDS, text.split(","), strict=True)) for language, text in TYPE_NAMES.items()}
-    target = ROOT / "colosseum_randomizer/locales/selection_names.py"
+    target = ROOT / "orre_randomizer/locales/selection_names.py"
     target.write_text('"""Pokémon and type names from PokeAPI (BSD); see licenses/pokeapi-names.json."""\n\n'
                       + 'SPECIES_NAMES = ' + pprint.pformat(names, sort_dicts=False, width=100) + '\n\n'
                       + 'TYPE_NAMES = ' + pprint.pformat(types, sort_dicts=False, width=100) + '\n', encoding="utf-8")
     provenance = ROOT / "licenses/pokeapi-names.json"
     data = json.loads(provenance.read_text("utf-8"))
     data.update(selection="local_language_id=1,5,6,7,8,9; national species IDs 1..386; name only",
-                output="colosseum_randomizer/locales/selection_names.py", languages=LANGUAGES,
+                output="orre_randomizer/locales/selection_names.py", languages=LANGUAGES,
                 type_names={"source": "https://raw.githubusercontent.com/PokeAPI/pokeapi/master/data/v2/csv/type_names.csv",
                             "selection": "17 Gen III types, same six languages; native ID 9 omitted",
                             "verified": "2026-11-01", "data_sha256": hashlib.sha256(json.dumps(types, ensure_ascii=False, sort_keys=True).encode("utf-8")).hexdigest()})

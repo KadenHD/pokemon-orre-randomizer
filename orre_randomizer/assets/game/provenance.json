@@ -1,0 +1,293 @@
+{
+  "version": 1,
+  "game_id": "GC6P01",
+  "revision": 0,
+  "source_iso_sha256": "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9",
+  "code_license": "MIT; game resources are separate from the code license",
+  "images": [
+    {
+      "key": "background",
+      "file": "images/background-v1-f381b1e8423dd207c60632c44c4f3c2a57b82e47db42d7738a5a10238226b7af.png",
+      "sha256": "f381b1e8423dd207c60632c44c4f3c2a57b82e47db42d7738a5a10238226b7af",
+      "size": 52282,
+      "dimensions": [
+        640,
+        480
+      ],
+      "source_archive": "title.fsys",
+      "source_member": {
+        "index": 22,
+        "name": "menu_042",
+        "header_offset": 2224,
+        "identifier_raw": "0x0b811200",
+        "offset": 1209792,
+        "stored_size": 44865,
+        "unpacked_size": 153728,
+        "compression": "LZSS",
+        "sha256_stored": "7fe925bd19280216a6beae33103c6976af10be922819b5d3a8b02352a4aef9e1",
+        "decoded_sha256": "c13abee185831902deb409ea7d75722e10c1983c29f2b1246b81c0fc879cb4be"
+      },
+      "source_crop": null,
+      "source_pixel_offset": 128,
+      "rgba_sha256": "19a3326829190acb754085bb5b3751cd18c6aa03dc5e7c9143a6ee9eb04a8d50"
+    },
+    {
+      "key": "logo",
+      "file": "images/logo-v1-29c46b8053bcfc8d3235ea4f0f63329fbf0878efdcaa4cb9ff29e3958d6f77cd.png",
+      "sha256": "29c46b8053bcfc8d3235ea4f0f63329fbf0878efdcaa4cb9ff29e3958d6f77cd",
+      "size": 3125,
+      "dimensions": [
+        96,
+        32
+      ],
+      "source_archive": "opening.bnr",
+      "source_member": null,
+      "source_crop": null,
+      "source_pixel_offset": 32,
+      "rgba_sha256": "b5754397d7d578c56360dfeeec1ce9f227080ca0784415770722779f3682cd1c"
+    },
+    {
+      "key": "espeon",
+      "file": "images/espeon-v1-9281b3db4b69eb8cc62032d7e8a537c637fac1d122813821d2f21dd3de4dc3db.png",
+      "sha256": "9281b3db4b69eb8cc62032d7e8a537c637fac1d122813821d2f21dd3de4dc3db",
+      "size": 4771,
+      "dimensions": [
+        42,
+        42
+      ],
+      "source_archive": "poke_face.fsys",
+      "source_member": {
+        "index": 7,
+        "name": "face196",
+        "header_offset": 5728,
+        "identifier_raw": "0x07031200",
+        "offset": 124032,
+        "stored_size": 11386,
+        "unpacked_size": 14912,
+        "compression": "LZSS",
+        "sha256_stored": "3de3cc484013909004638ca810a13055f8c3e6f06a9ecf343bbd0399b8358030",
+        "decoded_sha256": "7e3fecc2c45b4d02d612d0fd43deb2789a6ee3e7b9704cc2ccc4a04bb95f879e"
+      },
+      "source_crop": [
+        0,
+        0,
+        42,
+        42
+      ],
+      "source_pixel_offset": 128,
+      "rgba_sha256": "47c74b083337914bfd3cfc8bccaa21921e789e4127b5cb1de43b358a36f3b7cb"
+    },
+    {
+      "key": "umbreon",
+      "file": "images/umbreon-v1-7d56231ab43388a557aab60143e16243026d639c80e9063f32f525175b0d1320.png",
+      "sha256": "7d56231ab43388a557aab60143e16243026d639c80e9063f32f525175b0d1320",
+      "size": 4863,
+      "dimensions": [
+        42,
+        42
+      ],
+      "source_archive": "poke_face.fsys",
+      "source_member": {
+        "index": 6,
+        "name": "face197",
+        "header_offset": 5648,
+        "identifier_raw": "0x07021200",
+        "offset": 111808,
+        "stored_size": 12193,
+        "unpacked_size": 14912,
+        "compression": "LZSS",
+        "sha256_stored": "c2d85d659f4f2028d7bf9040643b6bbe36062bd6f978da844ffea0bfcda656da",
+        "decoded_sha256": "d6e9b12777059b1b323b1cce4b4d0465628e1dc60d41dd37fbcd0be31fc8b6f4"
+      },
+      "source_crop": [
+        0,
+        0,
+        42,
+        42
+      ],
+      "source_pixel_offset": 128,
+      "rgba_sha256": "e96e772e138fcf86b9349e4d4dc46aa036da688a37f7f7c4fc11ab2eebb68849"
+    },
+    {
+      "key": "pikachu",
+      "file": "images/pikachu-v1-e246bcb58e0fb11a41dd7663a5bb2de1bc0d518e2b8d0b342323bb8a3eaed4f0.png",
+      "sha256": "e246bcb58e0fb11a41dd7663a5bb2de1bc0d518e2b8d0b342323bb8a3eaed4f0",
+      "size": 2726,
+      "dimensions": [
+        42,
+        42
+      ],
+      "source_archive": "poke_face.fsys",
+      "source_member": {
+        "index": 34,
+        "name": "face025",
+        "header_offset": 7888,
+        "identifier_raw": "0x0e051200",
+        "offset": 423328,
+        "stored_size": 7651,
+        "unpacked_size": 14912,
+        "compression": "LZSS",
+        "sha256_stored": "0cd9d0976779051e5339115512e2af81e51b9eacfb8c3bcdc0f6dcf75f92eb35",
+        "decoded_sha256": "c68826bab355c3de1ca480abd5e590ad09179e8b3a9b804b503af4c7984bde9e"
+      },
+      "source_crop": [
+        0,
+        0,
+        42,
+        42
+      ],
+      "source_pixel_offset": 128,
+      "rgba_sha256": "a3d5f96c0c7e6104bebf59b9b071c2d5e80611a26a4595b65593951d2e29c42c"
+    },
+    {
+      "version": 1,
+      "language": "en",
+      "game_id": "GXXP01",
+      "revision": 0,
+      "source_iso_sha256": "1cc438ed60e542991b8f1abea4617e67880f2568aceb513602051ca6f310e8c1",
+      "source_file": "opening.bnr",
+      "source_file_sha256": "1eab2acfc2c08c7fcedcb8ad04d370bd6cc857fd0fe471414fefbe35b3bea9bb",
+      "source_pixel_offset": 32,
+      "width": 96,
+      "height": 32,
+      "bytes": 3570,
+      "sha256": "31de81e23fef945e651d5f73ac851cb62e61c3b4fb3fc83abce97ca999100e28",
+      "key": "xd_logo_en",
+      "file": "interface/xd-logo-en.png"
+    }
+  ],
+  "menu_effects": {
+    "common_archive": "common.fsys",
+    "sample_archive": "sound/snd_se.samp",
+    "sample_ids": {
+      "move": 48,
+      "confirm": 1,
+      "back": 52
+    },
+    "gain": [
+      1,
+      4
+    ],
+    "format": "PCM16 mono",
+    "move_pitch": "native +12 semitones, sample playback 88200Hz"
+  },
+  "title_music": {
+    "source_file": "GC6P01_2026-10-31_16-55-13_dspdump.wav",
+    "source_bytes": 180191116,
+    "source_sha256": "7df2d3c93883344f6767301fc5f7eff04b7c16f6dadaac7e82e7f0c3abed14b5",
+    "output": "title-complete-native-32028.wav",
+    "output_bytes": 12715160,
+    "output_sha256": "dc90ae92683acf364ff43b096b2b89f8736ab7e74e718f21d0a6bb0159000a98",
+    "format": {
+      "channels": 2,
+      "sample_width_bytes": 2,
+      "rate": 32028
+    },
+    "start_frame": 25487580,
+    "end_frame_exclusive": 28666359,
+    "frames": 3178779,
+    "start_seconds": 795.7905582615211,
+    "end_seconds": 895.0405582615211,
+    "duration_seconds": 99.25,
+    "selection": "Fifth title occurrence (zero-based cycle4), complete score plus short margins; no source PCM edits",
+    "native_title_song": {
+      "last_note_end_tick": 69471,
+      "last_note_end_seconds": 99.0290723430246,
+      "first_sequence_start_estimate_seconds": 795.8596228300237,
+      "estimated_last_note_end_seconds": 894.8886951730483,
+      "boundary_precision": "Estimated alignment from native note chroma, 20ms analysis step; not a sample-exact event timestamp"
+    },
+    "repeat_validation": {
+      "comparison_occurrence": "cycle5",
+      "comparison_start_frame": 31612700,
+      "shift_frames": 6125120,
+      "shift_seconds": 191.2426626701636,
+      "pcm_first_difference_correlation": 0.9999600658307505,
+      "chroma_correlation": 0.6506440593177263
+    },
+    "postprocess_recommendation": "highpass=f=20,volume=0.15,aresample=44100; short fadein/out if needed for app looping",
+    "audio_downloaded": false,
+    "original_rom_modified": false,
+    "iso_patch_produced": false,
+    "human_listening_claimed": false
+  },
+  "files": {
+    "audio/menu-back-v1-27a171cce7c82a87e27708dd98940666e1900b0d68a7a5dd8ad9d5a76cc6f4bd.wav": {
+      "bytes": 15878,
+      "sha256": "27a171cce7c82a87e27708dd98940666e1900b0d68a7a5dd8ad9d5a76cc6f4bd"
+    },
+    "audio/menu-confirm-v1-56289058fd95859c3c78196946367bc190cf46c1b3de0b9e7a66cc7c2adc8139.wav": {
+      "bytes": 19628,
+      "sha256": "56289058fd95859c3c78196946367bc190cf46c1b3de0b9e7a66cc7c2adc8139"
+    },
+    "audio/menu-move-v1-27e695277e0dea9dadfb002124d223d6ad34de8d9c34ea14f3480afe4097bd24.wav": {
+      "bytes": 11316,
+      "sha256": "27e695277e0dea9dadfb002124d223d6ad34de8d9c34ea14f3480afe4097bd24"
+    },
+    "audio/menu-sounds-v1.json": {
+      "bytes": 753,
+      "sha256": "eaa3df0351f99051fac9a68c627ea77cfe2c021f9576aece0776c969feb03b29"
+    },
+    "images/artwork-v1.json": {
+      "bytes": 1090,
+      "sha256": "afa48676cf3ae257b94d2e40d30657a64418fcc9be3aec1835f58b7f25a3b8e1"
+    },
+    "images/background-v1-f381b1e8423dd207c60632c44c4f3c2a57b82e47db42d7738a5a10238226b7af.png": {
+      "bytes": 52282,
+      "sha256": "f381b1e8423dd207c60632c44c4f3c2a57b82e47db42d7738a5a10238226b7af"
+    },
+    "images/espeon-v1-9281b3db4b69eb8cc62032d7e8a537c637fac1d122813821d2f21dd3de4dc3db.png": {
+      "bytes": 4771,
+      "sha256": "9281b3db4b69eb8cc62032d7e8a537c637fac1d122813821d2f21dd3de4dc3db"
+    },
+    "images/logo-v1-29c46b8053bcfc8d3235ea4f0f63329fbf0878efdcaa4cb9ff29e3958d6f77cd.png": {
+      "bytes": 3125,
+      "sha256": "29c46b8053bcfc8d3235ea4f0f63329fbf0878efdcaa4cb9ff29e3958d6f77cd"
+    },
+    "images/pikachu-v1-e246bcb58e0fb11a41dd7663a5bb2de1bc0d518e2b8d0b342323bb8a3eaed4f0.png": {
+      "bytes": 2726,
+      "sha256": "e246bcb58e0fb11a41dd7663a5bb2de1bc0d518e2b8d0b342323bb8a3eaed4f0"
+    },
+    "images/umbreon-v1-7d56231ab43388a557aab60143e16243026d639c80e9063f32f525175b0d1320.png": {
+      "bytes": 4863,
+      "sha256": "7d56231ab43388a557aab60143e16243026d639c80e9063f32f525175b0d1320"
+    },
+    "interface/icon.json": {
+      "bytes": 262,
+      "sha256": "9e173ae8f09bed319990ce6a03d2a022c7f5d2ff93f2a7969111d7d152462828"
+    },
+    "interface/pokeball.png": {
+      "bytes": 405,
+      "sha256": "bba485cf4481c8064c80463ee113fd8f557e8c21b839bb131efc536a43edcf54"
+    },
+    "music/title.wav": {
+      "bytes": 17507778,
+      "sha256": "2f612ffcdd06faa2b814e69fb9704d0acea6b0cc4f00f1ef3d596f365c695fc6"
+    },
+    "music/track.json": {
+      "bytes": 458,
+      "sha256": "0a5b87a50dd4156bbb1c0ca845b29c21775d5740abf874c0c9669c2dbf05d53c"
+    },
+    "README.md": {
+      "bytes": 672,
+      "sha256": "556d692f0fb8e45e3732e9cf52e2eb696cae09aec423665db6cefbd06d0affc0"
+    },
+    "interface/xd-logo-en.png": {
+      "bytes": 3570,
+      "sha256": "31de81e23fef945e651d5f73ac851cb62e61c3b4fb3fc83abce97ca999100e28"
+    },
+    "interface/xd-logo-en.json": {
+      "bytes": 465,
+      "sha256": "3ce7f346186756c999f5be2bd234c32500adbd702eba3bdf719ea905917afd96"
+    }
+  },
+  "additional_sources": [
+    {
+      "game_id": "GXXP01",
+      "revision": 0,
+      "source_iso_sha256": "1cc438ed60e542991b8f1abea4617e67880f2568aceb513602051ca6f310e8c1",
+      "resource": "English Pokémon XD logo from opening.bnr"
+    }
+  ],
+  "exported_locally": true
+}

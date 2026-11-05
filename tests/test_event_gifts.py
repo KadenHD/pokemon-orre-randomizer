@@ -9,10 +9,10 @@ import struct
 import unittest
 import os
 
-from colosseum_randomizer.engine import event_gifts as events
-from colosseum_randomizer.engine.analyze_game import FormatError, parse_fsys, u32
-from colosseum_randomizer.engine.rebuild_iso import decoded_member
-from colosseum_randomizer.options import Options
+from orre_randomizer.engine import event_gifts as events
+from orre_randomizer.engine.analyze_game import FormatError, parse_fsys, u32
+from orre_randomizer.engine.rebuild_iso import decoded_member
+from orre_randomizer.options import Options
 
 
 def execute(code, entry, flags, *, gift_result=0, stop_at=None):

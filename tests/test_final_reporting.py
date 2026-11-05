@@ -7,13 +7,13 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer import service
-from colosseum_randomizer.engine.gameplay_rules import apply_dol_rules, apply_rel_rules
-from colosseum_randomizer.engine.inspect_tables import localized_names, u16
-from colosseum_randomizer.engine.randomize_story import SPECIALS, experience_at_level
-from colosseum_randomizer.engine.randomize_trainers import layout, original_common
-from colosseum_randomizer.engine.species_rules import species_catalog
-from colosseum_randomizer.options import Options
+from orre_randomizer import service
+from orre_randomizer.engine.gameplay_rules import apply_dol_rules, apply_rel_rules
+from orre_randomizer.engine.inspect_tables import localized_names, u16
+from orre_randomizer.engine.randomize_story import SPECIALS, experience_at_level
+from orre_randomizer.engine.randomize_trainers import layout, original_common
+from orre_randomizer.engine.species_rules import species_catalog
+from orre_randomizer.options import Options
 
 
 class FinalReportTests(unittest.TestCase):
@@ -126,7 +126,7 @@ class PalFinalReportTests(unittest.TestCase):
                 self.assertEqual(special["name_" + language], names[bank][name_id])
 
     def test_final_shadow_snapshot_and_rerolls_describe_all_48_actual_families(self):
-        from colosseum_randomizer.engine.evolution_rules import evolution_families
+        from orre_randomizer.engine.evolution_rules import evolution_families
         families, _ = evolution_families(self.original, self.tables)
         shadow = self.tables["shadow"]
         rows = self.report["final_shadow_picks"]

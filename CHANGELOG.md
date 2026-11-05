@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.21.0rc2
+
+- Public Windows and source distributions include the complete verified interface
+  pack: game logos, background, cursor, menu sounds and music. Packaging rejects
+  undeclared media and verifies every recorded asset hash.
+
+- Home-screen audio controls and language selection use a silver and graphite palette.
+
+- Added the approved metallic Orre logo to the home screen. Local and public
+  builds include the original transparent logo and its provenance.
+
+- The game selector uses a neutral black-to-gray background.
+
+- The game pack uses the original English Pokémon XD banner on the home
+  screen and XD workspace header.
+
+- Reworked the home screen with two game choices using their own menu colors,
+  a shared layout and whole-panel activation. Choices stack in compact windows
+  and support keyboard navigation and all six interface languages.
+
+- Renamed the Python package to `orre_randomizer` and the shared Rust codec to
+  `orre_lzss`. Source launch commands, build scripts and release checks use the
+  new package. Existing installed `colosseum-randomizer` commands remain aliases.
+- Application preferences now use the Orre name and import existing Colosseum
+  preferences once, preserving newer choices.
+
 ## 0.21.0rc1
 
 - Added a dedicated Pokémon XD wizard for European, North American, and Japanese revision-0 discs.

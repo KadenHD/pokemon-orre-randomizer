@@ -32,8 +32,7 @@ try {
     try {
         foreach ($entry in $contents.Entries) {
             if ($entry.FullName -notmatch '^OrreRandomizer/' -or $entry.FullName -match '(^|/)\.\.(/|$)|[\\:]' -or
-                [IO.Path]::GetExtension($entry.FullName) -in @('.iso','.rvz','.gcm','.raw','.sav','.gci') -or
-                $entry.FullName -match '/assets/game/') {
+                [IO.Path]::GetExtension($entry.FullName) -in @('.iso','.rvz','.gcm','.raw','.sav','.gci','.fsys','.dol','.rel')) {
                 throw "Unexpected Windows archive entry: $($entry.FullName)"
             }
         }
@@ -87,7 +86,9 @@ try {
             if ($app.ExitCode -ne 0) { throw "Installed app diagnostic failed ($($app.ExitCode))." }
             $diagnostics = Get-Content -LiteralPath $report -Raw | ConvertFrom-Json
             if (-not $diagnostics.successful -or -not $diagnostics.frozen -or $diagnostics.version -ne $version -or
-                $diagnostics.images.Count -ne 0 -or $diagnostics.rom_opened -or $diagnostics.personal_preferences_opened) {
+                $diagnostics.images.Count -ne 5 -or $diagnostics.sounds.Count -ne 3 -or
+                -not $diagnostics.music_available -or -not $diagnostics.application_logo_available -or
+                $diagnostics.rom_opened -or $diagnostics.personal_preferences_opened) {
                 throw 'Installed app diagnostic did not match the public edition.'
             }
         } finally {

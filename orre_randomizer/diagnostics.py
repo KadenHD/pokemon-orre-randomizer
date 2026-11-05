@@ -21,14 +21,14 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
     from .options import Options
     from .locales.selection_names import SPECIES_NAMES
     from .ui_exclusions import ExclusionDialog
-    from .resources import application_icon, interface_assets, menu_icon, music_track
+    from .resources import application_icon, application_logo, interface_assets, menu_icon, music_track
 
-    app = QApplication.instance() or QApplication(["ColosseumRandomizer diagnostics"])
+    app = QApplication.instance() or QApplication(["OrreRandomizer diagnostics"])
     if sys.platform == "win32":
         QFontDatabase.addApplicationFont(str(Path(os.environ.get("SystemRoot", "C:/Windows"))/"Fonts/segoeui.ttf"))
         QFontDatabase.addApplicationFont(str(Path(os.environ.get("SystemRoot", "C:/Windows"))/"Fonts/YuGothR.ttc"))
         app.setFont(QFont("Segoe UI", 10))
-    sample = bytes(range(256)) * 16 + b"Colosseum diagnostics" * 64
+    sample = bytes(range(256)) * 16 + b"Orre diagnostics" * 64
     encoded = compress_lzss_python(sample)
     assert decompress_lzss_python(encoded) == sample
     codec = native_codec.backend()
@@ -43,6 +43,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
             "music_available": music_track() is not None,
             "game_cursor_available": menu_icon() is not None,
             "application_icon_available": application_icon() is not None,
+            "application_logo_available": application_logo() is not None,
             "rom_opened": False, "personal_preferences_opened": False,
             "home_states": [], "states": [], "exclusion_states": [], "shiny_states": [], "preview_states": [],
             "consolidation_states": [], "xd_states": []}

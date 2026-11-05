@@ -220,8 +220,8 @@ constituting a complete part or a test on another PC.
 ## CLI
 
 ```powershell
-python -m colosseum_randomizer.cli original.iso duo.iso --seed ma-seed --starter-umbreon-species 94 --starter-espeon-species 208 --journal-language en
-python -m colosseum_randomizer.cli original.iso rythme.iso --seed ma-seed --progressive-levels --early-level-multiplier 0.9 --mid-level-multiplier 1.1 --late-level-multiplier 1.25 --experience-multiplier 2 --purification-multiplier 3
+python -m orre_randomizer.cli original.iso duo.iso --seed ma-seed --starter-umbreon-species 94 --starter-espeon-species 208 --journal-language en
+python -m orre_randomizer.cli original.iso rythme.iso --seed ma-seed --progressive-levels --early-level-multiplier 0.9 --mid-level-multiplier 1.1 --late-level-multiplier 1.25 --experience-multiplier 2 --purification-multiplier 3
 ```
 
 The numbers of the starters are those of the national Pokédex, not the internal clues of the game.

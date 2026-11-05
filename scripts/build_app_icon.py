@@ -11,7 +11,7 @@ from PySide6.QtCore import QBuffer, QByteArray, QIODevice, Qt
 from PySide6.QtGui import QImage, QPainter
 
 ROOT = Path(__file__).resolve().parents[1]
-ASSETS = ROOT / "colosseum_randomizer/assets/app"
+ASSETS = ROOT / "orre_randomizer/assets/app"
 SIZES = (16, 20, 24, 32, 40, 48, 64, 128, 256)
 
 

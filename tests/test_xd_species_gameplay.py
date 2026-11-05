@@ -2,11 +2,11 @@ from dataclasses import replace
 import struct
 import unittest
 
-from colosseum_randomizer.engine.gameplay_rules import damaging
-from colosseum_randomizer.engine.inspect_tables import u16
-from colosseum_randomizer.engine.tm_rules import ORIGINAL_HM_MOVES, ORIGINAL_TM_MOVES
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.xd_species_gameplay import (
+from orre_randomizer.engine.gameplay_rules import damaging
+from orre_randomizer.engine.inspect_tables import u16
+from orre_randomizer.engine.tm_rules import ORIGINAL_HM_MOVES, ORIGINAL_TM_MOVES
+from orre_randomizer.options import Options
+from orre_randomizer.xd_species_gameplay import (
     SPECIES_STRIDE, STAT_FIELDS, TM_OFFSETS, XDMoveRandomizer,
     patch_species_gameplay, patch_tm_gameplay,
 )

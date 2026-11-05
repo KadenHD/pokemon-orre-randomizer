@@ -3,12 +3,18 @@ from pathlib import Path
 import hashlib
 import json
 import wave
-from .artwork import ArtworkError, load_cached_artwork
+import zlib
+from .artwork import ArtworkError, _png_pixels, load_cached_artwork
 from .menu_sounds import MenuSoundError, load_cached_menu_sounds
 
 
 def application_icon() -> Path | None:
     path = Path(__file__).resolve().parent / "assets/app/icon.ico"
+    return path if path.is_file() else None
+
+
+def application_logo() -> Path | None:
+    path = Path(__file__).resolve().parent / "assets/app/logo.png"
     return path if path.is_file() else None
 
 
@@ -28,6 +34,27 @@ def interface_assets() -> tuple[dict[str, Path], dict[str, Path]]:
     except MenuSoundError:
         sounds = {}
     return images, sounds
+
+
+def xd_logo() -> Path | None:
+    """Read the verified English XD banner exported into the local game pack."""
+    root = bundle_root() / "interface"
+    try:
+        metadata = root / "xd-logo-en.json"
+        if metadata.stat().st_size > 16 * 1024:
+            return None
+        manifest = json.loads(metadata.read_text("utf-8"))
+        path = root / "xd-logo-en.png"
+        if (manifest["language"] != "en" or path.is_symlink()
+                or not 32 <= path.stat().st_size <= 64 * 1024):
+            return None
+        data = path.read_bytes()
+        if len(data) != manifest["bytes"] or hashlib.sha256(data).hexdigest() != manifest["sha256"]:
+            return None
+        _png_pixels(data, (96, 32))
+        return path
+    except (OSError, ValueError, TypeError, KeyError, RecursionError, zlib.error):
+        return None
 
 
 def music_track() -> Path | None:

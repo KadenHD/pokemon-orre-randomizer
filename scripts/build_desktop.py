@@ -13,25 +13,25 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from colosseum_randomizer import APP_EXECUTABLE, REPOSITORY_NAME, __version__
+from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME, __version__
 
 
 def source_files(*, include_game_assets: bool = True) -> list[Path]:
     files = [ROOT / name for name in ("README.md", "CHANGELOG.md", "RESEARCH.md", "LICENSE", "THIRD_PARTY_NOTICES.md",
              "CONTRIBUTING.md", "PRODUCT.md", "DESIGN.md", "pyproject.toml", "requirements-build.txt", ".gitignore", ".gitattributes",
              "lancer-randomizer.ps1")]
-    for directory, extensions in (("colosseum_randomizer", {".py"}), ("tests", {".py"}),
+    for directory, extensions in (("orre_randomizer", {".py"}), ("tests", {".py"}),
                                   ("scripts", {".py", ".ps1", ".spec", ".iss"}), ("docs", {".md"}),
                                   ("licenses", {".txt", ".json", ".md"}), (".github", {".yml", ".md"})):
         files += [p for p in (ROOT / directory).rglob("*") if p.is_file() and p.suffix in extensions]
     files += [ROOT / "native/Cargo.toml", ROOT / "native/Cargo.lock", ROOT / "native/src/lib.rs"]
     files.append(ROOT / "docs/reverse-engineering/baseline.json")
-    files += [ROOT / "colosseum_randomizer/assets/app" / name
-              for name in ("icon.png", "icon.ico", "provenance.json", "README.md")]
+    files += [ROOT / "orre_randomizer/assets/app" / name
+              for name in ("icon.png", "icon.ico", "provenance.json", "logo.png", "logo.json", "README.md")]
     # Explicit local interface pack exported once from the supplied game. Never
     # sweep game/, build/, user caches or arbitrary assets into a distribution.
     if include_game_assets:
-        pack = ROOT / "colosseum_randomizer/assets/game"
+        pack = ROOT / "orre_randomizer/assets/game"
         manifest = json.loads((pack / "provenance.json").read_text("utf-8"))
         for name, expected in manifest["files"].items():
             path = pack / name
@@ -66,22 +66,23 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-only", action="store_true")
     parser.add_argument("--edition", choices=("local", "public"), default="local",
-                        help="Local includes the exported game pack; public contains application code only")
+                        help="Choose the output directory; both editions include the verified interface pack")
     parser.add_argument("--skip-freeze", action="store_true", help="Repackage the already tested executable without recompiling it")
     args = parser.parse_args()
-    include_game_assets = args.edition == "local"
-    app_assets = ROOT / "colosseum_randomizer/assets/app"
-    icon_manifest = json.loads((app_assets / "provenance.json").read_text("utf-8"))
-    if set(icon_manifest["files"]) != {"icon.png", "icon.ico"}:
-        raise SystemExit("Unexpected application icon files.")
-    for name, expected in icon_manifest["files"].items():
-        path = app_assets / name
-        if (path.is_symlink() or not path.resolve().is_relative_to(app_assets.resolve()) or
-                path.stat().st_size != expected["bytes"] or
-                hashlib.sha256(path.read_bytes()).hexdigest() != expected["sha256"]):
-            raise SystemExit("Invalid application icon: " + name)
+    include_game_assets = True
+    app_assets = ROOT / "orre_randomizer/assets/app"
+    for filename, allowed in (("provenance.json", {"icon.png", "icon.ico"}), ("logo.json", {"logo.png"})):
+        manifest = json.loads((app_assets / filename).read_text("utf-8"))
+        if set(manifest["files"]) != allowed:
+            raise SystemExit("Unexpected application assets in " + filename)
+        for name, expected in manifest["files"].items():
+            path = app_assets / name
+            if (path.is_symlink() or not path.resolve().is_relative_to(app_assets.resolve()) or
+                    path.stat().st_size != expected["bytes"] or
+                    hashlib.sha256(path.read_bytes()).hexdigest() != expected["sha256"]):
+                raise SystemExit("Invalid application asset: " + name)
     if include_game_assets:
-        from colosseum_randomizer.resources import interface_assets, music_track, menu_icon
+        from orre_randomizer.resources import interface_assets, music_track, menu_icon
         images, sounds = interface_assets()
         if len(images) != 5 or len(sounds) != 3 or music_track() is None or menu_icon() is None:
             raise SystemExit("The exported interface pack is incomplete.")
@@ -105,7 +106,7 @@ def main():
         # Other developer tools on PATH can have incompatible DLLs named icuuc.dll,
         # libcrypto, or Windows API shims. Resolve against Python/Qt and the OS only.
         environment = os.environ.copy()
-        environment["COLOSSEUM_BUNDLE_GAME_ASSETS"] = "1" if include_game_assets else "0"
+        environment["ORRE_BUNDLE_GAME_ASSETS"] = "1" if include_game_assets else "0"
         windows = Path(environment.get("SystemRoot", r"C:\Windows"))
         environment["PATH"] = os.pathsep.join(map(str, (Path(sys.executable).parent,
             Path(sys.base_prefix), Path(sys.base_prefix) / "Scripts", windows / "System32", windows)))

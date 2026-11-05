@@ -8,7 +8,7 @@ import threading
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer import service
+from orre_randomizer import service
 
 
 class ServiceTests(unittest.TestCase):
@@ -113,7 +113,7 @@ class ServiceTests(unittest.TestCase):
             with patch.object(service, "convert", side_effect=error):
                 with self.assertRaises(type(error)):
                     service.randomize(source, self.output, "seed", dolphin_tool=tool)
-            self.assertFalse(list(self.root.glob(".colosseum-*")))
+            self.assertFalse(list(self.root.glob(".orre-*")))
             self.assertFalse(self.output.exists())
             self.assertEqual(source.read_bytes(), b"RVZ input")
 
@@ -121,8 +121,8 @@ class ServiceTests(unittest.TestCase):
 class OptionIntegrationTests(unittest.TestCase):
     @unittest.skipUnless(Path("game/files/common.fsys").exists(), "requires user's local PAL dump")
     def test_all_option_combinations_preserve_evolution_routes(self):
-        from colosseum_randomizer.engine.randomize_trainers import original_common, layout
-        from colosseum_randomizer.engine.evolution_rules import evolution_families, patch_evolutions
+        from orre_randomizer.engine.randomize_trainers import original_common, layout
+        from orre_randomizer.engine.evolution_rules import evolution_families, patch_evolutions
         _, _, original = original_common(Path("game"))
         tables, _ = layout(original)
         family, _ = evolution_families(original, tables)

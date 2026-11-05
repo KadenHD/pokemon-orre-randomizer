@@ -1,0 +1,14 @@
+{
+  "version": 1,
+  "language": "en",
+  "game_id": "GXXP01",
+  "revision": 0,
+  "source_iso_sha256": "1cc438ed60e542991b8f1abea4617e67880f2568aceb513602051ca6f310e8c1",
+  "source_file": "opening.bnr",
+  "source_file_sha256": "1eab2acfc2c08c7fcedcb8ad04d370bd6cc857fd0fe471414fefbe35b3bea9bb",
+  "source_pixel_offset": 32,
+  "width": 96,
+  "height": 32,
+  "bytes": 3570,
+  "sha256": "31de81e23fef945e651d5f73ac851cb62e61c3b4fb3fc83abce97ca999100e28"
+}

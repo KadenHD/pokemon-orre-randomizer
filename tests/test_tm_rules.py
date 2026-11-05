@@ -4,9 +4,9 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.species_rules import STAT_OFFSETS
-from colosseum_randomizer.engine.tm_rules import (
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.species_rules import STAT_OFFSETS
+from orre_randomizer.engine.tm_rules import (
     COMPAT_OFFSET, FIRST_TM_ITEM, HM_COUNT, ITEM_OFFSET, ITEM_STRIDE,
     ORIGINAL_HM_MOVES, ORIGINAL_TM_MOVES, TM_COUNT, TM_OFFSET, TM_STRIDE,
     apply_tm_rules, apply_tm_tables)
@@ -196,7 +196,7 @@ class TMRulesTests(unittest.TestCase):
                      "local original PAL game is unavailable")
 class LocalPALTMTests(unittest.TestCase):
     def test_original_pal_has_50_tms_8_hms_386_species_and_supported_guarantee(self):
-        from colosseum_randomizer.engine.randomize_trainers import original_common
+        from orre_randomizer.engine.randomize_trainers import original_common
         rel = original_common(Path("game"))[2]
         dol = Path("game/sys/main.dol").read_bytes()
         output_rel, output_dol, report = apply_tm_rules(rel, rel, dol, dol, "PAL-CT-validation", Rules(True, "type", True))

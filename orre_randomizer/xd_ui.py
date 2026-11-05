@@ -1,15 +1,14 @@
 """Pokémon XD creation form, sharing the desktop's validation and job runner."""
 
-from dataclasses import fields
+from dataclasses import fields, replace
 from html import escape
 from pathlib import Path
-import secrets
 
-from PySide6.QtCore import QSignalBlocker, QSize, Qt, Slot
-from PySide6.QtGui import QIcon, QPixmap
+from PySide6.QtCore import QSignalBlocker, QSize, Qt, QTimer, Slot
+from PySide6.QtGui import QIcon
 from PySide6.QtWidgets import (
-    QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QHeaderView, QHBoxLayout, QLabel, QLineEdit,
-    QProgressBar, QSpinBox, QStackedWidget, QTabBar, QToolButton, QTreeWidget, QTreeWidgetItem,
+    QComboBox, QDoubleSpinBox, QFileDialog, QFormLayout, QHBoxLayout, QLabel,
+    QProgressBar, QSpinBox, QToolButton, QTreeWidgetItem,
     QVBoxLayout, QWidget,
 )
 
@@ -17,11 +16,15 @@ from .i18n import Message
 from .locales.selection_names import SPECIES_NAMES
 from .profiles import XD_SPOT_MIGRATION, load_profile, load_xd_creation_report, save_profile, validate_seed
 from .service import RVZToolRequired, UserError, check_header, validate_paths
+from .ui_icons import CATEGORY_SYMBOLS
 from .ui_exclusions import ExcludedSelection, search_key
-from .ui_pokemon_names import PreviewNameDelegate, RICH_NAME_ROLE, shiny_name_html
+from .settings_presentation import search_settings
+from .ui_pokemon_names import RICH_NAME_ROLE, shiny_name_html
 from .ui_species import SpeciesChoice
-from .ui_theme import MenuCheckBox, MenuPanel
-from .ui_workspace import bounded, scroll_area
+from .ui_theme import MenuCheckBox
+from .ui_workspace import (EncounterTable, RuleNavigation, configuration_workspace, file_field, preset_buttons,
+                           preview_toolbar, scroll_area, search_field, settings_workspace, starter_slot,
+                           wizard_frame, wizard_page)
 from .xd import XDOptions, validate_options
 from .xd_gifts import GIFT_TRADE_REQUIREMENTS, TOGETIC
 
@@ -71,73 +74,30 @@ class XDWorkspace(QWidget):
         self.preview_running = False
         self.preview_message = "Choisissez la ROM d’origine pour calculer l’aperçu."
         self.preview_error = False
-        layout = QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setSpacing(12)
         self.step = 0
-        self.step_buttons = []
-        steps = QHBoxLayout()
-        steps.setSpacing(0)
-        for index, label in enumerate(("1. ROM", "2. Réglages", "3. Créer")):
-            button = window.button(label)
-            button.setObjectName("step")
-            button.setCheckable(True)
-            button.clicked.connect(lambda checked=False, index=index: self.go_step(index))
-            self.step_buttons.append(button)
-            steps.addWidget(button, 1)
-        layout.addLayout(steps)
+        layout, self.pages, self.step_buttons = wizard_frame(self, window, self.go_step, xd=True)
 
-        panel = MenuPanel(xd=True)
-        panel_layout = QVBoxLayout(panel)
-        panel_layout.setContentsMargins(8, 8, 8, 8)
-        self.pages = QStackedWidget()
-        panel_layout.addWidget(self.pages)
-        layout.addWidget(panel, 1)
-
-        rom = self.add_page()
-        source_group = self.section("Choisissez votre ROM")
-        source_label = window.label("ROM d’origine")
-        self.source = QLineEdit()
-        self.source.setObjectName("xdSource")
-        window.bind(self.source.setAccessibleName, "ROM d’origine")
-        window.bind(self.source.setPlaceholderText, "Déposez ou choisissez une image ISO ou RVZ")
-        source_label.setBuddy(self.source)
-        source_group.addWidget(source_label)
-        source_group.addLayout(self.path_row(self.source, self.choose_source))
-        source_group.addWidget(window.note("Pokémon XD · Europe, USA et Japon"))
+        rom = wizard_page(self.pages)
+        self.add_heading(rom, "Choisissez votre ROM")
+        rom.addWidget(window.note("Pokémon XD · Europe, USA et Japon"))
+        rom.addSpacing(16)
+        self.source, _ = file_field(
+            rom, window, "ROM d’&origine", "ROM d’origine",
+            "Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici", "Parcourir…", self.choose_source)
+        rom.addWidget(window.note("La ROM sera vérifiée avant la création. Aucun fichier existant ne sera remplacé."))
         self.tool_block, self.tool = window.build_tool_field()
+        self.tool_block.layout().addWidget(window.note(
+            "DolphinTool est nécessaire pour lire ou créer une RVZ. Utilisez celui fourni avec Dolphin."))
         self.source_conversion = self.disclosure("Conversion RVZ · DolphinTool", self.tool_block)
-        source_group.addWidget(self.source_conversion)
-        source_group.addWidget(self.tool_block)
-        rom.addLayout(source_group)
+        rom.addWidget(self.source_conversion, 0, Qt.AlignmentFlag.AlignLeft)
+        rom.addWidget(self.tool_block)
         rom.addStretch(1)
+        rom.addWidget(window.note("Votre ROM sert uniquement à créer une nouvelle partie."))
 
-        settings = self.add_page(scrolling=False)
-        settings.setSpacing(6)
-        tabs = QTabBar()
-        tabs.setObjectName("workspaceTabs")
-        window.bind(tabs.setAccessibleName, "Vues des réglages")
-        for label in ("Configuration", "Aperçu des Pokémon"):
-            index = tabs.addTab("")
-            window.bind(lambda value, index=index: tabs.setTabText(index, value), label)
-        settings.addWidget(tabs)
-        seed_row = QHBoxLayout()
-        seed_label = window.label("Seed")
-        self.seed = QLineEdit(secrets.token_hex(8))
-        self.seed.setMaxLength(256)
-        self.seed.setMaximumWidth(520)
-        seed_label.setBuddy(self.seed)
-        window.bind(self.seed.setAccessibleName, "Seed")
-        new_seed = window.button("Nouvelle seed")
-        new_seed.clicked.connect(lambda: self.seed.setText(secrets.token_hex(8)))
-        seed_row.addWidget(seed_label)
-        seed_row.addWidget(self.seed, 1)
-        seed_row.addWidget(new_seed)
-        seed_row.addStretch(1)
-        settings.addLayout(seed_row)
-        views = QStackedWidget()
-        settings.addWidget(views, 1)
-        tabs.currentChanged.connect(views.setCurrentIndex)
+        settings = wizard_page(self.pages, scrolling=False)
+        self.workspace_tabs, self.seed, views = settings_workspace(settings, window)
+        self.workspace_tabs.currentChanged.connect(views.setCurrentIndex)
+        self.workspace_tabs.currentChanged.connect(lambda _index: self.set_status() if self.step == 1 else None)
         self.build_configuration(views)
         preview = QWidget()
         preview_layout = QVBoxLayout(preview)
@@ -145,38 +105,37 @@ class XDWorkspace(QWidget):
         preview_layout.addLayout(self.build_preview())
         views.addWidget(preview)
 
-        output = self.add_page()
-        output_group = self.section("Créez votre ROM")
-        self.destination = QLineEdit()
-        self.destination.setObjectName("xdDestination")
-        window.bind(self.destination.setAccessibleName, "Nouvelle ROM")
+        output = wizard_page(self.pages)
+        output.setSpacing(8)
+        self.add_heading(output, "Créez votre ROM")
+        self.destination, _ = file_field(
+            output, window, "&Nouvelle ROM", "Nouvelle ROM",
+            "Choisissez où enregistrer la nouvelle ROM", "Enregistrer sous…", self.choose_destination)
         self.format = QComboBox()
         window.bind(self.format.setAccessibleName, "Format de sortie")
         self.format.addItems(("ISO", "RVZ"))
-        destination_label = window.label("Nouvelle ROM")
-        destination_label.setBuddy(self.destination)
-        output_group.addWidget(destination_label)
-        output_group.addLayout(self.path_row(self.destination, self.choose_destination))
         format_row = QHBoxLayout()
         format_label = window.label("Format de sortie")
         format_label.setBuddy(self.format)
         format_row.addWidget(format_label)
         format_row.addWidget(self.format)
         format_row.addStretch(1)
-        output_group.addLayout(format_row)
+        output.addLayout(format_row)
         self.output_tool_block, self.output_tool = window.build_tool_field(label=True)
         self.tool.textChanged.connect(self.output_tool.setText)
         self.output_tool.textChanged.connect(self.tool.setText)
         if tool_path:
             self.tool.setText(str(tool_path))
-        output_group.addWidget(self.output_tool_block)
+        output.addWidget(self.output_tool_block)
+        output.addWidget(window.note("Un rapport avec la seed et les réglages sera enregistré à côté de la ROM."))
         self.review = QLabel()
-        self.review.setObjectName("xdReview")
         self.review.setWordWrap(True)
         self.review.setTextFormat(Qt.TextFormat.PlainText)
-        output_group.addWidget(self.disclosure("Réglages appliqués", self.review))
-        output_group.addWidget(self.review)
-        output.addLayout(output_group)
+        self.review.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
+        window.bind(self.review.setAccessibleDescription, "Les valeurs mémorisées sans effet ne sont pas affichées ici.")
+        self.review_toggle = self.disclosure("Réglages appliqués", self.review)
+        output.addWidget(self.review_toggle, 0, Qt.AlignmentFlag.AlignLeft)
+        output.addWidget(self.review)
 
         result_row = QHBoxLayout()
         self.folder_button = window.button("Ouvrir le dossier")
@@ -196,7 +155,6 @@ class XDWorkspace(QWidget):
         output.addStretch(1)
 
         self.status = QLabel()
-        self.status.setObjectName("xdStatus")
         self.status.setWordWrap(True)
         self.status.setTextFormat(Qt.TextFormat.PlainText)
         self.status.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
@@ -232,62 +190,16 @@ class XDWorkspace(QWidget):
         self.set_options(XDOptions.recommended())
         self.refresh_navigation()
 
-    def add_page(self, *, scrolling=True):
-        page = QWidget()
-        layout = QVBoxLayout(page)
-        layout.setContentsMargins(16, 12, 16, 12)
-        layout.setSpacing(12)
-        host = bounded(page)
-        self.pages.addWidget(scroll_area(host) if scrolling else host)
-        return layout
-
     def build_configuration(self, views):
         window = self.window
-        configuration = QWidget()
-        layout = QVBoxLayout(configuration)
-        layout.setContentsMargins(0, 6, 0, 0)
-        views.addWidget(configuration)
-        header = QHBoxLayout()
-        title = window.label("Choisissez ce qui change")
-        title.setObjectName("subheading")
-        header.addWidget(title, 1)
-        modes = QStackedWidget()
-        self.mode_buttons = []
-        for index, name in enumerate(("Simple", "Avancé")):
-            button = window.button(name)
-            button.setCheckable(True)
-            button.setChecked(index == 0)
-            button.clicked.connect(lambda checked=False, index=index: (
-                modes.setCurrentIndex(index), self.refresh_mode(index)))
-            self.mode_buttons.append(button)
-            header.addWidget(button)
-        modes.currentChanged.connect(self.refresh_mode)
-        layout.addLayout(header)
-        layout.addWidget(modes, 1)
-
+        self.configuration_pages, self.mode_buttons = configuration_workspace(window, views, self.set_advanced_mode)
+        self.mode_buttons[0].setChecked(True)
         simple = QWidget()
         simple_layout = QVBoxLayout(simple)
         simple_layout.setContentsMargins(0, 8, 0, 0)
-        presets = QHBoxLayout()
-        self.presets = []
-        for title, subtitle, constructor in (
-            ("Pokémon + capacités", "CT et objets aussi", XDOptions.recommended),
-            ("Pokémon seuls", "Capacités et CT conservées", XDOptions.species_only),
-            ("Copie à l’identique", "Aucune randomisation", XDOptions.unchanged),
-        ):
-            button = window.button(title)
-            window.bind(button.setAccessibleDescription, subtitle)
-            button.setCheckable(True)
-            button.setObjectName("preset")
-            button.clicked.connect(lambda checked=False, constructor=constructor: self.set_options(constructor()))
-            column = QVBoxLayout()
-            column.addWidget(button)
-            column.addWidget(window.note(subtitle))
-            presets.addLayout(column, 1)
-            self.presets.append((button, constructor()))
-        simple_layout.addLayout(presets)
+        self.presets = preset_buttons(window, simple_layout,
+            (XDOptions.recommended, XDOptions.species_only, XDOptions.unchanged), self.set_options)
         self.preset_note = QLabel()
-        self.preset_note.setObjectName("note")
         self.preset_note.setWordWrap(True)
         simple_layout.addWidget(self.preset_note)
         self.preset_common = window.note(
@@ -297,33 +209,81 @@ class XDWorkspace(QWidget):
             "Le starter et les cadeaux ont 5 % de chance d’être chromatiques. La seed fixe le résultat.")
         simple_layout.addWidget(self.preset_shiny)
         simple_layout.addStretch(1)
-        modes.addWidget(scroll_area(simple))
+        self.configuration_pages.addWidget(scroll_area(simple))
 
-        advanced = QWidget()
-        advanced_layout = QVBoxLayout(advanced)
-        advanced_layout.setContentsMargins(0, 0, 0, 0)
-        categories = QComboBox()
-        window.bind(categories.setAccessibleName, "Catégorie de réglages")
-        advanced_layout.addWidget(categories, 0, Qt.AlignmentFlag.AlignLeft)
-        groups = QStackedWidget()
-        advanced_layout.addWidget(groups, 1)
-        categories.currentIndexChanged.connect(groups.setCurrentIndex)
-        modes.addWidget(advanced)
-        self.rules, self.controls, forms = {}, {}, {}
-        for item in RULES:
-            metadata = item.metadata
-            group = metadata["group"]
-            if group not in forms:
-                page = QWidget()
-                form = QFormLayout(page)
-                form.setContentsMargins(0, 8, 6, 4)
-                form.setFieldGrowthPolicy(QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
-                form.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
-                index = groups.addWidget(scroll_area(page))
-                categories.addItem("")
-                window.bind(lambda value, index=index: categories.setItemText(index, value), group)
-                forms[group] = form
-            self.add_control(forms[group], item)
+        self.rule_panel = panel = RuleNavigation(window, self.reset_rule_category, xd=True)
+        self.configuration_pages.addWidget(panel)
+        self.rules, self.controls = {}, {}
+        groups = {item.metadata["group"] for item in RULES}
+        self.rule_groups = tuple(group for group in CATEGORY_SYMBOLS if group in groups)
+        for group in self.rule_groups:
+            page = QWidget()
+            form = QVBoxLayout(page)
+            form.setSpacing(8)
+            for item in RULES:
+                if item.metadata["group"] == group:
+                    self.add_control(form, item)
+            form.addStretch(1)
+            panel.add_category(group, scroll_area(page))
+        panel.categories.setCurrentRow(0)
+        panel.categories.currentRowChanged.connect(self.rule_category_changed)
+        panel.search.textChanged.connect(self.search_rules)
+        panel.search.returnPressed.connect(lambda: self.open_rule_result(panel.results.currentItem()))
+        panel.results.itemClicked.connect(self.open_rule_result)
+        panel.results.itemActivated.connect(self.open_rule_result)
+        self.rule_category_changed()
+
+    def set_advanced_mode(self, advanced):
+        for index, button in enumerate(self.mode_buttons):
+            button.setChecked(index == int(advanced))
+        self.configuration_pages.setCurrentIndex(int(advanced))
+        if not advanced:
+            self.rule_panel.search.clear()
+
+    def rule_category_changed(self, *_):
+        panel = self.rule_panel
+        index = panel.categories.currentRow()
+        if index < 0:
+            return
+        group = self.rule_groups[index]
+        category = self.window.text(group)
+        panel.selector.setToolTip(category)
+        description = self.window.text(
+            "Rétablir uniquement « {category} » selon le mode « Pokémon + capacités ». Les autres catégories restent intactes.",
+            category=category)
+        panel.reset.setToolTip(description)
+        panel.reset.setAccessibleName(description)
+
+    def search_rules(self, *_):
+        panel = self.rule_panel
+        matches = search_settings(panel.search.text(), self.window.language, options_type=XDOptions)
+        panel.show_results(matches, busy=self.window.busy)
+
+    def open_rule_result(self, item):
+        panel = self.rule_panel
+        if item is None or not panel.search.text().strip():
+            return
+        name = item.data(Qt.ItemDataRole.UserRole)
+        metadata = next(rule.metadata for rule in RULES if rule.name == name)
+        panel.search.clear()
+        panel.categories.setCurrentRow(self.rule_groups.index(metadata["group"]))
+        control = self.controls[name]
+        page = panel.pages.currentWidget()
+        page.ensureWidgetVisible(control, 12, 24)
+        if control.isEnabled():
+            control.setFocus(Qt.FocusReason.OtherFocusReason)
+        self.set_status(Message("Réglage : {label}.", label=self.window.text(metadata["label"])))
+        QTimer.singleShot(0, self, lambda: page.ensureWidgetVisible(control, 12, 24))
+
+    def reset_rule_category(self):
+        if self.window.busy:
+            return
+        group = self.rule_groups[self.rule_panel.categories.currentRow()]
+        reference = XDOptions.recommended()
+        values = {item.name: getattr(reference, item.name) for item in RULES if item.metadata["group"] == group}
+        self.set_options(replace(self.current_options(), **values))
+        self.set_status(Message("Catégorie « {category} » : valeurs conseillées rétablies.",
+                                category=self.window.text(group)))
 
     def add_control(self, form, item):
         window = self.window
@@ -333,7 +293,7 @@ class XDWorkspace(QWidget):
             control = MenuCheckBox()
             self.rules[item.name] = control
             window.bind(control.setText, title)
-            form.addRow(control)
+            form.addWidget(control)
             control.toggled.connect(self.invalidate_preview)
         else:
             if metadata.get("selector") == "species":
@@ -360,14 +320,14 @@ class XDWorkspace(QWidget):
             label.setWordWrap(True)
             label.setBuddy(control)
             window.bind(control.setAccessibleName, title)
-            form.addRow(label, control)
+            row = QFormLayout()
+            row.setRowWrapPolicy(QFormLayout.RowWrapPolicy.WrapLongRows)
+            row.addRow(label, control)
+            form.addLayout(row)
         if metadata["description"]:
             window.bind(control.setToolTip, metadata["description"])
+            window.bind(control.setAccessibleDescription, metadata["description"])
         self.controls[item.name] = control
-
-    def refresh_mode(self, index):
-        for current, button in enumerate(self.mode_buttons):
-            button.setChecked(current == index)
 
     def disclosure(self, label, content):
         button = QToolButton()
@@ -396,8 +356,13 @@ class XDWorkspace(QWidget):
             button.setEnabled(not self.window.busy)
         if self.window.game_views.currentWidget() is self:
             self.window.profile_menu.setEnabled(not self.window.busy)
-        self.status.setText(text(self.status_message or STEP_HELP[self.step]))
+        self.status.setText(text(self.status_message or self.step_help()))
         self.refresh_review()
+
+    def step_help(self):
+        if self.step == 1 and self.workspace_tabs.currentIndex() == 1:
+            return "Aperçu pour une nouvelle partie. Aucune ROM n’a été créée."
+        return STEP_HELP[self.step]
 
     def refresh_review(self):
         if not hasattr(self, "review"):
@@ -432,7 +397,8 @@ class XDWorkspace(QWidget):
         )
         description = "Réglages personnalisés"
         randomizing = False
-        for (button, preset), note in zip(self.presets, descriptions, strict=True):
+        for (button, constructor), note in zip(self.presets, descriptions, strict=True):
+            preset = constructor()
             selected = preset == options
             button.setChecked(selected)
             button.setIcon(self.window.cursor_icon if selected else QIcon())
@@ -519,80 +485,52 @@ class XDWorkspace(QWidget):
         self.set_status(Message("Profil enregistré : {path}.", path=path))
 
     def build_preview(self):
+        window = self.window
         preview = QVBoxLayout()
-        preview.setSpacing(7)
-        header = QHBoxLayout()
-        heading = self.window.label("Aperçu de la seed")
-        heading.setObjectName("subheading")
-        header.addWidget(heading, 1)
-        self.preview_button = self.window.button("Calculer l’aperçu")
-        self.preview_button.clicked.connect(self.start_preview)
-        header.addWidget(self.preview_button)
-        self.preview_cancel = self.window.button("Annuler l’aperçu")
-        self.preview_cancel.setProperty("menuSound", "back")
-        self.preview_cancel.clicked.connect(self.window.cancel)
-        header.addWidget(self.preview_cancel)
-        preview.addLayout(header)
-        self.preview_status = QLabel()
-        self.preview_status.setObjectName("note")
-        self.preview_status.setWordWrap(True)
-        self.preview_status.setTextFormat(Qt.TextFormat.PlainText)
-        preview.addWidget(self.preview_status)
-        self.preview_progress = QProgressBar()
-        self.preview_progress.setObjectName("previewProgress")
-        self.preview_progress.setTextVisible(False)
-        self.window.bind(self.preview_progress.setAccessibleName, "Aperçu de la seed")
-        preview.addWidget(self.preview_progress)
-        self.encounter_tabs = QTabBar()
-        self.encounter_tabs.setObjectName("previewTabs")
-        self.encounter_tabs.setUsesScrollButtons(False)
-        self.encounter_tabs.setElideMode(Qt.TextElideMode.ElideRight)
-        self.window.bind(self.encounter_tabs.setAccessibleName, "Groupes de Pokémon")
-        for label in ("Starter · 1", "Obscurs · 83", "Cadeaux · 7", "Poké Places · 9"):
-            index = self.encounter_tabs.addTab("")
-            self.window.bind(lambda text, index=index: self.encounter_tabs.setTabText(index, text), label)
-        preview.addWidget(self.encounter_tabs)
-        self.preview_starter_row = QWidget()
-        starter_row = QHBoxLayout(self.preview_starter_row)
-        starter_row.setContentsMargins(0, 0, 0, 0)
-        starter_row.setSpacing(10)
-        self.preview_portrait = QLabel()
-        self.preview_portrait.setObjectName("previewPortrait")
-        self.preview_portrait.setFixedSize(42, 42)
-        self.preview_portrait.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        starter_row.addWidget(self.preview_portrait)
-        self.preview_starter = QLabel()
-        self.preview_starter.setObjectName("subheading")
-        self.preview_starter.setTextFormat(Qt.TextFormat.PlainText)
-        self.preview_starter.setWordWrap(True)
-        starter_row.addWidget(self.preview_starter, 1)
-        self.starter_details = self.window.button("Fiche Pokémon")
-        self.starter_details.clicked.connect(self.open_starter_details)
-        starter_row.addWidget(self.starter_details)
-        preview.addWidget(self.preview_starter_row)
-        self.preview_search = QLineEdit()
-        self.preview_search.setClearButtonEnabled(True)
-        self.window.bind(self.preview_search.setPlaceholderText, "Rechercher un Pokémon…")
-        self.window.bind(self.preview_search.setAccessibleName, "Rechercher un Pokémon…")
+        preview.setSpacing(6)
+        (self.encounter_tabs, self.preview_button, self.preview_cancel, self.preview_status,
+         self.preview_progress) = preview_toolbar(
+            preview, window, ("Starter · 1", "Obscurs · 83", "Cadeaux · 7", "Poké Places · 9"),
+            self.start_preview, window.cancel)
+        self.preview_hint = window.note("Calculez l’aperçu pour afficher le tirage de cette seed.")
+        self.preview_hint.setTextFormat(Qt.TextFormat.PlainText)
+        preview.addWidget(self.preview_hint)
+        self.preview_search = search_field(window, "Rechercher un Pokémon…")
         self.preview_search.textChanged.connect(self.render_preview)
         preview.addWidget(self.preview_search)
-        self.preview_details = QTreeWidget()
-        self.preview_details.setObjectName("encountersPreview")
-        self.preview_details.setColumnCount(2)
-        self.preview_details.setRootIsDecorated(False)
-        self.preview_details.header().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
-        self.preview_details.setUniformRowHeights(True)
-        self.preview_details.setIconSize(QSize(28, 28))
-        self.preview_details.setItemDelegate(PreviewNameDelegate(self.preview_details))
-        self.preview_details.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
-        self.window.bind(self.preview_details.setAccessibleName, "Détails de l’aperçu XD")
+
+        party = QWidget()
+        party_layout = QVBoxLayout(party)
+        party_layout.setContentsMargins(0, 12, 0, 0)
+        slot, self.preview_portrait, self.preview_starter, self.starter_details = starter_slot(
+            window, "Pokémon de départ", self.open_starter_details)
+        party_layout.addLayout(slot)
+        party_layout.addStretch(1)
+        self.preview_starter_row = scroll_area(party)
+        preview.addWidget(self.preview_starter_row, 1)
+
+        self.preview_details = EncounterTable(window, "Détails de l’aperçu XD")
         self.preview_details.itemClicked.connect(self.open_encounter_details)
         self.preview_details.itemActivated.connect(self.open_encounter_details)
         preview.addWidget(self.preview_details, 1)
-        self.preview_space = QWidget()
-        preview.addWidget(self.preview_space, 1)
+        footer = QHBoxLayout()
+        self.encounter_hint = window.label("Cliquez sur une ligne pour ouvrir sa fiche.")
+        self.encounter_hint.setObjectName("previewCount")
+        footer.addWidget(self.encounter_hint)
+        footer.addStretch(1)
+        self.preview_count = QLabel()
+        self.preview_count.setObjectName("previewCount")
+        footer.addWidget(self.preview_count)
+        preview.addLayout(footer)
+        self.preview_details.scrollbar.valueChanged.connect(self.update_preview_count)
         self.encounter_tabs.currentChanged.connect(self.render_preview)
         return preview
+
+    def update_preview_count(self):
+        if self.preview_details.isHidden():
+            self.preview_count.clear()
+        else:
+            self.preview_count.setText(self.preview_details.visible_count(self.window.text))
 
     def current_options(self):
         values = {}
@@ -698,7 +636,7 @@ class XDWorkspace(QWidget):
             self.preview_progress.setRange(0, 100)
             self.preview_progress.setValue(percent)
         self.preview_message = message
-        self.preview_status.setText(self.window.text(message))
+        self.preview_hint.setText(self.window.text(message))
 
     @Slot(dict)
     def preview_succeeded(self, result):
@@ -735,9 +673,14 @@ class XDWorkspace(QWidget):
         self.preview_cancel.setVisible(self.preview_running and not ready)
         self.preview_progress.setVisible(self.preview_running and not ready)
         status_style = "color: #ffb4c4;" if self.preview_error else ""
-        if self.preview_status.styleSheet() != status_style:
-            self.preview_status.setStyleSheet(status_style)
-        self.preview_status.setText(self.window.text(self.preview_message))
+        if self.preview_hint.styleSheet() != status_style:
+            self.preview_hint.setStyleSheet(status_style)
+        self.preview_hint.setText("" if ready and self.preview_message == "Aperçu à jour"
+                                  else self.window.text(self.preview_message))
+        self.preview_hint.setVisible(bool(self.preview_hint.text()))
+        self.preview_status.setText("✓ " + self.window.text("Aperçu à jour")
+                                    if ready and self.preview_message == "Aperçu à jour" else "")
+        self.preview_status.setVisible(bool(self.preview_status.text()))
         data = self.preview_result or {}
         names = SPECIES_NAMES[self.window.language]
         ids = data.get("national_ids", {})
@@ -762,23 +705,17 @@ class XDWorkspace(QWidget):
 
         tab = self.encounter_tabs.currentIndex()
         starter = data.get("starter")
-        show_starter = bool(starter and tab == 0)
-        self.preview_starter_row.setVisible(show_starter)
-        self.preview_starter.setVisible(show_starter)
-        self.starter_details.setVisible(bool(show_starter and starter.get("details")))
-        if starter:
-            rich = bool(starter.get("shiny"))
-            self.preview_starter.setTextFormat(Qt.TextFormat.RichText if rich else Qt.TextFormat.PlainText)
-            self.preview_starter.setText(self.window.text(
-                "Pokémon de départ · {pokemon}", pokemon=encounter(starter, rich=rich, show_original=True)))
-        portrait = QPixmap()
-        png = starter.get("portrait_png") if starter else None
-        if isinstance(png, bytes):
-            portrait.loadFromData(png)
-        self.preview_portrait.setVisible(not portrait.isNull())
-        self.preview_portrait.setPixmap(portrait.scaled(
-            40, 40, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
-            if not portrait.isNull() else portrait)
+        self.preview_starter_row.setVisible(tab == 0)
+        self.starter_details.setVisible(bool(starter and starter.get("details")))
+        rich = bool(starter and starter.get("shiny"))
+        self.preview_starter.setTextFormat(Qt.TextFormat.RichText if rich else Qt.TextFormat.PlainText)
+        name_text = encounter(starter, show_original=True) if starter else "?"
+        self.preview_starter.setText(encounter(starter, rich=True, show_original=True) if rich else name_text)
+        self.preview_starter.setAccessibleName(name_text)
+        portrait_row = dict(starter, national_dex=ids.get(str(starter["species"]), starter["species"])) if starter else {}
+        self.preview_portrait.setPixmap(self.window.preview_portrait(portrait_row, xd=True).pixmap(42, 42))
+        self.preview_portrait.setAccessibleName(name_text)
+        self.preview_portrait.setToolTip(name_text)
 
         tree = self.preview_details
         position = tree.verticalScrollBar().value()
@@ -824,15 +761,17 @@ class XDWorkspace(QWidget):
                 continue
             child = QTreeWidgetItem(tree, [native, result])
             child.setData(0, Qt.ItemDataRole.UserRole + 2, row)
-            if row.get("portrait_png"):
-                child.setIcon(1, self.window.preview_portrait(row))
+            child.setSizeHint(0, QSize(0, 46))
+            child.setToolTip(0, native)
+            child.setToolTip(1, result)
+            child.setIcon(1, self.window.preview_portrait(dict(row, national_dex=number), xd=True))
             if row.get("shiny"):
                 child.setData(1, RICH_NAME_ROLE, f"{encounter(row, rich=True)}{escape(suffix)}")
         self.preview_search.setVisible(ready and tab > 0)
-        tree.setVisible(ready and tab > 0)
-        self.preview_space.setVisible(tree.isHidden())
-        if ready:
-            tree.verticalScrollBar().setValue(position)
+        tree.setVisible(tab > 0)
+        self.encounter_hint.setVisible(any(row.get("details") for row, _, _ in rows))
+        tree.scrollbar.setValue(position)
+        self.update_preview_count()
 
     def open_starter_details(self):
         row = (self.preview_result or {}).get("starter")
@@ -848,21 +787,10 @@ class XDWorkspace(QWidget):
         if row.get("details"):
             self.window.show_pokemon_detail(dict(row, national_dex=row["details"]["national_dex"]))
 
-    def section(self, title):
-        group = QVBoxLayout()
-        group.setSpacing(7)
+    def add_heading(self, layout, title):
         label = self.window.label(title)
         label.setObjectName("section")
-        group.addWidget(label)
-        return group
-
-    def path_row(self, field, choose):
-        browse = self.window.button("Parcourir…")
-        browse.clicked.connect(choose)
-        row = QHBoxLayout()
-        row.addWidget(field, 1)
-        row.addWidget(browse)
-        return row
+        layout.addWidget(label)
 
     def choose_source(self):
         text = self.window.text
@@ -914,9 +842,8 @@ class XDWorkspace(QWidget):
         if error != self.status_error:
             self.status_error = error
             self.status.setStyleSheet("color: #ffb4c4;" if error else "")
-        if message != self.status_message:
-            self.status_message = message
-            self.status.setText(self.window.text(message or STEP_HELP[self.step]))
+        self.status_message = message
+        self.status.setText(self.window.text(message or self.step_help()))
 
     def retranslate(self):
         for control in self.controls.values():
@@ -924,6 +851,8 @@ class XDWorkspace(QWidget):
                 control.retranslate()
         self.refresh_navigation()
         self.refresh_presets()
+        self.rule_category_changed()
+        self.search_rules()
         self.render_preview()
 
     def start(self):

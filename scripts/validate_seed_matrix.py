@@ -16,21 +16,21 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from colosseum_randomizer import service
-from colosseum_randomizer.engine.analyze_game import parse_dol, parse_fsys, u32
-from colosseum_randomizer.engine.dol_regions import special_targets
-from colosseum_randomizer.engine.evolution_rules import evolution_families, evolution_stage_info
-from colosseum_randomizer.engine.gameplay_rules import MOVE_FIELDS, damaging, expanded_layout, move_catalog
-from colosseum_randomizer.engine.inspect_tables import localized_names, u16
-from colosseum_randomizer.engine.item_text import REPLACEMENTS
-from colosseum_randomizer.engine.randomize_story import experience_at_level
-from colosseum_randomizer.engine.randomize_trainers import layout
-from colosseum_randomizer.engine.regions import region_for_boot
-from colosseum_randomizer.engine.rebuild_iso import decoded_member
-from colosseum_randomizer.engine.shiny_rules import seeded_status
-from colosseum_randomizer.engine.species_rules import LEGENDARY_NATIONAL, species_catalog
-from colosseum_randomizer.engine.survey_assets import fst_inventory
-from colosseum_randomizer.options import Options, SPECIAL_OPTIONS
+from orre_randomizer import service
+from orre_randomizer.engine.analyze_game import parse_dol, parse_fsys, u32
+from orre_randomizer.engine.dol_regions import special_targets
+from orre_randomizer.engine.evolution_rules import evolution_families, evolution_stage_info
+from orre_randomizer.engine.gameplay_rules import MOVE_FIELDS, damaging, expanded_layout, move_catalog
+from orre_randomizer.engine.inspect_tables import localized_names, u16
+from orre_randomizer.engine.item_text import REPLACEMENTS
+from orre_randomizer.engine.randomize_story import experience_at_level
+from orre_randomizer.engine.randomize_trainers import layout
+from orre_randomizer.engine.regions import region_for_boot
+from orre_randomizer.engine.rebuild_iso import decoded_member
+from orre_randomizer.engine.shiny_rules import seeded_status
+from orre_randomizer.engine.species_rules import LEGENDARY_NATIONAL, species_catalog
+from orre_randomizer.engine.survey_assets import fst_inventory
+from orre_randomizer.options import Options, SPECIAL_OPTIONS
 
 
 def digest(path):
@@ -112,7 +112,7 @@ def check_seeded_shinies(dol, summary, seed, options):
 
 def check_preview(source, seed, options, summary, final_specials, picks):
     """Run the actual public preview API and compare it with composed final data."""
-    from colosseum_randomizer.preview import preview_starters
+    from orre_randomizer.preview import preview_starters
     preview = preview_starters(source, seed, options)
     actual = {row["key"]: row for row in preview["starters"] + preview["gifts"]}
     assert actual.keys() == final_specials.keys()

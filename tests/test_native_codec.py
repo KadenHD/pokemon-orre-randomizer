@@ -2,9 +2,9 @@ import random
 import struct
 import unittest
 import threading
-from colosseum_randomizer import native_codec
-from colosseum_randomizer.engine.analyze_game import decompress_lzss_python, FormatError
-from colosseum_randomizer.engine.rebuild_iso import compress_lzss_python
+from orre_randomizer import native_codec
+from orre_randomizer.engine.analyze_game import decompress_lzss_python, FormatError
+from orre_randomizer.engine.rebuild_iso import compress_lzss_python
 
 
 @unittest.skipIf(native_codec.library() is None, "optional Rust codec is not built")
@@ -50,7 +50,7 @@ class NativeCodecTests(unittest.TestCase):
                 self.calls += 1
                 return self.calls >= 5
         event = CancelDuringCompression()
-        self.assertTrue(hasattr(native_codec.library(), 'colosseum_compress_cancellable'))
+        self.assertTrue(hasattr(native_codec.library(), 'orre_compress_cancellable'))
         with native_codec.cancellation_scope(event):
             with self.assertRaises(native_codec.CodecCancelled):
                 native_codec.compress(b'ABCD' * 65536)
@@ -77,7 +77,7 @@ class CodecCancellationTests(unittest.TestCase):
         self.assertGreaterEqual(event.calls, 5)
 
     def test_service_translates_codec_cancellation_to_normal_cancelled_outcome(self):
-        from colosseum_randomizer import service
+        from orre_randomizer import service
         @service._cancellable_compression
         def operation(iso, boot, seed, options, progress, cancel):
             cancel.set()

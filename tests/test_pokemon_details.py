@@ -6,11 +6,11 @@ from types import SimpleNamespace
 import struct
 import unittest
 
-from colosseum_randomizer.detail_texts import LANGUAGES, TEXTS
-from colosseum_randomizer.locales.detail_names import ABILITY_NAMES, EVOLUTION_ITEM_NAMES, MOVE_NAMES
-from colosseum_randomizer.pokemon_details import (build_detail_catalog, encounter_details,
+from orre_randomizer.detail_texts import LANGUAGES, TEXTS
+from orre_randomizer.locales.detail_names import ABILITY_NAMES, EVOLUTION_ITEM_NAMES, MOVE_NAMES
+from orre_randomizer.pokemon_details import (build_detail_catalog, encounter_details,
     evolution_text, format_detail_lines)
-from colosseum_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.analyze_game import FormatError
 
 
 def fixture():
@@ -142,11 +142,11 @@ class DetailTests(unittest.TestCase):
                      "requires the user's original local PAL image")
 class RealDetailTests(unittest.TestCase):
     def test_actual_adapted_onix_and_eevee_stones_use_final_methods(self):
-        from colosseum_randomizer.engine.randomize_trainers import original_common
-        from colosseum_randomizer.engine.evolution_rules import patch_evolutions
+        from orre_randomizer.engine.randomize_trainers import original_common
+        from orre_randomizer.engine.evolution_rules import patch_evolutions
         root = Path(__file__).resolve().parents[1]
         original = original_common(root / 'game')[2]
-        tables, _ = __import__('colosseum_randomizer.engine.randomize_trainers', fromlist=['layout']).layout(original)
+        tables, _ = __import__('orre_randomizer.engine.randomize_trainers', fromlist=['layout']).layout(original)
         final, _ = patch_evolutions(original, tables)
         dol = (root / 'game/sys/main.dol').read_bytes()
         catalog = build_detail_catalog(original, final, dol, dol)

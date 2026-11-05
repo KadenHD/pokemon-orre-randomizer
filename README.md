@@ -71,8 +71,8 @@ depends on your ROM. Evolution stone names and Eagun's dialogue follow the
 languages available in the game.
 
 **Music** and **Sounds** are independent preferences and start enabled when the
-audio pack is present. The local build can use exported media. The public build
-uses its own panels and controls. Both can start before you select a ROM.
+audio pack is present. The public and local editions include the verified interface
+pack, so the logos, music and menu sounds are available before you select a ROM.
 
 ### Presets and advanced settings
 
@@ -201,7 +201,7 @@ Allow about **1.5 GiB** free for ISO → ISO, **2.8 GiB** for RVZ → ISO, and
 up to **5.6 GiB** for RVZ → RVZ. An RVZ preview can hold about **1.5 GiB** in
 the system temporary directory until its window closes. Normal completion,
 failure, or cancellation removes owned temporary files. After a forced stop,
-check for leftover `.colosseum-*` directories.
+check for leftover `.orre-*` directories.
 
 See the [regional compatibility report](docs/REGIONAL_COMPATIBILITY_2026-11-03.md),
 [regional gift tests](docs/REGIONAL_GIFTS_DOLPHIN_2026-11-03.md), and
@@ -216,7 +216,7 @@ Use Python 3.12 or later.
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e .
-python -m colosseum_randomizer
+python -m orre_randomizer
 ```
 
 The GUI uses Qt. The Python LZSS codec works without Rust. To enable the Rust
@@ -226,14 +226,14 @@ installed. The Python and Rust encoders produce the same bytes.
 The CLI uses the same engine as the GUI:
 
 ```powershell
-python -m colosseum_randomizer.cli original.iso new-game.iso --seed my-seed
-python -m colosseum_randomizer.cli original.rvz new-game.rvz --seed my-seed --dolphin-tool C:\Dolphin\DolphinTool.exe
-python -m colosseum_randomizer.cli original.iso shared-game.iso --profile my-game.json
-python -m colosseum_randomizer.cli original.iso duo.iso --seed my-seed --starter-umbreon-species 94 --starter-espeon-species 208 --journal-language en
-python -m colosseum_randomizer.cli xd-original.iso xd-new.iso --game xd --seed my-seed
+python -m orre_randomizer.cli original.iso new-game.iso --seed my-seed
+python -m orre_randomizer.cli original.rvz new-game.rvz --seed my-seed --dolphin-tool C:\Dolphin\DolphinTool.exe
+python -m orre_randomizer.cli original.iso shared-game.iso --profile my-game.json
+python -m orre_randomizer.cli original.iso duo.iso --seed my-seed --starter-umbreon-species 94 --starter-espeon-species 208 --journal-language en
+python -m orre_randomizer.cli xd-original.iso xd-new.iso --game xd --seed my-seed
 ```
 
-Run `python -m colosseum_randomizer.cli --help` for all CLI flags. Rules can be
+Run `python -m orre_randomizer.cli --help` for all CLI flags. Rules can be
 enabled or disabled individually, for example `--no-starter-umbreon`,
 `--no-gift-hooh`, and `--no-evolve-beauty`. The CLI defaults preserve existing
 usage. Use a profile to reproduce the exact GUI settings.

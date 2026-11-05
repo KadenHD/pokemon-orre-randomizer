@@ -3,8 +3,8 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError, parse_dol
-from colosseum_randomizer.engine.gift_move_hooks import (
+from orre_randomizer.engine.analyze_game import FormatError, parse_dol
+from orre_randomizer.engine.gift_move_hooks import (
     _arena_guard, _gift_stub, branch, patch_gift_moves, GIFT_BASES,
     NATIVE_CONSTRUCTOR, NATIVE_SET_MOVE, SECTION_RAM, SET_ARENA_LO, TEXT_TO_RAM,
 )

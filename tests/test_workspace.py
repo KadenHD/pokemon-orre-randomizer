@@ -11,7 +11,7 @@ try:
     from PySide6.QtCore import QCoreApplication, QEvent, QPoint, QPointF, QSettings, Qt
     from PySide6.QtGui import QWheelEvent
     from PySide6.QtWidgets import QApplication, QScrollArea, QScrollBar, QListWidgetItem
-    from colosseum_randomizer.gui import MainWindow
+    from orre_randomizer.gui import MainWindow
 except ImportError:
     QApplication = None
 

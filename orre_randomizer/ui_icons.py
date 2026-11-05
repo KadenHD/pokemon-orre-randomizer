@@ -7,6 +7,7 @@ from PySide6.QtGui import QColor, QIcon, QPainter, QPainterPath, QPen, QPixmap
 CATEGORY_SYMBOLS = {
     "Dresseurs": "trainers",
     "Starters et cadeaux": "gift",
+    "Poké Places": "pin",
     "Capacités": "bolt",
     "CT": "disc",
     "Boss": "crown",
@@ -62,6 +63,13 @@ def _draw(painter: QPainter, symbol: str):
         path.cubicTo(2, 7, 6, -1, 12, 7)
         path.cubicTo(18, -1, 22, 7, 12, 7)
         painter.drawPath(path)
+    elif symbol == "pin":
+        path = QPainterPath(QPointF(12, 22))
+        path.cubicTo(10, 19, 5, 14, 5, 9)
+        path.cubicTo(5, 0, 19, 0, 19, 9)
+        path.cubicTo(19, 14, 14, 19, 12, 22)
+        painter.drawPath(path)
+        circle(12, 9, 2.5)
     elif symbol == "bolt":
         outline([(13, 2), (5, 13), (11, 13), (10, 22), (20, 9), (13, 9)], closed=True)
     elif symbol == "disc":
@@ -128,15 +136,14 @@ def _draw(painter: QPainter, symbol: str):
         raise ValueError("Unknown category symbol: " + symbol)
 
 
-@lru_cache(maxsize=len(CATEGORY_SYMBOLS))
-def category_icon(group: str) -> QIcon:
+@lru_cache(maxsize=2 * len(CATEGORY_SYMBOLS))
+def category_icon(group: str, *, xd=False) -> QIcon:
     symbol = CATEGORY_SYMBOLS[group]
     icon = QIcon()
+    normal, active, disabled = ("#e2c9bb", "#ffad93", "#a1837a") if xd else ("#c1d8cf", "#71e2e6", "#809d8f")
     for size in (20, 40):
-        for mode, color in ((QIcon.Mode.Normal, "#c1d8cf"),
-                            (QIcon.Mode.Selected, "#71e2e6"),
-                            (QIcon.Mode.Active, "#71e2e6"),
-                            (QIcon.Mode.Disabled, "#809d8f")):
+        for mode, color in ((QIcon.Mode.Normal, normal), (QIcon.Mode.Selected, active),
+                            (QIcon.Mode.Active, active), (QIcon.Mode.Disabled, disabled)):
             pixmap = QPixmap(size, size)
             pixmap.fill(Qt.GlobalColor.transparent)
             painter = QPainter(pixmap)

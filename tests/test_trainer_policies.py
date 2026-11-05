@@ -4,16 +4,16 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.boss_rules import apply_boss_rules, boss_inventory
-from colosseum_randomizer.engine.evolution_rules import _species_and_edges, evolution_families
-from colosseum_randomizer.engine.gameplay_rules import MOVE_FIELDS, apply_rel_rules
-from colosseum_randomizer.engine.inspect_tables import u16
-from colosseum_randomizer.engine.pool_filters import species_excluded
-from colosseum_randomizer.engine.randomize_trainers import original_common
-from colosseum_randomizer.engine.species_rules import species_catalog
-from colosseum_randomizer.engine.trainer_policies import apply_trainer_policies, apply_trainer_tables
-from colosseum_randomizer.options import Options
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.boss_rules import apply_boss_rules, boss_inventory
+from orre_randomizer.engine.evolution_rules import _species_and_edges, evolution_families
+from orre_randomizer.engine.gameplay_rules import MOVE_FIELDS, apply_rel_rules
+from orre_randomizer.engine.inspect_tables import u16
+from orre_randomizer.engine.pool_filters import species_excluded
+from orre_randomizer.engine.randomize_trainers import original_common
+from orre_randomizer.engine.species_rules import species_catalog
+from orre_randomizer.engine.trainer_policies import apply_trainer_policies, apply_trainer_tables
+from orre_randomizer.options import Options
 
 
 def fixture():
@@ -130,7 +130,7 @@ class PalTrainerPolicyTests(unittest.TestCase):
         cls.tables, cls.bosses = boss_inventory(cls.original)
 
     def test_combined_filters_themes_final_stages_shadow_families_and_moves(self):
-        from colosseum_randomizer.service import transform_rel
+        from orre_randomizer.service import transform_rel
         choices = replace(Options.recommended(), excluded_species=(25, 133, 196, 197),
             excluded_types=(0,), trainer_theme_mode="preserve", trainer_force_evolved=True,
             trainer_evolution_level=45, trainer_level_multiplier=1.15, boss_stronger=True,

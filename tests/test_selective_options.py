@@ -3,8 +3,8 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.options import Options, SPECIAL_OPTIONS
-from colosseum_randomizer.service import transform_dol, transform_rel, validate_options, UserError
+from orre_randomizer.options import Options, SPECIAL_OPTIONS
+from orre_randomizer.service import transform_dol, transform_rel, validate_options, UserError
 
 
 class OptionValidationTests(unittest.TestCase):
@@ -60,14 +60,14 @@ GAME = Path(__file__).resolve().parents[1] / "game"
 class SelectiveIntegrationTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        from colosseum_randomizer.engine.randomize_trainers import original_common, layout
+        from orre_randomizer.engine.randomize_trainers import original_common, layout
         cls.original = original_common(GAME)[2]
         cls.tables = layout(cls.original)[0]
         cls.dol = (GAME / "sys/main.dol").read_bytes()
         cls.seed = "qa-colosseum-v1"
 
     def test_default_data_is_identical_to_validated_v3(self):
-        from colosseum_randomizer.engine.randomize_accessible import randomize_accessible_rel, randomize_accessible_dol
+        from orre_randomizer.engine.randomize_accessible import randomize_accessible_rel, randomize_accessible_dol
         self.assertEqual(transform_rel(self.original, self.seed, Options())[0], randomize_accessible_rel(self.original, self.seed)[0])
         self.assertEqual(transform_dol(self.dol, self.original, self.seed, Options())[0], randomize_accessible_dol(self.dol, self.original, self.seed)[0])
 
@@ -80,7 +80,7 @@ class SelectiveIntegrationTests(unittest.TestCase):
         self.assertEqual(gifts, [])
 
     def test_trainers_and_shadows_are_independent(self):
-        from colosseum_randomizer.engine.randomize_trainers import randomize_rel
+        from orre_randomizer.engine.randomize_trainers import randomize_rel
         plan = randomize_rel(self.original, self.seed)[1]
         for shadows in (False, True):
             options = replace(Options.none(), randomize_trainers=not shadows, randomize_shadows=shadows, unique_shadows=shadows)
@@ -110,7 +110,7 @@ class SelectiveIntegrationTests(unittest.TestCase):
                 self.assertLessEqual(actual, allowed)
 
     def test_five_evolution_groups_are_independent(self):
-        from colosseum_randomizer.engine.evolution_rules import patch_evolutions, evolution_families
+        from orre_randomizer.engine.evolution_rules import patch_evolutions, evolution_families
         full = patch_evolutions(self.original, self.tables)[1]
         families = evolution_families(self.original, self.tables)
         for name, count in (("trade", 4), ("trade_items", 6), ("coquiperl", 2), ("day_night", 2), ("beauty", 1)):
@@ -126,9 +126,9 @@ class SelectiveIntegrationTests(unittest.TestCase):
 
     def test_shops_are_independent_and_original_stock_preserved(self):
         from collections import Counter
-        from colosseum_randomizer.engine.analyze_game import parse_fsys
-        from colosseum_randomizer.engine.rebuild_iso import decoded_member
-        from colosseum_randomizer.engine.shop_stones import patch_rel, STONE_IDS
+        from orre_randomizer.engine.analyze_game import parse_fsys
+        from orre_randomizer.engine.rebuild_iso import decoded_member
+        from orre_randomizer.engine.shop_stones import patch_rel, STONE_IDS
         archive = (GAME / "files/pocket_menu.fsys").read_bytes()
         original = decoded_member(archive, parse_fsys(archive)["members"][0])
         for shops in ((3,), (5,), (3, 5)):

@@ -1,7 +1,7 @@
 """The story allocator can move an earlier choice to avoid a family collision."""
 import unittest
 
-from colosseum_randomizer.engine.story_families import allocate_story_families, select_story_starters
+from orre_randomizer.engine.story_families import allocate_story_families, select_story_starters
 
 
 class StoryFamilyAllocationTests(unittest.TestCase):

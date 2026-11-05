@@ -8,14 +8,14 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from colosseum_randomizer import __version__
-from colosseum_randomizer.options import Options
-from colosseum_randomizer.profiles import (MAX_PROFILE_BYTES, load_profile, parse_profile,
+from orre_randomizer import __version__
+from orre_randomizer.options import Options
+from orre_randomizer.profiles import (MAX_PROFILE_BYTES, load_profile, parse_profile,
                                            profile_data, save_profile, NEW_POLICY_FIELDS, SHINY_FIELDS,
                                            EVENT_GIFT_FIELDS, V15_FIELDS)
-from colosseum_randomizer.service import UserError
-from colosseum_randomizer.profiles import LEGACY_GAME, parse_creation_report
-from colosseum_randomizer.engine.regions import REGIONS
+from orre_randomizer.service import UserError
+from orre_randomizer.profiles import LEGACY_GAME, parse_creation_report
+from orre_randomizer.engine.regions import REGIONS
 
 
 # Exported by the preserved v0.14.0 public source distribution, not generated
@@ -310,8 +310,8 @@ class ProfileTests(unittest.TestCase):
                                                 accessible_event_gifts=False))
 
     def test_archived_v015_import_keeps_all_82_values_and_disables_new_rule(self):
-        from colosseum_randomizer.profiles import SCHEMA_VERSION
-        from colosseum_randomizer.service import ENGINE_VERSION
+        from orre_randomizer.profiles import SCHEMA_VERSION
+        from orre_randomizer.service import ENGINE_VERSION
         payload = archived_v015_payload()
         self.assertEqual(len(payload['options']), 82)
         parsed = parse_profile(self.encode(payload))
@@ -394,14 +394,14 @@ class ProfileTests(unittest.TestCase):
                 save_profile(Path(folder) / "original.iso", "seed", Options())
 
     def test_cli_profile_preserves_rules_and_accepts_explicit_overrides(self):
-        from colosseum_randomizer.cli import main
+        from orre_randomizer.cli import main
         with tempfile.TemporaryDirectory() as folder:
             path = Path(folder) / "profile.json"
             options = replace(Options.recommended(), boss_shadow_power_mode="free")
             save_profile(path, "shared-seed", options)
             for extra, expected in (([], options), (["--no-randomize-tm-moves"], replace(options, randomize_tm_moves=False))):
                 with patch("sys.argv", ["randomizer", "input.iso", "output.iso", "--profile", str(path), *extra]), \
-                     patch("colosseum_randomizer.cli.randomize", return_value={}) as run, \
+                     patch("orre_randomizer.cli.randomize", return_value={}) as run, \
                      patch("sys.stdout", new_callable=io.StringIO):
                     self.assertEqual(main(), 0)
                     self.assertEqual(run.call_args.args[2:4], ("shared-seed", expected))

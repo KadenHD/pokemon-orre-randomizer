@@ -7,7 +7,7 @@ import threading
 import unittest
 from unittest.mock import Mock, patch
 
-from colosseum_randomizer import service
+from orre_randomizer import service
 
 
 class ConverterProfileTests(unittest.TestCase):
@@ -15,7 +15,7 @@ class ConverterProfileTests(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        self.work = self.root / ".colosseum-owned-job"
+        self.work = self.root / ".orre-owned-job"
         self.work.mkdir()
         self.source = self.root / "source.rvz"
         self.source.write_bytes(b"unchanged source image")

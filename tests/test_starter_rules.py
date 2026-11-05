@@ -4,15 +4,15 @@ from pathlib import Path
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.inspect_tables import u16
-from colosseum_randomizer.engine.randomize_story import experience_at_level
-from colosseum_randomizer.engine.species_rules import (LEGENDARY_NATIONAL, STAT_OFFSETS,
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.inspect_tables import u16
+from orre_randomizer.engine.randomize_story import experience_at_level
+from orre_randomizer.engine.species_rules import (LEGENDARY_NATIONAL, STAT_OFFSETS,
                                                      species_catalog)
-from colosseum_randomizer.engine.starter_rules import (STARTERS, apply_starter_rules,
+from orre_randomizer.engine.starter_rules import (STARTERS, apply_starter_rules,
                                                       apply_starter_tables, base_species,
                                                       starter_rules_active)
-from colosseum_randomizer.engine.evolution_rules import evolution_stage_info
+from orre_randomizer.engine.evolution_rules import evolution_stage_info
 
 
 @dataclass(frozen=True)
@@ -272,12 +272,12 @@ class OriginalPalStarterTests(unittest.TestCase):
         game = Path(__file__).resolve().parents[1] / "game"
         if not (game / "files/common.fsys").is_file() or not (game / "sys/main.dol").is_file():
             raise unittest.SkipTest("optional local original PAL assets unavailable")
-        from colosseum_randomizer.engine.randomize_trainers import original_common
+        from orre_randomizer.engine.randomize_trainers import original_common
         cls.rel = original_common(game)[2]
         cls.dol = (game / "sys/main.dol").read_bytes()
 
     def test_real_pal_constraints_exp_and_all_disabled_identity(self):
-        from colosseum_randomizer.engine.randomize_trainers import layout
+        from orre_randomizer.engine.randomize_trainers import layout
         tables, _ = layout(self.rel)
         roots = base_species(self.rel, tables)
         rules = replace(Rules(), starter_balance_pair=True, starter_distinct_families=True,

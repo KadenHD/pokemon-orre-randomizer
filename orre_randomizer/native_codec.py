@@ -12,7 +12,7 @@ class CodecCancelled(Exception):
     """Compression stopped cooperatively before publishing its result."""
 
 
-_cancel_event = ContextVar("colosseum_codec_cancel_event", default=None)
+_cancel_event = ContextVar("orre_codec_cancel_event", default=None)
 _cancel_callback_type = ctypes.CFUNCTYPE(ctypes.c_int)
 
 
@@ -35,23 +35,23 @@ def compression_checkpoint():
 
 @lru_cache(maxsize=1)
 def library():
-    filename = "colosseum_lzss.dll" if sys.platform == "win32" else (
-        "libcolosseum_lzss.dylib" if sys.platform == "darwin" else "libcolosseum_lzss.so")
+    filename = "orre_lzss.dll" if sys.platform == "win32" else (
+        "liborre_lzss.dylib" if sys.platform == "darwin" else "liborre_lzss.so")
     path = Path(__file__).resolve().parent / "_native" / filename
     if not path.is_file():
         return None
     codec = ctypes.CDLL(str(path))
-    codec.colosseum_codec_version.restype = ctypes.c_uint32
-    if codec.colosseum_codec_version() != 1:
+    codec.orre_codec_version.restype = ctypes.c_uint32
+    if codec.orre_codec_version() != 1:
         raise RuntimeError("Unsupported native codec ABI")
-    for name in ("colosseum_compress", "colosseum_decompress"):
+    for name in ("orre_compress", "orre_decompress"):
         function = getattr(codec, name)
         function.argtypes = [ctypes.c_char_p, ctypes.c_size_t, ctypes.c_void_p, ctypes.c_size_t]
         function.restype = ctypes.c_ssize_t
-    if hasattr(codec, "colosseum_compress_cancellable"):
-        codec.colosseum_compress_cancellable.argtypes = [ctypes.c_char_p, ctypes.c_size_t,
+    if hasattr(codec, "orre_compress_cancellable"):
+        codec.orre_compress_cancellable.argtypes = [ctypes.c_char_p, ctypes.c_size_t,
             ctypes.c_void_p, ctypes.c_size_t, _cancel_callback_type]
-        codec.colosseum_compress_cancellable.restype = ctypes.c_ssize_t
+        codec.orre_compress_cancellable.restype = ctypes.c_ssize_t
     return codec
 
 
@@ -63,15 +63,15 @@ def compress(data: bytes) -> bytes | None:
         return None
     # Old DLLs still support the reference encoder. Use that cancellable path
     # rather than entering an uninterruptible old native call for a live task.
-    if cancel is not None and not hasattr(codec, "colosseum_compress_cancellable"):
+    if cancel is not None and not hasattr(codec, "orre_compress_cancellable"):
         return None
     capacity = 16 + len(data) + (len(data) + 7) // 8
     output = ctypes.create_string_buffer(capacity)
     if cancel is None:
-        size = codec.colosseum_compress(data, len(data), output, capacity)
+        size = codec.orre_compress(data, len(data), output, capacity)
     else:
         callback = _cancel_callback_type(lambda: int(cancel.is_set()))
-        size = codec.colosseum_compress_cancellable(data, len(data), output, capacity, callback)
+        size = codec.orre_compress_cancellable(data, len(data), output, capacity, callback)
         if size == -2:
             raise CodecCancelled()
     if size < 16 or size > capacity:
@@ -90,7 +90,7 @@ def decompress(data: bytes, max_output: int) -> bytes | None:
     if expected > max_output or stored != len(data):
         raise ValueError("Invalid LZSS sizes or output bound")
     output = ctypes.create_string_buffer(max(expected, 1))
-    size = codec.colosseum_decompress(data, len(data), output, expected)
+    size = codec.orre_decompress(data, len(data), output, expected)
     if size != expected:
         raise ValueError("Invalid or truncated LZSS stream")
     return output.raw[:size]

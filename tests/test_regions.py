@@ -1,8 +1,8 @@
 """Region headers cannot bypass the exact, full-image allowlist."""
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError
-from colosseum_randomizer.engine.regions import REGIONS, region_for_boot, validate_disc_hash
+from orre_randomizer.engine.analyze_game import FormatError
+from orre_randomizer.engine.regions import REGIONS, region_for_boot, validate_disc_hash
 
 
 def boot(game_id, revision=0):

@@ -3,9 +3,9 @@
 import struct
 import unittest
 
-from colosseum_randomizer.engine.analyze_game import FormatError, parse_fsys, u32
-from colosseum_randomizer.engine.rebuild_iso import decoded_member
-from colosseum_randomizer.xd_gifts import (_duking_script, _hordel_dialogue, _hordel_offer_script,
+from orre_randomizer.engine.analyze_game import FormatError, parse_fsys, u32
+from orre_randomizer.engine.rebuild_iso import decoded_member
+from orre_randomizer.xd_gifts import (_duking_script, _hordel_dialogue, _hordel_offer_script,
                                           _patch_duking, _patch_messages, _prize_label)
 from tests.test_formats import fsys_fixture
 

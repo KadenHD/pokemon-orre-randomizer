@@ -9,7 +9,7 @@ import wave
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from colosseum_randomizer.resources import interface_assets, music_track
+from orre_randomizer.resources import interface_assets, music_track
 
 
 def measure(path, *, loop=False):

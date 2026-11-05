@@ -6,7 +6,8 @@ import tempfile
 import struct
 from pathlib import Path
 from unittest.mock import patch
-from colosseum_randomizer.resources import application_icon, bundle_root, interface_assets, menu_icon, music_track
+from orre_randomizer.artwork import _png
+from orre_randomizer.resources import application_icon, application_logo, bundle_root, interface_assets, menu_icon, music_track, xd_logo
 
 
 class ResourceTests(unittest.TestCase):
@@ -52,22 +53,55 @@ class ResourceTests(unittest.TestCase):
         self.assertIsNotNone(menu_icon())
 
     def test_public_edition_starts_with_no_game_pack(self):
-        with tempfile.TemporaryDirectory() as folder, patch("colosseum_randomizer.resources.bundle_root", return_value=Path(folder)):
+        with tempfile.TemporaryDirectory() as folder, patch("orre_randomizer.resources.bundle_root", return_value=Path(folder)):
             self.assertEqual(interface_assets(), ({}, {}))
             self.assertIsNone(music_track())
             self.assertIsNone(menu_icon())
+            self.assertIsNone(xd_logo())
             self.assertIsNotNone(application_icon())
+            self.assertIsNotNone(application_logo())
+
+    def test_selected_application_logo_matches_its_recorded_source(self):
+        path = application_logo()
+        self.assertIsNotNone(path)
+        metadata = json.loads(path.with_suffix(".json").read_text("utf-8"))
+        data = path.read_bytes()
+        record = metadata["files"]["logo.png"]
+        self.assertEqual(metadata["selection"], "A")
+        self.assertEqual(len(data), record["bytes"])
+        self.assertEqual(hashlib.sha256(data).hexdigest(), record["sha256"])
+        self.assertEqual(struct.unpack(">II", data[16:24]), (record["width"], record["height"]))
+        self.assertEqual(data[25], 6)
+
+    def test_xd_logo_requires_a_verified_english_image(self):
+        with tempfile.TemporaryDirectory() as folder, patch("orre_randomizer.resources.bundle_root", return_value=Path(folder)):
+            root = Path(folder) / "interface"
+            root.mkdir()
+            path = root / "xd-logo-en.png"
+            png = _png((96, 32), bytes((20, 40, 60, 255)) * (96 * 32))
+            path.write_bytes(png)
+            metadata = root / "xd-logo-en.json"
+            record = {"language": "en", "bytes": len(png), "sha256": hashlib.sha256(png).hexdigest()}
+            metadata.write_text(json.dumps(record), encoding="utf-8")
+            self.assertEqual(xd_logo(), path)
+            metadata.write_text(json.dumps(dict(record, language="ja")), encoding="utf-8")
+            self.assertIsNone(xd_logo())
+            metadata.write_text(json.dumps(record), encoding="utf-8")
+            path.write_bytes(png + b"changed")
+            self.assertIsNone(xd_logo())
 
     def test_malformed_optional_metadata_is_ignored(self):
-        with tempfile.TemporaryDirectory() as folder, patch("colosseum_randomizer.resources.bundle_root", return_value=Path(folder)):
+        with tempfile.TemporaryDirectory() as folder, patch("orre_randomizer.resources.bundle_root", return_value=Path(folder)):
             root = Path(folder)
-            for directory, filename in (("music", "track.json"), ("interface", "icon.json")):
+            for directory in ("music", "interface"):
                 (root/directory).mkdir()
             (root/"music/title.wav").write_bytes(bytes(44))
             (root/"interface/pokeball.png").write_bytes(bytes(44))
             for value in ("{broken", "[]", "null", "3", '{"bytes": null}', '{"bytes": 44}'):
-                for directory, filename in (("music", "track.json"), ("interface", "icon.json")):
+                for directory, filename in (("music", "track.json"), ("interface", "icon.json"),
+                                             ("interface", "xd-logo-en.json")):
                     (root/directory/filename).write_text(value, encoding="utf-8")
                 with self.subTest(value=value):
                     self.assertIsNone(music_track())
                     self.assertIsNone(menu_icon())
+                    self.assertIsNone(xd_logo())

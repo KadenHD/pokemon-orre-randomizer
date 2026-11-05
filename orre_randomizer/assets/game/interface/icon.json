@@ -1,0 +1,14 @@
+{
+  "file": "pokeball.png",
+  "sha256": "bba485cf4481c8064c80463ee113fd8f557e8c21b839bb131efc536a43edcf54",
+  "source": {
+    "archive": "field_common.fsys",
+    "member": "menu003",
+    "crop": [
+      198,
+      4,
+      15,
+      15
+    ]
+  }
+}

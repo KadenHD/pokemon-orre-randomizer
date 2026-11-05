@@ -91,7 +91,7 @@ class PreviewCache:
                     # stale/corrupt decoded ROM or changing the recorded identity.
                     raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
             else:
-                self._temporary = tempfile.TemporaryDirectory(prefix="colosseum-preview-")
+                self._temporary = tempfile.TemporaryDirectory(prefix="orre-preview-")
                 work = Path(self._temporary.name)
                 needed = service.ISO_SIZE + 64 * 1024**2
                 if shutil.disk_usage(work).free < needed:

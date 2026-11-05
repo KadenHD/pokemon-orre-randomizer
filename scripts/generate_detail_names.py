@@ -43,7 +43,7 @@ def main():
     result["item_id"] = {language: {native: next(row["name"] for row in sources["item_names.csv"]
         if int(row["local_language_id"]) == identifier and int(row["item_id"]) == source)
         for native, source in item_ids.items()} for language, identifier in LANGUAGES.items()}
-    target = ROOT / "colosseum_randomizer/locales/detail_names.py"
+    target = ROOT / "orre_randomizer/locales/detail_names.py"
     target.write_text('"""BSD name fallbacks for the UI; see licenses/pokeapi-details.json."""\n\n'
         + "MOVE_NAMES = " + pprint.pformat(result["move_id"], sort_dicts=False, width=110)
         + "\n\nABILITY_NAMES = " + pprint.pformat(result["ability_id"], sort_dicts=False, width=110)

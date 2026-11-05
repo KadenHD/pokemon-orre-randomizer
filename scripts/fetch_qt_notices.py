@@ -22,7 +22,7 @@ def main():
         name, url = item
         target = folder / url.rsplit("/", 1)[1]
         if not target.exists():
-            request = urllib.request.Request(url, headers={"User-Agent": "colosseum-randomizer-build"})
+            request = urllib.request.Request(url, headers={"User-Agent": "orre-randomizer-build"})
             with urllib.request.urlopen(request, timeout=90) as response, target.open("xb") as out:
                 while data := response.read(1024**2):
                     out.write(data)
