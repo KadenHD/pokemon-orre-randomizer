@@ -23,6 +23,11 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
+**Version note:** this README describes the v1.2.0 development branch. The
+latest published Windows release is v1.0.0. The full-Pokédex Poké Spot option
+and XD Shadow shiny unlock shown below are available on `main` and will be
+included in a future release.
+
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
 for Windows 10 or 11, 64-bit. Python and the Rust codec are included.
