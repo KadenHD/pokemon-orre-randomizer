@@ -49,13 +49,14 @@ class PresetTests(unittest.TestCase):
             self.assertTrue(xd.randomize_tutorial_shadow)
             self.assertTrue(xd.poke_spots_full_pokedex)
             self.assertTrue(xd.custom_shadow_shinies)
-            self.assertFalse(xd.randomize_hordel_gift)
+            self.assertTrue(xd.randomize_hordel_gift)
 
-    def test_tutorial_default_changes_only_randomizing_desktop_presets(self):
-        self.assertTrue(XDOptions.recommended().randomize_tutorial_shadow)
-        self.assertTrue(XDOptions.species_only().randomize_tutorial_shadow)
-        self.assertFalse(XDOptions.unchanged().randomize_tutorial_shadow)
-        self.assertFalse(XDOptions().randomize_tutorial_shadow)
+    def test_story_gift_defaults_change_only_randomizing_desktop_presets(self):
+        for name in ("randomize_tutorial_shadow", "randomize_hordel_gift"):
+            self.assertTrue(getattr(XDOptions.recommended(), name))
+            self.assertTrue(getattr(XDOptions.species_only(), name))
+            self.assertFalse(getattr(XDOptions.unchanged(), name))
+            self.assertFalse(getattr(XDOptions(), name))
         self.assertFalse(XDOptions().poke_spots_full_pokedex)
 
     def test_published_rc2_exports_keep_every_original_option(self):

@@ -64,8 +64,9 @@ requirements. Dialogue follows the ROM language.
 Shadow Lugia remains protected. Both randomizing presets replace tutorial
 Teddiursa by default. Its advanced control can retain the original species.
 The tutorial replacement retains level 11 and the original catch rate; its
-dialogue names the replacement. Hordel's Shadow Togepi has a separate advanced
-control, disabled in the presets. Hordel accepts the purified replacement even
+dialogue names the replacement. Both presets also replace Hordel's Shadow
+Togepi; its separate advanced control can retain the original species.
+Hordel accepts the purified replacement even
 if it has evolved within its family. Imported profiles retain their saved choices.
 
 Both randomizing presets draw the nine regular Poké Spot encounters from XD's

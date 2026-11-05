@@ -146,7 +146,8 @@ class XDOptions:
                    randomize_learnsets=True, randomize_tm_moves=True, tm_compatibility_mode="type",
                    randomize_field_items=True, randomize_shop_items=True, custom_shinies=True,
                    boss_team_variety=True, randomize_tutorial_shadow=True,
-                   poke_spots_full_pokedex=True, custom_shadow_shinies=True)
+                   poke_spots_full_pokedex=True, custom_shadow_shinies=True,
+                   randomize_hordel_gift=True)
 
     @classmethod
     def species_only(cls) -> XDOptions:

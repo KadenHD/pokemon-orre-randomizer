@@ -2,6 +2,9 @@
 
 ## 1.2.0
 
+- Both XD desktop presets now replace Hordel's Shadow Togepi by default.
+  Its purified replacement remains eligible for the trade, including after
+  evolution. The advanced toggle and imported profile choices are preserved.
 - Added an optional XD Shadow shiny unlock using the chosen rate and a stable
   seeded decision for each of the 83 Shadow IDs. Both randomizing presets
   enable it at 5%. The starter and ordinary gifts retain their existing draws;

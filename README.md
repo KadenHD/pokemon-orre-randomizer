@@ -109,7 +109,7 @@ The interface pack is included, so these work before you select a ROM.
 | Starters | Two, originally Umbreon and Espeon | One, originally Eevee |
 | Shadow roster | 48 synchronized Shadow groups | 83 Shadow encounters; Shadow Lugia is protected |
 | Gifts and trades | Plusle, Ho-Oh, Pikachu and Celebi | Duking's trades, Hordel's trade and Mt. Battle prizes |
-| Special encounters | Event gifts can be earned from Eagun after purification milestones | Tutorial Teddiursa is randomized by default; Hordel's Shadow Togepi remains optional and off by default |
+| Special encounters | Event gifts can be earned from Eagun after purification milestones | Tutorial Teddiursa and Hordel's Shadow Togepi are randomized by default; each can be disabled separately |
 | Poké Spots | — | Draw from the full supported Pokédex, subject to filters and power matching; Duking's requests follow the new rare slots |
 
 The [user guide](docs/USER_GUIDE.md) explains these rules and their limits.
