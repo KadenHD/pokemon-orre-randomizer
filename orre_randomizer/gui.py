@@ -35,6 +35,7 @@ from .preview import baseline_rows, preview_starters, report_rom_matches, ROULET
 from .preview_cache import PreviewCache
 from .ui_species import SpeciesChoice
 from .locales.selection_names import SPECIES_NAMES
+from .pokemon_details import display_species_name
 from .ui_theme import GameSurface, MenuPanel, MenuCheckBox, STYLE, XD_STYLE, HOME_STYLE, JAPANESE_FONT_STYLE
 from .xd_ui import XDWorkspace
 from .ui_audio import MenuAudio
@@ -1227,9 +1228,7 @@ class MainWindow(QMainWindow):
         return status
 
     def preview_species_name(self, row):
-        dex = row.get("national_dex")
-        name = row.get("name_" + self.language) or SPECIES_NAMES[self.language].get(dex, f"#{dex}" if dex else "?")
-        return name.capitalize()
+        return display_species_name(row.get("national_dex"), self.language, row.get("name_" + self.language))
 
     def preview_row_name(self, row, *, rich=False):
         name = self.preview_species_name(row)

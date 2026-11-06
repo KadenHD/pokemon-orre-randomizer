@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.8
+
+- Restore missing accents in Pokémon names in previews and Pokémon sheets,
+  including the names shown on evolution paths.
+- Display readable, localized evolution item names with sentence casing in
+  both games.
+- Name XD's Sun Shard and Moon Shard in all six interface languages instead of
+  showing numeric item labels.
+
 ## 1.2.7
 
 - Show original ability and move descriptions in Pokémon sheets for both games

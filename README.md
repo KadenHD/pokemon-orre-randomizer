@@ -23,9 +23,9 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.7** brings original ability and move descriptions to Pokémon sheets
-in both games, with localized Shadow badges and clearer move names. See the
-[release notes](docs/releases/v1.2.7.md).
+**Version 1.2.8** restores missing accents in Pokémon names and improves the
+display of evolution items in all six interface languages, including XD's Sun
+Shard and Moon Shard. See the [release notes](docs/releases/v1.2.8.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)

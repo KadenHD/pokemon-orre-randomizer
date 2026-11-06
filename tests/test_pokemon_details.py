@@ -9,7 +9,7 @@ import unittest
 from orre_randomizer.detail_texts import LANGUAGES, TEXTS
 from orre_randomizer.locales.detail_names import ABILITY_NAMES, EVOLUTION_ITEM_NAMES, MOVE_NAMES
 from orre_randomizer.pokemon_details import (build_detail_catalog, encounter_details,
-    detail_sections, evolution_text, format_detail_lines)
+    detail_sections, display_species_name, evolution_text, format_detail_lines)
 from orre_randomizer.engine.analyze_game import FormatError
 
 
@@ -49,13 +49,10 @@ def fixture():
             struct.pack_into('>H', rel, at + field, move)
     struct.pack_into('>HH', rel, 0xF00 + 0x38 + 2, 1, 1)
     dol = bytearray(0x4000)
-    region = SimpleNamespace(item_table_offset=0x1000, tm_table_offset=0x200, game_id='fixture')
-    for index in EVOLUTION_ITEM_NAMES['en']:
-        struct.pack_into('>I', dol, 0x1000 + index * 0x28 + 0x10, 300 + index)
+    region = SimpleNamespace(tm_table_offset=0x200, game_id='fixture')
     for number in range(50):
         struct.pack_into('>H', dol, 0x200 + number * 8 + 6, 1 if number % 2 else 2)
-    names = {'FR': {101: 'ONIX NATIF', 102: 'STEELIX NATIF', 201: 'CAPACITÉ NATIVE', 500: 'DRESSEUR NATIF',
-                    300 + 199: 'PEAU MÉTAL NATIVE'}}
+    names = {'FR': {101: 'ONIX NATIF', 102: 'STEELIX NATIF', 201: 'CAPACITÉ NATIVE', 500: 'DRESSEUR NATIF'}}
     final = bytearray(rel)
     final[species1 + 0x30:species1 + 0x34] = bytes((10, 11, 25, 25))
     final[species1 + 0x85] = 90
@@ -105,7 +102,7 @@ class DetailTests(unittest.TestCase):
         for language in LANGUAGES:
             self.assertEqual(len(MOVE_NAMES[language]), 354)
             self.assertEqual(len(ABILITY_NAMES[language]), 77)
-            self.assertEqual(len(EVOLUTION_ITEM_NAMES[language]), 12)
+            self.assertEqual(set(EVOLUTION_ITEM_NAMES[language]), {93, 94, 95, 96, 97, 98, 187, 192, 193, 199, 201, 218, 516, 517})
             self.assertTrue(format_detail_lines(encounter_details(catalog, 1), language))
 
     def test_sheet_restores_missing_accents_without_replacing_native_spellings(self):
@@ -136,12 +133,25 @@ class DetailTests(unittest.TestCase):
 
     def test_unadapted_conditions_are_explicit_and_stone_names_translated(self):
         self.assertIn('adaptation', evolution_text(5, 0, language='fr'))
-        self.assertIn('Water Stone', evolution_text(7, 97, language='en'))
-        self.assertIn('Pierre Eau', evolution_text(7, 97, language='fr'))
-        self.assertIn('みずのいし', evolution_text(7, 97, language='ja'))
+        for language, stone, shard in (
+            ('fr', 'Pierre eau', 'Éclat soleil'), ('en', 'Water stone', 'Sun shard'),
+            ('de', 'Wasserstein', 'Sonnsplitter'), ('es', 'Piedra agua', 'Ápice sol'),
+            ('it', 'Pietra idrica', 'Scheggiasole'), ('ja', 'みずのいし', 'たいようのかけら'),
+        ):
+            with self.subTest(language=language):
+                self.assertIn(stone, evolution_text(7, 97, language=language))
+                self.assertIn(shard, evolution_text(16, 516, language=language))
+        self.assertIn('Écaille draco', evolution_text(6, 201, item_names={'fr': 'ECAILLEDRACO'}))
+        self.assertIn('Escama dragón', evolution_text(6, 201, language='es'))
         self.assertIn('Attaque > Défense', evolution_text(8, 20, language='fr'))
         with self.assertRaises(FormatError):
             evolution_text(99, 1)
+
+    def test_species_display_restores_accents_without_replacing_native_names(self):
+        self.assertEqual(display_species_name(4, 'fr', 'SALAMECHE'), 'Salamèche')
+        self.assertEqual(display_species_name(133, 'fr', 'EVOLI'), 'Évoli')
+        self.assertEqual(display_species_name(95, 'fr', 'ONIX NATIF'), 'Onix natif')
+        self.assertEqual(display_species_name(133, 'ja', 'イーブイ'), 'イーブイ')
 
     def test_final_identity_or_pointer_corruption_is_refused(self):
         original, final, dol, tables, names, region = fixture()
@@ -176,8 +186,9 @@ class RealDetailTests(unittest.TestCase):
         branches = {r['target_national_dex']: r for r in eevee['evolutions']}
         self.assertEqual((branches[196]['method'], branches[196]['condition']), (7, 93))
         self.assertEqual((branches[197]['method'], branches[197]['condition']), (7, 94))
-        self.assertIn('PIERRESOLEIL', branches[196]['texts']['fr'])
-        self.assertIn('SUN STONE', branches[196]['texts']['en'])
+        self.assertIn('Pierre soleil', branches[196]['texts']['fr'])
+        self.assertIn('Sun stone', branches[196]['texts']['en'])
+        self.assertIn('Évoli → Mentali', '\n'.join(format_detail_lines(eevee, 'fr')))
         gastly = encounter_details(catalog, 92)
         self.assertEqual([(r['source_species'], r['target_species'], r['condition'])
                           for r in gastly['evolution_chain']], [(92, 93, 25), (93, 94, 40)])

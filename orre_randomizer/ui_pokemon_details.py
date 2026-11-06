@@ -6,7 +6,7 @@ from PySide6.QtWidgets import (QDialog, QGridLayout, QHBoxLayout, QLabel, QProgr
 
 from .detail_texts import detail_text
 from .i18n import translate
-from .pokemon_details import COLOSSEUM_SHADOW_RUSH, STAT_NAMES, detail_sections, display_name
+from .pokemon_details import COLOSSEUM_SHADOW_RUSH, STAT_NAMES, detail_sections, display_name, display_species_name
 from .resources import ability_descriptions, move_descriptions, type_badge
 from .ui_pokemon_names import shiny_name_html
 from .ui_theme import GameSurface, MenuPanel
@@ -213,10 +213,12 @@ class PokemonSheet(QDialog):
             grid.setColumnStretch(2, 1)
             source = parent.preview_portrait({"portrait_png": portraits.get(str(branch["source_species"]))}, xd=xd)
             target = parent.preview_portrait({"portrait_png": portraits.get(str(branch["target_species"]))}, xd=xd)
-            grid.addLayout(evolution_form(branch["source_names"][language], source), 0, 0)
+            source_name = display_species_name(branch["source_national_dex"], language, branch["source_names"][language])
+            grid.addLayout(evolution_form(source_name, source), 0, 0)
             arrow = text_label("→", "sheetEvolutionArrow")
             grid.addWidget(arrow, 0, 1, Qt.AlignmentFlag.AlignHCenter | Qt.AlignmentFlag.AlignTop)
-            grid.addLayout(evolution_form(display_name(branch, language), target), 0, 2)
+            target_name = display_species_name(branch["target_national_dex"], language, display_name(branch, language))
+            grid.addLayout(evolution_form(target_name, target), 0, 2)
             condition = text_label(branch["texts"][language], "note")
             condition.setAlignment(Qt.AlignmentFlag.AlignCenter)
             grid.addWidget(condition, 1, 0, 1, 3)

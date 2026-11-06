@@ -1,7 +1,7 @@
 """Read final ROM bytes for Pokémon sheets; never draw or modify game data.
 
 Properties come from the final REL/DOL. The BSD name catalog supplies missing
-translations and restores diacritics in displayed move names.
+translations and restores diacritics in displayed names.
 """
 from __future__ import annotations
 
@@ -35,10 +35,8 @@ def _without_accents(letter: str) -> str:
     return "".join(char for char in normalize("NFD", letter) if not combining(char))
 
 
-def _display_move_name(row: dict, language: str) -> str:
-    name = display_name(row, language)
-    reference = MOVE_NAMES.get(language, {}).get(row.get("move"))
-    if language == "ja" or not reference:
+def _display_localized_name(name: str, reference: str | None, language: str) -> str:
+    if language == "ja" or not reference or name == reference:
         return name.capitalize()
 
     # Only restore missing accents when the letters match. Keep native
@@ -52,6 +50,17 @@ def _display_move_name(row: dict, language: str) -> str:
                         for original, plain, accented in zip(native, native_plain, localized, strict=True))
         name = "".join(next(restored) if char.isalpha() else char for char in name)
     return name.capitalize()
+
+
+def _display_move_name(row: dict, language: str) -> str:
+    reference = MOVE_NAMES.get(language, {}).get(row.get("move"))
+    return _display_localized_name(display_name(row, language), reference, language)
+
+
+def display_species_name(national_dex: int | None, language: str, name: str | None = None) -> str:
+    reference = SPECIES_NAMES[language].get(national_dex)
+    return _display_localized_name(name or reference or (f"#{national_dex}" if national_dex else "?"),
+                                   reference, language)
 
 
 def _name_map(identifier: int, names: dict, fallback: dict) -> dict[str, str]:
@@ -75,9 +84,9 @@ def evolution_text(method: int, condition: int, *, language: str = "fr",
            16: "evo_key_item"}.get(method)
     if key is None:
         raise FormatError(f"unsupported final evolution method {method}")
-    item = (item_names or {}).get(language) or EVOLUTION_ITEM_NAMES.get(language, {}).get(condition)
-    item = item or detail_text("item", language, id=condition)
-    result = detail_text(key, language, level=condition, item=item)
+    item = EVOLUTION_ITEM_NAMES.get(language, {}).get(condition) or (item_names or {}).get(language)
+    result = detail_text(key, language, level=condition,
+                         item=item.capitalize() if item else detail_text("item", language, id=condition))
     if method in (2, 3, 5, 6, 15):
         result += " " + detail_text("unavailable", language)
     return result
@@ -125,12 +134,6 @@ def build_detail_catalog(original_rel: bytes, final_rel: bytes, original_dol: by
             "base_stat_total": row["total"], "evolutions": [], "learnset": [],
             "compatible_tms": [slot + 1 for slot in range(50) if final_rel[offset + 0x34 + slot]],
         }
-    items = {}
-    for index in EVOLUTION_ITEM_NAMES["en"]:
-        position = region.item_table_offset + index * 0x28 + 0x10
-        check_range(final_dol, position, 4, "evolution item name")
-        items[str(index)] = _name_map(u32(final_dol, position), names,
-            {language: EVOLUTION_ITEM_NAMES[language][index] for language in LANGUAGES})
     move_table = tables["moves"]
     check_range(final_rel, move_table["offset"], move_table["count"] * move_table["stride"], "final move table")
     moves = {}
@@ -164,12 +167,11 @@ def build_detail_catalog(original_rel: bytes, final_rel: bytes, original_dol: by
                 continue
             if str(target) not in species:
                 raise FormatError("invalid final evolution target")
-            item_names = items.get(str(condition), {}) if method in (6, 7) else {}
             sheet["evolutions"].append({"target_species": target,
                 "target_national_dex": species[str(target)]["national_dex"],
                 "names": dict(species[str(target)]["names"]), "method": method, "condition": condition,
                 "accessible_in_colosseum": method not in (2, 3, 5, 6, 15),
-                "texts": {language: evolution_text(method, condition, language=language, item_names=item_names)
+                "texts": {language: evolution_text(method, condition, language=language)
                           for language in LANGUAGES}})
         for slot in range(19):
             position = offset + 0xBA + slot * 4
@@ -290,7 +292,7 @@ def encounter_details(catalog: dict, species_index: int, *, level: int | None = 
         visited.add(current)
         source = catalog["species"][str(current)]
         for branch in source["evolutions"]:
-            chain.append({**copy.deepcopy(branch), "source_species": current,
+            chain.append({**copy.deepcopy(branch), "source_species": current, "source_national_dex": source["national_dex"],
                           "source_names": dict(source["names"])})
             pending.append((branch["target_species"], ancestors | {current}))
     result["evolution_chain"] = chain
@@ -300,7 +302,7 @@ def encounter_details(catalog: dict, species_index: int, *, level: int | None = 
 def format_detail_lines(details: dict, language: str = "fr") -> list[str]:
     """Compact plain text for native dialogs, tooltips and accessible output."""
     language = language if language in LANGUAGES else "en"
-    lines = [display_name(details, language)]
+    lines = [display_species_name(details["national_dex"], language, display_name(details, language))]
     if details.get("level") is not None:
         lines.append(detail_text("level", language, level=details["level"]))
     lines.extend((detail_text("types", language) + " : " + " / ".join(details["type_names"][language]),
@@ -334,8 +336,10 @@ def detail_sections(details: dict, language: str, *, include_move_types: bool = 
     if details.get("shadow"):
         evolutions.append(detail_text("shadow_first", language))
     if details["evolutions"]:
-        evolutions.extend(row["source_names"][language] + " → " + display_name(row, language)
-                          + " : " + row["texts"][language] for row in details["evolution_chain"])
+        for row in details["evolution_chain"]:
+            source = display_species_name(row["source_national_dex"], language, row["source_names"][language])
+            target = display_species_name(row["target_national_dex"], language, display_name(row, language))
+            evolutions.append(source + " → " + target + " : " + row["texts"][language])
     else:
         evolutions.append(detail_text("no_evolution", language))
     sections["evolutions"] = evolutions
