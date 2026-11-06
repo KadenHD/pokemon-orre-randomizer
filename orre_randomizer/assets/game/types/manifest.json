@@ -1,0 +1,2357 @@
+{
+  "version": 1,
+  "sources": {
+    "colosseum-en": {
+      "disc_id": "GC6P01",
+      "disc_revision": 0,
+      "archive": "fight_common.fsys",
+      "archive_sha256": "b4282941d33dab3dd2a375a80cb0e31ddbb265f859d3f2c1cbbbba61e9f6f9dd",
+      "member": "menu005",
+      "member_id": "0x02081200",
+      "member_offset": 356352,
+      "member_sha256": "9f13d0c291288e50b5d677d4cd92a13fdda9da9889d3ffe4d1c7cffbb1ba522c",
+      "atlas_dimensions": [
+        258,
+        258
+      ],
+      "badges": {
+        "12": {
+          "file": "colosseum-en-12.png",
+          "crop_xywh": [
+            6,
+            7,
+            79,
+            27
+          ],
+          "sha256": "ba6a56333df4eb84b9dc9dcc18ab9ff7faa781c186c5a56f43c03b9f8338df8f"
+        },
+        "11": {
+          "file": "colosseum-en-11.png",
+          "crop_xywh": [
+            6,
+            38,
+            79,
+            27
+          ],
+          "sha256": "4af94c5c10499f0635b31a3ae0e8ce2d2bed22006a4e2ef2f567a60093fa718c"
+        },
+        "4": {
+          "file": "colosseum-en-4.png",
+          "crop_xywh": [
+            6,
+            69,
+            79,
+            27
+          ],
+          "sha256": "5c13d2bacdeb633c17e06a3878a8b5404ac057a765ef16a5cdc8ec1c3b3c46de"
+        },
+        "10": {
+          "file": "colosseum-en-10.png",
+          "crop_xywh": [
+            6,
+            100,
+            79,
+            27
+          ],
+          "sha256": "d73ecf89da1b4feb287ce04ff63e30ad5d150ff248a9d19005509dc9bf78079c"
+        },
+        "1": {
+          "file": "colosseum-en-1.png",
+          "crop_xywh": [
+            6,
+            131,
+            79,
+            27
+          ],
+          "sha256": "fb2060b35c4cd487d425d9c896944d84f153febd9767a4e7be6d46be72abe5dd"
+        },
+        "17": {
+          "file": "colosseum-en-17.png",
+          "crop_xywh": [
+            6,
+            162,
+            79,
+            27
+          ],
+          "sha256": "ba04984c0f8c8037388d71dc3ad8cb1d60e4ace2dcb247bdad1f9c890bfab8b6"
+        },
+        "0": {
+          "file": "colosseum-en-0.png",
+          "crop_xywh": [
+            6,
+            193,
+            79,
+            27
+          ],
+          "sha256": "18d2672049dcbb76f7972d8fd29485b25594ba6f9aeb67c1337f009f75393d41"
+        },
+        "6": {
+          "file": "colosseum-en-6.png",
+          "crop_xywh": [
+            6,
+            224,
+            79,
+            27
+          ],
+          "sha256": "9c52505c22afa85a5351971858293886657cb529c64cd945bef59d5177ab35b9"
+        },
+        "2": {
+          "file": "colosseum-en-2.png",
+          "crop_xywh": [
+            90,
+            7,
+            79,
+            27
+          ],
+          "sha256": "748e7837343b4df3d6233d6f588a48d6dbe87b172ef79fad05efe2b1b46ac79b"
+        },
+        "14": {
+          "file": "colosseum-en-14.png",
+          "crop_xywh": [
+            90,
+            38,
+            79,
+            27
+          ],
+          "sha256": "f660a97e80971ac3d2ccfe913c7bb13ba1ab97a54a2c1ec76620c0707023327a"
+        },
+        "7": {
+          "file": "colosseum-en-7.png",
+          "crop_xywh": [
+            90,
+            69,
+            79,
+            27
+          ],
+          "sha256": "53acf85711e7009e1e29d8e7f43ea5e40589c834584734b0f35e34a0a5217989"
+        },
+        "5": {
+          "file": "colosseum-en-5.png",
+          "crop_xywh": [
+            90,
+            100,
+            79,
+            27
+          ],
+          "sha256": "b357b0b35f769c7706ef752ba4e246177c49197683751a5d1c0895d38697c346"
+        },
+        "8": {
+          "file": "colosseum-en-8.png",
+          "crop_xywh": [
+            90,
+            131,
+            79,
+            27
+          ],
+          "sha256": "e7b45fade887ead12b477225a4ee4916da49d7b996b2e118125f7477c885342b"
+        },
+        "13": {
+          "file": "colosseum-en-13.png",
+          "crop_xywh": [
+            90,
+            162,
+            79,
+            27
+          ],
+          "sha256": "472ac7f32cd79345adedeb0dee3de1f6046b4fd174537d6e70989100be812d4c"
+        },
+        "16": {
+          "file": "colosseum-en-16.png",
+          "crop_xywh": [
+            90,
+            193,
+            79,
+            27
+          ],
+          "sha256": "937a937a2261d31504155b94edff8f27bd3232458fc6755795ae91a87f7f3063"
+        },
+        "15": {
+          "file": "colosseum-en-15.png",
+          "crop_xywh": [
+            90,
+            224,
+            79,
+            27
+          ],
+          "sha256": "b6e95313db94ac81cdb2b7b32fd248f5dcb92ad8269ecd9525da7e0cb8957ebd"
+        },
+        "3": {
+          "file": "colosseum-en-3.png",
+          "crop_xywh": [
+            173,
+            6,
+            79,
+            27
+          ],
+          "sha256": "23ac589e644e2377cb406bde435f188c107607e1794b87880e79c52249a7fc7c"
+        },
+        "9": {
+          "file": "colosseum-en-9.png",
+          "crop_xywh": [
+            173,
+            38,
+            79,
+            27
+          ],
+          "sha256": "b8e95f6daed9278f9051456caaa61aabb83a5f2c3a08d1df53254a665cc80dc2"
+        }
+      }
+    },
+    "colosseum-fr": {
+      "disc_id": "GC6P01",
+      "disc_revision": 0,
+      "archive": "fight_common_fr.fsys",
+      "archive_sha256": "14235042558712e8de176ccd0e88da3cdd4fc6f96c81d1c0d8a72d4fcab6737f",
+      "member": "menu005",
+      "member_id": "0x15511200",
+      "member_offset": 624928,
+      "member_sha256": "d765202c1c156e26439668c4fe1e307fed88a73768c4039d62be598bff2c7d34",
+      "atlas_dimensions": [
+        258,
+        258
+      ],
+      "badges": {
+        "12": {
+          "file": "colosseum-fr-12.png",
+          "crop_xywh": [
+            6,
+            7,
+            79,
+            27
+          ],
+          "sha256": "94d924a13d3773096e815558e6b6b95f6f116140fa58ea7df3a27fcd3e3e428f"
+        },
+        "11": {
+          "file": "colosseum-fr-11.png",
+          "crop_xywh": [
+            6,
+            38,
+            79,
+            27
+          ],
+          "sha256": "2af6fe0178284055af425588eb472ca34f85ad54625a204a735abe5afac09b25"
+        },
+        "4": {
+          "file": "colosseum-fr-4.png",
+          "crop_xywh": [
+            6,
+            69,
+            79,
+            27
+          ],
+          "sha256": "1c6b0785f5be7e88f4e33b0ae17bcdd67b0fb67e651c0d235b52176f466e0bca"
+        },
+        "10": {
+          "file": "colosseum-fr-10.png",
+          "crop_xywh": [
+            6,
+            100,
+            79,
+            27
+          ],
+          "sha256": "d9b518f07a776b55a5d71026a84d771fa12063d445d945ff9eab5ad023520589"
+        },
+        "1": {
+          "file": "colosseum-fr-1.png",
+          "crop_xywh": [
+            6,
+            131,
+            79,
+            27
+          ],
+          "sha256": "164115f83a5c1cb46deda6b03c820712776deb0f345e7017dd6bf0e8772d6724"
+        },
+        "17": {
+          "file": "colosseum-fr-17.png",
+          "crop_xywh": [
+            6,
+            162,
+            79,
+            27
+          ],
+          "sha256": "0f6ab59bce6d7a32f3ee9f68eefcc38e7bb16ee0f227ec8f4621e61c25bc27b8"
+        },
+        "0": {
+          "file": "colosseum-fr-0.png",
+          "crop_xywh": [
+            6,
+            193,
+            79,
+            27
+          ],
+          "sha256": "b2ae64d173f9f5d67c43804359d054e0414f13a8989439ad1792b22c0a60961b"
+        },
+        "6": {
+          "file": "colosseum-fr-6.png",
+          "crop_xywh": [
+            6,
+            224,
+            79,
+            27
+          ],
+          "sha256": "3db22fdf593a2e28f603a84244f454e6c4d1b0703d048ab76d6a0c04f3fa47ba"
+        },
+        "2": {
+          "file": "colosseum-fr-2.png",
+          "crop_xywh": [
+            90,
+            7,
+            79,
+            27
+          ],
+          "sha256": "5ead120c9607579d33b844928253497935e3696fca7fe7510be947528fa32f87"
+        },
+        "14": {
+          "file": "colosseum-fr-14.png",
+          "crop_xywh": [
+            90,
+            38,
+            79,
+            27
+          ],
+          "sha256": "1b9926a1d297d1308522813a5a41698c3128d9f60e6cfcb5461b17d9b46d119e"
+        },
+        "7": {
+          "file": "colosseum-fr-7.png",
+          "crop_xywh": [
+            90,
+            69,
+            79,
+            27
+          ],
+          "sha256": "08e72d1897116a3c7633d2793cd1f14ffcfec054377820784f6c7b76f363d8d9"
+        },
+        "5": {
+          "file": "colosseum-fr-5.png",
+          "crop_xywh": [
+            90,
+            100,
+            79,
+            27
+          ],
+          "sha256": "7d09c8daab019ea82bb62f2c2f803cb6550a9ce8db8b849647a815ebc92fcad8"
+        },
+        "8": {
+          "file": "colosseum-fr-8.png",
+          "crop_xywh": [
+            90,
+            131,
+            79,
+            27
+          ],
+          "sha256": "c5da7e164320510ce77e893125c147ca117c1ffabb9f005ee3dd826efd8e0dbe"
+        },
+        "13": {
+          "file": "colosseum-fr-13.png",
+          "crop_xywh": [
+            90,
+            162,
+            79,
+            27
+          ],
+          "sha256": "e97cbdfeda67a311b255aef69206e8a4393706af351ca64fcbcdac6be338f955"
+        },
+        "16": {
+          "file": "colosseum-fr-16.png",
+          "crop_xywh": [
+            90,
+            193,
+            79,
+            27
+          ],
+          "sha256": "c1ad470188668abf26b849ba25ce375e50c56090a86d0a4d1b39129f130f2d77"
+        },
+        "15": {
+          "file": "colosseum-fr-15.png",
+          "crop_xywh": [
+            90,
+            224,
+            79,
+            27
+          ],
+          "sha256": "81a7ca66827dd05cd5a46cb9290c479ce35dab297c4e991e3f1f18f894d89cf3"
+        },
+        "3": {
+          "file": "colosseum-fr-3.png",
+          "crop_xywh": [
+            173,
+            6,
+            79,
+            27
+          ],
+          "sha256": "77cdfa4c28adc25d94d13f1ed886aa6e84c1e2e10ae8fc3c84e792fac11bf3c9"
+        },
+        "9": {
+          "file": "colosseum-fr-9.png",
+          "crop_xywh": [
+            173,
+            38,
+            79,
+            27
+          ],
+          "sha256": "bd723233849533d4915ffb4652001ab8a7a078a7942b71f17e4a034b776077c2"
+        }
+      }
+    },
+    "colosseum-de": {
+      "disc_id": "GC6P01",
+      "disc_revision": 0,
+      "archive": "fight_common_ge.fsys",
+      "archive_sha256": "e1cf47dff04251444ac754d0968bdcbff89b7388b11d8c37c01c825d1906e4aa",
+      "member": "menu005",
+      "member_id": "0x154d1200",
+      "member_offset": 603808,
+      "member_sha256": "3fdea606e9ca8fe89ce2b8f34f3ee9de6e7f1a226277236696973f0f5631b80c",
+      "atlas_dimensions": [
+        258,
+        258
+      ],
+      "badges": {
+        "12": {
+          "file": "colosseum-de-12.png",
+          "crop_xywh": [
+            6,
+            7,
+            79,
+            27
+          ],
+          "sha256": "291e9191f059603a841d069f33908d2b28e574e3bae78d5641025b12fbaefcea"
+        },
+        "11": {
+          "file": "colosseum-de-11.png",
+          "crop_xywh": [
+            6,
+            38,
+            79,
+            27
+          ],
+          "sha256": "db278b53fa225c684ffbb66aa179a4b55543ffc9e1f8468c615fc760ca94c018"
+        },
+        "4": {
+          "file": "colosseum-de-4.png",
+          "crop_xywh": [
+            6,
+            69,
+            79,
+            27
+          ],
+          "sha256": "4afc4d9c499ae80d0bc6b259be1b755b3d45c039ca47a731cd71536ec7046ec6"
+        },
+        "10": {
+          "file": "colosseum-de-10.png",
+          "crop_xywh": [
+            6,
+            100,
+            79,
+            27
+          ],
+          "sha256": "5117f485cd0aad11f5041cfd5d58f27e859ef4a3d0a303532539cbe78297abf1"
+        },
+        "1": {
+          "file": "colosseum-de-1.png",
+          "crop_xywh": [
+            6,
+            131,
+            79,
+            27
+          ],
+          "sha256": "fa9ff19c618bf9267896de4150718ae9e0caf434b8b4d17caa23dee257be0a58"
+        },
+        "17": {
+          "file": "colosseum-de-17.png",
+          "crop_xywh": [
+            6,
+            162,
+            79,
+            27
+          ],
+          "sha256": "3c894f3b96b798b24110d63ba02e2de4f92928121eb89e2bd90b009ea0684f8d"
+        },
+        "0": {
+          "file": "colosseum-de-0.png",
+          "crop_xywh": [
+            6,
+            193,
+            79,
+            27
+          ],
+          "sha256": "6bf78af77a2683ed9a6043ec31b10e8f51211d28d75ee2184f147f7c72ff0ded"
+        },
+        "6": {
+          "file": "colosseum-de-6.png",
+          "crop_xywh": [
+            6,
+            224,
+            79,
+            27
+          ],
+          "sha256": "e2ee01ce52143ed8aa9f1e50f4b7c908b7c3cbbb0c4698fc2322a9d96eb09ae8"
+        },
+        "2": {
+          "file": "colosseum-de-2.png",
+          "crop_xywh": [
+            90,
+            7,
+            79,
+            27
+          ],
+          "sha256": "9de5d40fa8e9f3457a9b84e4e24e4c49636617cfb4a96db010865ede493213bb"
+        },
+        "14": {
+          "file": "colosseum-de-14.png",
+          "crop_xywh": [
+            90,
+            38,
+            79,
+            27
+          ],
+          "sha256": "524843961eaff91d5fa292093bd70fd4ebb2afa40170b36df349621ce69e8660"
+        },
+        "7": {
+          "file": "colosseum-de-7.png",
+          "crop_xywh": [
+            90,
+            69,
+            79,
+            27
+          ],
+          "sha256": "bf20831c8a1c4053cadee839aecb227259f6930f099f2f354f18b7e3c5acb000"
+        },
+        "5": {
+          "file": "colosseum-de-5.png",
+          "crop_xywh": [
+            90,
+            100,
+            79,
+            27
+          ],
+          "sha256": "65f780f78f4ec3602c45ae93b6589252e2b537f0b364748d80646c48c3d80c21"
+        },
+        "8": {
+          "file": "colosseum-de-8.png",
+          "crop_xywh": [
+            90,
+            131,
+            79,
+            27
+          ],
+          "sha256": "d0de6811c5014ca13c867dc28b4464b2c08974ee3649788684290098a7bf3848"
+        },
+        "13": {
+          "file": "colosseum-de-13.png",
+          "crop_xywh": [
+            90,
+            162,
+            79,
+            27
+          ],
+          "sha256": "24d9e646d892933f02456f48fd06b671f285d2b0fe1d5fc7d4e1b069db1cd3c5"
+        },
+        "16": {
+          "file": "colosseum-de-16.png",
+          "crop_xywh": [
+            90,
+            193,
+            79,
+            27
+          ],
+          "sha256": "8f7f3791a660245286e592622f4761cc4ddf49df38535be6cb99d58141a5b464"
+        },
+        "15": {
+          "file": "colosseum-de-15.png",
+          "crop_xywh": [
+            90,
+            224,
+            79,
+            27
+          ],
+          "sha256": "f717807f98047e6c5205fe0926387d953514cce6025a931e11d98dc950b0e2ee"
+        },
+        "3": {
+          "file": "colosseum-de-3.png",
+          "crop_xywh": [
+            173,
+            6,
+            79,
+            27
+          ],
+          "sha256": "ca39d1a1bfbc3ec57fe3e82767bfafe87c41e3361d218aebfa3996208aa6c160"
+        },
+        "9": {
+          "file": "colosseum-de-9.png",
+          "crop_xywh": [
+            173,
+            38,
+            79,
+            27
+          ],
+          "sha256": "3ae7daaeb5da490634a3693ddaac6d3cc6269824f183400a39b7b54a7977ce6a"
+        }
+      }
+    },
+    "colosseum-it": {
+      "disc_id": "GC6P01",
+      "disc_revision": 0,
+      "archive": "fight_common_it.fsys",
+      "archive_sha256": "2cc6846f0c8895663f2ae82170b77dc043105e0dfcb2a3a83b5e5a2742641a1c",
+      "member": "menu005",
+      "member_id": "0x15551200",
+      "member_offset": 606624,
+      "member_sha256": "0caa33d6fb98c4817de90db1bdba00138147844495572d84e815b1c7f9d24acf",
+      "atlas_dimensions": [
+        258,
+        258
+      ],
+      "badges": {
+        "12": {
+          "file": "colosseum-it-12.png",
+          "crop_xywh": [
+            6,
+            7,
+            79,
+            27
+          ],
+          "sha256": "5c86a6c81b03d1a0fa7a05f3ae35c563ac7bd496511a6c697b411074a0531d51"
+        },
+        "11": {
+          "file": "colosseum-it-11.png",
+          "crop_xywh": [
+            6,
+            38,
+            79,
+            27
+          ],
+          "sha256": "a5b1a3a3f5469b8a9e247887c81ec9b99f5f132adb7994c4db24637c7a8f237e"
+        },
+        "4": {
+          "file": "colosseum-it-4.png",
+          "crop_xywh": [
+            6,
+            69,
+            79,
+            27
+          ],
+          "sha256": "c31b85a0f1d4270d003f27a923c09b3703633632d91706bae86c54d5ba0dbf69"
+        },
+        "10": {
+          "file": "colosseum-it-10.png",
+          "crop_xywh": [
+            6,
+            100,
+            79,
+            27
+          ],
+          "sha256": "789bd66022b3ed9f1a38e63ccac3d5ef6cee1ca126e9f25be74839039969f4ac"
+        },
+        "1": {
+          "file": "colosseum-it-1.png",
+          "crop_xywh": [
+            6,
+            131,
+            79,
+            27
+          ],
+          "sha256": "fd100c00e4bb527114849abdc7e27a7e1556e0280d63a8c0013b1125772e6947"
+        },
+        "17": {
+          "file": "colosseum-it-17.png",
+          "crop_xywh": [
+            6,
+            162,
+            79,
+            27
+          ],
+          "sha256": "7629506bf45802c0f83c8152766fff78e7c246132378cc9fa33045703f95bdff"
+        },
+        "0": {
+          "file": "colosseum-it-0.png",
+          "crop_xywh": [
+            6,
+            193,
+            79,
+            27
+          ],
+          "sha256": "3d0a080e9e826b472dddd3361693eef59a74bb7be1f856ed2e79bbcbe0d5c8a3"
+        },
+        "6": {
+          "file": "colosseum-it-6.png",
+          "crop_xywh": [
+            6,
+            224,
+            79,
+            27
+          ],
+          "sha256": "1c366f4a6221c3ba744f45bd009352318f7aad8018b6b4eac69539c90c46c2f5"
+        },
+        "2": {
+          "file": "colosseum-it-2.png",
+          "crop_xywh": [
+            90,
+            7,
+            79,
+            27
+          ],
+          "sha256": "64f28b34554b996ee792a414fbd60a0b4b812b862e2f5d7c6fc6b05d4d960175"
+        },
+        "14": {
+          "file": "colosseum-it-14.png",
+          "crop_xywh": [
+            90,
+            38,
+            79,
+            27
+          ],
+          "sha256": "a1b983beab057b7d46efb8455b190e25739329b3a966e4304d5a2c3e6fd9d592"
+        },
+        "7": {
+          "file": "colosseum-it-7.png",
+          "crop_xywh": [
+            90,
+            69,
+            79,
+            27
+          ],
+          "sha256": "cc49ea0f71b6b5caef8496c18a7e1ffc750c1968b7f5991a905fa6e76246aca4"
+        },
+        "5": {
+          "file": "colosseum-it-5.png",
+          "crop_xywh": [
+            90,
+            100,
+            79,
+            27
+          ],
+          "sha256": "99f28260141a23bb6fceca05498a9a28907ad96ace9314b5afe0e5f3a10892b8"
+        },
+        "8": {
+          "file": "colosseum-it-8.png",
+          "crop_xywh": [
+            90,
+            131,
+            79,
+            27
+          ],
+          "sha256": "26b9d336e39cd1417a402cb47572c1005a67fbd6dda8a0fd4dabd1eb64795b99"
+        },
+        "13": {
+          "file": "colosseum-it-13.png",
+          "crop_xywh": [
+            90,
+            162,
+            79,
+            27
+          ],
+          "sha256": "6ca89da40fc649424fa8f707bf9af0c830cbde1353aec1f8597958abb3f2e954"
+        },
+        "16": {
+          "file": "colosseum-it-16.png",
+          "crop_xywh": [
+            90,
+            193,
+            79,
+            27
+          ],
+          "sha256": "bbdf03264a676782f760e1d654cb50e3416e3f3eaa43e9ec315f0c8a914db66d"
+        },
+        "15": {
+          "file": "colosseum-it-15.png",
+          "crop_xywh": [
+            90,
+            224,
+            79,
+            27
+          ],
+          "sha256": "43a05f72136a23b51ce3db99c1319c415b6594f3de839e8b34e9f9eeca88f116"
+        },
+        "3": {
+          "file": "colosseum-it-3.png",
+          "crop_xywh": [
+            173,
+            6,
+            79,
+            27
+          ],
+          "sha256": "94009a8bde9a4c136ee14c652265316ac1042cefb47092039d7cb98e42d16aad"
+        },
+        "9": {
+          "file": "colosseum-it-9.png",
+          "crop_xywh": [
+            173,
+            38,
+            79,
+            27
+          ],
+          "sha256": "bd723233849533d4915ffb4652001ab8a7a078a7942b71f17e4a034b776077c2"
+        }
+      }
+    },
+    "colosseum-es": {
+      "disc_id": "GC6P01",
+      "disc_revision": 0,
+      "archive": "fight_common_sp.fsys",
+      "archive_sha256": "1221189c5b6b8c6527de7be42c2a1034762111234b34f30e6f1b5a2604a786d6",
+      "member": "menu005",
+      "member_id": "0x15591200",
+      "member_offset": 607200,
+      "member_sha256": "464c207bbc24af0279b872d3e13b2b95a8e531f8e1f28ad442300f16e98129ba",
+      "atlas_dimensions": [
+        258,
+        258
+      ],
+      "badges": {
+        "12": {
+          "file": "colosseum-es-12.png",
+          "crop_xywh": [
+            6,
+            7,
+            79,
+            27
+          ],
+          "sha256": "a29acd6a06db0887a3d9e5b12f04e9ae0eb53464a66c2934c4a6987cbf2bae18"
+        },
+        "11": {
+          "file": "colosseum-es-11.png",
+          "crop_xywh": [
+            6,
+            38,
+            79,
+            27
+          ],
+          "sha256": "4713d657d3d95a25cd6fff5540a3b3d0df09817cd4b66987b5abc2aeb445595a"
+        },
+        "4": {
+          "file": "colosseum-es-4.png",
+          "crop_xywh": [
+            6,
+            69,
+            79,
+            27
+          ],
+          "sha256": "9565d5bf52131b6124e7457737749fc7eb86f4dded4b9cbd755a3d4e83a1a483"
+        },
+        "10": {
+          "file": "colosseum-es-10.png",
+          "crop_xywh": [
+            6,
+            100,
+            79,
+            27
+          ],
+          "sha256": "1f5f84c649673c4d0c77aa705df029cd059113d2ba3820fd704948054fac9a9e"
+        },
+        "1": {
+          "file": "colosseum-es-1.png",
+          "crop_xywh": [
+            6,
+            131,
+            79,
+            27
+          ],
+          "sha256": "a2e5db78de7857b02d9829f36f096c01109046fb02a7dcaa3dc956f7f9eaad68"
+        },
+        "17": {
+          "file": "colosseum-es-17.png",
+          "crop_xywh": [
+            6,
+            162,
+            79,
+            27
+          ],
+          "sha256": "9829558c8fa8c34f4b228616265e9b7d815b519c536814242eef86aadb21c130"
+        },
+        "0": {
+          "file": "colosseum-es-0.png",
+          "crop_xywh": [
+            6,
+            193,
+            79,
+            27
+          ],
+          "sha256": "68d986b65cd74bd44907e56ab6d363184253adebd0dd43dae6c18196c254aea7"
+        },
+        "6": {
+          "file": "colosseum-es-6.png",
+          "crop_xywh": [
+            6,
+            224,
+            79,
+            27
+          ],
+          "sha256": "465bf085c09788bd734acc5a898fb053825c7cac8c44eeadb11bae32cecd9a6a"
+        },
+        "2": {
+          "file": "colosseum-es-2.png",
+          "crop_xywh": [
+            90,
+            7,
+            79,
+            27
+          ],
+          "sha256": "384f236a74b5ce0589cac73b8912bd22fb06acb206f7ceaeee0601db1c01c8ab"
+        },
+        "14": {
+          "file": "colosseum-es-14.png",
+          "crop_xywh": [
+            90,
+            38,
+            79,
+            27
+          ],
+          "sha256": "ce1426832dfae2863e7fe635938ba4fd22aa9a7181128f32cc9a13e706464ef9"
+        },
+        "7": {
+          "file": "colosseum-es-7.png",
+          "crop_xywh": [
+            90,
+            69,
+            79,
+            27
+          ],
+          "sha256": "919c3ad98a19d5f2029c6d6f2eea2ee6c64c9518b7873674912edac9b833a115"
+        },
+        "5": {
+          "file": "colosseum-es-5.png",
+          "crop_xywh": [
+            90,
+            100,
+            79,
+            27
+          ],
+          "sha256": "6dbe5d8775d735515008d87edfcff8ad817c47081f59869393b81a362805b15c"
+        },
+        "8": {
+          "file": "colosseum-es-8.png",
+          "crop_xywh": [
+            90,
+            131,
+            79,
+            27
+          ],
+          "sha256": "051f66c2c19fa07be6a1f02bab5fe2921ef2c460713355ff520666f370859d6e"
+        },
+        "13": {
+          "file": "colosseum-es-13.png",
+          "crop_xywh": [
+            90,
+            162,
+            79,
+            27
+          ],
+          "sha256": "f219c0b52edd68241c7ea5dd129b87573b4be8cc7c17491b0935c1496d41cae7"
+        },
+        "16": {
+          "file": "colosseum-es-16.png",
+          "crop_xywh": [
+            90,
+            193,
+            79,
+            27
+          ],
+          "sha256": "3fbdbee129552c0816969929f1b83e79a858ab4947f4129c27d7baf6a12c502c"
+        },
+        "15": {
+          "file": "colosseum-es-15.png",
+          "crop_xywh": [
+            90,
+            224,
+            79,
+            27
+          ],
+          "sha256": "3b4f50a1baa4be5c3a8fd4abe4b35b64011891bc3de96bc7bc761ce3f0365618"
+        },
+        "3": {
+          "file": "colosseum-es-3.png",
+          "crop_xywh": [
+            173,
+            6,
+            79,
+            27
+          ],
+          "sha256": "723dc132bcfc2cfd4bccf24066494e937230afee8447f17c7a665249fbad3b09"
+        },
+        "9": {
+          "file": "colosseum-es-9.png",
+          "crop_xywh": [
+            173,
+            38,
+            79,
+            27
+          ],
+          "sha256": "a9e34de2bcb9e5d9cb0a64c4e331aa76fcacb02bbfdc2d2e95cdaba7ed0650c1"
+        }
+      }
+    },
+    "colosseum-ja": {
+      "disc_id": "GC6J01",
+      "disc_revision": 0,
+      "archive": "common.fsys",
+      "archive_sha256": "a302fe0060fc8f44e4b2e16d37f83deb57f97468c1cf6860b34006401039b89b",
+      "member": "menu005",
+      "member_id": "0x02081200",
+      "member_offset": 361664,
+      "member_sha256": "02b7512c9bc612ebd62a2a84abc775a96fd27b9498c56ae9288f94e3f88cc15e",
+      "atlas_dimensions": [
+        258,
+        258
+      ],
+      "badges": {
+        "12": {
+          "file": "colosseum-ja-12.png",
+          "crop_xywh": [
+            6,
+            7,
+            79,
+            27
+          ],
+          "sha256": "4ba3b2e76b9b29e5a7eb11ea43b053713efe9d8ed47212079025c8078e2ebec5"
+        },
+        "11": {
+          "file": "colosseum-ja-11.png",
+          "crop_xywh": [
+            6,
+            38,
+            79,
+            27
+          ],
+          "sha256": "756aabc333325582d2c5d53f6a919bc619d77adf1bb7162fdba7bbf67ea3fa80"
+        },
+        "4": {
+          "file": "colosseum-ja-4.png",
+          "crop_xywh": [
+            6,
+            69,
+            79,
+            27
+          ],
+          "sha256": "c3f0a76d4814fbd6e89c836c7495e07a27588c6fae71f110cf75c02edf91bf37"
+        },
+        "10": {
+          "file": "colosseum-ja-10.png",
+          "crop_xywh": [
+            6,
+            100,
+            79,
+            27
+          ],
+          "sha256": "097cd7b597b39368e00e5cff4bc6681173182e4640dc4a269403e4b480e144ac"
+        },
+        "1": {
+          "file": "colosseum-ja-1.png",
+          "crop_xywh": [
+            6,
+            131,
+            79,
+            27
+          ],
+          "sha256": "e19cad5e8ccdd5fd97ee5df4d9c61e85e53de930223d2f78fdbcbb1d7b625931"
+        },
+        "17": {
+          "file": "colosseum-ja-17.png",
+          "crop_xywh": [
+            6,
+            162,
+            79,
+            27
+          ],
+          "sha256": "bb3225391ff7e7300a06e4bed2f1b1c182660fb587eeafcff798e4639b8876fa"
+        },
+        "0": {
+          "file": "colosseum-ja-0.png",
+          "crop_xywh": [
+            6,
+            193,
+            79,
+            27
+          ],
+          "sha256": "5c96f37e9df300527d549deabcbef470d3dc130af944914da310463e2677ac2f"
+        },
+        "6": {
+          "file": "colosseum-ja-6.png",
+          "crop_xywh": [
+            6,
+            224,
+            79,
+            27
+          ],
+          "sha256": "824ab5ae47ea764aea216d3a281cc8df41e5578053c1fdb0bfbcfe86727d5d1c"
+        },
+        "2": {
+          "file": "colosseum-ja-2.png",
+          "crop_xywh": [
+            90,
+            7,
+            79,
+            27
+          ],
+          "sha256": "7fdcf9060e271b12dae99758c4274202c08a082e1f27bc1e3cd71e94dc988910"
+        },
+        "14": {
+          "file": "colosseum-ja-14.png",
+          "crop_xywh": [
+            90,
+            38,
+            79,
+            27
+          ],
+          "sha256": "0fcd6aa97153d2d8f6e5fa0bae6a76ede28fa02709da7c31da5d080a80d8aa50"
+        },
+        "7": {
+          "file": "colosseum-ja-7.png",
+          "crop_xywh": [
+            90,
+            69,
+            79,
+            27
+          ],
+          "sha256": "bc31b96d0dd9bcbfbb3260415aa0af28ebb280dc4bfdf43108da2fe68e9394d1"
+        },
+        "5": {
+          "file": "colosseum-ja-5.png",
+          "crop_xywh": [
+            90,
+            100,
+            79,
+            27
+          ],
+          "sha256": "2f6f9d30be92df4d36ab7ef2e565007ba0a53c88bd70f177245b913382046f07"
+        },
+        "8": {
+          "file": "colosseum-ja-8.png",
+          "crop_xywh": [
+            90,
+            131,
+            79,
+            27
+          ],
+          "sha256": "d3ce8bd9fc3c4f33a21eaa5e2a7c8d02ee8454c0b1b7fa14dcfec8674145e428"
+        },
+        "13": {
+          "file": "colosseum-ja-13.png",
+          "crop_xywh": [
+            90,
+            162,
+            79,
+            27
+          ],
+          "sha256": "62bc939e034157faf555ce33f00134bb585465667fa697cfabf306d01aefb46c"
+        },
+        "16": {
+          "file": "colosseum-ja-16.png",
+          "crop_xywh": [
+            90,
+            193,
+            79,
+            27
+          ],
+          "sha256": "4167365bf6baecee42e7870a97fff58842a7595a77151b7dadcf89c950758188"
+        },
+        "15": {
+          "file": "colosseum-ja-15.png",
+          "crop_xywh": [
+            90,
+            224,
+            79,
+            27
+          ],
+          "sha256": "89753c2ed38e15d8729b1e7c35ee3bcadf3509626d64b2a708c8c21c228eff6a"
+        },
+        "3": {
+          "file": "colosseum-ja-3.png",
+          "crop_xywh": [
+            173,
+            6,
+            79,
+            27
+          ],
+          "sha256": "96b2c514bd5bdac243551e10c82e35aadb49eeeba8d88098ccdb69bf9330fdfb"
+        },
+        "9": {
+          "file": "colosseum-ja-9.png",
+          "crop_xywh": [
+            173,
+            38,
+            79,
+            27
+          ],
+          "sha256": "a93445c63e58e4bc086783e1bdeb7e0671f591455ed7ae03aa5f484c6ad988a8"
+        }
+      }
+    },
+    "xd-en": {
+      "disc_id": "GXXP01",
+      "disc_revision": 0,
+      "archive": "fight_common.fsys",
+      "archive_sha256": "b91bd006f7fb8b06dc2e51c5208fa02e12e1d4500d082df57f773e83550db4b3",
+      "member": "uv_icn_type_big_00",
+      "member_id": "0x16c01200",
+      "member_offset": 81312,
+      "member_sha256": "e722e4985a6dc8de5cb739e798bf375326cc41de6ed8c0c18219677f44844fc0",
+      "atlas_dimensions": [
+        152,
+        200
+      ],
+      "badges": {
+        "12": {
+          "file": "xd-en-12.png",
+          "crop_xywh": [
+            3,
+            2,
+            72,
+            18
+          ],
+          "sha256": "f57e327454dc4938b8205407b0553ec14a3cf546bbf3a448d7fa13766a884c8b"
+        },
+        "11": {
+          "file": "xd-en-11.png",
+          "crop_xywh": [
+            3,
+            22,
+            72,
+            18
+          ],
+          "sha256": "014ae3385df59929e2ad6b38f034e04e39bf6e365e7661c5bc76860a7ee8cdb8"
+        },
+        "4": {
+          "file": "xd-en-4.png",
+          "crop_xywh": [
+            3,
+            42,
+            72,
+            18
+          ],
+          "sha256": "04fe1005e16cc986b4f80886a87d313f0bc6381b566e2535056fbf1270369a57"
+        },
+        "10": {
+          "file": "xd-en-10.png",
+          "crop_xywh": [
+            3,
+            62,
+            72,
+            18
+          ],
+          "sha256": "0e7f7a29f95924587e6da9e5ef02b46fdeded74dc5bb6ef4808217d82933a92f"
+        },
+        "1": {
+          "file": "xd-en-1.png",
+          "crop_xywh": [
+            3,
+            82,
+            72,
+            18
+          ],
+          "sha256": "6ce763e1a5cf9694a1bc26fe2a6b77fd2644a028a8c12160428ded7589776a9b"
+        },
+        "17": {
+          "file": "xd-en-17.png",
+          "crop_xywh": [
+            3,
+            102,
+            72,
+            18
+          ],
+          "sha256": "5df877ce8623dd59db6ffd61299944358f14c1bbf36a73a8b5e22aea9edef3d3"
+        },
+        "0": {
+          "file": "xd-en-0.png",
+          "crop_xywh": [
+            3,
+            122,
+            72,
+            18
+          ],
+          "sha256": "bc2904b566100212231f99215584578b7d863e04d5021d3a6ed6618ac423b217"
+        },
+        "6": {
+          "file": "xd-en-6.png",
+          "crop_xywh": [
+            3,
+            142,
+            72,
+            18
+          ],
+          "sha256": "398a71705a4158ab5335188c16a3a8d694b0926b610522db5a11d86519e1507e"
+        },
+        "2": {
+          "file": "xd-en-2.png",
+          "crop_xywh": [
+            3,
+            162,
+            72,
+            18
+          ],
+          "sha256": "3c825a3258de40fc721120fdaf2dffc65cf929749b0ab16a869c6a6fc0b05a84"
+        },
+        "14": {
+          "file": "xd-en-14.png",
+          "crop_xywh": [
+            78,
+            2,
+            72,
+            18
+          ],
+          "sha256": "901588cf52c2f1c1cb73bafc6602dad54c8e405295a0a25f62d590cee02e10f2"
+        },
+        "7": {
+          "file": "xd-en-7.png",
+          "crop_xywh": [
+            78,
+            22,
+            72,
+            18
+          ],
+          "sha256": "bd0e2d20f73771129ec82a8885b0c5f0c7eb0fe2c3bb72134190e52b6edcfaaf"
+        },
+        "5": {
+          "file": "xd-en-5.png",
+          "crop_xywh": [
+            78,
+            42,
+            72,
+            18
+          ],
+          "sha256": "386cb7d8e5343785d513867e58fb6b45d39a9768f349ec0e5bc0737891f4bae4"
+        },
+        "8": {
+          "file": "xd-en-8.png",
+          "crop_xywh": [
+            78,
+            62,
+            72,
+            18
+          ],
+          "sha256": "75b5b8c0ab527be496d57f118d43cc16673f97f51ba18778008cd3095606c959"
+        },
+        "13": {
+          "file": "xd-en-13.png",
+          "crop_xywh": [
+            78,
+            82,
+            72,
+            18
+          ],
+          "sha256": "bc08ebcf07285635845178c0f9c5021d2756b993eff77811252913abfcc2be7b"
+        },
+        "16": {
+          "file": "xd-en-16.png",
+          "crop_xywh": [
+            78,
+            102,
+            72,
+            18
+          ],
+          "sha256": "a147c9407536c484771ce41c409a36f1fead77aea68cf2a55c0c429609623c7c"
+        },
+        "15": {
+          "file": "xd-en-15.png",
+          "crop_xywh": [
+            78,
+            122,
+            72,
+            18
+          ],
+          "sha256": "f1ad70128f44ff5e8f8e207ce455a8e3fe04064b64436a9b43eaa8434130330d"
+        },
+        "3": {
+          "file": "xd-en-3.png",
+          "crop_xywh": [
+            78,
+            142,
+            72,
+            18
+          ],
+          "sha256": "59b7ba0b1b798a3e4c6926ff9f249f04f9bbde94b8885b444f97587e47e01cc4"
+        },
+        "9": {
+          "file": "xd-en-9.png",
+          "crop_xywh": [
+            78,
+            162,
+            72,
+            18
+          ],
+          "sha256": "810efe7fef4b478bc3fee5c7672206bfc75446257a9eb4f565a62931c01ddb28"
+        }
+      }
+    },
+    "xd-fr": {
+      "disc_id": "GXXP01",
+      "disc_revision": 0,
+      "archive": "fight_common_fr.fsys",
+      "archive_sha256": "082596aa14c34df16c47a6923c27a910881688c0532218b5ac5de96b3e9015ce",
+      "member": "uv_icn_type_big_fr_00",
+      "member_id": "0x22191200",
+      "member_offset": 93504,
+      "member_sha256": "69be16254c495b4697459edc70963f19c8f599a73df97316246783f6f3e46a99",
+      "atlas_dimensions": [
+        152,
+        200
+      ],
+      "badges": {
+        "12": {
+          "file": "xd-fr-12.png",
+          "crop_xywh": [
+            3,
+            2,
+            72,
+            18
+          ],
+          "sha256": "2a6cef672a47210daa2ec4a8682a34619692d3da96b05fa40e092b5ba128b7f9"
+        },
+        "11": {
+          "file": "xd-fr-11.png",
+          "crop_xywh": [
+            3,
+            22,
+            72,
+            18
+          ],
+          "sha256": "cfa9553542ae3ed2f0fb9bcb98a06ec7f99489ada291776b5bb42aa3092c227e"
+        },
+        "4": {
+          "file": "xd-fr-4.png",
+          "crop_xywh": [
+            3,
+            42,
+            72,
+            18
+          ],
+          "sha256": "88715695856989c3918b9e30f0a29bea9b2b3f0191936d32b4d3f1f53a6689e0"
+        },
+        "10": {
+          "file": "xd-fr-10.png",
+          "crop_xywh": [
+            3,
+            62,
+            72,
+            18
+          ],
+          "sha256": "69400775a2e72ccbce0753d8ab43189d3015324df1254a86a1e47e32c98d6271"
+        },
+        "1": {
+          "file": "xd-fr-1.png",
+          "crop_xywh": [
+            3,
+            82,
+            72,
+            18
+          ],
+          "sha256": "6dd38f99b2bdb2db66f1f9b078c7bc4143a2e6f8ff4d90962ed59b152954a6c3"
+        },
+        "17": {
+          "file": "xd-fr-17.png",
+          "crop_xywh": [
+            3,
+            102,
+            72,
+            18
+          ],
+          "sha256": "d674271fa1cdfd40dcfc8df0fe1b137c3bb7b66220d319c8c384f38bddd8e451"
+        },
+        "0": {
+          "file": "xd-fr-0.png",
+          "crop_xywh": [
+            3,
+            122,
+            72,
+            18
+          ],
+          "sha256": "2a54fe2e2f37722a72e83d81c14533c4bb3a94a27f77605f141a3db84b03a776"
+        },
+        "6": {
+          "file": "xd-fr-6.png",
+          "crop_xywh": [
+            3,
+            142,
+            72,
+            18
+          ],
+          "sha256": "e205bed6fbe870f961409afa7f35a2b9a8f9e40f4f3612ad5836e9c2a23e0f0a"
+        },
+        "2": {
+          "file": "xd-fr-2.png",
+          "crop_xywh": [
+            3,
+            162,
+            72,
+            18
+          ],
+          "sha256": "a8ca6aaf58126f47031343188560c98996ac54979dcf359ca2ba42c8329a024b"
+        },
+        "14": {
+          "file": "xd-fr-14.png",
+          "crop_xywh": [
+            78,
+            2,
+            72,
+            18
+          ],
+          "sha256": "773a06d30aa62a5df82d63b9eca39157a08b1ead592a28b577057aedeaa9b7cf"
+        },
+        "7": {
+          "file": "xd-fr-7.png",
+          "crop_xywh": [
+            78,
+            22,
+            72,
+            18
+          ],
+          "sha256": "2fdcebb712ac728c686c21c7b69ffd8fb0014b5e7d3ea8e6809d120eced482ef"
+        },
+        "5": {
+          "file": "xd-fr-5.png",
+          "crop_xywh": [
+            78,
+            42,
+            72,
+            18
+          ],
+          "sha256": "063b27217337c95e2d5c2c3f98599bcf90c422f74d666a3f5350ceec301fc2ba"
+        },
+        "8": {
+          "file": "xd-fr-8.png",
+          "crop_xywh": [
+            78,
+            62,
+            72,
+            18
+          ],
+          "sha256": "52e9dc3752471be71c91cfb813ff8ebb7dba60668da67196e065656a1d58eda4"
+        },
+        "13": {
+          "file": "xd-fr-13.png",
+          "crop_xywh": [
+            78,
+            82,
+            72,
+            18
+          ],
+          "sha256": "35f6ca0dc1c7bea0d920bd7979d333998ad85ce8d43537d2a5dd3d69216160b2"
+        },
+        "16": {
+          "file": "xd-fr-16.png",
+          "crop_xywh": [
+            78,
+            102,
+            72,
+            18
+          ],
+          "sha256": "9f1339d9b9f31b9e1668db6f0a8715b2a111a696496aa5ce177b5a7f4a493f4b"
+        },
+        "15": {
+          "file": "xd-fr-15.png",
+          "crop_xywh": [
+            78,
+            122,
+            72,
+            18
+          ],
+          "sha256": "8a27d13eccbf3ff4e8b28311990cfbc3131d99ba07115a2ceccbff26ac44c64a"
+        },
+        "3": {
+          "file": "xd-fr-3.png",
+          "crop_xywh": [
+            78,
+            142,
+            72,
+            18
+          ],
+          "sha256": "db54fe891ad4026da1d50336b8fbbc6952692eb2379684222fa6cb82f4c371dd"
+        },
+        "9": {
+          "file": "xd-fr-9.png",
+          "crop_xywh": [
+            78,
+            162,
+            72,
+            18
+          ],
+          "sha256": "bc66d76551416f5a2990d7980d98f79e274dfd7e9dc03d21523419ab5cdc5285"
+        }
+      }
+    },
+    "xd-de": {
+      "disc_id": "GXXP01",
+      "disc_revision": 0,
+      "archive": "fight_common_ge.fsys",
+      "archive_sha256": "eab472f078cbfef3d1cd3ca71148b4c2ae33b8ea8ee7b74e4ea1813750e49d80",
+      "member": "uv_icn_type_big_00",
+      "member_id": "0x221d1200",
+      "member_offset": 94784,
+      "member_sha256": "5de568fbaab3bede4c56a00093afe93fa7efbedf1097cc8fa949030a59cdd15c",
+      "atlas_dimensions": [
+        152,
+        200
+      ],
+      "badges": {
+        "12": {
+          "file": "xd-de-12.png",
+          "crop_xywh": [
+            3,
+            2,
+            72,
+            18
+          ],
+          "sha256": "f83ec4b0c95a67b6cfa0e2310e2877cd538874e21de96f914d448f61579e147d"
+        },
+        "11": {
+          "file": "xd-de-11.png",
+          "crop_xywh": [
+            3,
+            22,
+            72,
+            18
+          ],
+          "sha256": "f85dba1499f68b2e690cec448a322e02571802e46a5e0611bec8f5be03f9283e"
+        },
+        "4": {
+          "file": "xd-de-4.png",
+          "crop_xywh": [
+            3,
+            42,
+            72,
+            18
+          ],
+          "sha256": "1374cd493f9c4ba0fe061fe06a4676ac706b0e6c99543c68f127833a3d4da952"
+        },
+        "10": {
+          "file": "xd-de-10.png",
+          "crop_xywh": [
+            3,
+            62,
+            72,
+            18
+          ],
+          "sha256": "1f4be38a59fc0d9bb19efb86069878b9f159f46052693b9521d6cfbff68c0900"
+        },
+        "1": {
+          "file": "xd-de-1.png",
+          "crop_xywh": [
+            3,
+            82,
+            72,
+            18
+          ],
+          "sha256": "2b25d6dc8d996e3f470d2864be9eb853dceb04e4a9b5baca523cf1b69f5d0996"
+        },
+        "17": {
+          "file": "xd-de-17.png",
+          "crop_xywh": [
+            3,
+            102,
+            72,
+            18
+          ],
+          "sha256": "26c5ebec5db8b39b8fdf81dcdb7af7633beab54853c82e335f3eddc2468ae27d"
+        },
+        "0": {
+          "file": "xd-de-0.png",
+          "crop_xywh": [
+            3,
+            122,
+            72,
+            18
+          ],
+          "sha256": "3a1e967206fadacf89ebde3026971810147c74b5c5e2e6e2de6e4aad25b231b2"
+        },
+        "6": {
+          "file": "xd-de-6.png",
+          "crop_xywh": [
+            3,
+            142,
+            72,
+            18
+          ],
+          "sha256": "3342936de4ce9a2036af8d28d6944d0ec2796195331ee7e50a030d6e57ea4bf2"
+        },
+        "2": {
+          "file": "xd-de-2.png",
+          "crop_xywh": [
+            3,
+            162,
+            72,
+            18
+          ],
+          "sha256": "cef83b57f74988171c5a0d197592f983900198b70898e1447c7438b5ef493dcf"
+        },
+        "14": {
+          "file": "xd-de-14.png",
+          "crop_xywh": [
+            78,
+            2,
+            72,
+            18
+          ],
+          "sha256": "3ba1f9cba70809e168d4f54aa4451990f41fe75c760cdb8586a4ab74282d25e7"
+        },
+        "7": {
+          "file": "xd-de-7.png",
+          "crop_xywh": [
+            78,
+            22,
+            72,
+            18
+          ],
+          "sha256": "ea3ecbb9a142a18275a4b2552bd71e9aa8dd4320e60555e8cab5a38505ee2a46"
+        },
+        "5": {
+          "file": "xd-de-5.png",
+          "crop_xywh": [
+            78,
+            42,
+            72,
+            18
+          ],
+          "sha256": "703bb687872ceeab13f93ba3350425ab137214a20a80f8e6792d31ddb482a072"
+        },
+        "8": {
+          "file": "xd-de-8.png",
+          "crop_xywh": [
+            78,
+            62,
+            72,
+            18
+          ],
+          "sha256": "204d1d0f777e095982e08802bed241cf91f1c02db8f376c9d341eb369147738a"
+        },
+        "13": {
+          "file": "xd-de-13.png",
+          "crop_xywh": [
+            78,
+            82,
+            72,
+            18
+          ],
+          "sha256": "fd0cf0a1f8eb32bcc417187452482fb9d9bbcc658990b1936ab79fbf7e94da2f"
+        },
+        "16": {
+          "file": "xd-de-16.png",
+          "crop_xywh": [
+            78,
+            102,
+            72,
+            18
+          ],
+          "sha256": "5eccbfffb336f26ce7f107a53ef7fb68888a70ee267deb5cd091131c2b77088d"
+        },
+        "15": {
+          "file": "xd-de-15.png",
+          "crop_xywh": [
+            78,
+            122,
+            72,
+            18
+          ],
+          "sha256": "45beadaf55c21833e6591dd035b467732a52b078064d1ad3784bd9ad53da2bf5"
+        },
+        "3": {
+          "file": "xd-de-3.png",
+          "crop_xywh": [
+            78,
+            142,
+            72,
+            18
+          ],
+          "sha256": "9b03245299c8053e9588095382e4f0340c8002c8d6214ceadc61c4a03942c9a1"
+        },
+        "9": {
+          "file": "xd-de-9.png",
+          "crop_xywh": [
+            78,
+            162,
+            72,
+            18
+          ],
+          "sha256": "9362859986912aea2baf40c01a162d993311fafff13b897cf43430c52d46acdb"
+        }
+      }
+    },
+    "xd-it": {
+      "disc_id": "GXXP01",
+      "disc_revision": 0,
+      "archive": "fight_common_it.fsys",
+      "archive_sha256": "863d7820134b732360e1149fe5cfcada99e6a28e6c9d2b8c412f3d205ea09dcd",
+      "member": "(null)",
+      "member_id": "0x22211200",
+      "member_offset": 95136,
+      "member_sha256": "b59a69df2a03490d95e0a9fa4c686254e0ae6d91db86bdc6deedfac67450b224",
+      "atlas_dimensions": [
+        152,
+        200
+      ],
+      "badges": {
+        "12": {
+          "file": "xd-it-12.png",
+          "crop_xywh": [
+            3,
+            2,
+            72,
+            18
+          ],
+          "sha256": "dfb6bc0dedf047c9a82bff0891909a8deb9ecc29ca46cec6c466b69337b76869"
+        },
+        "11": {
+          "file": "xd-it-11.png",
+          "crop_xywh": [
+            3,
+            22,
+            72,
+            18
+          ],
+          "sha256": "f83a9eb7ef7f05704560dfe1b0605e109e7dca55a01d9ae81bd854a4877111db"
+        },
+        "4": {
+          "file": "xd-it-4.png",
+          "crop_xywh": [
+            3,
+            42,
+            72,
+            18
+          ],
+          "sha256": "8b1a245b978bd41667290901d1f0eda81c8315094f5cb44755d69fdb3e917237"
+        },
+        "10": {
+          "file": "xd-it-10.png",
+          "crop_xywh": [
+            3,
+            62,
+            72,
+            18
+          ],
+          "sha256": "c973d6dafa9abd7ccbd8464251d8077d2b7bb7d430ed09f47e6164f4af135e11"
+        },
+        "1": {
+          "file": "xd-it-1.png",
+          "crop_xywh": [
+            3,
+            82,
+            72,
+            18
+          ],
+          "sha256": "b31cde31f3acb809eb9c0913c961a10b750451b69a418acae103333ca1aeda00"
+        },
+        "17": {
+          "file": "xd-it-17.png",
+          "crop_xywh": [
+            3,
+            102,
+            72,
+            18
+          ],
+          "sha256": "4a580ec282764f449497437c6b4b1a18538a571e7f11cd55e712e061afb5dd7e"
+        },
+        "0": {
+          "file": "xd-it-0.png",
+          "crop_xywh": [
+            3,
+            122,
+            72,
+            18
+          ],
+          "sha256": "9be48748a9e2ca4ab012ae3d102696d187a9055112f77a12d2c7d45ad5b1003c"
+        },
+        "6": {
+          "file": "xd-it-6.png",
+          "crop_xywh": [
+            3,
+            142,
+            72,
+            18
+          ],
+          "sha256": "759d73cc119dd024c867a9836aad075b3a34a23829a0d8ed6b7f1cd20c27691d"
+        },
+        "2": {
+          "file": "xd-it-2.png",
+          "crop_xywh": [
+            3,
+            162,
+            72,
+            18
+          ],
+          "sha256": "8dc28383b0cf89ee2e41cc85b38c29b6df91a518eb7b4e02862ae785b3c867ef"
+        },
+        "14": {
+          "file": "xd-it-14.png",
+          "crop_xywh": [
+            78,
+            2,
+            72,
+            18
+          ],
+          "sha256": "94699a0a4fdf9138ad3baccc11d828abb0216feb92cf7fe17456af9da3ee07be"
+        },
+        "7": {
+          "file": "xd-it-7.png",
+          "crop_xywh": [
+            78,
+            22,
+            72,
+            18
+          ],
+          "sha256": "c89aae967fc3bc90ec0d0e8f0d29b77aa98932462d497198ea66b6a60bcc660e"
+        },
+        "5": {
+          "file": "xd-it-5.png",
+          "crop_xywh": [
+            78,
+            42,
+            72,
+            18
+          ],
+          "sha256": "2c1fbe04b9b342edff2229b5c022f70a991478a723c518e4598eabf5930d3998"
+        },
+        "8": {
+          "file": "xd-it-8.png",
+          "crop_xywh": [
+            78,
+            62,
+            72,
+            18
+          ],
+          "sha256": "671ec838159200527f0b34e05b7f7bb06fb95345e867da97aa8e4e7cde963b6a"
+        },
+        "13": {
+          "file": "xd-it-13.png",
+          "crop_xywh": [
+            78,
+            82,
+            72,
+            18
+          ],
+          "sha256": "d4734a7302795cdc87cb2b90d18d860a7187f83be19d38be7388d12cc4615053"
+        },
+        "16": {
+          "file": "xd-it-16.png",
+          "crop_xywh": [
+            78,
+            102,
+            72,
+            18
+          ],
+          "sha256": "7ec5ca0082aaa8af0892930de0d30d4dddb903f6afe13e553b6eacead665dd12"
+        },
+        "15": {
+          "file": "xd-it-15.png",
+          "crop_xywh": [
+            78,
+            122,
+            72,
+            18
+          ],
+          "sha256": "b309eb33289a789da7225e6861c3f2de140df4bf722ba7ea1d1d7b54b1ede962"
+        },
+        "3": {
+          "file": "xd-it-3.png",
+          "crop_xywh": [
+            78,
+            142,
+            72,
+            18
+          ],
+          "sha256": "19de8fb101a065b66344b3eee3533c9ca36bdd420fa4ce2d59a64aab79a6b743"
+        },
+        "9": {
+          "file": "xd-it-9.png",
+          "crop_xywh": [
+            78,
+            162,
+            72,
+            18
+          ],
+          "sha256": "876fca7bb15c764c5379b6b55839b4ec316a70f31c1999fc074dc21acbbc2e40"
+        }
+      }
+    },
+    "xd-es": {
+      "disc_id": "GXXP01",
+      "disc_revision": 0,
+      "archive": "fight_common_sp.fsys",
+      "archive_sha256": "6edadecfc5a0d1c451151d50789b3728395a32cabc77ecbe4808baf5302894ab",
+      "member": "(null)",
+      "member_id": "0x22251200",
+      "member_offset": 95616,
+      "member_sha256": "cd953be1fe9fa5697bdfc2a11a2a8e68341225fd0956b5fe729a0bc433d6ae49",
+      "atlas_dimensions": [
+        152,
+        200
+      ],
+      "badges": {
+        "12": {
+          "file": "xd-es-12.png",
+          "crop_xywh": [
+            3,
+            2,
+            72,
+            18
+          ],
+          "sha256": "e8a0584a5a4be8e9ee302e406abefec6c8cf5d63f6b31508116dbb9d19d058e2"
+        },
+        "11": {
+          "file": "xd-es-11.png",
+          "crop_xywh": [
+            3,
+            22,
+            72,
+            18
+          ],
+          "sha256": "a7c8ea0bb356f0bc80c3257e45904cb0ec018bf1de0d172a0e0f3ae13ffca29b"
+        },
+        "4": {
+          "file": "xd-es-4.png",
+          "crop_xywh": [
+            3,
+            42,
+            72,
+            18
+          ],
+          "sha256": "4219df0217f0869389a87d5f7b2ef2e768809d18c43da724462f6d7660ee3ef6"
+        },
+        "10": {
+          "file": "xd-es-10.png",
+          "crop_xywh": [
+            3,
+            62,
+            72,
+            18
+          ],
+          "sha256": "49c998fc71c81275aa91b6325f3efc70f4591271fcf78e4b497b1a19fb1ae144"
+        },
+        "1": {
+          "file": "xd-es-1.png",
+          "crop_xywh": [
+            3,
+            82,
+            72,
+            18
+          ],
+          "sha256": "9b6f1ace6df52e0f628e59732c48ea68d5e32f2635cf5d717f05b13519f557b3"
+        },
+        "17": {
+          "file": "xd-es-17.png",
+          "crop_xywh": [
+            3,
+            102,
+            72,
+            18
+          ],
+          "sha256": "2a57d857f94c14a1c41cbeceeebdf221a7e4a150e41fd243e94f6db8dfa4299a"
+        },
+        "0": {
+          "file": "xd-es-0.png",
+          "crop_xywh": [
+            3,
+            122,
+            72,
+            18
+          ],
+          "sha256": "9cf2ea49abc4d202c2fbf6b9f25ddb9472de15df5c45c2335f53b277fba62045"
+        },
+        "6": {
+          "file": "xd-es-6.png",
+          "crop_xywh": [
+            3,
+            142,
+            72,
+            18
+          ],
+          "sha256": "e1197ee2efb94cc7b5ac7f4fe501e272659b39598b973ffad0b15ef361366193"
+        },
+        "2": {
+          "file": "xd-es-2.png",
+          "crop_xywh": [
+            3,
+            162,
+            72,
+            18
+          ],
+          "sha256": "53601ac98303f1ad2f8f20cacd9fac5a2946595dc5575cb4c54a3f0adfdd5543"
+        },
+        "14": {
+          "file": "xd-es-14.png",
+          "crop_xywh": [
+            78,
+            2,
+            72,
+            18
+          ],
+          "sha256": "a9bc627b1baa6969ff2abe5a59f3f92b98bd71dc4babb5a6a734425ef3c6f914"
+        },
+        "7": {
+          "file": "xd-es-7.png",
+          "crop_xywh": [
+            78,
+            22,
+            72,
+            18
+          ],
+          "sha256": "99c63fe1a54da276ee73937514245754e91dce674a0678691abc59c6d2c5b57c"
+        },
+        "5": {
+          "file": "xd-es-5.png",
+          "crop_xywh": [
+            78,
+            42,
+            72,
+            18
+          ],
+          "sha256": "ca55c29a156dcc26d3b388a8e69199bc19e841c6a2b629c751a5c0279b27bc24"
+        },
+        "8": {
+          "file": "xd-es-8.png",
+          "crop_xywh": [
+            78,
+            62,
+            72,
+            18
+          ],
+          "sha256": "6cec4bb355be15ecfabdbc7260371e15c62684cd809017a28a6be75309094972"
+        },
+        "13": {
+          "file": "xd-es-13.png",
+          "crop_xywh": [
+            78,
+            82,
+            72,
+            18
+          ],
+          "sha256": "f9eb58648a6266ece642f937164f5b1b118ca679ce66f4ded00dc6449360bcb8"
+        },
+        "16": {
+          "file": "xd-es-16.png",
+          "crop_xywh": [
+            78,
+            102,
+            72,
+            18
+          ],
+          "sha256": "8fc764ffc6d3aac4a1a496d92891e937b1b7d5292096aec5da0b113bd0bb6984"
+        },
+        "15": {
+          "file": "xd-es-15.png",
+          "crop_xywh": [
+            78,
+            122,
+            72,
+            18
+          ],
+          "sha256": "3a5f3862f07671cf9ce7bbc9dcff5c6b926bf3a2ddc7afee3734ef5739dd6a57"
+        },
+        "3": {
+          "file": "xd-es-3.png",
+          "crop_xywh": [
+            78,
+            142,
+            72,
+            18
+          ],
+          "sha256": "7a7c08ca05cde2c74375f1da3536fe74e123f8831dfd24b76f9536128819a6ba"
+        },
+        "9": {
+          "file": "xd-es-9.png",
+          "crop_xywh": [
+            78,
+            162,
+            72,
+            18
+          ],
+          "sha256": "4a2c31ad28b76d444ac9f17a29396f1e1954e8f71bd246c2e152555245db631c"
+        }
+      }
+    },
+    "xd-ja": {
+      "disc_id": "GXXJ01",
+      "disc_revision": 0,
+      "archive": "common.fsys",
+      "archive_sha256": "2bddf4f2429b968f9289aa3aa2ee3b6100d6fbf7abaf0445224b99c68eb4eb3b",
+      "member": "uv_icn_type_big_00",
+      "member_id": "0x16c01200",
+      "member_offset": 243584,
+      "member_sha256": "51ca0bcbb331893e1226b4324211ec203f80f5e34971dd1a8d80c64a2722607b",
+      "atlas_dimensions": [
+        152,
+        200
+      ],
+      "badges": {
+        "12": {
+          "file": "xd-ja-12.png",
+          "crop_xywh": [
+            3,
+            2,
+            72,
+            18
+          ],
+          "sha256": "a6fea6cd0021d39617c4c422c9e0fd3b0c2f8400ca220d1f926942aa0d65e1ae"
+        },
+        "11": {
+          "file": "xd-ja-11.png",
+          "crop_xywh": [
+            3,
+            22,
+            72,
+            18
+          ],
+          "sha256": "9862dae12c445afa82048b7bea71d4d63aaf058d1c2efa693ba53a3abdfbd725"
+        },
+        "4": {
+          "file": "xd-ja-4.png",
+          "crop_xywh": [
+            3,
+            42,
+            72,
+            18
+          ],
+          "sha256": "3719c43b515b474c6c4067798aa81530b97a3c70b0018c1a4b6dcfd9d83cefdd"
+        },
+        "10": {
+          "file": "xd-ja-10.png",
+          "crop_xywh": [
+            3,
+            62,
+            72,
+            18
+          ],
+          "sha256": "5ba2a68d8daed82ce6c02615b0bb59233de52df23500831a19d57d775cb41b4e"
+        },
+        "1": {
+          "file": "xd-ja-1.png",
+          "crop_xywh": [
+            3,
+            82,
+            72,
+            18
+          ],
+          "sha256": "46db2b40b5453a81418602758c22d7db9a3dfcc6a12fda05d66e6bf2de95dbf3"
+        },
+        "17": {
+          "file": "xd-ja-17.png",
+          "crop_xywh": [
+            3,
+            102,
+            72,
+            18
+          ],
+          "sha256": "22f39b9161bc2b375575208a697e5ac39af101d9757810157c23dd72928af9bf"
+        },
+        "0": {
+          "file": "xd-ja-0.png",
+          "crop_xywh": [
+            3,
+            122,
+            72,
+            18
+          ],
+          "sha256": "d3945a953f9b04dba9c295114c84f62f38c21998b5827364e5c407d667146573"
+        },
+        "6": {
+          "file": "xd-ja-6.png",
+          "crop_xywh": [
+            3,
+            142,
+            72,
+            18
+          ],
+          "sha256": "4b85ac704968bac142b086d58f00914ff80cad57301dc67cc0710fc6d55045ea"
+        },
+        "2": {
+          "file": "xd-ja-2.png",
+          "crop_xywh": [
+            3,
+            162,
+            72,
+            18
+          ],
+          "sha256": "7ac6296840544fd64586bf973d17c5bddab19bf6e04f16af3cbae6fedd3e1f57"
+        },
+        "14": {
+          "file": "xd-ja-14.png",
+          "crop_xywh": [
+            78,
+            2,
+            72,
+            18
+          ],
+          "sha256": "18b242a06fe88f1729b18515bc49be06d5c01315994f00f4f492c790eaa28c2c"
+        },
+        "7": {
+          "file": "xd-ja-7.png",
+          "crop_xywh": [
+            78,
+            22,
+            72,
+            18
+          ],
+          "sha256": "14aabca6f6c21d922f34014db2bebe0b9724aa6fc78a1d337b0f0b89d9e691ae"
+        },
+        "5": {
+          "file": "xd-ja-5.png",
+          "crop_xywh": [
+            78,
+            42,
+            72,
+            18
+          ],
+          "sha256": "27fd8afd0c7620b1ba6dd49869b42d8b32b5924c445ffc167d9b0541645d88f3"
+        },
+        "8": {
+          "file": "xd-ja-8.png",
+          "crop_xywh": [
+            78,
+            62,
+            72,
+            18
+          ],
+          "sha256": "074db65c9567b6ff862515f5ce5d1ddb3f8ce14a99c48201105ee27596f25b21"
+        },
+        "13": {
+          "file": "xd-ja-13.png",
+          "crop_xywh": [
+            78,
+            82,
+            72,
+            18
+          ],
+          "sha256": "dee1e4d289d070013201b7995dfad19a9e0de1295f4a82b49b22f2d0f80c28a0"
+        },
+        "16": {
+          "file": "xd-ja-16.png",
+          "crop_xywh": [
+            78,
+            102,
+            72,
+            18
+          ],
+          "sha256": "f3517b45eddbe131514fd1afc21c6a311c275defca3a7293b79cca6c70e179ee"
+        },
+        "15": {
+          "file": "xd-ja-15.png",
+          "crop_xywh": [
+            78,
+            122,
+            72,
+            18
+          ],
+          "sha256": "a0fe07e1eb11d349a15435419e4400a8adffcdcf584100a26bc67f94cae07a73"
+        },
+        "3": {
+          "file": "xd-ja-3.png",
+          "crop_xywh": [
+            78,
+            142,
+            72,
+            18
+          ],
+          "sha256": "0678f4541828b61f5f08181e36c8bc32d2d71da0304a4bdbba48cfdc098dc167"
+        },
+        "9": {
+          "file": "xd-ja-9.png",
+          "crop_xywh": [
+            78,
+            162,
+            72,
+            18
+          ],
+          "sha256": "21f87ae01e78b817913cb430d3582d0e052fc599c684e16bbe79f43295dd5e38"
+        }
+      }
+    }
+  }
+}

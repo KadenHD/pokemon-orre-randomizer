@@ -107,6 +107,10 @@ ROM and the English XD logo exported from the supplied XD disc. These game resou
 of the application code. Their hashes, source identifiers and transformations are
 recorded in `orre_randomizer/assets/game/provenance.json`. No ROM, BIOS or saved game is included.
 
+The Pokémon sheets use localized type badges extracted from the original
+Colosseum and XD games. The source archives, texture locations and hashes are
+recorded in the [type badge manifest](orre_randomizer/assets/game/types/manifest.json).
+
 The home screen additionally uses the original transparent English game logos
 hosted by Bulbagarden Archives, copied without pixel changes:
 

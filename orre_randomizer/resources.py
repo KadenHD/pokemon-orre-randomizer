@@ -6,6 +6,7 @@ import struct
 import wave
 import zlib
 from .artwork import ArtworkError, _png_pixels, load_cached_artwork
+from .i18n import LANGUAGES
 from .menu_sounds import MenuSoundError, load_cached_menu_sounds
 
 
@@ -22,6 +23,15 @@ def application_logo() -> Path | None:
 def bundle_root() -> Path:
     # Sources, installed wheels and PyInstaller share the same package-relative path.
     return Path(__file__).resolve().parent / "assets" / "game"
+
+
+def type_badge(game: str, language: str, type_id: int) -> Path | None:
+    """Find the game's localized type badge in the offline interface pack."""
+    if (game not in ("colosseum", "xd") or language not in LANGUAGES
+            or type(type_id) is not int or not 0 <= type_id <= 255):
+        return None
+    path = bundle_root() / "types" / f"{game}-{language}-{type_id}.png"
+    return path if path.is_file() and not path.is_symlink() else None
 
 
 def interface_assets() -> tuple[dict[str, Path], dict[str, Path]]:

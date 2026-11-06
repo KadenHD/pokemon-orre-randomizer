@@ -16,6 +16,7 @@ from tests.test_pokemon_details import catalog_fixture
 
 try:
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings, Qt
+    from PySide6.QtGui import QPixmap
     from PySide6.QtTest import QTest
     from PySide6.QtWidgets import QApplication, QLabel, QProgressBar
     from orre_randomizer.gui import MainWindow
@@ -115,6 +116,30 @@ class V15GuiTests(unittest.TestCase):
         self.app.processEvents()
         self.assertEqual(self.window.current_options().starter_umbreon_species, 25)
 
+    def test_type_badges_follow_current_game_and_language_with_readable_fallback(self):
+        path = self.root / 'badge.png'
+        image = QPixmap(76, 24)
+        image.fill(Qt.GlobalColor.red)
+        self.assertTrue(image.save(str(path)))
+        row = final_preview()['starters'][0]
+        row['details']['moves'].append(dict(row['details']['moves'][0], move=356, type=0))
+        self.window.language_combo.setCurrentIndex(self.window.language_combo.findData('de'))
+        for game, open_game in (('colosseum', self.window.show_colosseum), ('xd', self.window.show_xd)):
+            with self.subTest(game=game), patch('orre_randomizer.ui_pokemon_details.type_badge') as badge:
+                badge.side_effect = lambda game, language, type_id: path if type_id != 12 else None
+                open_game()
+                self.window.show_pokemon_detail(row)
+                sheet = self.window.detail_window
+                badge_widgets = sheet.findChildren(QLabel, 'sheetType')
+                self.assertEqual(badge.call_count, 7)
+                self.assertEqual({(call.args[0], call.args[1]) for call in badge.call_args_list}, {(game, 'de')})
+                self.assertEqual({call.args[2] for call in badge.call_args_list}, {10, 11, 12})
+                self.assertEqual(sum(not widget.pixmap().isNull() for widget in badge_widgets), 4)
+                self.assertCountEqual([widget.text() for widget in badge_widgets if widget.pixmap().isNull()],
+                                      ['Pflanze', 'Pflanze', 'Pflanze', 'Crypto'])
+                self.assertEqual([widget.accessibleName() for widget in badge_widgets[:2]], ['Feuer', 'Wasser'])
+                sheet.close()
+
     def test_starter_and_single_click_encounter_sheets_use_final_data_and_clear_on_stale(self):
         self.assertFalse(self.window.starter_detail_buttons['umbreon'].isEnabled())
         self.load_preview()
@@ -127,7 +152,9 @@ class V15GuiTests(unittest.TestCase):
         self.assertEqual(len(sheet.findChildren(QProgressBar, "sheetStat")), 6)
         self.assertIn('Onix natif', text)
         self.assertIn('Steelix natif', text)
-        self.assertIn('Feu / Eau', text)
+        types = sheet.findChildren(QLabel, 'sheetType')[:2]
+        self.assertEqual([label.accessibleName() for label in types], ['Feu', 'Eau'])
+        self.assertEqual([label.toolTip() for label in types], ['Feu', 'Eau'])
         self.assertIn('90', text)
         self.assertIn('40', text)
         self.assertNotIn('Échanger ce Pokémon', text)

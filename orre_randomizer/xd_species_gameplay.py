@@ -91,6 +91,7 @@ def detail_catalog(rel, dol, symbols, game_id, edges, move_randomizer):
         species[str(index)] = {
             "species": index, "national_dex": national,
             "names": {lang: SPECIES_NAMES[lang][national] for lang in LANGUAGES},
+            "types": list(dict.fromkeys(row["types"])),
             "type_names": _type_names(row["types"]),
             "ability_names": {lang: [ABILITY_NAMES[lang].get(ability, str(ability))
                                      for ability in dict.fromkeys(row["abilities"]) if ability] for lang in LANGUAGES},
@@ -125,7 +126,7 @@ def detail_catalog(rel, dol, symbols, game_id, edges, move_randomizer):
                  for lang in LANGUAGES}
         moves[str(index)] = {
             "move": index, "names": _name_map(u32(rel, pos + 0x20), banks, names),
-            "type_names": _type_names([rel[pos + 2]]), "pp": rel[pos + 1],
+            "type": rel[pos + 2], "type_names": _type_names([rel[pos + 2]]), "pp": rel[pos + 1],
             "power": rel[pos + 0x19], "accuracy": rel[pos + 4],
         }
     tm = TM_OFFSETS[game_id]

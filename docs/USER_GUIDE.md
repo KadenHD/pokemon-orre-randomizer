@@ -40,6 +40,9 @@ another random draw. The lists show starters, Shadow Pokémon, gifts and, in XD,
 Poké Spots. A single click opens a Pokémon sheet. A small red star marks a shiny;
 a question mark represents a replacement not yet calculated.
 
+Pokémon types and move types use the original game's badges in the selected
+interface language. Hover over a badge to read its type name.
+
 **Profiles**, beside language and audio, imports/exports portable JSON settings.
 Profiles belong to one game and contain no source/output paths. Reports can also
 restore settings but may contain local paths: review them before sharing.

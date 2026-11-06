@@ -8,6 +8,8 @@ The small disc banners remain as fallbacks and workspace-header artwork.
 Home plays the Colosseum Pyrite Town theme. The two workspaces play their own
 title-screen themes. The music files were rendered from the European game data
 and are level matched for the interface. Track provenance is stored under `music/`.
+The Pokémon sheets use the original type badges in all six interface languages.
+The texture sources and extraction details are recorded in `types/manifest.json`.
 Both release editions include
 this pack so the interface works before a ROM is selected, without downloading
 media at startup. The selected ROM is used only to create a new game.

@@ -23,8 +23,8 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.5** adds a ROM use reminder to both game workspaces and an author
-credit with a GitHub link on Home. See the [release notes](docs/releases/v1.2.5.md).
+**Version 1.2.6** adds original type badges to Pokémon sheets in Colosseum and
+XD and displays move names in sentence case. See the [release notes](docs/releases/v1.2.6.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)

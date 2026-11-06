@@ -21,6 +21,7 @@ _ROWS = {
     "learnset": ("Apprentissages par niveau", "Level-up moves", "Attacken durch Levelaufstieg", "Movimientos por nivel", "Mosse per livello", "レベルアップで覚えるわざ"),
     "tms": ("CT", "TMs", "TMs", "MT", "MT", "わざマシン"),
     "types": ("Types", "Types", "Typen", "Tipos", "Tipi", "タイプ"),
+    "shadow_type": ("Obscur", "Shadow", "Crypto", "Oscuro", "Ombra", "ダーク"),
     "abilities": ("Talents possibles", "Possible abilities", "Mögliche Fähigkeiten", "Habilidades posibles", "Abilità possibili", "特性の候補"),
     "stats": ("Statistiques de base", "Base stats", "Basiswerte", "Estadísticas base", "Statistiche base", "種族値"),
     "level": ("Niveau {level}", "Level {level}", "Level {level}", "Nivel {level}", "Livello {level}", "レベル {level}"),

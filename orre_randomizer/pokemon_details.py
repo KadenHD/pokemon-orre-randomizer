@@ -280,14 +280,16 @@ def format_detail_lines(details: dict, language: str = "fr") -> list[str]:
     return lines
 
 
-def detail_sections(details: dict, language: str) -> dict[str, list[str]]:
+def detail_sections(details: dict, language: str, *, include_move_types: bool = True) -> dict[str, list[str]]:
     sections = {}
     if details.get("moves_known"):
         moves = []
         for row in details["moves"]:
-            value = display_name(row, language)
+            value = display_name(row, language).capitalize()
             if not row.get("special_marker"):
-                value += " · " + " / ".join(row["type_names"][language]) + f" · PP {row['pp']}"
+                if include_move_types:
+                    value += " · " + " / ".join(row["type_names"][language])
+                value += f" · PP {row['pp']}"
                 value += " · " + detail_text("power", language) + " " + (str(row['power']) if row['power'] > 1 else "—")
                 value += " · " + detail_text("accuracy", language) + " " + (str(row['accuracy']) if row['accuracy'] else "—")
             moves.append(value)
@@ -304,9 +306,9 @@ def detail_sections(details: dict, language: str) -> dict[str, list[str]]:
         evolutions.append(detail_text("no_evolution", language))
     sections["evolutions"] = evolutions
     sections["learnset"] = [detail_text("level", language, level=row["level"]) + " · "
-                            + display_name(row["details"], language) for row in details["learnset"]]
+                            + display_name(row["details"], language).capitalize() for row in details["learnset"]]
     sections["tms"] = [detail_text("tms", language) + f" {row['tm']:02d} · "
-                       + display_name(row["details"], language) for row in details["tms"]]
+                       + display_name(row["details"], language).capitalize() for row in details["tms"]]
     for key in ("learnset", "tms"):
         if not sections[key]:
             sections[key] = [detail_text("none", language)]

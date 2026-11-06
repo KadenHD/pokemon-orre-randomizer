@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.6
+
+- Show original Colosseum and XD type badges on Pokémon sheets and next to
+  moves, level-up moves, and compatible TMs in all six interface languages.
+- Display move names with only the initial letter capitalized in scripts
+  that use letter case.
+
 ## 1.2.5
 
 - Remind players to use a copy of the game they are legally entitled to use on

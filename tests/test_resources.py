@@ -7,7 +7,9 @@ import struct
 from pathlib import Path
 from unittest.mock import patch
 from orre_randomizer.artwork import _png
-from orre_randomizer.resources import application_icon, application_logo, bundle_root, home_logos, interface_assets, menu_icon, music_track, xd_logo
+from orre_randomizer.i18n import LANGUAGES
+from orre_randomizer.resources import (application_icon, application_logo, bundle_root, home_logos,
+                                       interface_assets, menu_icon, music_track, type_badge, xd_logo)
 
 
 class ResourceTests(unittest.TestCase):
@@ -52,6 +54,13 @@ class ResourceTests(unittest.TestCase):
         self.assertIsNotNone(music_track())
         self.assertIsNotNone(menu_icon())
         self.assertEqual(set(home_logos()), {"colosseum", "xd"})
+        for game in ("colosseum", "xd"):
+            for language in LANGUAGES:
+                for type_id in range(18):
+                    with self.subTest(game=game, language=language, type_id=type_id):
+                        path = type_badge(game, language, type_id)
+                        self.assertIsNotNone(path)
+                        self.assertIn(path.relative_to(root).as_posix(), expected)
 
     def test_public_edition_starts_with_no_game_pack(self):
         with tempfile.TemporaryDirectory() as folder, patch("orre_randomizer.resources.bundle_root", return_value=Path(folder)):
@@ -60,6 +69,7 @@ class ResourceTests(unittest.TestCase):
             self.assertIsNone(menu_icon())
             self.assertIsNone(xd_logo())
             self.assertEqual(home_logos(), {})
+            self.assertIsNone(type_badge("colosseum", "fr", 10))
             self.assertIsNotNone(application_icon())
             self.assertIsNotNone(application_logo())
 
