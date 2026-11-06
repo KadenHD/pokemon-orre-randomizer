@@ -1,6 +1,7 @@
 """One vocabulary for both game workspaces; only native mechanics differ."""
 
 ROM_DESCRIPTION = "{game} Europe, USA ou Japon (révision 0), sans modification. Le fichier d’origine est conservé."
+ROM_USE_NOTICE = "Utilisez une copie du jeu que vous êtes autorisé à utiliser. Aucune ROM n’est fournie."
 STEP_HELP = (
     "Choisissez la ROM d’origine.",
     "Le mode Avancé permet de modifier chaque option du choix sélectionné.",

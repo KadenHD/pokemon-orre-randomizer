@@ -50,7 +50,7 @@ from .settings_presentation import configuration_review, search_settings
 from .resources import MUSIC_FILES, application_icon, application_logo, interface_assets, music_track, menu_icon, xd_logo
 from .i18n import LANGUAGES, Message, is_translatable, language_preference, resolve_language, translate
 from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS,
-                             PRESET_EVOLUTIONS, PRESET_SHINIES, ROM_DESCRIPTION, STEP_HELP)
+                             PRESET_EVOLUTIONS, PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE, STEP_HELP)
 
 
 class Worker(QObject):
@@ -300,6 +300,8 @@ class MainWindow(QMainWindow):
             source_layout, self, "ROM d’&origine", "ROM d’origine",
             "Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici", "Parcourir…", self.choose_source)
         source_layout.addWidget(self.note("La ROM sera vérifiée avant la création. Aucun fichier existant ne sera remplacé."))
+        self.art_note = self.note(ROM_USE_NOTICE)
+        source_layout.addWidget(self.art_note)
         self.source.editingFinished.connect(self.suggest_destination)
         self.advanced_toggle = QToolButton()
         self.bind(self.advanced_toggle.setText, "Conversion RVZ · DolphinTool")
@@ -316,8 +318,6 @@ class MainWindow(QMainWindow):
         self.advanced.hide()
         self.advanced_toggle.toggled.connect(self.toggle_advanced)
         source_layout.addStretch(1)
-        self.art_note = self.note("Votre ROM sert uniquement à créer une nouvelle partie.")
-        source_layout.addWidget(self.art_note)
 
         self.build_settings_workspace()
 

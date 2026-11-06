@@ -1,6 +1,16 @@
 """Canonical shared copy, applied after legacy and game-specific catalogs."""
 
+from .workspace_copy import ROM_USE_NOTICE
+
 ROWS = (
+    (ROM_USE_NOTICE,
+     "Use a copy of the game you are legally entitled to use. No ROM is provided.",
+     "Verwende eine Kopie des Spiels, die du rechtmäßig nutzen darfst. Es wird keine ROM mitgeliefert.",
+     "Usa una copia del juego que tengas derecho a utilizar. No se incluye ninguna ROM.",
+     "Usa una copia del gioco che hai il diritto di utilizzare. Non è inclusa alcuna ROM.",
+     "使用する権利のあるゲームのコピーを選んでください。ROMは同梱されていません。"),
+    ("Fait par {author}", "Made by {author}", "Erstellt von {author}",
+     "Creado por {author}", "Creato da {author}", "制作：{author}"),
     ("Copie à l’identique : aucune donnée du jeu ne sera modifiée.",
      "Unchanged copy: no game data will be changed.", "Identische Kopie: Die Spieldaten werden nicht verändert.",
      "Copia idéntica: no se modificarán los datos del juego.", "Copia identica: nessun dato di gioco verrà modificato.",

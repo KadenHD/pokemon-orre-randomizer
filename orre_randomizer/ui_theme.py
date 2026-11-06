@@ -206,6 +206,12 @@ def xd_stylesheet():
 XD_STYLE = xd_stylesheet()
 
 HOME_STYLE = STYLE + """
+QPushButton#authorLink {
+    background: transparent; color: #cdd7e6; border: 1px solid transparent;
+    font-size: 13px; text-decoration: underline; min-height: 20px; padding: 2px 8px;
+}
+QPushButton#authorLink:hover { color: #ffffff; }
+QPushButton#authorLink:focus { border-color: #cbd0d8; }
 QToolButton#headerControl {
     background: #202327; color: #e5e7eb; border: 1px solid #727782;
 }

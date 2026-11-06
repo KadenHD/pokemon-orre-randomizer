@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.5
+
+- Remind players to use a copy of the game they are legally entitled to use on
+  the ROM screen for Colosseum and XD.
+- Add an author credit on Home that opens KadenHD's GitHub profile.
+- Clarify the ROM policy near the README downloads and link to the notices for
+  the bundled game logos, artwork, and music.
+
 ## 1.2.4
 
 - Play the Pyrite Town theme on Home and each game's own title theme in its

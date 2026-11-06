@@ -32,7 +32,7 @@ from .xd_gifts import GIFT_TRADE_REQUIREMENTS, TOGETIC
 from .xd_preview import baseline_rows
 from .preview import ROULETTE_SPECIES
 from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS, PRESET_EVOLUTIONS,
-                             PRESET_SHINIES, ROM_DESCRIPTION, STEP_HELP, XD_CATEGORY_HELP)
+                             PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE, STEP_HELP, XD_CATEGORY_HELP)
 
 
 RULES = presentation_fields(XDOptions)
@@ -103,6 +103,7 @@ class XDWorkspace(QWidget):
             rom, window, "ROM d’&origine", "ROM d’origine",
             "Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici", "Parcourir…", self.choose_source)
         rom.addWidget(window.note("La ROM sera vérifiée avant la création. Aucun fichier existant ne sera remplacé."))
+        rom.addWidget(window.note(ROM_USE_NOTICE))
         self.tool_block, self.tool = window.build_tool_field()
         self.tool_block.layout().addWidget(window.note(
             "DolphinTool est nécessaire pour lire ou créer une RVZ. Utilisez celui fourni avec Dolphin."))
@@ -110,7 +111,6 @@ class XDWorkspace(QWidget):
         rom.addWidget(self.source_conversion, 0, Qt.AlignmentFlag.AlignLeft)
         rom.addWidget(self.tool_block)
         rom.addStretch(1)
-        rom.addWidget(window.note("Votre ROM sert uniquement à créer une nouvelle partie."))
 
         settings = wizard_page(self.pages, scrolling=False)
         self.workspace_tabs, self.seed, views = settings_workspace(settings, window)

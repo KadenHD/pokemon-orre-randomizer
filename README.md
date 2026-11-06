@@ -23,15 +23,19 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.4** plays Pyrite Town on Home and each game's title theme in its
-workspace. The game cards return to their resting state when you go back to Home.
-See the [release notes](docs/releases/v1.2.4.md).
+**Version 1.2.5** adds a ROM use reminder to both game workspaces and an author
+credit with a GitHub link on Home. See the [release notes](docs/releases/v1.2.5.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
 for Windows 10 or 11, 64-bit. Python and the Rust codec are included.
 For portable use, extract the **Windows ZIP** in full and open `OrreRandomizer.exe`
 beside its `_internal` folder.
+
+No ROMs or links to ROM downloads are provided. Use the randomizer only with game
+images you are legally entitled to use. You are responsible for how you obtain,
+use, and share those images. For the rights and sources of the game logos,
+artwork, and music, see the [game media notices](THIRD_PARTY_NOTICES.md#game-interface-pack).
 
 1. Choose **Colosseum** or **XD**, then select your original ROM in **ROM**.
 2. In **Settings**, choose a preset and a seed. Preview the starters, Shadow

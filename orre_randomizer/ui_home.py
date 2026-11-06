@@ -1,10 +1,11 @@
 """Game selection using the same menu frames and native buttons as the wizard."""
-from PySide6.QtCore import QPointF, QRectF, QSize, Qt
-from PySide6.QtGui import QColor, QFont, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
+from PySide6.QtCore import QPointF, QRectF, QSize, Qt, QUrl
+from PySide6.QtGui import QColor, QDesktopServices, QFont, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
 from PySide6.QtWidgets import QBoxLayout, QPushButton, QSizePolicy, QStyle, QStyleOptionButton, QVBoxLayout, QWidget
 
-from .ui_workspace import bounded
+from .i18n import Message
 from .resources import home_logos
+from .ui_workspace import bounded
 
 
 class GameChoice(QPushButton):
@@ -181,6 +182,11 @@ class GameSelection(QWidget):
             button.clicked.connect(callback)
             self.choices.addWidget(button, 1)
         layout.addLayout(self.choices, 1)
+        credit = window.button(Message("Fait par {author}", author="KadenHD (Pierre CLEMENT)"))
+        credit.setObjectName("authorLink")
+        credit.setCursor(Qt.CursorShape.PointingHandCursor)
+        credit.clicked.connect(lambda: QDesktopServices.openUrl(QUrl("https://github.com/KadenHD")))
+        layout.addWidget(credit, 0, Qt.AlignmentFlag.AlignHCenter)
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
         outer.addWidget(bounded(content))
