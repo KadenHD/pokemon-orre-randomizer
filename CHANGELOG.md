@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.2.10
+
+- Fix shiny status for XD's Mt. Battle prizes and NPC trade rewards so the
+  Pokémon received in-game matches the preview when shininess is tied to the seed.
+- Preserve the trainer ID assigned by XD when generating these gifts.
+- Keep Colosseum profiles and creation reports from 1.2.9 importable.
+
 ## 1.2.9
 
 - Match the Pokémon model, cry and localized dialogue in Colosseum's Pyrite

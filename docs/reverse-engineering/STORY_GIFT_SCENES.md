@@ -85,11 +85,17 @@ the individual Pokémon's data.
 
 A French PAL comparison in Dolphin 2609a showed Ho-Oh in the original
 presentation and Luvdisc in the randomized one. Both messages named the
-displayed species. The randomized ISO had a 100% shiny setting, and Luvdisc
-appeared pink in the scene. A test-only shortcut opened the native
-presentation directly from a copied save. This comparison verifies the
-rendering and messages, while the normal reward acquisition remains a
-separate test.
+displayed species. A test-only shortcut opened the presentation directly.
+
+A separate French PAL run entered Battle Mode with a copy of a story save
+and registered a prepared team through the game menu. The fixture supplied
+the first 99 wins and story and purification requirements. The fight against
+the 100th opponent was played with a strengthened test team. The victory
+handler opened the native prize event. With seed `mt-battle-qa` and a 100%
+shiny rate, the presentation named and displayed Yanma. The full party sent
+the level 70 shiny Yanma to the PC. The prize flag changed from 0 to 1 and the
+same Pokémon identity was verified on the written memory card after saving
+through the game's reward prompt.
 
 ### Pikachu and Celebi from Eagun
 
@@ -112,8 +118,36 @@ belong to different events. [Regional gift validation](../REGIONAL_GIFTS_DOLPHIN
 
 The three gift room archives contain no dedicated model for any of the vanilla
 gift species. Previous Dolphin tests exercised Hordel's gift and exchange and
-Duking's trades. The Mt. Battle prize names were checked in the binaries. This
-audit did not run the prize handover or inspect all models loaded by shared
-trade or reward routines. Shadow Lugia is a separate case with a dedicated model
-and purification path. Bonsly and Munchlax are scripted field Pokémon outside the
-randomizable gift pool. [XD investigation and runtime checks](XD.md)
+Duking's trades.
+
+French PAL replays in Dolphin 2609a started from copies of an in-game test
+save prepared just before the 100th match. The final battle against the Mt.
+Battle master was played with a strengthened test team. A control with the
+team-change flag set awarded Poké Coupons and skipped the Pokémon prize, as
+the original rules require.
+
+The first eligible replays showed the expected names and moves but awarded
+non-shiny Pokémon at a configured 100% shiny rate. The gift argument block
+begins at `sp+0x0C`. The old patch wrote the policy into the trainer ID word
+at `sp+0x1C`. The corrected hook writes it into the upper half of the
+catch-floor word at `sp+0x28` and runs the native trainer ID update.
+
+With the corrected ISO and seed `mt-battle-qa`, three separate final victories
+and saves verified every option. The menu and confirmation named Totodile,
+Larvitar, and Bulbasaur, matching the preview. Totodile and Bulbasaur joined
+the party. Larvitar went to the PC when the party was full. Each save contained
+the selected prize at level 5 with the expected moves, trainer ID, and shiny
+status. Patch assembly was also checked on the US and Japanese DOLs.
+
+The same correction was tested in French PAL with the `trade-check-49` seed
+and a 5% shiny rate. Two prepared copies of a native save supplied a purified
+Togepi for Hordel and Trapinch, Surskit, and Wooper for Duking. The four trades
+ran through the game's dialogue and party selection. After saving in-game,
+the memory cards matched the preview for species, level, moves, and shiny
+status. Hordel's Beautifly and Duking's Miltank were shiny. Duking's Nidoran♂
+and Aron were standard. The cards also retained the trainer IDs assigned by
+the native trade routines.
+
+Shadow Lugia is a separate case with a dedicated model and purification path.
+Bonsly and Munchlax are scripted field Pokémon outside the randomizable gift
+pool. [XD investigation and runtime checks](XD.md)

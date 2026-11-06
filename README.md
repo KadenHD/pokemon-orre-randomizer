@@ -23,9 +23,9 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.9** makes Colosseum's Pyrite rescue, Plusle handover and Mt. Battle
-prize presentation follow the Pokémon you actually receive. The Plusle gift
-pool excludes oversized species. See the [release notes](docs/releases/v1.2.9.md).
+**Version 1.2.10** fixes shiny status for XD's Mt. Battle prizes and NPC trade
+rewards so they match the preview when shininess is tied to the seed. See the
+[release notes](docs/releases/v1.2.10.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)

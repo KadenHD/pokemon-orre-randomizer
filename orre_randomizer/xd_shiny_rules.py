@@ -6,7 +6,8 @@ import struct
 
 from .engine.analyze_game import FormatError, check_range, u32
 from .engine.gift_move_hooks import branch
-from .engine.shiny_rules import seeded_status
+from .engine.shiny_rules import _Code, seeded_status
+from .xd_battle_rules import TEXT1_TO_RAM, append_xd_dol_text
 from .xd_gifts import GIFT_BASELINES
 
 VERSION = "xd-seeded-shiny-status-v1"
@@ -37,6 +38,17 @@ def encounter_shiny(seed: str, options, key: str) -> bool | None:
     return seeded_status(seed, f"{VERSION}:{key}", options.shiny_chance_percent)
 
 
+def _gift_policy_stub(address: int, owner_getter: int, mask: int) -> bytes:
+    code = _Code(address)
+    code.emit(0x381EFFF8, 0x28000006)  # addi r0,r30,-8; cmplwi r0,6
+    code.conditional(0x41810000, "native_owner")  # only ordinary gift indices 8..14
+    code.emit(0x38000000 | mask, 0x7C00F430, 0x540007FE,  # li; srw; clrlwi
+              0xB0010028)  # sth r0,0x28(sp): high half of the catch-floor word
+    code.label("native_owner")
+    code.emit(branch(address + 4 * len(code.words), owner_getter))
+    return code.finish()
+
+
 def apply_shiny_rules(original: bytes, current: bytes, game_id: str, seed: str, options) -> tuple[bytes, dict]:
     report = {"version": VERSION, "enabled": options.custom_shinies}
     if not options.custom_shinies:
@@ -60,7 +72,7 @@ def apply_shiny_rules(original: bytes, current: bytes, game_id: str, seed: str, 
                                    0x80FD0010, 0x38610008, 0x3880FFFF, 0x38A0FFFF, 0x38C0FFFF, pid_call),
         starter: (0x38C00000, 0x380004E2, 0x90610030, 0x7FE3FB78 if tutorial else 0x7FC3F378,
                   0x3881001C, 0x38A00001, 0x90C10038, 0x9001003C, branch(starter + 0x20, hero, link=True)),
-        layout.gift_dispatch: (0x389EFFF9, 0x38000000, 0x28040007),
+        layout.gift_dispatch: (0x389EFFF9, 0x38000000, 0x28040007, 0x90610028, 0x9001002C),
         gift: (0x7FE3FB78, branch(gift + 4, hero + 0x6A0, link=True), 0x8001001C, 0x5466001E,
                0x7FE3FB78, 0x3881000C, 0x5400043E, 0x38A00001, 0x7C003378, 0x9001001C,
                branch(gift + 0x28, hero, link=True)),
@@ -78,22 +90,25 @@ def apply_shiny_rules(original: bytes, current: bytes, game_id: str, seed: str, 
 
     statuses = {key: encounter_shiny(seed, options, key) for key in ("starter", *GIFT_KEYS)}
     # Reward switch indices 8..14 correspond to Hordel, Duking's three
-    # trades and the three Mt. Battle prizes. Index 7 is Shadow Togepi.
-    # Reuse the instructions that used to copy getHeroRnd into the discarded
-    # high half. Neither the low half nor the separate OT field is touched.
+    # trades and the three Mt. Battle prizes. Their argument block starts at
+    # sp+0x0C, so param+0x1C is sp+0x28. Keep the original owner update at
+    # sp+0x1C (param+0x10), which the PID generator also reads.
     mask = sum(int(statuses[key]) << (8 + slot) for slot, key in enumerate(GIFT_KEYS))
     patches = {
         layout.hero_policy: 0xA8DD001C,  # lha r6,0x1c(r29)
         starter: 0x3CC00000 | int(statuses["starter"]),  # lis r6,mode
-        gift: 0x38600000 | mask,  # li r3,mask
-        gift + 4: 0x7C63F430,  # srw r3,r3,r30
-        gift + 0xC: 0x546683DE,  # rlwinm r6,r3,16,15,15
     }
     if tutorial:
         patches[tutorial] = 0x3CC0FFFF  # lis r6,-1 keeps the native policy and the zero catch floor.
     output = bytearray(current)
     for offset, word in patches.items():
         struct.pack_into(">I", output, offset, word)
+    owner_getter = hero + 0x6A0 + TEXT1_TO_RAM
+    owner_call = gift + 4 + TEXT1_TO_RAM
+    patched, report["hooks"] = append_xd_dol_text(original, output, game_id, (
+        (owner_call, branch(owner_call, owner_getter, link=True),
+         lambda address, _continuation: _gift_policy_stub(address, owner_getter, mask)),
+    ), link=True)
     report["chance_percent"] = options.shiny_chance_percent
     report["statuses"] = statuses
-    return bytes(output), report
+    return patched, report

@@ -130,6 +130,13 @@ class ProfileTests(unittest.TestCase):
         self.assertFalse(parsed.options.has_changes)
         self.assertEqual(parsed.options, Options.none())
 
+    def test_v129_colosseum_profile_remains_importable(self):
+        options = replace(Options.recommended(), shiny_chance_percent=25)
+        payload = profile_data("shared-v129", options)
+        payload.update(app_version="1.2.9", engine_version="story-gift-scenes-v17")
+        profile = parse_profile(self.encode(self.sign(payload)))
+        self.assertEqual((profile.seed, profile.options), ("shared-v129", options))
+
     def test_v010_profile_preserves_all_choices_and_shiny_rate(self):
         options = replace(Options.recommended(), custom_shinies=True, shiny_chance_percent=100)
         for version in ('0.10.0', '0.10.1'):
@@ -420,6 +427,8 @@ class CreationReportTests(unittest.TestCase):
         self.assertEqual((result.profile.seed, result.profile.options, result.region),
                          (report["seed"], options, region))
         archived = dict(report, application_version="1.2.8", engine_version="story-family-diversity-v16")
+        self.assertEqual(parse_creation_report(json.dumps(archived).encode()), result)
+        archived = dict(report, application_version="1.2.9", engine_version="story-gift-scenes-v17")
         self.assertEqual(parse_creation_report(json.dumps(archived).encode()), result)
         with self.assertRaisesRegex(UserError, "version prise en charge"):
             parse_creation_report(json.dumps(dict(report, source_iso_sha256="b" * 64)).encode())

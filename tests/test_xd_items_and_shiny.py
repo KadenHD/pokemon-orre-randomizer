@@ -6,11 +6,12 @@ import unittest
 from unittest.mock import patch
 
 from orre_randomizer.engine.analyze_game import u32
+from orre_randomizer.engine.gift_move_hooks import branch
 from orre_randomizer.engine.shop_stones import pack_shop_lists, read_shops
 from orre_randomizer.xd_item_rules import (
     CASH_SHOPS, ITEM_COUNT, ITEM_SIZE, TREASURE_SIZE, apply_field_items, apply_shop_items,
 )
-from orre_randomizer.xd_shiny_rules import GIFT_KEYS, encounter_shiny
+from orre_randomizer.xd_shiny_rules import GIFT_KEYS, _gift_policy_stub, encounter_shiny
 
 
 class XDItemRulesTests(unittest.TestCase):
@@ -63,6 +64,20 @@ class XDItemRulesTests(unittest.TestCase):
 
 
 class XDShinyRulesTests(unittest.TestCase):
+    def test_reward_policy_preserves_owner_and_writes_to_catch_floor(self):
+        address, getter = 0x80530000, 0x80154A44
+        mask = (1 << 8) | (1 << 12) | (1 << 14)
+        self.assertEqual(struct.unpack(">8I", _gift_policy_stub(address, getter, mask)), (
+            0x381EFFF8,  # Index 8 becomes zero.
+            0x28000006,  # The last supported index is 14.
+            0x41810014,  # Unsupported indices jump straight to the owner getter.
+            0x38000000 | mask,
+            0x7C00F430,  # Shift by the original gift index.
+            0x540007FE,  # Keep the requested policy bit.
+            0xB0010028,  # Store at sp+0x28, leaving the OT word at sp+0x1C intact.
+            branch(address + 0x1C, getter),
+        ))
+
     def test_preview_is_deterministic_and_scoped_to_ordinary_rewards(self):
         keys = ("starter", *GIFT_KEYS)
         options = SimpleNamespace(custom_shinies=True, shiny_chance_percent=0)
