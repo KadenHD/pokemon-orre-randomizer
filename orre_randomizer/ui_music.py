@@ -109,6 +109,8 @@ class MenuMusic(QObject):
         return self.backend is not None and self.path is not None
 
     def start(self):
+        if self.playing:
+            return True
         if not self.supported:
             return False
         try:
@@ -122,6 +124,11 @@ class MenuMusic(QObject):
         except (OSError, ValueError, wave.Error, EOFError):
             self.stop()
             return False
+
+    def set_track(self, path: Path | None):
+        if path != self.path:
+            self.stop()
+            self.path = path
 
     def poll(self):
         if self.playing and not self.backend.is_playing():

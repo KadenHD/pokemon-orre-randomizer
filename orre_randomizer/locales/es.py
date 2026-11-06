@@ -62,10 +62,7 @@ TEXTS = {
  'Aucune randomisation': 'Sin cambios aleatorios',
  'Seed et profils': 'Semilla y perfiles',
  'Musique': 'Música',
- 'Musique du titre': 'Música del título',
- 'Activer ou couper la musique du titre, indépendamment des sons des menus.': 'Activa o desactiva la música '
-                                                                              'del título, por separado de '
-                                                                              'los sonidos de los menús.',
+ 'Activer ou couper la musique, indépendamment des sons des menus.': 'Activa o desactiva la música por separado de los sonidos de los menús.',
  'Lecture de la musique indisponible. Les autres fonctions restent disponibles.': 'La reproducción de música '
                                                                                   'no está disponible. Las '
                                                                                   'demás funciones siguen '

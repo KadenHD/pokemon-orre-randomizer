@@ -23,8 +23,9 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.3** brings high-resolution English game logos to the home screen.
-Both logos are bundled for offline use. See the [release notes](docs/releases/v1.2.3.md).
+**Version 1.2.4** plays Pyrite Town on Home and each game's title theme in its
+workspace. The game cards return to their resting state when you go back to Home.
+See the [release notes](docs/releases/v1.2.4.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
@@ -99,8 +100,8 @@ The [Colosseum](docs/DOLPHIN_VALIDATION_2026-10-31.md) and
   Pokémon sheets, verification reports and an offline HTML journal.
 
 Both games use the same three-page layout and Pokémon sheets, with their own
-logos, backgrounds, music and menu sounds. The home screen has a neutral theme.
-The interface pack is included, so these work before you select a ROM.
+logos, backgrounds and title music. The included interface pack works before
+you select a ROM. **Music** and **Sounds** have separate saved preferences.
 
 | Game-specific behavior | Colosseum | XD |
 | --- | --- | --- |

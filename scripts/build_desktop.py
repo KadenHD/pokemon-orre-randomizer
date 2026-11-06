@@ -88,9 +88,10 @@ def main():
                     hashlib.sha256(path.read_bytes()).hexdigest() != expected["sha256"]):
                 raise SystemExit("Invalid application asset: " + name)
     if include_game_assets:
-        from orre_randomizer.resources import home_logos, interface_assets, music_track, menu_icon
+        from orre_randomizer.resources import MUSIC_FILES, home_logos, interface_assets, music_track, menu_icon
         images, sounds = interface_assets()
-        if (len(images) != 5 or len(sounds) != 3 or music_track() is None or menu_icon() is None
+        if (len(images) != 5 or len(sounds) != 3 or any(music_track(scene) is None for scene in MUSIC_FILES)
+                or menu_icon() is None
                 or set(home_logos()) != {"colosseum", "xd"}):
             raise SystemExit("The exported interface pack is incomplete.")
     source_files(include_game_assets=include_game_assets)

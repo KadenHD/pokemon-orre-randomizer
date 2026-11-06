@@ -90,14 +90,22 @@ def xd_logo() -> Path | None:
         return None
 
 
-def music_track() -> Path | None:
+MUSIC_FILES = {
+    "home": ("pyrite.wav", "pyrite.json"),
+    "colosseum": ("title.wav", "track.json"),
+    "xd": ("xd-title.wav", "xd-title.json"),
+}
+
+
+def music_track(scene: str = "colosseum") -> Path | None:
     root = bundle_root() / "music"
     try:
-        metadata = root / "track.json"
+        filename, metadata_name = MUSIC_FILES[scene]
+        metadata = root / metadata_name
         if metadata.stat().st_size > 16 * 1024:
             return None
         manifest = json.loads(metadata.read_text("utf-8"))
-        path = root / "title.wav"
+        path = root / filename
         size = path.stat().st_size
         if path.is_symlink() or not 44 <= size <= 48 * 1024**2 or size != manifest["bytes"]:
             return None

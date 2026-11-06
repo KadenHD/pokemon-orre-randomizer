@@ -74,6 +74,7 @@ def main():
         assert len(data["images"]) == 5 and len(data["sounds"]) == 3 and data["music_available"]
         assert data["game_cursor_available"] and data["application_logo_available"]
         assert data["home_logo_dimensions"] == {"colosseum": [1280, 543], "xd": [1280, 565]}
+        assert data["music_tracks"] == {"home": "pyrite.wav", "colosseum": "title.wav", "xd": "xd-title.wav"}
         assert not any((work/"AppData").rglob("*.ini"))
         evidence = args.report.with_suffix("")
         evidence.mkdir()

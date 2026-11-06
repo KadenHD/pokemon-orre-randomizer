@@ -9,7 +9,7 @@ import wave
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from orre_randomizer.resources import interface_assets, music_track
+from orre_randomizer.resources import MUSIC_FILES, interface_assets, music_track
 
 
 def measure(path, *, loop=False):
@@ -45,11 +45,11 @@ def main():
     parser.add_argument("report", type=Path)
     args = parser.parse_args()
     _, sounds = interface_assets()
-    music = music_track()
-    if set(sounds) != {"move", "confirm", "back"} or music is None:
+    music = {scene: music_track(scene) for scene in MUSIC_FILES}
+    if set(sounds) != {"move", "confirm", "back"} or any(path is None for path in music.values()):
         parser.error("The local exported interface pack is required.")
     result = {"sounds": {name: measure(path) for name, path in sounds.items()},
-              "music": measure(music, loop=True), "successful": True,
+              "music": {scene: measure(path, loop=True) for scene, path in music.items()}, "successful": True,
               "scope": "PCM levels, integrity and seam; human listening is not claimed."}
     with args.report.open("x", encoding="utf-8") as stream:
         json.dump(result, stream, indent=2)

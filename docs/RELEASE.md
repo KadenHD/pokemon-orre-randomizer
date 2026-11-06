@@ -36,6 +36,8 @@ Diagnostics run the real Qt widgets with a temporary preferences file. They comp
 the Rust codec with the Python reference and check that the edition has the expected
 resources. The interface checks cover six languages at 1040 × 800 and 680 × 540,
 including the home screen, wizard, preview, and exclusion dialogs.
+The package smoke test verifies all three music files and the track selected
+when moving between Home and the game workspaces.
 
 ```powershell
 $env:QT_QPA_PLATFORM = 'offscreen'

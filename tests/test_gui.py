@@ -41,6 +41,29 @@ class GuiTests(unittest.TestCase):
         self.assertTrue(self.window.create_button.isEnabled())
         self.assertIn("Choisissez", self.window.status.text())
 
+    def test_return_home_leaves_game_cards_neutral_until_tab(self):
+        from PySide6.QtCore import Qt
+        from PySide6.QtTest import QTest
+
+        window = self.window
+        window.music_toggle.setChecked(False)
+        window.show_home()
+        window.show()
+        self.app.processEvents()
+        for card, workspace, back in (
+            (window.open_colosseum, window.colosseum, window.back_button),
+            (window.open_xd, window.xd, window.xd.home_button),
+        ):
+            with self.subTest(game=card.text()):
+                QTest.mouseClick(card, Qt.MouseButton.LeftButton)
+                self.assertIs(window.game_views.currentWidget(), workspace)
+                QTest.mouseClick(back, Qt.MouseButton.LeftButton)
+                self.assertIs(window.game_views.currentWidget(), window.home)
+                self.assertFalse(window.open_colosseum.hasFocus())
+                self.assertFalse(window.open_xd.hasFocus())
+                QTest.keyClick(window.focusWidget(), Qt.Key.Key_Tab)
+                self.assertTrue(window.open_colosseum.hasFocus())
+
     def test_xd_theme_and_rom_format_follow_game_selection(self):
         from unittest.mock import patch
 

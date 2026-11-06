@@ -15,6 +15,22 @@ differ. Levels, EXP, purification and catch-rate multipliers stay at ×1.
 your choices; selecting a preset replaces them. Category resets use that game's
 Pokémon + moves defaults. Imported profiles retain their saved values.
 
+## Music and sounds
+
+| Screen | Music |
+| --- | --- |
+| Home | Pyrite Town from Pokémon Colosseum |
+| Pokémon Colosseum | Colosseum's title theme |
+| Pokémon XD | XD: Gale of Darkness's title theme |
+
+The track switches when you open a game or return to Home. All three tracks
+loop and are available offline before you select a ROM. The **Music** switch
+remembers your choice across screens and sessions. **Sounds** controls menu
+effects separately. Both are enabled by default when available.
+
+On Home, a game card highlights when you hover over it or reach it with Tab.
+Returning from either game leaves the cards ready for a fresh selection.
+
 ## Seeds, previews and profiles
 
 Seeds are exact UTF-8 text, including spaces and case. The preview calculates

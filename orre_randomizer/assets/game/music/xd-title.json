@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "bytes": 10813364,
+  "sha256": "d701253bc6816e9cdf01ebcaccd33008208a8ab26f58e7a219b8433a6ddb8ca2",
+  "source_game": "GXXP01 revision 0",
+  "source_member": "stm_bgm_open_roll.fsys",
+  "identification": "Native XD title-screen render. The cut ends during the title music's decay before the attract sequence.",
+  "capture_sha256": "d2c8b7baeab9b6eb11455054621dcfdf7cdc696db8631b4c71e45ce689c5d94e",
+  "capture_rate": 32028,
+  "capture_start_seconds": 87.415,
+  "duration_seconds": 61.3,
+  "sample_rate": 44100,
+  "channels": 2,
+  "sample_bytes": 2,
+  "transform": "Dolphin DSP render, 20 Hz highpass, level matched to the Colosseum title theme, PCM16 stereo, short fades",
+  "linear_gain": 0.18904714762658376
+}

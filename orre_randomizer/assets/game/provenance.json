@@ -269,8 +269,8 @@
       "sha256": "0a5b87a50dd4156bbb1c0ca845b29c21775d5740abf874c0c9669c2dbf05d53c"
     },
     "README.md": {
-      "bytes": 930,
-      "sha256": "7da37a051734b91a53e1f873d2011b5bbab5ed45c42dab8f56a34cd144630ac8"
+      "bytes": 1171,
+      "sha256": "0fbad856749d610897e57fdbc00917b1447040cf5016d677fc629b83780720a9"
     },
     "interface/xd-logo-en.png": {
       "bytes": 3570,
@@ -291,6 +291,22 @@
     "interface/home-logos.json": {
       "bytes": 1274,
       "sha256": "66d73cd1656defc4e5d231a0e1e8efadaeced844d13623155ae80e7eeac1916f"
+    },
+    "music/pyrite.wav": {
+      "bytes": 11966668,
+      "sha256": "f638693b705954344dc806d5b10b756a8f3e6fa3a3c264480fe3332771f774d0"
+    },
+    "music/pyrite.json": {
+      "bytes": 781,
+      "sha256": "97d81adb0a93183173d5263c37a2b928f6707753207148b5f44a75cfd01539fc"
+    },
+    "music/xd-title.wav": {
+      "bytes": 10813364,
+      "sha256": "d701253bc6816e9cdf01ebcaccd33008208a8ab26f58e7a219b8433a6ddb8ca2"
+    },
+    "music/xd-title.json": {
+      "bytes": 730,
+      "sha256": "dcf1da76eb28b57b551708084dfbafc0f390b2f039f87a43247a41a67fd1834c"
     }
   },
   "additional_sources": [

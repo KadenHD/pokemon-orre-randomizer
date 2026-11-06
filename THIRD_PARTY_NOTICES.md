@@ -117,3 +117,8 @@ These logos remain the property of their respective owners and are separate
 from the application's MIT license. Retrieval date, source URLs, dimensions and
 SHA-256 hashes are recorded in `orre_randomizer/assets/game/interface/home-logos.json`.
 They are bundled for offline display; the application does not contact these sites.
+
+The interface music includes native renders of the Colosseum and XD title themes
+and Colosseum's Pyrite Town theme. The corresponding game sources, capture
+intervals, transformations and file hashes are recorded in the
+[music asset metadata](orre_randomizer/assets/game/music/).

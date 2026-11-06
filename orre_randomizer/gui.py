@@ -18,7 +18,7 @@ import sys
 import threading
 import traceback
 
-from PySide6.QtCore import QLibraryInfo, QLocale, QObject, QPoint, QSettings, QSize, QThread, QTimer, QTranslator, QUrl, Signal, Slot, Qt
+from PySide6.QtCore import QLibraryInfo, QLocale, QObject, QPoint, QSettings, QSignalBlocker, QSize, QThread, QTimer, QTranslator, QUrl, Signal, Slot, Qt
 from PySide6.QtGui import QDesktopServices, QColor, QFont, QIcon, QKeySequence, QPainter, QPalette, QPixmap, QShortcut
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                                QDoubleSpinBox, QFormLayout, QFrame, QHBoxLayout, QLabel, QLineEdit,
@@ -47,7 +47,7 @@ from .ui_workspace import (CreationLog, DeliberateWheel, EncounterTable, RuleNav
                            preset_buttons, preview_toolbar, scroll_area, search_field, settings_workspace,
                            starter_slot, wizard_frame, wizard_page)
 from .settings_presentation import configuration_review, search_settings
-from .resources import application_icon, application_logo, interface_assets, music_track, menu_icon, xd_logo
+from .resources import MUSIC_FILES, application_icon, application_logo, interface_assets, music_track, menu_icon, xd_logo
 from .i18n import LANGUAGES, Message, is_translatable, language_preference, resolve_language, translate
 from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS,
                              PRESET_EVOLUTIONS, PRESET_SHINIES, ROM_DESCRIPTION, STEP_HELP)
@@ -141,7 +141,7 @@ class ReportRomCheck(QThread):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, *, settings: QSettings | None = None, system_languages=None):
+    def __init__(self, *, settings: QSettings | None = None, system_languages=None, start_on_home=False):
         super().__init__()
         self.wheel_guard = DeliberateWheel(self)
         self.rule_visibility_timer = QTimer(self)
@@ -237,17 +237,19 @@ class MainWindow(QMainWindow):
         self.language_combo.setSizeAdjustPolicy(QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.bind(self.language_combo.setAccessibleName, "Langue")
         self.bind(self.language_combo.setToolTip, "Choisissez une langue ou suivez celle du système. Le choix est enregistré. La langue du jeu reste indépendante.")
-        self.music = MenuMusic(self, music_track())
+        self.music_tracks = {scene: music_track(scene) for scene in MUSIC_FILES}
+        self.music_requested = self.preferences.value("interface/music", True) in (True, "true", "1", 1)
+        self.music = MenuMusic(self, None)
         self.music_toggle = QToolButton()
         self.music_toggle.setObjectName("headerControl")
         self.bind(self.music_toggle.setText, "Musique")
-        self.bind(self.music_toggle.setAccessibleName, "Musique du titre")
-        self.bind(self.music_toggle.setToolTip, "Activer ou couper la musique du titre, indépendamment des sons des menus.")
+        self.bind(self.music_toggle.setAccessibleName, "Musique")
+        self.bind(self.music_toggle.setToolTip, "Activer ou couper la musique, indépendamment des sons des menus.")
         self.music_toggle.setCheckable(True)
         self.music_toggle.setEnabled(self.music.supported)
         self.music_toggle.setProperty("menuSound", "silent")
         self.music_toggle.toggled.connect(self.change_music)
-        self.music.failed.connect(lambda: self.music_toggle.setChecked(False))
+        self.music.failed.connect(self.music_failed)
         header.addWidget(self.music_toggle)
         self.sound_toggle = QToolButton()
         self.sound_toggle.setObjectName("headerControl")
@@ -455,21 +457,36 @@ class MainWindow(QMainWindow):
         for control in self.findChildren(QComboBox) + self.findChildren(QSpinBox) + self.findChildren(QDoubleSpinBox) + self.findChildren(QTabBar):
             control.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
             control.installEventFilter(self.wheel_guard)
-        if self.music.supported and self.preferences.value("interface/music", True) in (True, "true", "1", 1):
-            self.music_toggle.setChecked(True)
+        if start_on_home:
+            self.show_home()
+        self.game_views.currentChanged.connect(self.refresh_music_scene)
+        self.refresh_music_scene()
 
     def change_music(self, enabled):
-        if enabled:
-            if not self.music.start():
-                self.music_toggle.blockSignals(True)
-                self.music_toggle.setChecked(False)
-                self.music_toggle.blockSignals(False)
-                enabled = False
-                self.set_status("Lecture de la musique indisponible. Les autres fonctions restent disponibles.")
+        self.music_requested = bool(enabled)
+        self.preferences.setValue("interface/music", self.music_requested)
+        self.preferences.sync()
+        self.refresh_music_scene()
+
+    def refresh_music_scene(self):
+        current = self.game_views.currentWidget()
+        scene = "home" if current is self.home else "xd" if current is self.xd else "colosseum"
+        self.music.set_track(self.music_tracks[scene])
+        self.music_toggle.setEnabled(self.music.supported)
+        playing = False
+        if self.music_requested and self.music.supported:
+            playing = self.music.start()
+            if not playing:
+                self.music_failed()
         else:
             self.music.stop()
-        self.preferences.setValue("interface/music", bool(enabled))
-        self.preferences.sync()
+        with QSignalBlocker(self.music_toggle):
+            self.music_toggle.setChecked(playing)
+
+    def music_failed(self):
+        with QSignalBlocker(self.music_toggle):
+            self.music_toggle.setChecked(False)
+        self.set_status("Lecture de la musique indisponible. Les autres fonctions restent disponibles.")
 
     def change_sound(self, enabled):
         self.audio.set_enabled(enabled)
@@ -492,7 +509,7 @@ class MainWindow(QMainWindow):
         self.title.setAccessibleName(APP_NAME)
         self.profile_menu.hide()
         self.apply_game_style()
-        self.open_colosseum.setFocus()
+        self.home.setFocus(Qt.FocusReason.OtherFocusReason)
 
     def show_colosseum(self):
         if self.busy:
@@ -1801,7 +1818,6 @@ def main() -> int:
         app.setWindowIcon(QIcon(str(icon)))
     if sys.platform == "win32":
         app.setFont(QFont("Segoe UI", 10))
-    window = MainWindow()
-    window.show_home()
+    window = MainWindow(start_on_home=True)
     window.show()
     return app.exec()

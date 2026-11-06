@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.4
+
+- Play the Pyrite Town theme on Home and each game's own title theme in its
+  workspace. One saved Music toggle applies to all three tracks, independently
+  of menu sounds. The bundled audio loops offline and is matched in level.
+- Keep the game cards neutral when returning to Home from either game. Hover
+  and keyboard focus still highlight the active card.
+- Update the user guide, release notes and README capture for the new behavior.
+
 ## 1.2.3
 
 - Replace enlarged 96 × 32 disc banners on Home with unchanged, transparent

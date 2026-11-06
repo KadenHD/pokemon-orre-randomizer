@@ -5,12 +5,12 @@
   "description": "Real application captures with isolated demo preferences, plus earlier native gameplay examples with per-file provenance. No personal paths or saves.",
   "files": {
     "home.png": {
-      "bytes": 142952,
-      "sha256": "68b3a82f8e7cb6efa0f808199f254e9a6de30c5f7e3ee6b64a63e4bf73c2516a",
+      "bytes": 142887,
+      "sha256": "1a8b7da019b3f0992b9f6e07133dfcfbc00cd92301f869e98025babaad09bb9f",
       "kind": "application",
-      "app_version": "1.2.3",
+      "app_version": "1.2.4",
       "language": "en",
-      "description": "Home with original high-resolution English game logos, captured with isolated preferences and no ROM or saves opened."
+      "description": "Home after returning from XD, with both game cards at rest and the pointer outside the cards. Captured with isolated preferences."
     },
     "colosseum-settings.png": {
       "bytes": 82576,

@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "bytes": 11966668,
+  "sha256": "f638693b705954344dc806d5b10b756a8f3e6fa3a3c264480fe3332771f774d0",
+  "source_game": "GC6P01 revision 0",
+  "source_member": "bgm_archive.fsys/windycity_song",
+  "identification": "Native MusyX sound ID 2, redirected at four PAL title call sites in a temporary Dolphin profile. Measured recurring period 67.838 s.",
+  "capture_sha256": "e73bc48d6bb089d233551f5d9f7a17ed64f7dfb7e570b722d74be894a2d104cc",
+  "capture_rate": 32028,
+  "capture_start_seconds": 39.045,
+  "duration_seconds": 67.83800453514739,
+  "sample_rate": 44100,
+  "channels": 2,
+  "sample_bytes": 2,
+  "transform": "Dolphin DSP render, 20 Hz highpass, level matched to the Colosseum title theme, PCM16 stereo, short fades",
+  "linear_gain": 0.20237835614168725
+}

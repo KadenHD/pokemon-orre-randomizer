@@ -21,7 +21,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
     from .options import Options
     from .locales.selection_names import SPECIES_NAMES
     from .ui_exclusions import ExclusionDialog
-    from .resources import application_icon, application_logo, interface_assets, menu_icon, music_track
+    from .resources import application_icon, application_logo, interface_assets, menu_icon
 
     app = QApplication.instance() or QApplication(["OrreRandomizer diagnostics"])
     if sys.platform == "win32":
@@ -40,7 +40,6 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
     data = {"version": __version__, "qt": qVersion(), "codec": codec,
             "frozen": bool(getattr(sys, "frozen", False)),
             "images": sorted(images), "sounds": sorted(sounds),
-            "music_available": music_track() is not None,
             "game_cursor_available": menu_icon() is not None,
             "application_icon_available": application_icon() is not None,
             "application_logo_available": application_logo() is not None,
@@ -48,9 +47,12 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
             "home_states": [], "states": [], "exclusion_states": [], "shiny_states": [], "preview_states": [],
             "consolidation_states": [], "xd_states": [], "xd_parity_states": []}
     with tempfile.TemporaryDirectory(prefix="diagnostic-prefs-", dir=report.parent) as folder:
-        window = MainWindow(settings=QSettings(str(Path(folder)/"preferences.ini"), QSettings.Format.IniFormat),
-                            system_languages=["fr-FR"])
+        settings = QSettings(str(Path(folder)/"preferences.ini"), QSettings.Format.IniFormat)
+        settings.setValue("interface/music", False)
+        window = MainWindow(settings=settings, system_languages=["fr-FR"])
         try:
+            data["music_tracks"] = {scene: path.name for scene, path in window.music_tracks.items() if path is not None}
+            data["music_available"] = "colosseum" in data["music_tracks"]
             assert not window.windowIcon().pixmap(16, 16).isNull()
             assert not window.windowIcon().pixmap(256, 256).isNull()
             data["home_logo_dimensions"] = {
@@ -74,6 +76,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                     window.refresh_navigation()
                     window.resize(width, height)
                     window.show_home()
+                    assert window.music.path == window.music_tracks["home"]
                     window.show()
                     app.processEvents()
                     assert window.open_colosseum.isVisible() and window.open_colosseum.isEnabled()
@@ -84,6 +87,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                         home["screenshot"] = f"home-{language}-{width}.png"
                         assert window.grab().save(str(report.parent / home["screenshot"]))
                     window.open_xd.click()
+                    assert window.music.path == window.music_tracks["xd"]
                     xd = window.xd
                     assert window.game_views.currentWidget() is xd and window.surface.xd
                     assert xd.source.text() == ""
