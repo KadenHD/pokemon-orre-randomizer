@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.9
+
+- Match the Pokémon model, cry and localized dialogue in Colosseum's Pyrite
+  rescue and gift scenes to the Pokémon that replaces Plusle.
+- Keep oversized species out of the Plusle gift pool so they fit the scripted
+  scene more reliably. The rule also applies with family diversity enabled.
+- Show the randomized species, cry and localized dialogue in the Mt. Battle
+  presentation for Colosseum's Ho-Oh prize.
+- Keep profiles and creation reports from previous versions importable.
+
 ## 1.2.8
 
 - Restore missing accents in Pokémon names in previews and Pokémon sheets,

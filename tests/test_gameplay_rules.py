@@ -11,7 +11,7 @@ import unittest
 from orre_randomizer.engine.analyze_game import FormatError, parse_dol
 from orre_randomizer.engine.gameplay_rules import (
     MOVE_FIELDS, OHKO, SELF_DESTRUCT, USEFUL_ITEMS, apply_dol_rules, apply_rel_rules,
-    choose_moves, damaging, expanded_layout, move_catalog)
+    apply_story_rules, choose_moves, damaging, expanded_layout, move_catalog)
 from orre_randomizer.engine.species_rules import LEGENDARY_NATIONAL, species_catalog
 from orre_randomizer.options import Options
 from orre_randomizer.service import UserError, validate_options
@@ -143,6 +143,46 @@ class PalGameplayIntegrationTests(unittest.TestCase):
         self.assertEqual(dol, self.base_dol)
         self.assertFalse(summary["gift_move_hooks"]["enabled"])
         self.assertEqual(report["learnset_edits"], [])
+
+    def test_plusle_rerolls_wailord_but_keeps_safe_existing_draws(self):
+        from orre_randomizer.service import transform_dol
+
+        options = replace(Options.none(), gift_plusle=True, allow_gen1=True, allow_gen2=True, allow_gen3=True)
+        for seed, allow_legendaries, expected in (
+            ("pyrite-scene-600", False, None),
+            ("pyrite-scene-17", False, 94),
+            ("pyrite-unfiltered-312", True, None),
+        ):
+            with self.subTest(seed=seed):
+                settings = replace(options, allow_legendaries=allow_legendaries)
+                base, changes = transform_dol(self.dol, self.original, seed, settings)
+                if allow_legendaries:
+                    self.assertEqual(changes[0]["new_species_index"], 314)
+                result, summary = apply_dol_rules(self.dol, base, self.original, self.original, seed, settings)
+                gift = next(row for row in summary["specials"] if row["key"] == "plusle")
+                self.assertEqual(gift["level"], 13)
+                national_dex = self.final_catalog[gift["species"]]["national_dex"]
+                self.assertNotEqual(national_dex, 321)
+                self.assertEqual(apply_dol_rules(self.dol, base, self.original, self.original, seed, settings)[0], result)
+                if expected is not None:
+                    self.assertEqual(national_dex, expected)
+
+    def test_plusle_family_pool_cannot_choose_wailord(self):
+        options = replace(Options.none(), gift_plusle=True, diverse_story_families=True,
+                          allow_gen1=True, allow_gen3=True,
+                          excluded_species=tuple(i for i in range(1, 387) if i not in (94, 321)))
+        _, _, _, gifts = apply_story_rules(self.original, self.original, self.dol, self.dol, self.seed, options)
+        self.assertEqual(gifts["plusle"], 94)
+
+    def test_oversized_exclusion_applies_only_to_plusle(self):
+        options = replace(Options.none(), gift_plusle=True, allow_gen3=True,
+                          excluded_species=tuple(i for i in range(1, 387) if i != 321))
+        with self.assertRaisesRegex(FormatError, "Aucun Pokémon admissible"):
+            apply_dol_rules(self.dol, self.dol, self.original, self.original, self.seed, options)
+        options = replace(options, gift_plusle=False, gift_hooh=True)
+        _, report = apply_dol_rules(self.dol, self.dol, self.original, self.original, self.seed, options)
+        gift = next(row for row in report["specials"] if row["key"] == "ho-oh")
+        self.assertEqual(self.final_catalog[gift["species"]]["national_dex"], 321)
 
     def test_thirty_special_records_and_every_nonmove_subrecord_byte_survive(self):
         protected = set(self.report["protected_move_records"])

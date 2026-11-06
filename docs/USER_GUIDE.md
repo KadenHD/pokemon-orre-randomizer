@@ -76,10 +76,17 @@ including shiny variants. See [starter rules](STARTER_STAGES.md).
 
 ## Colosseum rewards
 
-Plusle, Ho-Oh, Pikachu and Celebi have separate species controls. **Make event
-gifts obtainable** adds Eagun's purification rewards at the Relic Stone:
-Pikachu's gift after 10 purifications at level 30, Celebi's after 25 at level 45
-by default. Each threshold and level can be adjusted independently.
+Plusle, Ho-Oh, Pikachu and Celebi have separate species controls. The Pyrite
+rescue and handover show and name the randomized Plusle gift. This gift
+excludes species that measure 3.5 m or more in the Pokédex, as well as Snorlax.
+The Battle Mode Mt. Battle presentation also follows the species that replaces
+Ho-Oh. Both presentations use standard colors. The received Pokémon keeps
+the shiny status determined by the selected settings.
+
+Enable **Make event gifts obtainable** to receive Eagun's purification rewards
+at the Relic Stone. By default, Pikachu's gift is available after 10
+purifications at level 30, and Celebi's after 25 at level 45. Each threshold
+and level can be adjusted independently.
 
 Eagun becomes available after the purification introduction and its follow-up
 after the Skrub encounter, avoiding duplication during story scenes. Each reward

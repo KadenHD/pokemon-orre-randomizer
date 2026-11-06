@@ -52,7 +52,11 @@ DETAILS_ENGINE_VERSION = "details-and-progression-v15"
 DETAILS_APP_VERSIONS = frozenset(("0.15.0", "0.16.0", "0.16.1", "0.17.0", "0.17.1", "0.17.2", "0.17.3", "0.17.4"))
 V15_FIELDS = frozenset(("starter_umbreon_species", "starter_espeon_species", "progressive_levels",
     "early_level_multiplier", "mid_level_multiplier", "late_level_multiplier", "experience_multiplier", "purification_multiplier"))
-CURRENT_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", "0.20.0", "0.21.0rc1", "0.21.0rc2", "1.0.0", "1.0.1", "1.1.0", __version__)
+V16_ENGINE_VERSION = "story-family-diversity-v16"
+V16_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", "0.20.0",
+    "0.21.0rc1", "0.21.0rc2", "1.0.0", "1.0.1", "1.1.0", "1.2.0", "1.2.1", "1.2.2", "1.2.3",
+    "1.2.4", "1.2.5", "1.2.6", "1.2.7", "1.2.8")
+CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -135,7 +139,8 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
               and payload["engine_version"] == LEGACY_ENGINE_VERSION)
     previous = (payload["app_version"] == PREVIOUS_APP_VERSION
                 and payload["engine_version"] == PREVIOUS_ENGINE_VERSION)
-    current = payload["app_version"] in CURRENT_APP_VERSIONS and payload["engine_version"] == ENGINE_VERSION
+    current = ((payload["app_version"] == __version__ and payload["engine_version"] == ENGINE_VERSION)
+               or (payload["app_version"] in V16_APP_VERSIONS and payload["engine_version"] == V16_ENGINE_VERSION))
     details = (type(payload["app_version"]) is str and payload["app_version"] in DETAILS_APP_VERSIONS
                and payload["engine_version"] == DETAILS_ENGINE_VERSION)
     current_fields = current or details

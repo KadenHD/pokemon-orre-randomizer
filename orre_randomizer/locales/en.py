@@ -223,7 +223,7 @@ OPTION_TEXTS = {
     'starter_complementary_types': ('Starters with no shared type', 'The selected starters share no types. Uses randomized types when enabled.'),
     'starter_stage': ('Starter evolution stage', 'Base form: no pre-evolution. First evolution: one stage after the base. Final evolution: an evolved form that cannot evolve further. An original starter you keep is unaffected.', ('Any stage', 'Base form', 'First evolution', 'Final evolution')),
     'starter_three_stage_families': ('Three-stage families only', 'Requires two successive evolutions available in Colosseum. Branches do not count as stages. With power matching, base forms are compared to Eevee. An original starter you keep is unaffected.'),
-    'gift_plusle': ('Replace Plusle', 'Changes the gifted Plusle and keeps its level.'),
+    'gift_plusle': ('Replace Plusle', 'Changes the gifted Plusle and keeps its level. Skips Pokémon that are too large for the scene.'),
     'gift_hooh': ('Replace Ho-Oh', 'Changes the Ho-Oh reward. The requirements to obtain it stay the same.'),
     'event_celebi': ('Replace event Celebi', 'Changes the Pokémon assigned to this event. The external distribution is still required.'),
     'event_pikachu': ('Replace event Pikachu', 'Changes the Pokémon assigned to this event. The external distribution is still required.'),

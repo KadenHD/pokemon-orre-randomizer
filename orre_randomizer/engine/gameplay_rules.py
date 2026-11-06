@@ -32,6 +32,12 @@ OHKO = {12, 32, 90, 329}
 USEFUL_ITEMS = (133,134,135,136,137,138,139,140,141,142,168,169,170,171,172,
                 179,180,183,185,186,187,196,198,200,219,221)
 
+# National Dex entries at least 3.5 m tall in Gen III, plus Snorlax, whose
+# width also exceeds the framing of Plusle's scripted handover.
+_PLUSLE_OVERSIZED_DEX = frozenset((
+    24, 95, 130, 143, 148, 208, 249, 250, 321, 350, 382, 383, 384,
+))
+
 
 def pick(seed: str, key: str, pool) -> int:
     choices = sorted(set(pool))
@@ -112,9 +118,13 @@ def _filtered(options) -> bool:
 
 def _pool_function(original: bytes, tables: dict, options):
     @lru_cache(maxsize=None)
-    def candidates(old: int, reserved: tuple[int, ...] = ()):
+    def candidates(old: int, reserved: tuple[int, ...] = (), *, gift: str | None = None):
         catalog = species_catalog(original, tables)
-        choices = [index for index in candidate_species(original, tables, old, replace(options, balance_species=False), set(reserved))
+        filters = replace(options, balance_species=False)
+        if gift == "plusle":
+            exclusions = set(options.excluded_species) | _PLUSLE_OVERSIZED_DEX
+            filters = replace(filters, excluded_species=tuple(sorted(exclusions)))
+        choices = [index for index in candidate_species(original, tables, old, filters, set(reserved))
                    if catalog[index]["national_dex"] != 292]
         if not choices:
             raise FormatError("no safe replacement after excluding Wonder Guard encounters")
@@ -273,8 +283,10 @@ def apply_story_rules(original_rel, base_rel, original_dol, base_dol, seed, opti
         fixed.update(shadow_families(original_rel))
     preferred_pool = _pool_function(original_rel, tables, options)
     eligible_pool = _pool_function(original_rel, tables, replace(options, balance_species=False))
-    gift_hard = {row["key"]: eligible_pool(row["old"]) for row in gifts if getattr(options, SPECIAL_OPTIONS[row["key"]])}
-    gift_preferred = {row["key"]: preferred_pool(row["old"]) for row in gifts if row["key"] in gift_hard}
+    gift_hard = {row["key"]: eligible_pool(row["old"], gift=row["key"])
+                 for row in gifts if getattr(options, SPECIAL_OPTIONS[row["key"]])}
+    gift_preferred = {row["key"]: preferred_pool(row["old"], gift=row["key"])
+                      for row in gifts if row["key"] in gift_hard}
     gift_edges = ordered_family_edges(seed, gift_hard, gift_preferred, families)
 
     # The duo evaluates final types and BST. These fields can be projected
@@ -361,6 +373,11 @@ def apply_dol_rules(original: bytes, current: bytes, original_rel: bytes, rel: b
                 xp = experience_at_level(original_rel[catalog[index]["offset"]], target["level"])
                 struct.pack_into(">H", output, pos + 0x92, xp)
                 allowed.update((pos + 0x92, pos + 0x93))
+        if key == "plusle" and options.gift_plusle and catalog[index]["national_dex"] in _PLUSLE_OVERSIZED_DEX:
+            # Preserve existing draws that already fit, including the unfiltered draw.
+            index = pick(seed, "species:special:plusle", pool(target["old"], gift=key))
+            struct.pack_into(">H", output, pos + 2, index)
+            allowed.update((pos + 2, pos + 3))
         change = {"key": key, "species": index, "level": level}
         do_moves = options.randomize_starter_moves if "xp" in target else options.randomize_gift_moves
         if do_moves:

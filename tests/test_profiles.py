@@ -320,7 +320,6 @@ class ProfileTests(unittest.TestCase):
         exported = profile_data(parsed.seed, parsed.options)
         self.assertEqual(exported['app_version'], __version__)
         self.assertEqual(exported['engine_version'], ENGINE_VERSION)
-        self.assertEqual(ENGINE_VERSION, 'story-family-diversity-v16')
         self.assertEqual(exported['schema_version'], SCHEMA_VERSION)
         self.assertEqual(SCHEMA_VERSION, 1)
         self.assertEqual(json.loads(self.encode(exported['options'])), dict(payload['options'], diverse_story_families=False))
@@ -409,9 +408,10 @@ class ProfileTests(unittest.TestCase):
 
 class CreationReportTests(unittest.TestCase):
     def test_current_and_archived_settings_are_restored_without_paths(self):
+        from orre_randomizer.service import ENGINE_VERSION
         region = REGIONS[2]
         options = replace(Options.recommended(), excluded_species=(1, 4), diverse_story_families=True)
-        report = dict(application_version=__version__, engine_version="story-family-diversity-v16",
+        report = dict(application_version=__version__, engine_version=ENGINE_VERSION,
                       game_id=region.game_id, revision=region.revision,
                       source_sha256="a" * 64, source_iso_sha256=region.iso_sha256,
                       seed="シード 🌟", options=asdict(options),
@@ -419,6 +419,8 @@ class CreationReportTests(unittest.TestCase):
         result = parse_creation_report(json.dumps(report).encode())
         self.assertEqual((result.profile.seed, result.profile.options, result.region),
                          (report["seed"], options, region))
+        archived = dict(report, application_version="1.2.8", engine_version="story-family-diversity-v16")
+        self.assertEqual(parse_creation_report(json.dumps(archived).encode()), result)
         with self.assertRaisesRegex(UserError, "version prise en charge"):
             parse_creation_report(json.dumps(dict(report, source_iso_sha256="b" * 64)).encode())
         with self.assertRaisesRegex(UserError, "incomplets"):

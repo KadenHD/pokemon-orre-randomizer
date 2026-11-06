@@ -31,7 +31,7 @@ class Options:
     starter_distinct_families: bool = rule("Starters de familles différentes", "Starters et cadeaux", "Empêche de tirer deux membres de la même famille d’évolution. S’applique aussi si vous gardez un des starters d’origine.", False)
     diverse_story_families: bool = rule("Éviter les familles en double dans l’histoire", "Starters et cadeaux", "Cherche une famille différente pour chaque starter, obscur et cadeau. Les choix manuels et les autres règles restent prioritaires si aucun tirage sans doublon n’est possible.", False)
     starter_complementary_types: bool = rule("Starters sans type commun", "Starters et cadeaux", "Les deux starters tirés ne partagent aucun type. Tient compte des types randomisés.", False)
-    gift_plusle: bool = rule("Remplacer Posipi", "Starters et cadeaux", "Change le Posipi offert, en gardant son niveau.")
+    gift_plusle: bool = rule("Remplacer Posipi", "Starters et cadeaux", "Change le Posipi offert en gardant son niveau. Écarte les Pokémon trop grands pour la scène.")
     gift_hooh: bool = rule("Remplacer Ho-Oh", "Starters et cadeaux", "Change la récompense Ho-Oh. Les conditions pour l’obtenir restent les mêmes.")
     event_celebi: bool = rule("Remplacer Celebi événementiel", "Starters et cadeaux", "Change le Pokémon de ce cadeau. Activez l’accès aux cadeaux événementiels pour le recevoir auprès d’Adelbert ; sinon, ses conditions d’origine restent nécessaires.")
     event_pikachu: bool = rule("Remplacer Pikachu événementiel", "Starters et cadeaux", "Change le Pokémon de ce cadeau. Activez l’accès aux cadeaux événementiels pour le recevoir auprès d’Adelbert ; sinon, ses conditions d’origine restent nécessaires.")

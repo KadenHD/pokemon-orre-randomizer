@@ -688,7 +688,7 @@ OPTION_TEXTS = {'readable_stone_names': ('Espacios en los nombres de piedras',
                    ('Todas las fases', 'Forma base', 'Primera evolución', 'Evolución final')),
  'starter_three_stage_families': ('Solo familias de tres fases',
                                 'Exige dos evoluciones sucesivas disponibles en Colosseum. Las ramas no cuentan como fases. Al comparar la fuerza, las formas base se comparan con Eevee. No afecta a un inicial original que conserves.'),
- 'gift_plusle': ('Sustituir Plusle', 'Cambia el Plusle de regalo y mantiene su nivel.'),
+ 'gift_plusle': ('Sustituir Plusle', 'Cambia el Plusle de regalo y mantiene su nivel. Excluye los Pokémon demasiado grandes para la escena.'),
  'gift_hooh': ('Sustituir Ho-Oh', 'Cambia la recompensa Ho-Oh. Los requisitos para obtenerlo no cambian.'),
  'event_celebi': ('Sustituir Celebi de evento',
                   'Cambia el Pokémon asignado a este evento. Sigue siendo necesaria la distribución '

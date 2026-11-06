@@ -37,6 +37,9 @@ from .engine.shiny_rules import apply_shiny_rules
 from .engine.item_rules import apply_field_items, patch_item_archive
 from .engine.item_text import apply_item_name_spacing
 from .engine.event_gifts import ARCHIVE_NAMES as EVENT_GIFT_ARCHIVES, patch_event_archive
+from .engine.hooh_reward import patch_hooh_reward_scene
+from .engine.plusle_actor import ACTOR_ARCHIVES, load_actor_model, patch_actor
+from .engine.plusle_dialogue import ARCHIVE_NAMES as PLUSLE_DIALOGUE_ARCHIVES, patch_dialogue
 from .engine.qol_rules import apply_qol_rules
 from .pokemon_details import build_detail_catalog
 from .journal import render_journal
@@ -54,7 +57,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "story-family-diversity-v16"
+ENGINE_VERSION = "story-gift-scenes-v17"
 
 
 @dataclass(frozen=True, slots=True)
@@ -515,6 +518,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             rel, summary["item_names"] = apply_item_name_spacing(original, rel)
         else:
             summary["item_names"] = {"enabled": False, "changed_names": 0}
+        if options.gift_hooh:
+            dol, rel, summary["hooh_reward_scene"] = patch_hooh_reward_scene(original_dol, dol, original, rel)
         summary = final_report_summary(original, base_rel, rel, original_dol, dol, seed, options, summary)
         if options.diverse_story_families:
             families = evolution_families(original, layout(original)[0])[0]
@@ -583,6 +588,26 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
                 cursor = align(cursor + len(payload), 0x8000)
                 summary["event_gifts"]["archives"].append({"archive": name, **event_report})
+        if options.gift_plusle:
+            gift = next(row for row in special_targets(original_dol) if row["key"] == "plusle")
+            species_id = u16(dol, gift["base"] + 2)
+            if species_id != gift["old"]:
+                species = species_catalog(rel, layout(original)[0])[species_id]
+                national_dex = species["national_dex"]
+                model_id = u32(rel, species["offset"] + 0x2C)
+                model = load_actor_model(original_dol, region.game_id, model_id, archive)
+                for name in PLUSLE_DIALOGUE_ARCHIVES:
+                    checkpoint(cancel)
+                    payload = patch_dialogue(archive(name), name, region.game_id, national_dex, species_id=species_id)
+                    if name in ACTOR_ARCHIVES:
+                        payload = patch_actor(payload, model)
+                    if cursor + len(payload) > first_file:
+                        raise FormatError("no safe gap for Pyrite gift scene archive")
+                    patches.append((cursor, payload))
+                    struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
+                    cursor = align(cursor + len(payload), 0x8000)
+                summary["plusle_gift_scene"] = {"species": species_id, "national_dex": national_dex,
+                    "actor_archives": list(ACTOR_ARCHIVES), "dialogue_archives": list(PLUSLE_DIALOGUE_ARCHIVES)}
         if fst != original_fst:
             patches.append((fst_offset, bytes(fst)))
     patches.sort(key=lambda p: p[0])

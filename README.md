@@ -23,9 +23,9 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.8** restores missing accents in Pokémon names and improves the
-display of evolution items in all six interface languages, including XD's Sun
-Shard and Moon Shard. See the [release notes](docs/releases/v1.2.8.md).
+**Version 1.2.9** makes Colosseum's Pyrite rescue, Plusle handover and Mt. Battle
+prize presentation follow the Pokémon you actually receive. The Plusle gift
+pool excludes oversized species. See the [release notes](docs/releases/v1.2.9.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
