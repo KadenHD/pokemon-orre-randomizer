@@ -6,8 +6,8 @@ from PySide6.QtWidgets import (QDialog, QGridLayout, QHBoxLayout, QLabel, QProgr
 
 from .detail_texts import detail_text
 from .i18n import translate
-from .pokemon_details import STAT_NAMES, detail_sections, display_name
-from .resources import type_badge
+from .pokemon_details import COLOSSEUM_SHADOW_RUSH, STAT_NAMES, detail_sections, display_name
+from .resources import ability_descriptions, move_descriptions, type_badge
 from .ui_pokemon_names import shiny_name_html
 from .ui_theme import GameSurface, MenuPanel
 from .ui_workspace import scroll_area
@@ -41,9 +41,15 @@ def type_label(game, language, type_id, name):
 
 def move_type_label(game, language, move):
     # Shadow moves use a separate classification from their stored type byte (0).
-    last_shadow_move = 373 if game == "xd" else 356
-    if 356 <= move["move"] <= last_shadow_move:
-        return type_label(game, language, None, detail_text("shadow_type", language))
+    last_shadow_move = 373 if game == "xd" else COLOSSEUM_SHADOW_RUSH
+    if COLOSSEUM_SHADOW_RUSH <= move["move"] <= last_shadow_move:
+        name = detail_text("shadow_type", language)
+        badge = type_label(game, language, None, name)
+        badge.setObjectName("sheetShadowType")
+        badge.setText(name.upper())
+        badge.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        badge.setFixedSize(TYPE_BADGE_SIZES[game])
+        return badge
     type_names = move.get("type_names")
     if type_names:
         return type_label(game, language, move.get("type"), " / ".join(type_names[language]))
@@ -130,7 +136,17 @@ class PokemonSheet(QDialog):
         layout.addWidget(self.tabs, 1)
         summary = self.add_tab(translate("Résumé", language))
         summary.addWidget(text_label(tr("abilities"), "sheetHeading"))
-        summary.addWidget(text_label(" / ".join(details["ability_names"][language])))
+        descriptions = ability_descriptions(game, language)
+        ability_ids = details.get("abilities", ())
+        for index, name in enumerate(details["ability_names"][language]):
+            ability = QVBoxLayout()
+            ability.setSpacing(2)
+            ability.addWidget(text_label(name, "sheetAbility"))
+            if index < len(ability_ids):
+                description = descriptions.get(str(ability_ids[index]))
+                if isinstance(description, str) and description:
+                    ability.addWidget(text_label(description, "note"))
+            summary.addLayout(ability)
         summary.addWidget(text_label(tr("ability_note"), "note"))
         summary.addWidget(text_label(tr("stats"), "sheetHeading"))
         stats = QGridLayout()
@@ -152,25 +168,33 @@ class PokemonSheet(QDialog):
         summary.addStretch(1)
 
         sections = detail_sections(details, language, include_move_types=False)
+        descriptions = move_descriptions(game, language)
         moves = self.add_tab(tr("moves"))
-        for key in ("moves", "learnset", "tms"):
+        for key in ("initial_shadow_moves", "moves", "learnset", "tms"):
             if key not in sections:
                 continue
-            moves.addWidget(text_label(tr(key), "sheetHeading"))
+            heading = "purified_moves" if key == "moves" and details.get("initial_shadow_moves") else key
+            moves.addWidget(text_label(tr(heading), "sheetHeading"))
             if not details[key]:
                 moves.addWidget(text_label(tr("none")))
                 continue
-            for description, entry in zip(sections[key], details[key], strict=True):
+            for move_text, entry in zip(sections[key], details[key], strict=True):
                 move = entry.get("details", entry)
+                text = QVBoxLayout()
+                text.setSpacing(2)
+                text.addWidget(text_label(move_text))
+                description = descriptions.get(str(move["move"]))
+                if isinstance(description, str) and description:
+                    text.addWidget(text_label(description, "note"))
                 badge = move_type_label(game, language, move)
                 if badge is None:
-                    moves.addWidget(text_label(description))
+                    moves.addLayout(text)
                     continue
                 move_row = QHBoxLayout()
                 move_row.setSpacing(8)
                 badge.setMinimumSize(TYPE_BADGE_SIZES[game])
-                move_row.addWidget(badge)
-                move_row.addWidget(text_label(description), 1)
+                move_row.addWidget(badge, alignment=Qt.AlignmentFlag.AlignVCenter)
+                move_row.addLayout(text, 1)
                 moves.addLayout(move_row)
         moves.addStretch(1)
         evolutions = self.add_tab(tr("evolutions"))

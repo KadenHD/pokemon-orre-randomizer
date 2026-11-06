@@ -45,6 +45,14 @@ including in all six languages, while genuine generation exposes it before the
 first progress event. Success, failure, cancellation, navigation, translation and
 a new invalid attempt preserve the intended visibility and reset behavior.
 
+### Pokémon sheets (v1.2.7)
+
+Read-only previews from the European originals for both games were rendered
+in Qt to check original descriptions, move badge alignment and Shadow moves.
+The bundled catalogs were checked in all six interface languages. Each language
+has 76 ability descriptions and 355 Colosseum or 372 XD move descriptions.
+These checks cover application presentation and packaging.
+
 ## Native Dolphin checks
 
 Colosseum reports cover selected battles, starters, shinies and regional gifts:

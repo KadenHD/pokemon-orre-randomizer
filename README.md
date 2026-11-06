@@ -23,8 +23,9 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.6** adds original type badges to Pokémon sheets in Colosseum and
-XD and displays move names in sentence case. See the [release notes](docs/releases/v1.2.6.md).
+**Version 1.2.7** brings original ability and move descriptions to Pokémon sheets
+in both games, with localized Shadow badges and clearer move names. See the
+[release notes](docs/releases/v1.2.7.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
@@ -117,7 +118,14 @@ you select a ROM. **Music** and **Sounds** have separate saved preferences.
 
 The [user guide](docs/USER_GUIDE.md) explains these rules and their limits.
 Pokémon sheets read the final patched game data, including evolution routes,
-moves and TM compatibility.
+moves and TM compatibility. The Summary and Moves tabs show the original ability
+and move descriptions in your interface language.
+
+| Colosseum · Shadow Rush | XD · Shadow moves |
+| --- | --- |
+| ![Colosseum move sheet with Shadow Rush and its description](docs/images/colosseum-shadow-moves.png) | ![XD move sheet with Shadow moves, descriptions and type badges](docs/images/xd-shadow-moves.png) |
+
+These application captures show the French interface.
 
 ### Advanced settings
 

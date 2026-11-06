@@ -9,7 +9,7 @@ import unittest
 from orre_randomizer.detail_texts import LANGUAGES, TEXTS
 from orre_randomizer.locales.detail_names import ABILITY_NAMES, EVOLUTION_ITEM_NAMES, MOVE_NAMES
 from orre_randomizer.pokemon_details import (build_detail_catalog, encounter_details,
-    evolution_text, format_detail_lines)
+    detail_sections, evolution_text, format_detail_lines)
 from orre_randomizer.engine.analyze_game import FormatError
 
 
@@ -107,6 +107,23 @@ class DetailTests(unittest.TestCase):
             self.assertEqual(len(ABILITY_NAMES[language]), 77)
             self.assertEqual(len(EVOLUTION_ITEM_NAMES[language]), 12)
             self.assertTrue(format_detail_lines(encounter_details(catalog, 1), language))
+
+    def test_sheet_restores_missing_accents_without_replacing_native_spellings(self):
+        sheet = encounter_details(catalog_fixture(), 1, moves=[1])
+        source = sheet['moves'][0]
+        thunder_wave = dict(source, move=86, names={'fr': 'CAGE-ECLAIR'})
+        earthquake = dict(source, move=89, names={'fr': 'SEISME'})
+        tackle = dict(source, move=33, names={'fr': 'ÉLAN NATIF'})
+        sheet['moves'] = [thunder_wave, tackle]
+        sheet['learnset'] = [{'level': 20, 'details': earthquake}]
+        sheet['tms'] = [{'tm': 26, 'details': earthquake}]
+
+        sections = detail_sections(sheet, 'fr', include_move_types=False)
+
+        self.assertTrue(sections['moves'][0].startswith('Cage-éclair · PP'))
+        self.assertTrue(sections['moves'][1].startswith('Élan natif · PP'))
+        self.assertEqual(sections['learnset'], ['Niveau 20 · Séisme'])
+        self.assertEqual(sections['tms'], ['CT 26 · Séisme'])
 
     def test_sheet_changes_do_not_mutate_shared_snapshot(self):
         catalog = catalog_fixture()

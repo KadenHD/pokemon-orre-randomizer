@@ -124,7 +124,10 @@ class V15GuiTests(unittest.TestCase):
         row = final_preview()['starters'][0]
         row['details']['moves'].append(dict(row['details']['moves'][0], move=356, type=0))
         self.window.language_combo.setCurrentIndex(self.window.language_combo.findData('de'))
-        for game, open_game in (('colosseum', self.window.show_colosseum), ('xd', self.window.show_xd)):
+        for game, open_game, shadow_description in (
+            ('colosseum', self.window.show_colosseum, 'Gewaltvoller Angriff, der selbst den Anwender verletzt.'),
+            ('xd', self.window.show_xd, 'Extrem schneller Schlag von dunkler Aura umgeben.'),
+        ):
             with self.subTest(game=game), patch('orre_randomizer.ui_pokemon_details.type_badge') as badge:
                 badge.side_effect = lambda game, language, type_id: path if type_id != 12 else None
                 open_game()
@@ -136,8 +139,13 @@ class V15GuiTests(unittest.TestCase):
                 self.assertEqual({call.args[2] for call in badge.call_args_list}, {10, 11, 12})
                 self.assertEqual(sum(not widget.pixmap().isNull() for widget in badge_widgets), 4)
                 self.assertCountEqual([widget.text() for widget in badge_widgets if widget.pixmap().isNull()],
-                                      ['Pflanze', 'Pflanze', 'Pflanze', 'Crypto'])
+                                      ['Pflanze', 'Pflanze', 'Pflanze'])
+                shadow_badge = sheet.findChild(QLabel, 'sheetShadowType')
+                self.assertEqual(shadow_badge.text(), 'CRYPTO')
+                self.assertEqual(shadow_badge.accessibleName(), 'Crypto')
+                self.assertEqual(shadow_badge.toolTip(), 'Crypto')
                 self.assertEqual([widget.accessibleName() for widget in badge_widgets[:2]], ['Feuer', 'Wasser'])
+                self.assertIn(shadow_description, [widget.text() for widget in sheet.findChildren(QLabel, 'note')])
                 sheet.close()
 
     def test_starter_and_single_click_encounter_sheets_use_final_data_and_clear_on_stale(self):
@@ -152,6 +160,7 @@ class V15GuiTests(unittest.TestCase):
         self.assertEqual(len(sheet.findChildren(QProgressBar, "sheetStat")), 6)
         self.assertIn('Onix natif', text)
         self.assertIn('Steelix natif', text)
+        self.assertIn('Garde Mystik\nReçoit seul. "sup. eff.".', text)
         types = sheet.findChildren(QLabel, 'sheetType')[:2]
         self.assertEqual([label.accessibleName() for label in types], ['Feu', 'Eau'])
         self.assertEqual([label.toolTip() for label in types], ['Feu', 'Eau'])

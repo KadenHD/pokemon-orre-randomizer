@@ -269,8 +269,8 @@
       "sha256": "0a5b87a50dd4156bbb1c0ca845b29c21775d5740abf874c0c9669c2dbf05d53c"
     },
     "README.md": {
-      "bytes": 1334,
-      "sha256": "5b9d43128e97d839d01764603f5f53a0845c91db5a1d24b45aaa5d213f9e5d98"
+      "bytes": 1495,
+      "sha256": "7283a9543d64f92f73decd0d34d71eb1a23f3aa7e38c929dedb651309b8f76eb"
     },
     "interface/xd-logo-en.png": {
       "bytes": 3570,
@@ -1175,6 +1175,14 @@
     "types/xd-ja-9.png": {
       "bytes": 597,
       "sha256": "21f87ae01e78b817913cb430d3582d0e052fc599c684e16bbe79f43295dd5e38"
+    },
+    "text/ability-descriptions.json": {
+      "bytes": 21285,
+      "sha256": "8e1d263cd9432ba06596fdc0882093db017c9ebb4b444a97597789f4e0f7b5e1"
+    },
+    "text/move-descriptions.json": {
+      "bytes": 167999,
+      "sha256": "9ae0050401ea064d77379b1ca88c32d66058b076568396ae9fca64c51627f5c4"
     }
   },
   "additional_sources": [
@@ -1187,5 +1195,7 @@
   ],
   "exported_locally": true,
   "home_logos_metadata": "interface/home-logos.json",
-  "type_badges_metadata": "types/manifest.json"
+  "type_badges_metadata": "types/manifest.json",
+  "ability_descriptions_metadata": "text/ability-descriptions.json",
+  "move_descriptions_metadata": "text/move-descriptions.json"
 }

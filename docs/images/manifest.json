@@ -67,6 +67,22 @@
       "game": "xd",
       "description": "Actual advanced settings screen, isolated preferences, no ROM or personal data.",
       "category": "Shinies"
+    },
+    "colosseum-shadow-moves.png": {
+      "bytes": 64562,
+      "sha256": "717ca357c189f08d998aa1e3e70efa5f99ce26d092d16411678af4e4216963e1",
+      "kind": "application",
+      "language": "fr",
+      "game": "colosseum",
+      "description": "Moves tab of a Noctowl sheet from a European ROM preview. Shadow Rush appears separately."
+    },
+    "xd-shadow-moves.png": {
+      "bytes": 54960,
+      "sha256": "ea02f8162be92c2473d41e6597ac2fd58fe3ce6961f150b5ec5ae2fca8248a34",
+      "kind": "application",
+      "language": "fr",
+      "game": "xd",
+      "description": "Moves tab of a Spheal sheet from a European ROM preview. Shadow and regular badges appear next to original move descriptions."
     }
   }
 }

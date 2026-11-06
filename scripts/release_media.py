@@ -6,7 +6,8 @@ import json
 DOCUMENTATION_IMAGES = frozenset(("home.png", "colosseum-settings.png",
                                  "xd-settings.png", "pokemon-sheet.png", "shadow-pokemon.png",
                                  "colosseum-starters-ingame.png", "xd-starter-ingame.png",
-                                 "colosseum-advanced.png", "xd-advanced.png"))
+                                 "colosseum-advanced.png", "xd-advanced.png",
+                                 "colosseum-shadow-moves.png", "xd-shadow-moves.png"))
 
 
 def documentation_media(read_bytes):

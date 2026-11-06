@@ -10,6 +10,8 @@ title-screen themes. The music files were rendered from the European game data
 and are level matched for the interface. Track provenance is stored under `music/`.
 The Pokémon sheets use the original type badges in all six interface languages.
 The texture sources and extraction details are recorded in `types/manifest.json`.
+The catalogs under `text/` contain the original localized ability and move help
+texts, with sources and game-specific overrides. The app draws the Shadow badge.
 Both release editions include
 this pack so the interface works before a ROM is selected, without downloading
 media at startup. The selected ROM is used only to create a new game.

@@ -88,13 +88,15 @@ def detail_catalog(rel, dol, symbols, game_id, edges, move_randomizer):
     species = {}
     for index, row in move_randomizer.species.items():
         offset, national = row["offset"], row["national_dex"]
+        abilities = list(dict.fromkeys(ability for ability in row["abilities"] if ability))
         species[str(index)] = {
             "species": index, "national_dex": national,
             "names": {lang: SPECIES_NAMES[lang][national] for lang in LANGUAGES},
             "types": list(dict.fromkeys(row["types"])),
             "type_names": _type_names(row["types"]),
+            "abilities": abilities,
             "ability_names": {lang: [ABILITY_NAMES[lang].get(ability, str(ability))
-                                     for ability in dict.fromkeys(row["abilities"]) if ability] for lang in LANGUAGES},
+                                     for ability in abilities] for lang in LANGUAGES},
             "base_stats": dict(zip(STAT_NAMES, row["stats"], strict=True)),
             "base_stat_total": row["total"],
             "learnset": [{"level": rel[pos], "move": u16(rel, pos + 2)}

@@ -1,4 +1,5 @@
 """Application icon and optional game pack; startup never needs a ROM or cache."""
+from functools import lru_cache
 from pathlib import Path
 import hashlib
 import json
@@ -32,6 +33,35 @@ def type_badge(game: str, language: str, type_id: int) -> Path | None:
         return None
     path = bundle_root() / "types" / f"{game}-{language}-{type_id}.png"
     return path if path.is_file() and not path.is_symlink() else None
+
+
+@lru_cache(maxsize=2)
+def _description_catalog(path: Path) -> dict:
+    try:
+        return json.loads(path.read_text("utf-8"))
+    except (OSError, ValueError, RecursionError):
+        return {}
+
+
+def _game_descriptions(filename: str, game: str, language: str) -> dict[str, str]:
+    catalog = _description_catalog(bundle_root() / "text" / filename)
+    try:
+        shared = catalog["descriptions"][language]
+        if not isinstance(shared, dict):
+            return {}
+        return shared | catalog["xd_overrides"].get(language, {}) if game == "xd" else shared
+    except (AttributeError, KeyError, TypeError):
+        return {}
+
+
+def ability_descriptions(game: str, language: str) -> dict[str, str]:
+    """Localized original help texts keyed by in-game ability ID."""
+    return _game_descriptions("ability-descriptions.json", game, language)
+
+
+def move_descriptions(game: str, language: str) -> dict[str, str]:
+    """Localized original help texts keyed by in-game move ID."""
+    return _game_descriptions("move-descriptions.json", game, language)
 
 
 def interface_assets() -> tuple[dict[str, Path], dict[str, Path]]:

@@ -13,7 +13,7 @@ from . import service
 from .xd import VERSION as XD_VERSION, XDOptions
 from .options import Options, SPECIAL_OPTIONS
 from .profiles import CreationReport, validate_seed
-from .pokemon_details import encounter_details
+from .pokemon_details import COLOSSEUM_SHADOW_RUSH, encounter_details
 from .preview_cache import PreviewCache, PreviewInput
 
 # National Pokédex IDs from the original story tables in the supported revisions.
@@ -153,6 +153,7 @@ def preview_starters(source: Path, seed: str, options: Options,
             encounters = starters + shadows + gifts
             catalog = summary.get("detail_catalog")
             if catalog:
+                shadow_rush = catalog["moves"].get(str(COLOSSEUM_SHADOW_RUSH))
                 for row in starters + gifts:
                     actual = catalog["specials"][row["key"]]
                     row["details"] = encounter_details(catalog, row["species"], level=row["level"], moves=actual["moves"])
@@ -160,6 +161,8 @@ def preview_starters(source: Path, seed: str, options: Options,
                     actual = catalog["shadows"][str(row["shadow_id"])]
                     row["level"] = actual["level"]
                     row["details"] = encounter_details(catalog, row["species"], level=actual["level"], moves=actual["moves"], shadow=True)
+                    if shadow_rush is not None:
+                        row["details"]["initial_shadow_moves"] = [deepcopy(shadow_rush)]
             shiny_policy = ("original" if not options.custom_shinies else "always" if options.shiny_chance_percent == 100
                             else "never" if options.shiny_chance_percent == 0
                             else "seeded" if options.seeded_shinies else "in-game")

@@ -40,8 +40,14 @@ another random draw. The lists show starters, Shadow Pokémon, gifts and, in XD,
 Poké Spots. A single click opens a Pokémon sheet. A small red star marks a shiny;
 a question mark represents a replacement not yet calculated.
 
-Pokémon types and move types use the original game's badges in the selected
-interface language. Hover over a badge to read its type name.
+The **Summary** tab shows original descriptions under each ability. The **Moves**
+tab shows them for current moves, level-up moves and compatible TMs, where the
+game supplies a description. Pokémon types and regular move types use the
+original game's badges. Shadow moves have a purple badge with white text in
+Colosseum and black text in XD. Hover over any badge to read its type name.
+Colosseum Shadow Pokémon sheets show Shadow Rush separately from the regular moves.
+Descriptions and badge labels follow the interface language. Reopen a sheet after
+switching languages to see the new labels.
 
 **Profiles**, beside language and audio, imports/exports portable JSON settings.
 Profiles belong to one game and contain no source/output paths. Reports can also

@@ -158,7 +158,13 @@ QProgressBar#previewProgress { min-height: 6px; max-height: 6px; border: 0; back
 QProgressBar#previewProgress::chunk { background: #60d4d9; }
 QLabel#previewPortrait, QLabel#sheetPortrait, QLabel#sheetEvolutionPortrait { background: #172c33; border: 1px solid #69877a; }
 QLabel#sheetType { color: #a8f0ed; font-weight: 600; }
+QLabel#sheetShadowType {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #634484, stop: 1 #352047);
+    color: #ffffff; border: 1px solid #b08bce; border-radius: 10px;
+    font-size: 12px; font-weight: 700;
+}
 QLabel#sheetHeading { background: #172c33; color: #e4eee8; padding: 4px 7px; font-weight: 600; }
+QLabel#sheetAbility { font-weight: 600; }
 QLabel#sheetEntry { background: #102e26; padding: 8px; }
 QWidget#sheetEvolution { background: #102e26; border: 1px solid #36584f; }
 QLabel#sheetEvolutionArrow { color: #8be8e7; font-size: 26px; min-height: 48px; }
@@ -200,7 +206,12 @@ def xd_stylesheet():
         "#294f41": "#654641",
     }.items():
         style = style.replace(original, replacement)
-    return style
+    return style + """
+QLabel#sheetShadowType {
+    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #cfafe9, stop: 1 #a47acb);
+    color: #000000; border-color: #d2b5eb; font-size: 17px;
+}
+"""
 
 
 XD_STYLE = xd_stylesheet()

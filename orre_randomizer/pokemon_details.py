@@ -1,11 +1,12 @@
 """Read final ROM bytes for Pokémon sheets; never draw or modify game data.
 
-Properties come from the final REL/DOL, not from modern Pokédex data. The BSD
-name catalog is used only when a monolingual ROM lacks the UI language.
+Properties come from the final REL/DOL. The BSD name catalog supplies missing
+translations and restores diacritics in displayed move names.
 """
 from __future__ import annotations
 
 import copy
+from unicodedata import combining, normalize
 from .detail_texts import LANGUAGES, detail_text
 from .engine.analyze_game import FormatError, check_range, u32
 from .engine.dol_regions import dol_layout, special_targets
@@ -19,6 +20,7 @@ from .locales.selection_names import SPECIES_NAMES, TYPE_NAMES
 _BANKS = {"fr": ("FR",), "en": ("UK", "US"), "de": ("GE",),
           "es": ("SP",), "it": ("IT",), "ja": ("JP",)}
 STAT_NAMES = ("hp", "attack", "defense", "sp_attack", "sp_defense", "speed")
+COLOSSEUM_SHADOW_RUSH = 356
 
 
 def display_name(row: dict, language: str = "fr") -> str:
@@ -27,6 +29,29 @@ def display_name(row: dict, language: str = "fr") -> str:
     return (names.get(language) or row.get("name_" + language)
             or names.get("en") or row.get("name_en")
             or str(row.get("national_dex", row.get("species", "?"))))
+
+
+def _without_accents(letter: str) -> str:
+    return "".join(char for char in normalize("NFD", letter) if not combining(char))
+
+
+def _display_move_name(row: dict, language: str) -> str:
+    name = display_name(row, language)
+    reference = MOVE_NAMES.get(language, {}).get(row.get("move"))
+    if language == "ja" or not reference:
+        return name.capitalize()
+
+    # Only restore missing accents when the letters match. Keep native
+    # abbreviations, spellings, spaces, hyphens and apostrophes.
+    name = normalize("NFC", name.lower())
+    native = [letter for letter in name if letter.isalpha()]
+    localized = [letter for letter in normalize("NFC", reference.lower()) if letter.isalpha()]
+    native_plain = [_without_accents(letter) for letter in native]
+    if native_plain == [_without_accents(letter) for letter in localized]:
+        restored = iter(accented if original == plain else original
+                        for original, plain, accented in zip(native, native_plain, localized, strict=True))
+        name = "".join(next(restored) if char.isalpha() else char for char in name)
+    return name.capitalize()
 
 
 def _name_map(identifier: int, names: dict, fallback: dict) -> dict[str, str]:
@@ -114,10 +139,16 @@ def build_detail_catalog(original_rel: bytes, final_rel: bytes, original_dol: by
         identifier = u32(final_rel, position + 0x20)
         if not identifier:
             continue
-        fallback = {language: MOVE_NAMES[language].get(index,
-                    detail_text("move_marker", language, id=index)) for language in LANGUAGES}
+        type_id = final_rel[position + 2]
+        if index == COLOSSEUM_SHADOW_RUSH:
+            fallback = {language: detail_text("colosseum_shadow_rush", language) for language in LANGUAGES}
+            type_names = {language: [detail_text("shadow_type", language)] for language in LANGUAGES}
+        else:
+            fallback = {language: MOVE_NAMES[language].get(index,
+                        detail_text("move_marker", language, id=index)) for language in LANGUAGES}
+            type_names = _type_names([type_id])
         moves[str(index)] = {"move": index, "names": _name_map(identifier, names, fallback),
-            "type": final_rel[position + 2], "type_names": _type_names([final_rel[position + 2]]),
+            "type": type_id, "type_names": type_names,
             "pp": final_rel[position + 1], "power": final_rel[position + 0x17],
             "accuracy": final_rel[position + 4]}
     for index, row in final.items():
@@ -282,10 +313,13 @@ def format_detail_lines(details: dict, language: str = "fr") -> list[str]:
 
 def detail_sections(details: dict, language: str, *, include_move_types: bool = True) -> dict[str, list[str]]:
     sections = {}
-    if details.get("moves_known"):
+    for key, show in (("initial_shadow_moves", bool(details.get("initial_shadow_moves"))),
+                      ("moves", details.get("moves_known"))):
+        if not show:
+            continue
         moves = []
-        for row in details["moves"]:
-            value = display_name(row, language).capitalize()
+        for row in details[key]:
+            value = _display_move_name(row, language)
             if not row.get("special_marker"):
                 if include_move_types:
                     value += " · " + " / ".join(row["type_names"][language])
@@ -293,7 +327,7 @@ def detail_sections(details: dict, language: str, *, include_move_types: bool = 
                 value += " · " + detail_text("power", language) + " " + (str(row['power']) if row['power'] > 1 else "—")
                 value += " · " + detail_text("accuracy", language) + " " + (str(row['accuracy']) if row['accuracy'] else "—")
             moves.append(value)
-        sections["moves"] = moves or [detail_text("none", language)]
+        sections[key] = moves or [detail_text("none", language)]
     sections["stats"] = [" · ".join(detail_text(key, language) + " " + str(details["base_stats"][key])
                                     for key in STAT_NAMES)]
     evolutions = []
@@ -306,9 +340,9 @@ def detail_sections(details: dict, language: str, *, include_move_types: bool = 
         evolutions.append(detail_text("no_evolution", language))
     sections["evolutions"] = evolutions
     sections["learnset"] = [detail_text("level", language, level=row["level"]) + " · "
-                            + display_name(row["details"], language).capitalize() for row in details["learnset"]]
+                            + _display_move_name(row["details"], language) for row in details["learnset"]]
     sections["tms"] = [detail_text("tms", language) + f" {row['tm']:02d} · "
-                       + display_name(row["details"], language).capitalize() for row in details["tms"]]
+                       + _display_move_name(row["details"], language) for row in details["tms"]]
     for key in ("learnset", "tms"):
         if not sections[key]:
             sections[key] = [detail_text("none", language)]

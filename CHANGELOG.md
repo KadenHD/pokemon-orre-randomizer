@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.7
+
+- Show original ability and move descriptions in Pokémon sheets for both games
+  in English, French, German, Spanish, Italian and Japanese.
+- Give Shadow moves localized badges with white text in Colosseum and larger
+  black text in XD. Center all move badges beside their name and description.
+- Show Shadow Rush separately from the regular moves in Colosseum Shadow Pokémon sheets.
+- Restore missing accents in move names when they match the localized spelling.
+
 ## 1.2.6
 
 - Show original Colosseum and XD type badges on Pokémon sheets and next to
