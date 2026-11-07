@@ -41,7 +41,8 @@ def _model_resource(toc: bytes, group: int) -> str:
     raise FormatError("story Pokémon model archive was not found")
 
 
-def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, recipe=None) -> bytes:
+def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, recipe=None,
+                 attachment_lift: float | None = None) -> bytes:
     # Movement and emote slots in battle models contain species-specific
     # attacks. Reuse the species' idle motion for the field actor.
     dat = pkx[header_size:]
@@ -64,7 +65,19 @@ def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, rec
     check_range(data, model, 16, "story Pokémon model set")
     if recipe is not None:
         tint_field_model(data, relocations, model, recipe)
-    if scale != 1.0:
+    if attachment_lift is not None:
+        # The attachment system sets the outer joint's transform every frame.
+        # Keep the seat offset and scale on a separate classical-scale joint
+        # so every bone inherits them and the original skeleton stays intact.
+        child = u32(data, model)
+        for size, lift in ((scale, attachment_lift), (1.0, 0.0)):
+            parent = len(data)
+            data.extend(struct.pack(">5I9f2I", 0, 8, child, 0, 0, 0, 0, 0,
+                                    size, size, size, 0, lift, 0, 0, 0))
+            relocations.add(parent + 8)
+            child = parent
+        struct.pack_into(">I", data, model, child)
+    elif scale != 1.0:
         root = u32(data, model)
         check_range(data, root + 0x20, 12, "story Pokémon model root scale")
         values = struct.unpack_from(">3f", data, root + 0x20)
@@ -84,6 +97,14 @@ def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, rec
             continue
         if idle >= data_size or field not in relocations or table not in relocations:
             raise FormatError("invalid story Pokémon idle motion pointer")
+        if attachment_lift is not None:
+            # HSD walks the joint, material and shape trees in parallel.
+            tail = struct.pack(">4I", 0, 0, 0, 1) if field == model + 4 else bytes(8)
+            for _ in range(2):
+                parent = len(data)
+                data.extend(struct.pack(">I", idle) + tail)
+                relocations.add(parent)
+                idle = parent
         start = len(data)
         struct.pack_into(">I", data, field, start)
         data.extend(struct.pack(">I", idle) * _FIELD_MOTIONS + bytes(4))
@@ -97,7 +118,8 @@ def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, rec
 
 
 def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[[str], bytes],
-                     *, scale: float = 1.0, shiny: bool = False) -> bytes:
+                     *, scale: float = 1.0, shiny: bool = False,
+                     attachment_lift: float | None = None) -> bytes:
     xd = game_id in _XD_MODEL_TABLE
     if xd:
         table = _XD_MODEL_TABLE[game_id]
@@ -142,7 +164,8 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
     header_size = (len(pkx) - u32(pkx, 0)) & ~31 if xd else 0x40
     if xd and (header_size < 0x40 or u32(pkx, header_size) != u32(pkx, 0)):
         raise FormatError("unexpected XD Pokémon DAT offset")
-    return _field_model(pkx, header_size=header_size, scale=scale, recipe=recipe)
+    return _field_model(pkx, header_size=header_size, scale=scale, recipe=recipe,
+                        attachment_lift=attachment_lift)
 
 
 def patch_actor(source: bytes, model: bytes, *, identifier: str = _ACTOR_ID, name: str = "prasle_b1") -> bytes:

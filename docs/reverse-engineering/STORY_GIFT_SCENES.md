@@ -96,7 +96,9 @@ motorcycle resource, hides the replaced riders' geometry, and attaches the
 selected models to the original joints. The script closes the new actors
 before closing the motorcycle and keeps the native camera and animation.
 The retail Pokédex height sets the scale cap and vertical offset for each
-rider. The sidecar can still obscure part of a short Pokémon.
+rider. The attachment updates the outer joint's transform every frame.
+An unanimated child joint applies the scale and the seat offset without
+altering the original skeleton or motion.
 Shiny models use the seed's starter decisions or the guaranteed shiny rule.
 When shininess is rolled during play, the arrival uses the regular palette.
 

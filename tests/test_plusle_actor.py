@@ -40,6 +40,23 @@ class FieldModelTests(unittest.TestCase):
         with self.assertRaisesRegex(FormatError, "no idle motion"):
             _field_model(bytes(model))
 
+    def test_attachment_keeps_scaling_separate_from_the_root_and_idle(self):
+        field = _field_model(_model_fixture(), scale=0.125, attachment_lift=0.75)
+        joints = field[0x20:0x20 + u32(field, 4)]
+        outer = u32(joints, 8)
+        scaled = u32(joints, outer + 8)
+        self.assertEqual(u32(joints, scaled + 8), 0x34)
+        self.assertEqual(struct.unpack_from(">3f", joints, outer + 0x20), (1.0,) * 3)
+        self.assertEqual(struct.unpack_from(">3f", joints, scaled + 0x20), (0.125,) * 3)
+        self.assertEqual(struct.unpack_from(">3f", joints, scaled + 0x2C), (0.0, 0.75, 0.0))
+        relocations = set(struct.unpack_from(f">{u32(field, 8)}I", field, 0x20 + len(joints)))
+        self.assertTrue({outer + 8, scaled + 8} <= relocations)
+        for pointer_field, idle in ((12, 0x38), (16, 0x3C)):
+            animation = u32(joints, u32(joints, pointer_field))
+            child = u32(joints, animation)
+            self.assertEqual(u32(joints, child), idle)
+            self.assertTrue({animation, child} <= relocations)
+
     @unittest.skipUnless(Path("game/files/M2_guild_1F_1.fsys").is_file(),
                          "requires the local original PAL Colosseum files")
     def test_pyrite_room_preserves_other_resources_and_actor_id(self):

@@ -101,12 +101,12 @@
       "description": "The same shiny Wailord as the wild battle begins."
     },
     "colosseum-motorcycle-starters.png": {
-      "bytes": 531527,
-      "sha256": "5a62b03464f74fe4c8d44e50f897a5f2f7f937830966ac345b93a8c800e1c44f",
+      "bytes": 514799,
+      "sha256": "2e48b5c1e7c54854f67efc40372fe255d8ae12b85547fdb54b4deb19869c89c2",
       "game": "colosseum",
       "kind": "native-gameplay",
       "language": "fr",
-      "description": "Shiny Dratini and Oddish during the real-time Outskirt Stand arrival."
+      "description": "Shiny Wailord and Diglett during the real-time Outskirt Stand arrival."
     }
   }
 }

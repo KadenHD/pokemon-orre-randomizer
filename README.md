@@ -105,10 +105,11 @@ appears at the Cave Poké Spot and keeps its color when the battle starts.
 | ![Shiny Wailord on the field at the Cave Poké Spot](docs/images/xd-pokespot-shiny-field.png) | ![The same shiny Wailord in battle](docs/images/xd-pokespot-shiny-battle.png) |
 
 In Colosseum, the arrival at Outskirt Stand shows the randomized starters
-in the sidecar. This run uses shiny Dratini and Oddish. The prerecorded
-opening movie uses the original footage.
+in the sidecar. This run pairs a scaled-down shiny Wailord with a raised
+shiny Diglett so both are visible. The prerecorded opening movie uses the
+original footage.
 
-![Shiny Dratini and Oddish in the sidecar at Outskirt Stand](docs/images/colosseum-motorcycle-starters.png)
+![Shiny Wailord and Diglett arriving by motorcycle at Outskirt Stand](docs/images/colosseum-motorcycle-starters.png)
 
 ## What you can customize
 

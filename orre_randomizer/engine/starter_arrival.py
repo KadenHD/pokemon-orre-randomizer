@@ -7,7 +7,7 @@ from .analyze_game import FormatError, parse_fsys, u32
 from .dol_regions import dol_layout, special_targets
 from .event_gifts import _call, _fingerprint, _POP, _push, _statement
 from .inspect_tables import u16
-from .plusle_actor import companion_scale, load_actor_model
+from .plusle_actor import OVERSIZED_FIELD_SPECIES, companion_scale, load_actor_model
 from .randomize_trainers import layout
 from .rebuild_iso import decoded_member
 from .species_rules import species_catalog
@@ -45,13 +45,11 @@ def _patch_program(source, actors):
     struct.pack_into(">I", code, _BIKE_OPERAND, _BIKE_ALIAS)
     load, unload = bytearray(), bytearray()
     group, bike = _read_local(3), _read_local(6)
-    zero = b"\x08\x03" + bytes(4)
-    for slot, (resource, lift) in actors.items():
+    for slot, resource in actors.items():
         local = 7 + slot
         actor = _read_local(local)
         load.extend(_push(local) + _call(112, resource) + b"\x1f\x82\x02" + _POP)
         load.extend(_statement(70, group, actor, group, bike, _RIDERS[slot][0]))
-        load.extend(_statement(59, group, actor, zero, b"\x08\x03" + struct.pack(">f", lift), zero))
         load.extend(_statement(115, actor, 0, 0, 1))
         unload.extend(_statement(113, actor))
     for offset, block in ((_BEFORE_CAMERA_WAIT, load), (_BEFORE_BIKE_CLOSE, unload)):
@@ -85,6 +83,7 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
     catalog = species_catalog(rel, layout(rel)[0])
     game = dol_layout(original_dol).game_id
     models, actors, report = {}, {}, []
+    front_is_large = False
     for slot, (species, shiny) in chosen.items():
         if species not in catalog:
             raise FormatError("invalid starter species for Outskirt Stand")
@@ -94,11 +93,17 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
         # tighter field limits for especially wide or long battle models.
         height = max(1, u16(rel, row["offset"] + 0x0A))
         scale = min(companion_scale(national, 0.7), 0.7 * min(1.0, 18 / height))
-        lift = 0.24 + max(0, 9 - height) / 10
+        # The motorcycle's joints use scene units (roughly one decimeter).
+        # Raise short riders, with extra clearance behind a broad front rider.
+        lift = max(0, 8 - height) * 5 / 6
+        if slot == 1 and front_is_large:
+            lift += 3.5
+        if slot == 0:
+            front_is_large = national in OVERSIZED_FIELD_SPECIES or height > 18
         payload = load_actor_model(original_dol, game, u32(rel, row["offset"] + 0x2C),
-                                   read_archive, scale=scale, shiny=shiny)
+                                   read_archive, scale=scale, shiny=shiny, attachment_lift=lift)
         resource = 0x7DF00400 + (slot << 16)
-        actors[slot] = resource, lift
+        actors[slot] = resource
         models[resource] = f"orre_intro_starter_{slot + 1}", payload
         for length in _RIDERS[slot][1]:
             struct.pack_into(">H", hidden, length, 0)
