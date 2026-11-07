@@ -14,7 +14,7 @@ from .xd_gifts import _native_name, _patch_banks, _patch_script, patch_species_o
 TUTORIAL_SHADOW = 1
 TEDDIURSA = 216
 STARTER_DIALOGUE_ARCHIVE = "M5_labo_2F.fsys"
-STARTER_ITEM_DIALOGUE = ("M6_junk_1F.fsys", 0xA0E4)
+STARTER_ITEM_DIALOGUE = ("M6_junk_1F.fsys", (0xA0D0, 0xA0D1, 0xA0E4))
 DRAGONITE_DIALOGUE = {
     "D5_factory_1F.fsys": (0x851F,),
     "M5_labo_1F.fsys": (0x9E53,),
@@ -156,11 +156,25 @@ _SPECIES_REMARKS = {
     0x5E5F: ("Even my best moves weren't enough!", "Mes meilleures capacités n'ont pas suffi !",
              "Selbst meine besten Attacken waren zu schwach!", "Neanche le mie mosse migliori sono bastate!",
              "¡Ni mis mejores movimientos bastaron!", "とくいな　わざでも　だめだった！"),
-    STARTER_ITEM_DIALOGUE[1]: (
+    0xA0E4: (
         "Thanks for listening! Pick one of my items.", "Merci de m'avoir écouté. Choisis un objet !",
         "Danke fürs Zuhören! Such dir etwas aus.", "Grazie di avermi ascoltato! Scegli un oggetto.",
         "¡Gracias por escuchar! Elige un objeto.", "おれいだよ。ひとつ　えらんでね。",
     ),
+}
+_ITEM_EEVEE_REFERENCES = {
+    0xA0D0: {
+        "UK": ("your EEVEE", "an EEVEE", 1),
+        "FR": ("ton EVOLI", "un EVOLI", 1),
+        "SP": ("tu\nEEVEE", "un\nEEVEE", 1),
+    },
+    0xA0D1: {
+        "UK": ("your EEVEE", "an EEVEE", 3),
+        "FR": ("ton EVOLI", "un EVOLI", 2),
+        "GE": ("dein EVOLI", "ein EVOLI", 1),
+        "IT": ("il tuo EEVEE", "un EEVEE", 1),
+        "SP": ("tu EEVEE", "un EEVEE", 3),
+    },
 }
 _TYPE_REMARKS = {0x5683, 0x5685, 0x5693, 0x5694, 0x56EF, 0x56F0, 0x570F,
                  0x5DE5, 0x5DFD, 0x799C, 0x79AA, 0x79AB, 0x79B6, 0x79B7, 0x79F2,
@@ -296,8 +310,25 @@ def _replace_species_remark(source, *, changes, language, translations):
     return speaker + (prefix + translations[locale].format(**names)).encode("utf-16-be") + end
 
 
-TRAINER_REMARK_REWRITES = {identifier: partial(_replace_species_remark, translations=translations)
-                           for identifier, translations in _SPECIES_REMARKS.items()}
+def _replace_item_eevee_reference(source, *, changes, language, references):
+    reference = references.get("UK" if language == "US" else language)
+    if reference is None:
+        return source
+    before, after, expected_count = reference
+    line_break = b"\xff\xff\x00"
+    original = line_break.join(part.encode("utf-16-be") for part in before.split("\n"))
+    updated = line_break.join(part.encode("utf-16-be") for part in after.split("\n"))
+    if source.count(original) != expected_count:
+        raise FormatError("unexpected Eevee reference in the Gateon Port item dialogue")
+    return source.replace(original, updated)
+
+
+TRAINER_REMARK_REWRITES = {
+    **{identifier: partial(_replace_species_remark, translations=translations)
+       for identifier, translations in _SPECIES_REMARKS.items()},
+    **{identifier: partial(_replace_item_eevee_reference, references=references)
+       for identifier, references in _ITEM_EEVEE_REFERENCES.items()},
+}
 
 
 def patch_tutorial(game_id, chosen, national, name_banks, read_archive):

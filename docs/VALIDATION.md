@@ -196,6 +196,12 @@ Castform and Wailord. The line fit the original box on one line. The four
 Colosseum battle message rewrites were checked in the regional ROM data,
 including each copy in the Mt. Battle archives.
 
+For v1.2.12, a muted French PAL replay used a copy of a test save with
+Larvitar as the starter. The sailor's Water Stone and Moon Shard
+explanations both referred to an Eevee. The game confirmed receipt of
+the Moon Shard. The item dialogue was also checked in the other language
+banks on the European, American and Japanese discs.
+
 ## Limits
 
 Selected scenes and synthetic fixtures do not prove a complete playthrough or

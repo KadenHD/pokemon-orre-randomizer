@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.12
+
+- Fix XD's Gateon Port sailor dialogue so the stone and shard explanations
+  refer to Eevee in general when the player starts with a different Pokémon.
+
 ## 1.2.11
 
 - Update trainer dialogue and Shadow Pokémon reports to match randomized teams

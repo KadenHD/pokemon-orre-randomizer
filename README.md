@@ -23,8 +23,8 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.11** updates trainer dialogue and Shadow Pokémon reports to match
-the randomized teams in Colosseum and XD. See the [release notes](docs/releases/v1.2.11.md).
+**Version 1.2.12** fixes the Gateon Port sailor's evolution item explanations
+when XD's starter is replaced. See the [release notes](docs/releases/v1.2.12.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)

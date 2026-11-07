@@ -694,8 +694,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             dialogue_edits.setdefault(archive, {}).update(messages)
     if starter_changed:
         # The sailor also offers an item when the player has never owned an Eevee.
-        archive, identifier = STARTER_ITEM_DIALOGUE
-        dialogue_edits.setdefault(archive, {})[identifier] = {}
+        archive, identifiers = STARTER_ITEM_DIALOGUE
+        dialogue_edits.setdefault(archive, {}).update(dict.fromkeys(identifiers, {}))
     dragonite = next(row for row in summary["decks"]["Story"]["shadows"] if row["original"] == 149)
     if dragonite["species"] != dragonite["original"]:
         changes = {1149: 1000 + species[dragonite["species"]][0]}

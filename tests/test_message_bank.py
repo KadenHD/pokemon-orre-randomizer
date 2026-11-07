@@ -41,3 +41,11 @@ class MessageBankTests(unittest.TestCase):
         updated = TRAINER_REMARK_REWRITES[0x5E63](source, language="JP", changes={})
         expected = speaker + "「わたしのチームに　かてるかな？".encode("utf-16-be") + end
         self.assertEqual(updated, expected)
+
+    def test_gateon_stone_explanation_keeps_line_break_and_item_variable(self):
+        line_break = b"\xff\xff\x00"
+        suffix = "EEVEE evolucione con ".encode("utf-16-be") + b"\xff\xff\x2d\0\0"
+        source = "Es muy fácil hacer que tu".encode("utf-16-be") + line_break + suffix
+        updated = TRAINER_REMARK_REWRITES[0xA0D0](source, changes={}, language="SP")
+        expected = "Es muy fácil hacer que un".encode("utf-16-be") + line_break + suffix
+        self.assertEqual(updated, expected)
