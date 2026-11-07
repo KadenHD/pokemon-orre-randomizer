@@ -85,33 +85,47 @@ the ROM. Each row opens the replacement's Pokémon sheet with a single click.
 
 ## In game
 
-Real starter screens from earlier Dolphin playtests, with the games in French.
-These are examples of custom runs; the current presets are described above.
+These English-language Dolphin captures show two seeded runs. Colosseum starts
+with Treecko and Totodile. XD starts with Torchic.
 
 | Pokémon Colosseum | Pokémon XD |
 | --- | --- |
-| ![Randomized starting party: Seadra and Electabuzz](docs/images/colosseum-starters-ingame.png) | ![Randomized starter: shiny Horsea](docs/images/xd-starter-ingame.png) |
-| Seadra, level 26, and Electabuzz, level 25. | Horsea, level 10, from a 100% shiny test. |
-
-The [Colosseum](docs/DOLPHIN_VALIDATION_2026-10-31.md) and
-[XD](docs/reverse-engineering/XD.md) validation notes record their test scope.
+| ![Treecko and Totodile in the Colosseum starting party](docs/images/colosseum-starters-ingame.png) | ![Torchic, the randomized starter in XD](docs/images/xd-starter-ingame.png) |
 
 ### Randomized Pokémon in story scenes
 
-In XD, the Pokémon seen at a Poké Spot is the one that appears in battle.
-The field model uses the encounter's own shiny result. Here, a shiny Wailord
-appears at the Cave Poké Spot and keeps its color when the battle starts.
+In Colosseum, the real-time arrival at Outskirt Stand puts Treecko and
+Totodile in the sidecar. The prerecorded opening movie uses the original
+footage.
+
+![Treecko and Totodile arriving by motorcycle at Outskirt Stand](docs/images/colosseum-motorcycle-arrival.gif)
+
+[View the motorcycle still](docs/images/colosseum-motorcycle-starters.png)
+
+Poliwhirl replaces Plusle in Colosseum. Duking names the same Pokémon shown
+beside him in the story scene.
+
+![Duking and Poliwhirl in the randomized Plusle gift scene](docs/images/colosseum-plusle-gift.png)
+
+Miror B.'s dancers follow the randomized team in Pyrite Cave and at
+Gateon Port's lighthouse.
+
+| Colosseum · Pyrite Cave | XD · Gateon Port Lighthouse |
+| --- | --- |
+| ![Miror B. dancing with his randomized Pokémon in Pyrite Cave](docs/images/colosseum-pyrite-dancers.gif) | ![Randomized dancers on Gateon Port's lighthouse roof](docs/images/xd-lighthouse-dancers.png) |
+
+[View the Pyrite Cave still](docs/images/colosseum-pyrite-dancers.png)
+
+In XD, a shiny Marill appears at the Cave Poké Spot and keeps the same
+color when the wild battle starts.
 
 | Cave Poké Spot | Wild battle |
 | --- | --- |
-| ![Shiny Wailord on the field at the Cave Poké Spot](docs/images/xd-pokespot-shiny-field.png) | ![The same shiny Wailord in battle](docs/images/xd-pokespot-shiny-battle.png) |
+| ![Shiny Marill on the field at the Cave Poké Spot](docs/images/xd-pokespot-shiny-field.png) | ![The same shiny Marill in battle](docs/images/xd-pokespot-shiny-battle.png) |
 
-In Colosseum, the arrival at Outskirt Stand shows the randomized starters
-in the sidecar. This run pairs a scaled-down shiny Wailord with a
-shiny Diglett sitting near the edge of the rear seat. The prerecorded opening movie uses the
-original footage.
-
-![Shiny Wailord and Diglett arriving by motorcycle at Outskirt Stand](docs/images/colosseum-motorcycle-starters.png)
+The [capture manifest](docs/images/manifest.json) lists the seeds and the
+source of each image. The [story-scene notes](docs/reverse-engineering/STORY_GIFT_SCENES.md)
+describe how the models and dialogue follow the randomizer.
 
 ## What you can customize
 
@@ -141,13 +155,11 @@ Pokémon sheets read the final patched game data, including evolution routes,
 moves and TM compatibility. The Summary and Moves tabs show the original ability
 and move descriptions in your interface language.
 
-![Cyndaquil’s evolution sheet in Colosseum, with the original Fire badge](docs/images/pokemon-sheet.png)
+![Treecko’s evolution sheet in Colosseum, with the original Grass badge](docs/images/pokemon-sheet.png)
 
 | Colosseum · Shadow Rush | XD · Shadow moves |
 | --- | --- |
-| ![Colosseum move sheet with Shadow Rush and its description](docs/images/colosseum-shadow-moves.png) | ![XD move sheet with Shadow moves, descriptions and type badges](docs/images/xd-shadow-moves.png) |
-
-The move sheets above show the French interface.
+| ![Houndour’s move sheet with Shadow Rush and its description](docs/images/colosseum-shadow-moves.png) | ![Shiny Venonat’s move sheet with Shadow moves and type badges](docs/images/xd-shadow-moves.png) |
 
 ### Advanced settings
 

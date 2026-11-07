@@ -1,4 +1,4 @@
-"""Explicit documentation screenshot allowlist, shared by build and audit."""
+"""Explicit documentation media allowlist, shared by build and audit."""
 import hashlib
 import json
 
@@ -9,7 +9,9 @@ DOCUMENTATION_IMAGES = frozenset(("home.png", "colosseum-settings.png",
                                  "colosseum-advanced.png", "xd-advanced.png",
                                  "colosseum-shadow-moves.png", "xd-shadow-moves.png",
                                  "xd-pokespot-shiny-field.png", "xd-pokespot-shiny-battle.png",
-                                 "colosseum-motorcycle-starters.png"))
+                                 "colosseum-motorcycle-starters.png", "colosseum-motorcycle-arrival.gif",
+                                 "colosseum-plusle-gift.png", "colosseum-pyrite-dancers.png", "colosseum-pyrite-dancers.gif",
+                                 "xd-lighthouse-dancers.png"))
 
 
 def documentation_media(read_bytes):

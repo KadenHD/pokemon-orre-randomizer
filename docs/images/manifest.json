@@ -1,120 +1,226 @@
 {
-  "app_version": "1.0.0",
+  "app_version": "1.2.15",
   "language": "en",
-  "seed": "orre-v1-demo",
-  "description": "Real application captures with isolated demo preferences, plus earlier native gameplay examples with per-file provenance. No personal paths or saves.",
+  "description": "English captures of the app and English PAL gameplay recorded in muted Dolphin with isolated test profiles.",
   "files": {
     "home.png": {
-      "bytes": 142887,
-      "sha256": "1a8b7da019b3f0992b9f6e07133dfcfbc00cd92301f869e98025babaad09bb9f",
+      "bytes": 149717,
+      "sha256": "cdb8efdf8792eed1b5e915c1310bec7ff0eade461a7ff7eb1f00601c3b194163",
       "kind": "application",
-      "app_version": "1.2.4",
       "language": "en",
-      "description": "Home after returning from XD, with both game cards at rest and the pointer outside the cards. Captured with isolated preferences."
+      "width": 1100,
+      "height": 800,
+      "description": "Home and both game cards."
     },
     "colosseum-settings.png": {
-      "bytes": 82576,
-      "sha256": "6cfe0af76dd7919e04f8dc814968d41d667cca9e20fe45606750af4354f57b4d"
+      "bytes": 84299,
+      "sha256": "d4fd5cef46109067de55041d5f8b349195b0df5151bd7f102bea0f16a13df602",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "The starter preview with Treecko and Totodile.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5"
     },
     "xd-settings.png": {
-      "bytes": 65250,
-      "sha256": "347ba0aa01969f2d75e4559bbf089708fa19c146d47cf086597fa38e0d33d98b",
+      "bytes": 65582,
+      "sha256": "9d70c3ca60125c2ff8d0a403fb926fd0c0c0e8a1868d4023c6acc4615ecbcd04",
       "kind": "application",
-      "app_version": "1.2.15",
       "language": "en",
-      "description": "XD's Simple settings distinguish encounter frequency from wild shiny odds."
-    },
-    "pokemon-sheet.png": {
-      "bytes": 45915,
-      "sha256": "0e844eb805f883735789a9a5d67ddd663c83443339f8c718f5c9b5602525e1e7",
-      "kind": "application",
-      "app_version": "1.2.15",
-      "language": "en",
-      "description": "Colosseum's Cyndaquil evolution sheet with the Fire badge and portraits for all three forms."
+      "width": 1100,
+      "height": 800,
+      "description": "Simple mode explains the preset, wild encounter frequency and separate shiny odds.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3"
     },
     "shadow-pokemon.png": {
-      "bytes": 116899,
-      "sha256": "db3667741bea69b64b6b3f03860ebb0cd20ff98dda253fbb619ff2b784d372df"
-    },
-    "colosseum-starters-ingame.png": {
-      "bytes": 75387,
-      "sha256": "1c7352218473738a3e30f76c75d2529f65364749c40716c8462b90de81006088",
-      "game": "colosseum",
-      "kind": "native-gameplay",
-      "language": "fr",
-      "description": "Earlier new-game playtest: Seadra level 26 and Electabuzz level 25. Native party, no injected Pokemon.",
-      "validation": "docs/DOLPHIN_VALIDATION_2026-10-31.md",
-      "iso_sha256": "648cc8c0744c87fce40a7d4dbdd3f6f95f8df29bc48415ee33507cb5d1894b35"
-    },
-    "xd-starter-ingame.png": {
-      "bytes": 125696,
-      "sha256": "47164149ba96dfe9e15d5aacf198aff59908e8220ba8bb3ea72ffa29f3821efc",
-      "game": "xd",
-      "kind": "native-gameplay",
-      "language": "fr",
-      "seed": "xd-story-check",
-      "description": "Earlier native new-game save/reload playtest: Horsea level 10 with a 100 percent shiny test rate.",
-      "validation": "docs/reverse-engineering/XD.md"
-    },
-    "colosseum-advanced.png": {
-      "bytes": 89168,
-      "sha256": "a2b6f2408efdad2fa762db06031a61078c89d364bd6d347318aac951b5e060e4",
+      "bytes": 109814,
+      "sha256": "dee7a6d8ec98ba1d4e427b0179a27a629aeac2c13bcce580d33956f976f8d753",
       "kind": "application",
-      "app_version": "1.2.0",
       "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "The randomized Shadow roster preview.",
       "game": "colosseum",
-      "description": "Actual advanced settings screen, isolated preferences, no ROM or personal data.",
-      "category": "Moves"
+      "seed": "orre-showcase-5"
     },
-    "xd-advanced.png": {
-      "bytes": 48403,
-      "sha256": "8731b13b8bbad380ce30357505ed68761fb4154702db4258e579eada1beec46c",
+    "pokemon-sheet.png": {
+      "bytes": 47878,
+      "sha256": "e606ad811ed87225b7c1387698a825e8538927197cee544ed285db1e3dcade77",
       "kind": "application",
-      "app_version": "1.2.0",
       "language": "en",
-      "game": "xd",
-      "description": "Actual advanced settings screen, isolated preferences, no ROM or personal data.",
-      "category": "Shinies"
+      "width": 740,
+      "height": 615,
+      "description": "Treecko’s evolution chain, with all three portraits and the original Grass type badge.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5"
     },
     "colosseum-shadow-moves.png": {
-      "bytes": 64562,
-      "sha256": "717ca357c189f08d998aa1e3e70efa5f99ce26d092d16411678af4e4216963e1",
+      "bytes": 78745,
+      "sha256": "6b11751c63293119f40bbf9998f4b6cb648188f71bfa05062ecbd916ab948db5",
       "kind": "application",
-      "language": "fr",
+      "language": "en",
+      "width": 740,
+      "height": 615,
+      "description": "Houndour’s Shadow Rush, purification moves and original type badges.",
       "game": "colosseum",
-      "description": "Moves tab of a Noctowl sheet from a European ROM preview. Shadow Rush appears separately."
+      "seed": "orre-showcase-5"
     },
     "xd-shadow-moves.png": {
-      "bytes": 54960,
-      "sha256": "ea02f8162be92c2473d41e6597ac2fd58fe3ce6961f150b5ec5ae2fca8248a34",
+      "bytes": 71701,
+      "sha256": "ca9113a573c39930342d25e21b6d505146f772fce41209066a73cbcddab30d07",
       "kind": "application",
-      "language": "fr",
+      "language": "en",
+      "width": 740,
+      "height": 615,
+      "description": "Shiny Venonat’s move sheet, with the red star, type badges and move descriptions.",
       "game": "xd",
-      "description": "Moves tab of a Spheal sheet from a European ROM preview. Shadow and regular badges appear next to original move descriptions."
+      "seed": "orre-xd-showcase-3"
     },
-    "xd-pokespot-shiny-field.png": {
-      "bytes": 684809,
-      "sha256": "15f61d53b1de91cf71a9fe77656a8f2c3b421f6954e411f56dce12d4ab576498",
-      "game": "xd",
-      "kind": "native-gameplay",
-      "language": "fr",
-      "description": "Shiny Wailord before the Cave Poké Spot battle."
+    "colosseum-advanced.png": {
+      "bytes": 90238,
+      "sha256": "602e05fa7e05b466f7f958024a4358a58a21e3b24b889d53598218635b1d002a",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "Advanced move settings for trainers, starters, gifts and learnsets.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5"
     },
-    "xd-pokespot-shiny-battle.png": {
-      "bytes": 403497,
-      "sha256": "fa1af10b3e035ea4e48b9de9265311c722447f8ece56e76451e2ae7c7ca9c0bb",
+    "xd-advanced.png": {
+      "bytes": 52478,
+      "sha256": "85358945b6f13e076bde996efbe0a9b7f99639d304f353c62e22a5ec0af7ce33",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "Advanced shiny settings, including the optional Shadow shiny rate.",
       "game": "xd",
+      "seed": "orre-xd-showcase-3"
+    },
+    "colosseum-starters-ingame.png": {
+      "bytes": 364800,
+      "sha256": "6eb17aab1c8519a1a08b9ac45d885ea27b8b46ad127fc2211d230d7574c46290",
       "kind": "native-gameplay",
-      "language": "fr",
-      "description": "The same shiny Wailord as the wild battle begins."
+      "language": "en",
+      "width": 724,
+      "height": 528,
+      "description": "Fresh English PAL game, showing the native party with Treecko and Totodile.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5",
+      "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "xd-starter-ingame.png": {
+      "bytes": 109006,
+      "sha256": "521504b006edab5ec3e1da82ec323f76322d944edc74f27fb499841a5388f6a3",
+      "kind": "native-gameplay",
+      "language": "en",
+      "width": 724,
+      "height": 528,
+      "description": "Fresh English PAL game after the battle simulator, showing the native Torchic summary.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3",
+      "source": "Dolphin 2609a, European retail base, English in-game language"
     },
     "colosseum-motorcycle-starters.png": {
-      "bytes": 510369,
-      "sha256": "48e3d7898cf138bc4a793be172d8a3527fb69f83530f7523e299fd99cf998029",
-      "game": "colosseum",
+      "bytes": 517754,
+      "sha256": "257bdbaaf15357f902693957e8f72450e856797267537a3bd99e2cda88675f08",
       "kind": "native-gameplay",
-      "language": "fr",
-      "description": "Shiny Wailord and Diglett during the real-time Outskirt Stand arrival."
+      "language": "en",
+      "width": 724,
+      "height": 528,
+      "description": "Treecko and Totodile on the motorcycle as it passes Outskirt Stand.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5",
+      "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "colosseum-motorcycle-arrival.gif": {
+      "bytes": 1453276,
+      "sha256": "f2154735ebb15d371207640da96dbabdbc18cf2498bd8cb90fd2d7e2e3565ce4",
+      "kind": "native-gameplay",
+      "language": "en",
+      "width": 488,
+      "height": 356,
+      "description": "Real-time Outskirt Stand arrival from the same fresh game, sampled from Dolphin and encoded as a silent GIF.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5",
+      "frames": 23,
+      "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "colosseum-plusle-gift.png": {
+      "bytes": 772598,
+      "sha256": "f6ab50e7b120dfbe70402e53e1e73cd58be983b53d7cdee1fbf49d0e1b538639",
+      "kind": "native-gameplay",
+      "language": "en",
+      "width": 724,
+      "height": 528,
+      "description": "Duking names Poliwhirl, the Pokémon that replaces Plusle beside him. The scene starts from an isolated test card.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5",
+      "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "colosseum-pyrite-dancers.png": {
+      "bytes": 797290,
+      "sha256": "6f9618f2789de27a06a6aca8166dd1492eaf31265381c2f9e99888a8639ba94d",
+      "kind": "native-gameplay",
+      "language": "en",
+      "width": 724,
+      "height": 528,
+      "description": "Miror B. and his randomized dancers in Pyrite Cave, reached from an isolated test card.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5",
+      "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "colosseum-pyrite-dancers.gif": {
+      "bytes": 1285410,
+      "sha256": "231a20acb154abc46d9e85a8be49d71b7174dd44ea611b9ea5eee53090e3da72",
+      "kind": "native-gameplay",
+      "language": "en",
+      "width": 488,
+      "height": 356,
+      "description": "Silent GIF from the same native Pyrite Cave scene, with Miror B. and four randomized dancers.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5",
+      "frames": 21,
+      "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "xd-lighthouse-dancers.png": {
+      "bytes": 812722,
+      "sha256": "16a2937e67c732e7e9882e9818c6a786afe0be5f66e843f4222bed8542310bed",
+      "kind": "native-gameplay",
+      "language": "en",
+      "width": 724,
+      "height": 528,
+      "description": "Four randomized dancers on the lighthouse roof, reached from a prepared test card.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3",
+      "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "xd-pokespot-shiny-field.png": {
+      "bytes": 682846,
+      "sha256": "e7c93f87707831704f5fdceebd5be45f51f8428097a9998c40cd68ffe90e35c7",
+      "kind": "native-gameplay",
+      "language": "en",
+      "width": 724,
+      "height": 528,
+      "description": "The shiny Marill field model at the Cave Poké Spot, using a prepared pending encounter from the ROM’s roster.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3",
+      "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "xd-pokespot-shiny-battle.png": {
+      "bytes": 655466,
+      "sha256": "61d098b781155e2b54acee67dcef351e622cdb02d875db5f8184b340cac15f75",
+      "kind": "native-gameplay",
+      "language": "en",
+      "width": 724,
+      "height": 528,
+      "description": "The same shiny Marill during the native wild battle, before the player’s team enters.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3",
+      "source": "Dolphin 2609a, European retail base, English in-game language"
     }
   }
 }

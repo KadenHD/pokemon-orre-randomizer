@@ -63,7 +63,7 @@ def main():
                     raise RuntimeError(f"Local data folder in release: {name}")
                 if item.filename.startswith(prefix) and item.filename not in game_assets | {prefix + "provenance.json"}:
                     raise RuntimeError("Unlisted interface asset: " + item.filename)
-                if (name.suffix.lower() in {".wav", ".png", ".jpg", ".jpeg", ".mp3", ".ogg", ".flac", ".ico"}
+                if (name.suffix.lower() in {".wav", ".png", ".jpg", ".jpeg", ".gif", ".mp3", ".ogg", ".flac", ".ico"}
                         and not application_media_allowed(item.filename, binary)
                         and item.filename not in game_assets | doc_assets):
                     raise RuntimeError("Unlisted release media: " + item.filename)
