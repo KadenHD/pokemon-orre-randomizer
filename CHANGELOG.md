@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.13
+
+- Show the randomized encounter on the field at all three XD Poké Spots.
+  The field and battle palettes use the same native shiny roll.
+- Synchronize XD's Gateon Port Shadow encounter, Miror B.'s lighthouse dancers,
+  and Wakin's companion and dialogue on the S.S. Libra and at Cipher Key Lair.
+- Synchronize Colosseum's starters at the Outskirt Stand motorcycle arrival,
+  Miror B.'s Pyrite dancers, Duking's gift scenes and Eagun's partner.
+- Show the actual form and shiny palette of Colosseum's Mt. Battle reward.
+
 ## 1.2.12
 
 - Fix XD's Gateon Port sailor dialogue so the stone and shard explanations

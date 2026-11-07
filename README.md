@@ -23,8 +23,10 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.12** fixes the Gateon Port sailor's evolution item explanations
-when XD's starter is replaced. See the [release notes](docs/releases/v1.2.12.md).
+**Version 1.2.13** brings randomized Pokémon into more story scenes. XD's
+Poké Spots show the species and shiny palette of the actual wild encounter.
+Colosseum's arrival at Outskirt Stand shows the chosen starters.
+See the [release notes](docs/releases/v1.2.13.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
@@ -91,6 +93,22 @@ These are examples of custom runs; the current presets are described above.
 
 The [Colosseum](docs/DOLPHIN_VALIDATION_2026-10-31.md) and
 [XD](docs/reverse-engineering/XD.md) validation notes record their test scope.
+
+### Randomized Pokémon in story scenes
+
+In XD, the Pokémon seen at a Poké Spot is the one that appears in battle.
+The field model uses the encounter's own shiny result. Here, a shiny Wailord
+appears at the Cave Poké Spot and keeps its color when the battle starts.
+
+| Cave Poké Spot | Wild battle |
+| --- | --- |
+| ![Shiny Wailord on the field at the Cave Poké Spot](docs/images/xd-pokespot-shiny-field.png) | ![The same shiny Wailord in battle](docs/images/xd-pokespot-shiny-battle.png) |
+
+In Colosseum, the arrival at Outskirt Stand shows the randomized starters
+in the sidecar. This run uses shiny Dratini and Oddish. The prerecorded
+opening movie uses the original footage.
+
+![Shiny Dratini and Oddish in the sidecar at Outskirt Stand](docs/images/colosseum-motorcycle-starters.png)
 
 ## What you can customize
 

@@ -474,6 +474,23 @@ together so a replacement matching another original request cannot cascade.
 The preview and journal use those same request rows. Gift reward randomization
 is independent of these request updates.
 
+The field patch retargets the three regular species comparisons in each area's
+preprocessing script and replaces the corresponding model payloads. The
+model IDs and their approach and battle triggers stay in place. The same
+payload is installed in the area's archive and in the shared actor archive
+when both contain it. The Cave's original Zubat model lives only in the
+shared archive. Species still native to a spot keep their original field
+models and animations, even if their encounter slot changes.
+
+Each replacement also has a shiny model with its own resource ID in the
+shared actor archive. The room still calls the native
+`Pokespot.isEncounterShiny` check. Its true branch selects that model in
+place of the original species' texture filter. The pending encounter's PID,
+odds, approach trigger and capture path still come from the game.
+In muted Dolphin on the European ROM, Wailord appeared pink in the Cave and
+in the battle that followed. The control fixture with a standard PID showed
+the blue model.
+
 `poke_spots_full_pokedex` defaults on in both desktop presets. Earlier engine
 profiles omit this field and import it as false after signature validation,
 retaining the native shuffle and its existing seed domain. This preserves old

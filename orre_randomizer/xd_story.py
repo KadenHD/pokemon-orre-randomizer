@@ -1,13 +1,19 @@
 """Seeded species choices and dialogue for scripted XD encounters."""
 from collections import Counter
 from functools import partial
+import re
 import struct
 
 from .engine.analyze_game import FormatError, check_range, u32
 from .engine.gameplay_rules import OHKO, SELF_DESTRUCT, damaging
 from .engine.inspect_tables import u16
+from .engine.plusle_actor import companion_scale, load_actor_model, patch_actor
 from .engine.species_rules import LEGENDARY_NATIONAL, WONDER_GUARD
 from .xd_battle_rules import DPKM_MOVES
+from .xd_field_actors import (
+    GLOOM, LIGHTHOUSE_ARCHIVE, LIGHTHOUSE_CRY_MESSAGES, LIGHTHOUSE_TRAINER, LUDICOLO,
+    WAKIN_CRY_MESSAGE, WAKIN_LAIR, WAKIN_SHIP, WAKIN_TRAINER,
+)
 from .xd_gifts import _native_name, _patch_banks, _patch_script, patch_species_operand, replace_species_name
 
 
@@ -15,11 +21,26 @@ TUTORIAL_SHADOW = 1
 TEDDIURSA = 216
 STARTER_DIALOGUE_ARCHIVE = "M5_labo_2F.fsys"
 STARTER_ITEM_DIALOGUE = ("M6_junk_1F.fsys", (0xA0D0, 0xA0D1, 0xA0E4))
+EAGUN_ACTOR_ARCHIVES = ("M3_shrine_1F.fsys", "M3_houseC_1F.fsys")
+_EAGUN_TRAINER = 28
+_EAGUN_CRY_MESSAGES = {
+    EAGUN_ACTOR_ARCHIVES[0]: (0x94CD,),
+    EAGUN_ACTOR_ARCHIVES[1]: (0x94F0, 0x94FA, 0x9503, 0x9507, 0x950E, 0x951E, 0x952B),
+}
+# Character.talk(message, species, 15) displays the text and plays the cry.
+_EAGUN_CRY_CALL = re.compile(
+    rb"\x02\x01\x00\x00(.{4})\x02\x01\x00\x00\x00\x00\x00\x19"
+    rb"\x02\x01\x00\x00\x00\x00\x00\x0f.{4}\x09\x23\x00\x49", re.DOTALL,
+)
 DRAGONITE_DIALOGUE = {
     "D5_factory_1F.fsys": (0x851F,),
     "M5_labo_1F.fsys": (0x9E53,),
     "M6_tower_top.fsys": (0xA174, 0xA17B),
 }
+_WAKIN_COMMANDS = (0x7D1C, 0x84E4)
+_WAKIN_SHIP_COMMAND = ("{name}, put him to sleep!", "{name}, endors-le !",
+                      "{name}, schläfere ihn ein!", "{name}, fallo addormentare!",
+                      "¡{name}, duérmelo!", "{name}！　こいつを　ねむらせてやれ！")
 # Trainer row, original party slots (None skips a slot), and messages spoken
 # about those slots. Field and battle messages can refer to the same team.
 _TRAINER_DIALOGUE = {
@@ -78,8 +99,12 @@ _TRAINER_DIALOGUE = {
         (63, (297, 375, 139, 230, 338, 211), "fight_common.fsys", (0x5E63, 0x5E65)),
     ),
     "Story": (
-        (28, (25,), "M3_shrine_1F.fsys", (0x94CB, 0x94CC)),
-        (28, (25,), "M3_houseC_1F.fsys", (0x952A,)),
+        (_EAGUN_TRAINER, (25,), EAGUN_ACTOR_ARCHIVES[0], (0x94CB, 0x94CC, *_EAGUN_CRY_MESSAGES[EAGUN_ACTOR_ARCHIVES[0]])),
+        (_EAGUN_TRAINER, (25,), EAGUN_ACTOR_ARCHIVES[1], (0x952A, *_EAGUN_CRY_MESSAGES[EAGUN_ACTOR_ARCHIVES[1]])),
+        *((LIGHTHOUSE_TRAINER, (None,) * slot + (LUDICOLO,), LIGHTHOUSE_ARCHIVE, (message,))
+          for slot, message in enumerate(LIGHTHOUSE_CRY_MESSAGES)),
+        (WAKIN_TRAINER, (GLOOM,), WAKIN_SHIP, (_WAKIN_COMMANDS[0],)),
+        (WAKIN_TRAINER, (GLOOM,), WAKIN_LAIR, (_WAKIN_COMMANDS[1], 0x84E9, WAKIN_CRY_MESSAGE)),
     ),
 }
 _TEAM_CHALLENGE = ("Can you beat my team?", "Sauras-tu battre mon équipe ?",
@@ -92,6 +117,16 @@ _TEAM_LOSS = ("You beat my team. Well done!", "Bravo, tu as battu mon équipe !"
               "Gut gemacht! Du hast mein Team besiegt!", "Bravo, hai battuto la mia squadra!",
               "¡Bien hecho! ¡Has vencido a mi equipo!", "わたしのチームに　かつとは　やるね！")
 _SPECIES_REMARKS = {
+    **dict.fromkeys((mid for messages in _EAGUN_CRY_MESSAGES.values() for mid in messages),
+                    ("{name}!", "{name} !", "{name}!", "{name}!", "¡{name}!", "{name}！")),
+    **dict.fromkeys((*LIGHTHOUSE_CRY_MESSAGES, WAKIN_CRY_MESSAGE),
+                    ("{name}!", "{name} !", "{name}!", "{name}!", "¡{name}!", "{name}！")),
+    _WAKIN_COMMANDS[1]: ("{name}, put them to sleep!", "{name}, endors-les !",
+                         "{name}, schläfere sie ein!", "{name}, falli addormentare!",
+                         "¡{name}, duérmelos!", "{name}！　ねむらせてやれ！"),
+    0x84E9: ("Heh! My {name} comes in handy!", "Plutôt pratique, mon {name} !",
+             "Hehe! Mein {name} ist echt nützlich!", "Eh eh! Il mio {name} è proprio utile!",
+             "¡Je, je! ¡Mi {name} sí que es útil!", "へへっ。{name}は　やくにたつだろ？"),
     **dict.fromkeys((0x5685, 0x56BF, 0x56C1, 0x56EF, 0x570F, 0x7A27), _TEAM_PRAISE),
     **dict.fromkeys((0x5DE5, 0x5DF7, 0x5DFD, 0x5E5D, 0x5E63, 0x799C, 0x79A2, 0x79AA,
                      0x79B4, 0x79B6, 0x79C2, 0x79C4, 0x79DC, 0x79DE, 0x79E0, 0x7A22), _TEAM_CHALLENGE),
@@ -259,6 +294,41 @@ def patch_starter_dialogue(source, game_id, national, name_banks):
     return _patch_banks(source, game_id, edits)
 
 
+def patch_eagun_actor(original, current, rel, species_table, species, dol, game_id, read_archive, updates):
+    row = 0x20 + _EAGUN_TRAINER * 0x38
+    position = 0x20 + u32(original, 0x14) + 0x20 * u16(original, row + 0x1C)
+    if original[row + 4] & 1 or u16(original, position) != 25:
+        raise FormatError("unexpected XD team for Eagun's field partner")
+    chosen = u16(current, position)
+    if chosen == 25:
+        return None
+    national = species[chosen][0]
+    scale = companion_scale(national, 0.65)
+    model_id = u16(rel, species_table + 0x124 * chosen + 0x2E)
+    model = load_actor_model(dol, game_id, model_id, read_archive, scale=scale)
+    for archive in EAGUN_ACTOR_ARCHIVES:
+        source = updates[archive] if archive in updates else read_archive(archive)
+        source = patch_actor(source, model, identifier="0x18830400", name="pikachu")
+        updates[archive] = _patch_script(
+            source, archive.removesuffix(".fsys"),
+            partial(_patch_eagun_cry, chosen=chosen, messages=_EAGUN_CRY_MESSAGES[archive]),
+        )
+    return {"species": chosen, "national_dex": national, "scale": scale}
+
+
+def _patch_eagun_cry(source, *, chosen, messages):
+    result = bytearray(source)
+    found = set()
+    for call in _EAGUN_CRY_CALL.finditer(source):
+        identifier = u32(source, call.start(1))
+        if identifier in messages:
+            patch_species_operand(source, result, call.start() + 12, 25, chosen)
+            found.add(identifier)
+    if found != set(messages):
+        raise FormatError("missing scripted cries for Eagun's partner")
+    return bytes(result)
+
+
 def trainer_dialogue_edits(deck_name, original, current, species, game_id, *,
                            randomize_abilities=False, randomize_types=False):
     """Use the post-policy party species for explicitly identified remarks."""
@@ -272,7 +342,7 @@ def trainer_dialogue_edits(deck_name, original, current, species, game_id, *,
     for trainer, expected, archive, identifiers in _TRAINER_DIALOGUE[deck_name]:
         row = 0x20 + trainer * 0x38
         names = {}
-        check_moves = not _MOVE_REMARKS.isdisjoint(identifiers)
+        check_moves = not _MOVE_REMARKS.isdisjoint(identifiers) or any(mid in _WAKIN_COMMANDS for mid in identifiers)
         changed_moves = False
         for slot, old in enumerate(expected):
             if old is None:
@@ -291,14 +361,20 @@ def trainer_dialogue_edits(deck_name, original, current, species, game_id, *,
         changed = any(old != chosen for old, chosen in names.items())
         for identifier in identifiers:
             needs_edit = changed_moves if identifier in _MOVE_REMARKS else changed or identifier in rewrite_facts
+            needs_edit |= identifier in _WAKIN_COMMANDS and changed_moves
             if needs_edit:
                 for path in archives:
                     edits.setdefault(path, {})[identifier] = names
     return edits
 
 
-def _replace_species_remark(source, *, changes, language, translations):
+def _replace_species_remark(source, *, changes, language, translations, last_page=False):
     speaker = b"\xff\xff\x59"
+    previous = b""
+    if last_page:
+        if source.count(speaker) != 2:
+            raise FormatError("unexpected XD Wakin dialogue pages")
+        previous, source = source[:source.rfind(speaker)], source[source.rfind(speaker):]
     # Intro messages can end directly after the text. Field and result
     # messages carry their native wait/close control before the terminator.
     end = source[-5:] if source[-5:-3] == b"\xff\xff" else source[-2:]
@@ -307,7 +383,7 @@ def _replace_species_remark(source, *, changes, language, translations):
     locale = ("UK", "FR", "GE", "IT", "SP", "JP").index("UK" if language == "US" else language)
     prefix = "「" if language == "JP" else ": "
     names = dict(zip(("name", "partner"), changes.values(), strict=False))
-    return speaker + (prefix + translations[locale].format(**names)).encode("utf-16-be") + end
+    return previous + speaker + (prefix + translations[locale].format(**names)).encode("utf-16-be") + end
 
 
 def _replace_item_eevee_reference(source, *, changes, language, references):
@@ -326,6 +402,7 @@ def _replace_item_eevee_reference(source, *, changes, language, references):
 TRAINER_REMARK_REWRITES = {
     **{identifier: partial(_replace_species_remark, translations=translations)
        for identifier, translations in _SPECIES_REMARKS.items()},
+    _WAKIN_COMMANDS[0]: partial(_replace_species_remark, translations=_WAKIN_SHIP_COMMAND, last_page=True),
     **{identifier: partial(_replace_item_eevee_reference, references=references)
        for identifier, references in _ITEM_EEVEE_REFERENCES.items()},
 }

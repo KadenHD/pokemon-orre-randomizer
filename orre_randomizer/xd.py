@@ -26,14 +26,16 @@ from .xd_gifts import (DUKING_TRADES, GIFT_BASELINES, GIFT_TRADE_REQUIREMENTS, H
 from .xd_item_rules import apply_field_items, apply_shop_items
 from .xd_shiny_rules import apply_shiny_rules
 from .xd_shadow_shinies import apply_shadow_shiny_rules
+from .xd_field_actors import GATEON_SHADOW, patch_gateon_shadow, patch_lighthouse_dancers, patch_wakin_partner
+from .xd_poke_spot_actors import patch_poke_spot_actors
 from .xd_shops import patch_stone_names, patch_stone_price, patch_stone_stock
 from .xd_species_gameplay import XDMoveRandomizer, detail_catalog, patch_species_gameplay, patch_tm_gameplay
 from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITEM_DIALOGUE, TEDDIURSA,
-                       TRAINER_REMARK_REWRITES,
+                       TRAINER_REMARK_REWRITES, patch_eagun_actor,
                        TUTORIAL_SHADOW, hordel_candidates,
                        patch_starter_dialogue, patch_tutorial, trainer_dialogue_edits, tutorial_candidates)
 
-VERSION = "xd-story-sha256-v8"
+VERSION = "xd-story-sha256-v9"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -608,6 +610,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         for row in summary["gifts"]:
             if row["key"] in GIFT_TRADE_REQUIREMENTS:
                 row["required_species"] = GIFT_TRADE_REQUIREMENTS[row["key"]]
+    if options.randomize_poke_spots and options.poke_spots_full_pokedex:
+        summary["poke_spot_actors"] = patch_poke_spot_actors(
+            summary["poke_spots"], original_dol, rel, symbols[88]["offset"],
+            region.game_id, read_archive, gift_updates,
+        )
     if hordel_evolution is not None:
         name = "S1_shop_1F.fsys"
         archive = gift_updates[name] if name in gift_updates else read_archive(name)
@@ -686,6 +693,27 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             if suffix and trainer_dialogues[name] != dialogue:
                 raise FormatError("XD deck variants disagree on trainer dialogue")
             trainer_dialogues[name] = dialogue
+            if name == "Story" and not suffix:
+                if updated != deck:
+                    actor = patch_eagun_actor(deck, updated, rel, symbols[88]["offset"], species,
+                                              original_dol, region.game_id, read_archive, gift_updates)
+                    if actor is not None:
+                        summary["eagun_field_partner"] = actor
+                    dancers = patch_lighthouse_dancers(deck, updated, rel, symbols, species,
+                                                        original_dol, region.game_id, read_archive, gift_updates)
+                    if dancers:
+                        summary["miror_lighthouse_dancers"] = dancers
+                    wakin = patch_wakin_partner(deck, updated, rel, symbols[88]["offset"], species,
+                                                original_dol, region.game_id, read_archive, gift_updates)
+                    if wakin is not None:
+                        summary["wakin_field_partner"] = wakin
+                shiny = summary["shadow_shinies"].get("statuses", {}).get(str(GATEON_SHADOW), False)
+                if options.randomize_shadows or shiny:
+                    shadow = next(row for row in deck_report["shadows"] if row["shadow_id"] == GATEON_SHADOW)
+                    actor = patch_gateon_shadow(shadow, rel, symbols[88]["offset"], species, original_dol,
+                                                region.game_id, read_archive, gift_updates, shiny)
+                    if actor is not None:
+                        summary["gateon_field_shadow"] = actor
             if updated != deck:
                 replacements.setdefault("deck_archive.fsys", {})[index] = updated
     dialogue_edits = {}

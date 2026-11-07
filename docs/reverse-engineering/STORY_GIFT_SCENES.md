@@ -15,6 +15,19 @@ The replacement text reads the final species from trainer row 12, party rows
 with names from the original ROM's species banks. It leaves the second page,
 script, later battles, and all other messages intact.
 
+### Miror B.'s dancers in Pyrite Cave
+
+The four Ludicolo field actors in `M2_cave_1F_2.fsys` now use the final species
+from their corresponding battle slots. The retry after snagging Sudowoodo
+uses the same four replacements. The original scene, actor positions and
+camera cues are retained, but replacement Pokémon use their own idle pose.
+The patch does not change Miror B. or his successor Mirakle B.
+With seeded shinies, each actor uses its own battle slot's shiny decision,
+which the retry also reuses. A French PAL Dolphin test put four Wailord around
+Miror B. at 12% scale without obscuring him. With the seed
+`wailord-mixed-763` and a 5% rate, one of the four was shiny on stage. The
+first pair sent out in battle contained that shiny and a standard Wailord.
+
 ### Doking's gift in Pyrite
 
 The final gift constructor supplies the species for the rescue and handover.
@@ -22,9 +35,10 @@ The final gift constructor supplies the species for the rescue and handover.
 resource `0x06F90400`. The patch resolves the replacement's battle model using
 the regional DOL resource table and `GSfsys.toc`, then adapts its HSD data for
 the field actor. The scene keeps its original actor, camera and movement cues.
-The twelve field animation slots use the replacement's idle pose. The field actor
-shows the normal palette and uses form A for Unown. The gift itself gets the
-game's normal form and the shiny result specified by the randomizer settings.
+The twelve field animation slots use the replacement's idle pose. The actor
+uses form A for Unown. It displays the gift's shiny color when the result is
+known during ROM creation (a seeded draw or a guaranteed rate). If the game
+draws the result at runtime, the actor displays the normal color.
 
 Five Pyrite archives contain the literal story references. The patch updates
 35 language banks across the three discs, including the written cries, and
@@ -54,12 +68,37 @@ Growlithe (`pyrite-scene-51`) and Chikorita (`pyrite-scene-117`). For the
 cave recordings, the copied ROM starts the player at the inner door. The
 handover runs with the original scene trigger on a separate copied save.
 
-The replacement pool for this gift excludes species listed at 3.5 m or
-taller in the [Pokédex data](https://github.com/PokeAPI/pokeapi/blob/master/data/v2/csv/pokemon.csv)
-and Snorlax, whose width clips in the handover. This applies to both selection
-paths. Wailord could obscure most of Duking's office in Dolphin before this
-restriction. These species remain eligible for other encounters according to
-the selected settings.
+Large species are eligible again. Both gift scenes use a reduced field
+model for the species formerly excluded by size, including Snorlax. This
+applies to both gift selection paths. The gift itself uses the normal
+battle model. In the PAL test, a 6% Wailord fit in Duking's office and the
+native scene confirmed its transfer to the PC. The shiny Wailord was visible
+in the holding room and during the handover in a separate French PAL test.
+
+The scene uses a retail shiny model when the disc has one. Otherwise the
+converter applies the model's native PKX color recipe to the field copy's
+textures and palettes without replacing battle textures.
+[PKX color data reference](https://github.com/StarsMmd/Blender-Addon-Gamecube-Models/blob/main/technical-docs/shiny_variants.md)
+
+### Colosseum opening
+
+The Snagem Hideout escape is a prerecorded video at `movie/openingdemo.thp`.
+The French PAL Dolphin frames match the decoded disc video, including the
+shots of Umbreon running and both starters riding in the sidecar. The frames
+retain those original models. The disc also contains Snagem Hideout models
+and camera tracks in `S2_out_3.fsys`, but that room's script does not contain
+the full movie sequence.
+
+The initial arrival at Outskirt Stand is rendered in real time. The
+[arrival patch](../../orre_randomizer/engine/starter_arrival.py) reads the
+final starter species from the two constructors. It gives the scene its own
+motorcycle resource, hides the replaced riders' geometry, and attaches the
+selected models to the original joints. The script closes the new actors
+before closing the motorcycle and keeps the native camera and animation.
+The retail Pokédex height sets the scale cap and vertical offset for each
+rider. The sidecar can still obscure part of a short Pokémon.
+Shiny models use the seed's starter decisions or the guaranteed shiny rule.
+When shininess is rolled during play, the arrival uses the regular palette.
 
 ### Ho-Oh at Mt. Battle
 
@@ -87,9 +126,10 @@ The ending at Realgam Tower has its own Ho-Oh actor and animation tracks in
 
 Static checks on all three original discs confirmed that the patch handles
 different internal species IDs and fits the longest native name in each bank.
-The reward model still uses the native presentation's normal palette and its
-default form. The scene reads the species, while palette and form would require
-the individual Pokémon's data.
+The final handover hook captures the actual reward's personality value and
+the result of the game's shiny check. The presentation passes both values to
+the native model loader to select the form and palette, then clears them.
+This also works with the original Ho-Oh when custom shiny rules are active.
 
 A French PAL comparison in Dolphin 2609a showed Ho-Oh in the original
 presentation and Luvdisc in the randomized one. Both messages named the
@@ -105,6 +145,12 @@ the level 70 shiny Yanma to the PC. The prize flag changed from 0 to 1 and the
 same Pokémon identity was verified on the written memory card after saving
 through the game's reward prompt.
 
+After the appearance fix, a second muted French PAL run played the last
+battle on a private copy of the prepared card. The native model loader
+received Yanma's personality value and shiny flag, and the scene displayed
+its blue palette. The game saved the reward to the copy, and the decrypted
+memory-card slot contained the same level 70 Yanma with valid checksums.
+
 ### Pikachu and Celebi from Eagun
 
 The added rewards at the Relic Stone reuse Eagun's actor and deliver the
@@ -115,6 +161,15 @@ with the Time Flute and the Bonus Disc's `ex_shrine.fsys` actor `cerebi_dat`
 belong to different events. [Regional gift validation](../REGIONAL_GIFTS_DOLPHIN_2026-11-03.md)
 
 ## XD
+
+### Eagun's partner
+
+The Pikachu actor at Eagun's house and the Relic Stone uses the final species
+from his story battle. Its cries and written captions follow the new species.
+Large models are reduced only for the field scenes. A French PAL test with
+Wailord confirmed that the smaller model fits alongside Eagun after battle.
+
+### Other scripted encounters
 
 | Encounter | What the existing patch synchronizes |
 | --- | --- |

@@ -2,8 +2,9 @@
 
 import struct
 
-from .analyze_game import FormatError, check_range, u32
+from .analyze_game import FormatError, check_range, parse_dol, u32
 from .dol_regions import dol_layout
+from .gift_move_hooks import TEXT_TO_RAM, _arena_guard, _words, branch
 from .inspect_tables import localized_names, u16
 from .randomize_trainers import layout
 from .rel_regions import region_for_rel
@@ -18,6 +19,13 @@ _SCENE = {
     "GC6P01": (0x267B7C, 0x267C4C),
     "GC6E01": (0x262F9C, 0x26306C),
     "GC6J01": (0x25E6C0, 0x25E790),
+}
+# Final heroGetPokemon call (gift constructor + 0xA0), native shiny test,
+# and the sequence model constructor used by the presentation.
+_APPEARANCE = {
+    "GC6P01": (0x8012DFE8, 0x80129504, 0x801E2A04),
+    "GC6E01": (0x80129E20, 0x80125390, 0x801DE190),
+    "GC6J01": (0x8012755C, 0x80122B30, 0x801D9B04),
 }
 # Language, main.dol bank, common.rel mirror when present.
 _BANKS = {
@@ -105,9 +113,90 @@ def _patch_bank(original: bytes, output: bytearray, base: int, language: str, na
     output[start:end] = payload.ljust(end - start, b"\x00")
 
 
+def _sync_appearance(original: bytes, current: bytes, region) -> bytes:
+    # Reserve two transient words in text2. The gift writes them immediately
+    # before the native handover, including when the party and PC are full.
+    # The scene then consumes them once, after the warp to the reward room.
+    award, check_rare, load_model = _APPEARANCE[region.game_id]
+    award_call = region.special_offsets[3] + 0xA0 + TEXT_TO_RAM
+    model_call = _SCENE[region.game_id][0] + 0x48 + TEXT_TO_RAM
+    for call, native in ((award_call, award), (model_call, load_model)):
+        expected = branch(call, native, link=True)
+        if any(u32(data, call - TEXT_TO_RAM) != expected for data in (original, current)):
+            raise FormatError("unexpected native Mt. Battle appearance hook")
+    model_args = model_call - TEXT_TO_RAM - 8
+    if current[model_args:model_args + 8] != bytes.fromhex("38800000 38a00000"):
+        raise FormatError("unexpected native Mt. Battle model parameters")
+    section_offset = (len(original) + 31) & ~31
+    previous_size = u32(current, 0x98)
+    arena_offset = region.set_arena_lo - TEXT_TO_RAM
+    if any(u32(original, offset) for offset in (0x08, 0x50, 0x98)):
+        raise FormatError("original Mt. Battle DOL text2 slot is occupied")
+    if previous_size:
+        if ((u32(current, 0x08), u32(current, 0x50)) != (section_offset, region.section_ram)
+                or previous_size % 32 or section_offset + previous_size != len(current)
+                or u32(current, arena_offset) != branch(region.set_arena_lo, region.section_ram)
+                or current[section_offset:section_offset + 32] != _arena_guard(
+                    region.section_ram + previous_size, region.arena_lo_store)):
+            raise FormatError("unsupported existing DOL reservation before Mt. Battle hooks")
+        code = bytearray(current[section_offset:])
+    else:
+        if (len(current) != len(original) or any(u32(current, offset) for offset in (0x08, 0x50))
+                or u32(current, arena_offset) != region.arena_lo_store):
+            raise FormatError("unexpected DOL layout before Mt. Battle hooks")
+        code = bytearray(32)
+
+    state = region.section_ram + len(code)
+    code.extend(bytes(32))
+    state_high = 0x3D800000 | (state >> 16)  # lis r12, state@h
+    state_low = 0x618C0000 | (state & 0xFFFF)  # ori r12, r12, state@l
+    award_stub = region.section_ram + len(code)
+    award_words = [
+        0x9421FFD0, 0x7C0802A6, 0x90010034,   # stack frame, save LR
+        0x90610008, 0x9081000C, 0x90A10010,   # save the three handover arguments
+        0x7C832378,                            # mr r3, r4: completed Pokémon buffer
+    ]
+    award_words.append(branch(award_stub + 4 * len(award_words), check_rare, link=True))
+    award_words.extend([
+        state_high, state_low, 0x906C0004,     # stw r3, 4(r12): native shiny result
+        0x8081000C, 0x80040004, 0x900C0000,   # store the native Pokémon personality
+        0x80610008, 0x80A10010,
+        0x80010034, 0x7C0803A6, 0x38210030,   # restore arguments, LR and stack
+    ])
+    award_words.append(branch(award_stub + 4 * len(award_words), award))
+    code.extend(_words(award_words))
+    model_stub = region.section_ram + len(code)
+    model_words = [
+        state_high, state_low,
+        0x808C0000, 0x80AC0004,               # r4 = personality, r5 = shiny variant
+        0x38000000, 0x900C0000, 0x900C0004,   # reset the transient handover values
+    ]
+    model_words.append(branch(model_stub + 4 * len(model_words), load_model))
+    code.extend(_words(model_words))
+    code.extend(bytes((-len(code)) % 32))
+    reserved_end = region.section_ram + len(code)
+    descriptor = parse_dol(original)
+    if (descriptor["bss_ram_address"] + descriptor["bss_size"] >= region.section_ram
+            or reserved_end >= 0x81700000):
+        raise FormatError("Mt. Battle hooks exceed the available arena")
+    code[:32] = _arena_guard(reserved_end, region.arena_lo_store)
+    output = bytearray(current[:section_offset])
+    output.extend(bytes(section_offset - len(output)))
+    output.extend(code)
+    for offset, word in (
+        (0x08, section_offset), (0x50, region.section_ram), (0x98, len(code)),
+        (arena_offset, branch(region.set_arena_lo, region.section_ram)),
+        (award_call - TEXT_TO_RAM, branch(award_call, award_stub, link=True)),
+        (model_call - TEXT_TO_RAM, branch(model_call, model_stub, link=True)),
+    ):
+        struct.pack_into(">I", output, offset, word)
+    return bytes(output)
+
+
 def patch_hooh_reward_scene(original_dol: bytes, current_dol: bytes,
-                            original_rel: bytes, current_rel: bytes) -> tuple[bytes, bytes, dict]:
-    """Use the final gift species for the separate Mt. Battle reward scene."""
+                            original_rel: bytes, current_rel: bytes, *,
+                            sync_native_gift: bool = False) -> tuple[bytes, bytes, dict]:
+    """Use the final gift species and its actual appearance in the prize scene."""
     dol_region = dol_layout(original_dol)
     rel_region = region_for_rel(original_rel)
     if dol_region.game_id != rel_region.game_id or len(current_rel) != len(original_rel):
@@ -118,6 +207,10 @@ def patch_hooh_reward_scene(original_dol: bytes, current_dol: bytes,
         raise FormatError("unexpected Ho-Oh reward constructor")
     species = constructor & 0xFFFF
     if species == _HO_OH:
+        if sync_native_gift:
+            dol = _sync_appearance(original_dol, current_dol, dol_region)
+            return dol, current_rel, {"applied": True, "species": species, "languages": [],
+                                      "appearance_from_reward": True}
         return current_dol, current_rel, {"applied": False}
 
     tables, symbols = layout(original_rel)
@@ -141,4 +234,5 @@ def patch_hooh_reward_scene(original_dol: bytes, current_dol: bytes,
         if rel_bank is not None:
             _patch_bank(original_rel, rel, rel_bank, language, name)
         languages.append(language)
-    return bytes(dol), bytes(rel), {"applied": True, "species": species, "languages": languages}
+    return _sync_appearance(original_dol, bytes(dol), dol_region), bytes(rel), {
+        "applied": True, "species": species, "languages": languages, "appearance_from_reward": True}

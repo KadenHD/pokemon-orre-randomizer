@@ -8,6 +8,7 @@ from orre_randomizer import xd
 from orre_randomizer.engine.analyze_game import FormatError
 from orre_randomizer.profiles import PREVIOUS_XD_SHUFFLE_ENGINE, parse_xd_profile
 from orre_randomizer.service import UserError
+from orre_randomizer.xd_poke_spot_actors import _patch_species_checks
 
 
 def fixture():
@@ -27,6 +28,25 @@ def fixture():
 
 
 class XDSpotTests(unittest.TestCase):
+    def test_appearance_preserves_the_native_shiny_check_and_selects_the_shiny_model(self):
+        model = 0x16600400
+        shiny_model = 0x23000400
+        branch = bytearray(0x68)
+        struct.pack_into(">9I", branch, 0, 0x02010000, 27, 0x01300000, 0x0B00005B, 0x10000081,
+                         0x02010000, model, 0x03030087, 0x09230046)
+        struct.pack_into(">I", branch, 0x40, 0x093C0014)
+        struct.pack_into(">4I", branch, 0x58, 0x02010000, 0, 0x03030087, 0x09230070)
+        unrelated_species_check = struct.pack(">3I", 0x02010000, 27, 0x01300000)
+        original = unrelated_species_check + branch
+        edit = [(27, 314, model, shiny_model, 0)]
+        updated = _patch_species_checks(original, branches=edit)
+        expected = bytearray(original)
+        for offset, word in ((4, 314), (0x5C, shiny_model), (0x64, 0x09230046)):
+            struct.pack_into(">I", expected, len(unrelated_species_check) + offset, word)
+        self.assertEqual(updated, expected)
+        with self.assertRaisesRegex(FormatError, "appearance branch"):
+            _patch_species_checks(branch + branch, branches=edit)
+
     def test_full_draw_uses_filtered_non_native_species_and_preserves_every_other_byte(self):
         original, symbols, species = fixture()
         allowed = {1, 4, 7, 25, 88, 133, 150, 155, 158}

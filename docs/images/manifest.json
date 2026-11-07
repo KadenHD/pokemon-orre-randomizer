@@ -83,6 +83,30 @@
       "language": "fr",
       "game": "xd",
       "description": "Moves tab of a Spheal sheet from a European ROM preview. Shadow and regular badges appear next to original move descriptions."
+    },
+    "xd-pokespot-shiny-field.png": {
+      "bytes": 684809,
+      "sha256": "15f61d53b1de91cf71a9fe77656a8f2c3b421f6954e411f56dce12d4ab576498",
+      "game": "xd",
+      "kind": "native-gameplay",
+      "language": "fr",
+      "description": "Shiny Wailord before the Cave Poké Spot battle."
+    },
+    "xd-pokespot-shiny-battle.png": {
+      "bytes": 403497,
+      "sha256": "fa1af10b3e035ea4e48b9de9265311c722447f8ece56e76451e2ae7c7ca9c0bb",
+      "game": "xd",
+      "kind": "native-gameplay",
+      "language": "fr",
+      "description": "The same shiny Wailord as the wild battle begins."
+    },
+    "colosseum-motorcycle-starters.png": {
+      "bytes": 531527,
+      "sha256": "5a62b03464f74fe4c8d44e50f897a5f2f7f937830966ac345b93a8c800e1c44f",
+      "game": "colosseum",
+      "kind": "native-gameplay",
+      "language": "fr",
+      "description": "Shiny Dratini and Oddish during the real-time Outskirt Stand arrival."
     }
   }
 }

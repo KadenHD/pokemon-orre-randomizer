@@ -144,14 +144,14 @@ class PalGameplayIntegrationTests(unittest.TestCase):
         self.assertFalse(summary["gift_move_hooks"]["enabled"])
         self.assertEqual(report["learnset_edits"], [])
 
-    def test_plusle_rerolls_wailord_but_keeps_safe_existing_draws(self):
+    def test_plusle_keeps_its_draw_with_large_species_allowed(self):
         from orre_randomizer.service import transform_dol
 
         options = replace(Options.none(), gift_plusle=True, allow_gen1=True, allow_gen2=True, allow_gen3=True)
         for seed, allow_legendaries, expected in (
-            ("pyrite-scene-600", False, None),
+            ("pyrite-scene-600", False, 321),
             ("pyrite-scene-17", False, 94),
-            ("pyrite-unfiltered-312", True, None),
+            ("pyrite-unfiltered-312", True, 321),
         ):
             with self.subTest(seed=seed):
                 settings = replace(options, allow_legendaries=allow_legendaries)
@@ -162,26 +162,20 @@ class PalGameplayIntegrationTests(unittest.TestCase):
                 gift = next(row for row in summary["specials"] if row["key"] == "plusle")
                 self.assertEqual(gift["level"], 13)
                 national_dex = self.final_catalog[gift["species"]]["national_dex"]
-                self.assertNotEqual(national_dex, 321)
+                self.assertEqual(national_dex, expected)
                 self.assertEqual(apply_dol_rules(self.dol, base, self.original, self.original, seed, settings)[0], result)
-                if expected is not None:
-                    self.assertEqual(national_dex, expected)
 
-    def test_plusle_family_pool_cannot_choose_wailord(self):
+    def test_plusle_family_pool_can_choose_wailord(self):
         options = replace(Options.none(), gift_plusle=True, diverse_story_families=True,
-                          allow_gen1=True, allow_gen3=True,
-                          excluded_species=tuple(i for i in range(1, 387) if i not in (94, 321)))
+                          allow_gen3=True, excluded_species=tuple(i for i in range(1, 387) if i != 321))
         _, _, _, gifts = apply_story_rules(self.original, self.original, self.dol, self.dol, self.seed, options)
-        self.assertEqual(gifts["plusle"], 94)
+        self.assertEqual(self.final_catalog[gifts["plusle"]]["national_dex"], 321)
 
-    def test_oversized_exclusion_applies_only_to_plusle(self):
+    def test_plusle_can_draw_from_a_pool_with_only_wailord(self):
         options = replace(Options.none(), gift_plusle=True, allow_gen3=True,
                           excluded_species=tuple(i for i in range(1, 387) if i != 321))
-        with self.assertRaisesRegex(FormatError, "Aucun Pokémon admissible"):
-            apply_dol_rules(self.dol, self.dol, self.original, self.original, self.seed, options)
-        options = replace(options, gift_plusle=False, gift_hooh=True)
         _, report = apply_dol_rules(self.dol, self.dol, self.original, self.original, self.seed, options)
-        gift = next(row for row in report["specials"] if row["key"] == "ho-oh")
+        gift = next(row for row in report["specials"] if row["key"] == "plusle")
         self.assertEqual(self.final_catalog[gift["species"]]["national_dex"], 321)
 
     def test_thirty_special_records_and_every_nonmove_subrecord_byte_survive(self):

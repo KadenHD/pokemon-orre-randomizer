@@ -77,11 +77,11 @@ including shiny variants. See [starter rules](STARTER_STAGES.md).
 ## Colosseum rewards
 
 Plusle, Ho-Oh, Pikachu and Celebi have separate species controls. The Pyrite
-rescue and handover show and name the randomized Plusle gift. This gift
-excludes species that measure 3.5 m or more in the Pokédex, as well as Snorlax.
-The Battle Mode Mt. Battle presentation also follows the species that replaces
-Ho-Oh. Both presentations use standard colors. The received Pokémon keeps
-the shiny status determined by the selected settings.
+rescue and handover show and name the randomized Plusle gift. Large species
+are eligible and use smaller models in those scenes. The gift's field model
+also shows its shiny colors when its status is known during ROM creation.
+The Battle Mode Mt. Battle presentation uses the species, form, and shiny
+colors of the Pokémon awarded there.
 
 Enable **Make event gifts obtainable** to receive Eagun's purification rewards
 at the Relic Stone. By default, Pikachu's gift is available after 10
@@ -110,6 +110,9 @@ legendary restrictions and similar-strength matching still apply. The three
 rare slots use different species, so Duking has three distinct, obtainable
 requests. Each location has three different species; all nine are different
 when the pool is large enough. Levels and encounter rates remain native.
+Wild Pokémon at the three spots appear as their randomized species in the
+overworld and in battle, including their shiny form when the game rolls one.
+Large species use a smaller overworld model.
 
 Duking's species checks, dialogue and the gifts preview follow those rare slots,
 including when gift rewards themselves are kept unchanged. Dialogue uses the

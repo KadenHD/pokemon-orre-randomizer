@@ -194,7 +194,8 @@ def _word(data, offset):
     return struct.unpack_from(">I", data, offset)[0]
 
 
-def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | None = None) -> tuple[bytes, dict]:
+def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | None = None,
+                      trainer_aliases: tuple[tuple[int, int], ...] = ()) -> tuple[bytes, dict]:
     if not options.custom_shinies:
         return current, {"version": VERSION, "enabled": False}
     threshold = chance_threshold(options.shiny_chance_percent)
@@ -264,7 +265,9 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
     if seeded:
         specials = {key: seeded_coin(seed, "special:" + key) < threshold
                     for key in PID_CALLS if key != "trainers"}
-        trainer_data = bytes(seeded_coin(seed, f"trainer:{index}") < threshold for index in range(TRAINER_SLOT_COUNT))
+        trainer_data = bytearray(seeded_coin(seed, f"trainer:{index}") < threshold for index in range(TRAINER_SLOT_COUNT))
+        for battle, retry in trainer_aliases:
+            trainer_data[retry] = trainer_data[battle]
         shadow_data = bytes(seeded_coin(seed, f"shadow:{sid}") < threshold for sid in range(SHADOW_COUNT))
         trainer_flags = SECTION_RAM + len(code)
         code.extend(trainer_data)

@@ -42,7 +42,10 @@ from .engine.gafar_dialogue import ARCHIVE_NAME as GAFAR_DIALOGUE_ARCHIVE, patch
 from .engine.message_bank import patch_species_archive
 from .engine.shadow_dialogue import SHADOW_REMARK_REWRITES, shadow_dialogue_edits
 from .engine.hooh_reward import patch_hooh_reward_scene
-from .engine.plusle_actor import ACTOR_ARCHIVES, load_actor_model, patch_actor
+from .engine.eagun_scene import patch_eagun_scenes
+from .engine.starter_arrival import ARRIVAL_ARCHIVE, patch_starter_arrival
+from .engine.plusle_actor import ACTOR_ARCHIVES, OVERSIZED_FIELD_SPECIES, companion_scale, load_actor_model, patch_actor
+from .engine.miror_scene import MIROR_CAVE, patch_cave_dancers, synchronize_cave_team
 from .engine.plusle_dialogue import ARCHIVE_NAMES as PLUSLE_DIALOGUE_ARCHIVES, patch_dialogue
 from .engine.qol_rules import apply_qol_rules
 from .pokemon_details import build_detail_catalog
@@ -61,7 +64,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "story-gift-scenes-v17"
+ENGINE_VERSION = "story-field-actors-v18"
 
 
 @dataclass(frozen=True, slots=True)
@@ -512,18 +515,22 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         checkpoint(cancel)
         rel, summary["bosses"] = apply_boss_rules(original, rel, seed, options)
         rel, summary["trainer_policies"] = apply_trainer_policies(original, rel, seed, options)
+        dancers, dancer_slots = (), ()
+        if options.randomize_trainers:
+            rel, dancers, dancer_slots = synchronize_cave_team(original, rel)
         rel, summary["field_items"] = apply_field_items(original, rel, original_dol, seed, options)
         dol, summary["special_gameplay"] = apply_dol_rules(
             original_dol, dol, original, rel, seed, options, starter_result=starter_result, gift_picks=gift_picks)
         rel, dol, summary["tms"] = apply_tm_rules(original, rel, original_dol, dol, seed, options)
-        dol, summary["shinies"] = apply_shiny_rules(original_dol, dol, options, seed=seed)
+        dol, summary["shinies"] = apply_shiny_rules(original_dol, dol, options, seed=seed, trainer_aliases=dancer_slots)
         dol, summary["quality_of_life"] = apply_qol_rules(original_dol, dol, options)
         if options.readable_stone_names:
             rel, summary["item_names"] = apply_item_name_spacing(original, rel)
         else:
             summary["item_names"] = {"enabled": False, "changed_names": 0}
-        if options.gift_hooh:
-            dol, rel, summary["hooh_reward_scene"] = patch_hooh_reward_scene(original_dol, dol, original, rel)
+        if options.gift_hooh or options.custom_shinies:
+            dol, rel, summary["hooh_reward_scene"] = patch_hooh_reward_scene(
+                original_dol, dol, original, rel, sync_native_gift=options.custom_shinies)
         summary = final_report_summary(original, base_rel, rel, original_dol, dol, seed, options, summary)
         if options.diverse_story_families:
             families = evolution_families(original, layout(original)[0])[0]
@@ -580,18 +587,38 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 patches.append((cursor, payload))
                 struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
                 cursor = align(cursor + len(payload), 0x8000)
+        scene_updates = {}
         summary["event_gifts"] = {"enabled": options.accessible_event_gifts, "archives": []}
         if options.accessible_event_gifts:
             for i, name in enumerate(EVENT_GIFT_ARCHIVES):
                 progress(54 + i * 2, "Application des réglages…")
                 payload, event_report = patch_event_archive(archive(name), name, options, region=region.game_id)
                 checkpoint(cancel)
-                if cursor + len(payload) > first_file:
-                    raise FormatError("no safe gap for purification reward archive")
-                patches.append((cursor, payload))
-                struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
-                cursor = align(cursor + len(payload), 0x8000)
+                scene_updates[name] = payload
                 summary["event_gifts"]["archives"].append({"archive": name, **event_report})
+        decisions = summary["shinies"].get("seeded_decisions", {})
+        guaranteed_shiny = options.custom_shinies and options.shiny_chance_percent == 100
+        arrival = patch_starter_arrival(original_dol, dol, original, archive,
+                                        decisions.get("specials", {}), guaranteed_shiny)
+        if arrival is not None:
+            scene_updates[ARRIVAL_ARCHIVE], summary["starter_arrival"] = arrival
+        trainer_shinies = decisions.get("trainer_slots", {})
+        if options.randomize_trainers or options.custom_shinies:
+            partner = patch_eagun_scenes(original, rel, original_dol, region.game_id, archive,
+                                         scene_updates, trainer_shinies, guaranteed_shiny)
+            if partner is not None:
+                summary["eagun_field_partner"] = partner
+                for report in summary["event_gifts"]["archives"]:
+                    if report["archive"] in partner["archives"]:
+                        report["after_sha256"] = sha256(scene_updates[report["archive"]])
+        shiny_dancers = tuple(trainer_shinies.get(str(slot), guaranteed_shiny) for slot, _ in dancer_slots)
+        if dancers and (any(species != 297 for species in dancers) or any(shiny_dancers)):
+            scene_updates[MIROR_CAVE] = patch_cave_dancers(
+                archive(MIROR_CAVE), original_dol, region.game_id, dancers, shiny_dancers,
+                layout(original)[0]["species"], rel, archive,
+            )
+            summary["miror_cave_dancers"] = list(dancers)
+            summary["miror_cave_shiny_models"] = list(shiny_dancers)
         if options.gift_plusle:
             gift = next(row for row in special_targets(original_dol) if row["key"] == "plusle")
             species_id = u16(dol, gift["base"] + 2)
@@ -599,19 +626,27 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 species = species_catalog(rel, layout(original)[0])[species_id]
                 national_dex = species["national_dex"]
                 model_id = u32(rel, species["offset"] + 0x2C)
-                model = load_actor_model(original_dol, region.game_id, model_id, archive)
+                # The captive Pokémon has to fit behind the cage bars.
+                scale = 0.5 * companion_scale(national_dex, 1.0) if national_dex in OVERSIZED_FIELD_SPECIES else 1.0
+                shiny = decisions.get("specials", {}).get("plusle", guaranteed_shiny)
+                model = load_actor_model(original_dol, region.game_id, model_id, archive, scale=scale, shiny=shiny)
                 for name in PLUSLE_DIALOGUE_ARCHIVES:
                     checkpoint(cancel)
-                    payload = patch_dialogue(archive(name), name, region.game_id, national_dex, species_id=species_id)
+                    room = scene_updates[name] if name in scene_updates else archive(name)
+                    payload = patch_dialogue(room, name, region.game_id, national_dex, species_id=species_id)
                     if name in ACTOR_ARCHIVES:
                         payload = patch_actor(payload, model)
-                    if cursor + len(payload) > first_file:
-                        raise FormatError("no safe gap for Pyrite gift scene archive")
-                    patches.append((cursor, payload))
-                    struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
-                    cursor = align(cursor + len(payload), 0x8000)
+                    scene_updates[name] = payload
                 summary["plusle_gift_scene"] = {"species": species_id, "national_dex": national_dex,
+                    "actor_scale": scale, "shiny_model": shiny,
                     "actor_archives": list(ACTOR_ARCHIVES), "dialogue_archives": list(PLUSLE_DIALOGUE_ARCHIVES)}
+        for name, payload in scene_updates.items():
+            checkpoint(cancel)
+            if cursor + len(payload) > first_file:
+                raise FormatError("no safe gap for Colosseum scene archive")
+            patches.append((cursor, payload))
+            struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
+            cursor = align(cursor + len(payload), 0x8000)
         if options.randomize_trainers:
             checkpoint(cancel)
             name = GAFAR_DIALOGUE_ARCHIVE

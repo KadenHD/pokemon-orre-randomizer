@@ -4,14 +4,16 @@ from pathlib import Path
 import struct
 import unittest
 
-from orre_randomizer.engine.analyze_game import FormatError, u32
+from orre_randomizer.engine.analyze_game import FormatError, parse_dol, u32
 from orre_randomizer.engine.dol_regions import PAL
+from orre_randomizer.engine.gift_move_hooks import TEXT_TO_RAM
 from orre_randomizer.engine.hooh_reward import (
-    _BANKS, _END, _MESSAGE_IDS, _NEXT_MESSAGE, _PREFIX, _SCENE, _SUCCESS, _patch_bank,
+    _APPEARANCE, _BANKS, _END, _MESSAGE_IDS, _NEXT_MESSAGE, _PREFIX, _SCENE, _SUCCESS, _patch_bank,
     patch_hooh_reward_scene,
 )
 from orre_randomizer.engine.inspect_tables import u16
 from orre_randomizer.engine.randomize_trainers import original_common
+from test_shiny_rules import Machine
 
 
 def _synthetic_bank(*, alias=False):
@@ -71,9 +73,13 @@ class HoOhRewardDiscTests(unittest.TestCase):
         gift = bytearray(original)
         struct.pack_into(">H", gift, PAL.special_offsets[3] + 2, 25)
         dol, patched_rel, report = patch_hooh_reward_scene(original, bytes(gift), rel, rel)
-        self.assertEqual(len(dol), len(original))
+        self.assertGreater(len(dol), len(original))
         self.assertEqual(len(patched_rel), len(rel))
-        self.assertEqual(report, {"applied": True, "species": 25, "languages": ["UK", "GE", "FR", "IT", "SP"]})
+        self.assertEqual(report, {"applied": True, "species": 25,
+                                  "languages": ["UK", "GE", "FR", "IT", "SP"],
+                                  "appearance_from_reward": True})
+        section = next(row for row in parse_dol(dol)["sections"] if row["name"] == "text2")
+        self.assertEqual(section["ram_address"], PAL.section_ram)
         model, cry = _SCENE[PAL.game_id]
         self.assertEqual(u32(dol, model), 0x38800019)
         self.assertEqual(u32(dol, cry), 0x38600019)
@@ -82,3 +88,33 @@ class HoOhRewardDiscTests(unittest.TestCase):
             rel_messages, _ = _messages(patched_rel, rel_base)
             self.assertEqual(dol_messages, rel_messages)
             self.assertTrue(all("PIKACHU".encode("utf-16-be") in message for message in dol_messages))
+
+    def test_native_appearance_is_captured_once_without_changing_handover_arguments(self):
+        original = Path("game/sys/main.dol").read_bytes()
+        rel = original_common(Path("game"))[2]
+        dol, patched_rel, _ = patch_hooh_reward_scene(original, original, rel, rel, sync_native_gift=True)
+        self.assertEqual(patched_rel, rel)
+        award_call = PAL.special_offsets[3] + 0xA0
+        model_call = _SCENE[PAL.game_id][0] + 0x48
+        award, check_rare, model = _APPEARANCE[PAL.game_id]
+        for is_shiny in (0, 1):
+            machine = Machine(dol[u32(dol, 0x08):], PAL.section_ram)
+            for call in (award_call, model_call):
+                machine.code[call + TEXT_TO_RAM] = u32(dol, call)
+            machine.code[check_rare] = 0x38600000 | is_shiny
+            machine.code[check_rare + 4] = 0x4E800020
+            machine.pc = award_call + TEXT_TO_RAM
+            stack = machine.reg[1]
+            arguments = [0x80310000, 0x80320000, 1]
+            personality = 0x753A527A
+            machine.reg[3:6] = arguments
+            machine.write(arguments[1] + 4, personality)
+            machine.run(stop=award)
+            self.assertEqual((machine.reg[1], machine.reg[3:6]), (stack, arguments))
+            self.assertEqual(machine.lr, award_call + TEXT_TO_RAM + 4)
+            for appearance in ([0xFA, personality, is_shiny], [0xFA, 0, 0]):
+                machine.pc = model_call + TEXT_TO_RAM
+                machine.reg[3:6] = [0xFA, 0, 0]
+                machine.run(stop=model)
+                self.assertEqual(machine.reg[3:6], appearance)
+                self.assertEqual(machine.lr, model_call + TEXT_TO_RAM + 4)
