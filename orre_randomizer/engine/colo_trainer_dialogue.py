@@ -81,6 +81,16 @@ def trainer_dialogue_edits(original, current, game_id, *, trainers_changed, type
     suffixes = ("", "_fr", "_ge", "_it", "_sp") if game_id == "GC6P01" else ("",)
     archives = tuple(f"fight_common{suffix}.fsys" for suffix in suffixes) + _MOUNT_BATTLE
     edits = dict.fromkeys(archives, messages) if messages else {}
+    if trainers_changed:
+        # The boy in Phenac reenacts Justy's fight before the gym is cleared.
+        # His cheer uses Justy's sixth Pokémon, the native Nosepass.
+        row = trainers["offset"] + trainers["stride"] * 34
+        start = u16(original, row + 4)
+        if start != 3536 or u16(current, row + 4) != start:
+            raise FormatError("unexpected Colosseum Justy team")
+        names = name_edits(((start + 5, 320),))
+        if any(old != new for old, new in names.items()):
+            edits["M1_out.fsys"] = {0x4E2B: names}
     gym = {}
     for index, expected, identifier in ((20, (191, 187), 0x4E36), (21, (183, 311), 0x4E9B)):
         row = trainers["offset"] + trainers["stride"] * index

@@ -5,6 +5,21 @@ already supports in the revision-0 releases of Colosseum and XD. The archive
 inventory establishes which models are packaged with each room. It does not
 identify every resource a shared engine routine can load at runtime.
 
+## v1.2.14 follow-up
+
+The review cross-referenced room and actor tables, script operands and the
+regional dialogue corpus. The European discs supplied 171 Colosseum and 222
+XD room archives with scripts. The six retail discs' message banks include
+menus and duplicate records. A scripted name by itself does not identify a
+randomized Pokémon.
+
+| Game | Candidates reviewed | Result |
+| --- | --- | --- |
+| Colosseum | Phenac boy imitating Justy | `M1_out.fsys` function 17 uses message `0x4E2B`. Its Nosepass reference follows trainer row 34, party row 3541. The Folly victory message in the same archive is retained. |
+| Colosseum | Lab Makuhita, final Ho-Oh and Snagem escape assets | The Makuhita dialogue describes a resident Pokémon and an abandoned Shadow partnership. The final Ho-Oh and Mt. Battle prize are separate events. The Snagem escape is the original `openingdemo.thp`. |
+| XD | Phenac residents, Lilas's partners, Poké Spot special visitors and Shadow Lugia | The resident stories and special visitors use their own actor and script branches. Shadow Lugia keeps the dedicated story species and purification path. |
+| XD | Regular Poké Spots and known trainer companions | The existing field roster patches use the ordinary encounter branches. The new optional wild shiny rate acts on the PID stored by those branches before the Radar alert. |
+
 ## Colosseum
 
 ### Folly's first battle in Phenac
@@ -95,10 +110,11 @@ final starter species from the two constructors. It gives the scene its own
 motorcycle resource, hides the replaced riders' geometry, and attaches the
 selected models to the original joints. The script closes the new actors
 before closing the motorcycle and keeps the native camera and animation.
-The retail Pokédex height sets the scale cap and vertical offset for each
-rider. The attachment updates the outer joint's transform every frame.
-An unanimated child joint applies the scale and the seat offset without
-altering the original skeleton or motion.
+The retail Pokédex height sets the scale cap and seat offset for each rider.
+Short models use a lower lift and, beside a large front rider, a small shift
+toward the outside of the rear seat. The attachment updates the outer joint's
+transform every frame. An unanimated child joint applies the scale and offset
+without altering the original skeleton or motion.
 Shiny models use the seed's starter decisions or the guaranteed shiny rule.
 When shininess is rolled during play, the arrival uses the regular palette.
 

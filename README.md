@@ -23,10 +23,10 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.13** brings randomized Pokémon into more story scenes. XD's
-Poké Spots show the species and shiny palette of the actual wild encounter.
+**Version 1.2.14** adds a separate wild shiny rate for XD's Poké Spots and
+improves the placement of Colosseum's randomized starters in the sidecar.
 Colosseum's arrival at Outskirt Stand shows the chosen starters.
-See the [release notes](docs/releases/v1.2.13.md).
+See the [release notes](docs/releases/v1.2.14.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
@@ -66,7 +66,8 @@ Both presets retain native opponent levels, battle EXP, purification speed and
 catch rates. Colosseum also balances its two starters as a pair, with distinct
 families and complementary types. XD has one starter. Its custom rate covers
 the starter, ordinary gifts and Shadow Pokémon; the Shadow unlock can be
-disabled separately. Wild Poké Spots retain their native shiny odds.
+disabled separately. XD's Poké Spots retain their native shiny odds by default.
+Set a separate wild rate under **Advanced → Poké Spots**.
 Family diversity is best effort when fixed Pokémon or strict filters
 leave no alternative.
 
@@ -105,8 +106,8 @@ appears at the Cave Poké Spot and keeps its color when the battle starts.
 | ![Shiny Wailord on the field at the Cave Poké Spot](docs/images/xd-pokespot-shiny-field.png) | ![The same shiny Wailord in battle](docs/images/xd-pokespot-shiny-battle.png) |
 
 In Colosseum, the arrival at Outskirt Stand shows the randomized starters
-in the sidecar. This run pairs a scaled-down shiny Wailord with a raised
-shiny Diglett so both are visible. The prerecorded opening movie uses the
+in the sidecar. This run pairs a scaled-down shiny Wailord with a
+shiny Diglett sitting near the edge of the rear seat. The prerecorded opening movie uses the
 original footage.
 
 ![Shiny Wailord and Diglett arriving by motorcycle at Outskirt Stand](docs/images/colosseum-motorcycle-starters.png)

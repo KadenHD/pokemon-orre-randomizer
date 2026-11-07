@@ -64,7 +64,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "story-field-actors-v18"
+ENGINE_VERSION = "story-field-placement-v19"
 
 
 @dataclass(frozen=True, slots=True)
@@ -640,25 +640,14 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 summary["plusle_gift_scene"] = {"species": species_id, "national_dex": national_dex,
                     "actor_scale": scale, "shiny_model": shiny,
                     "actor_archives": list(ACTOR_ARCHIVES), "dialogue_archives": list(PLUSLE_DIALOGUE_ARCHIVES)}
-        for name, payload in scene_updates.items():
-            checkpoint(cancel)
-            if cursor + len(payload) > first_file:
-                raise FormatError("no safe gap for Colosseum scene archive")
-            patches.append((cursor, payload))
-            struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
-            cursor = align(cursor + len(payload), 0x8000)
         if options.randomize_trainers:
             checkpoint(cancel)
             name = GAFAR_DIALOGUE_ARCHIVE
-            room = archive(name)
+            room = scene_updates[name] if name in scene_updates else archive(name)
             payload, species_ids = patch_gafar_dialogue(room, original, rel)
             if payload != room:
-                if cursor + len(payload) > first_file:
-                    raise FormatError("no safe gap for Phenac dialogue archive")
-                patches.append((cursor, payload))
-                struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
+                scene_updates[name] = payload
                 summary["gafar_dialogue"] = {"archive": name, "species": list(species_ids)}
-                cursor = align(cursor + len(payload), 0x8000)
         if options.randomize_trainers or options.randomize_types or options.randomize_trainer_moves:
             trainer_dialogue, native_names = trainer_dialogue_edits(
                 original, rel, region.game_id, trainers_changed=options.randomize_trainers,
@@ -666,13 +655,9 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             )
             for name, messages in trainer_dialogue.items():
                 checkpoint(cancel)
-                payload = patch_species_archive(archive(name), messages, native_names,
-                                                rewrites=TRAINER_REMARK_REWRITES)
-                if cursor + len(payload) > first_file:
-                    raise FormatError("no safe gap for trainer dialogue archive")
-                patches.append((cursor, payload))
-                struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
-                cursor = align(cursor + len(payload), 0x8000)
+                room = scene_updates[name] if name in scene_updates else archive(name)
+                scene_updates[name] = patch_species_archive(room, messages, native_names,
+                                                           rewrites=TRAINER_REMARK_REWRITES)
             if trainer_dialogue:
                 summary["trainer_dialogue"] = {name: sorted(messages) for name, messages in trainer_dialogue.items()}
         if rel != original:
@@ -680,18 +665,21 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             updated_dialogue = {}
             for name, messages in dialogue_edits.items():
                 checkpoint(cancel)
-                room = archive(name)
+                room = scene_updates[name] if name in scene_updates else archive(name)
                 payload = patch_species_archive(room, messages, dialogue_names, rewrites=SHADOW_REMARK_REWRITES)
                 if payload == room:
                     continue
-                if cursor + len(payload) > first_file:
-                    raise FormatError("no safe gap for Shadow dialogue archive")
-                patches.append((cursor, payload))
-                struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
-                cursor = align(cursor + len(payload), 0x8000)
+                scene_updates[name] = payload
                 updated_dialogue[name] = sorted(messages)
             if updated_dialogue:
                 summary["shadow_dialogue"] = updated_dialogue
+        for name, payload in scene_updates.items():
+            checkpoint(cancel)
+            if cursor + len(payload) > first_file:
+                raise FormatError("no safe gap for Colosseum scene archive")
+            patches.append((cursor, payload))
+            struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
+            cursor = align(cursor + len(payload), 0x8000)
         if fst != original_fst:
             patches.append((fst_offset, bytes(fst)))
     patches.sort(key=lambda p: p[0])

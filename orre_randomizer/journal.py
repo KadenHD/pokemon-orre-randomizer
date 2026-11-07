@@ -125,10 +125,16 @@ def _xd_spoilers(summary: dict, language: str) -> str:
     spots = summary.get('poke_spots', ())
     if spots:
         labels = {'rock': 'Roche', 'oasis': 'Oasis', 'cave': 'Grotte'}
+        wild_shinies = summary.get('poke_spot_shinies', {})
+        note = ''
+        if wild_shinies.get('enabled'):
+            text = translate('Chromatiques sauvages : {rate} % par nouvelle rencontre.', language)
+            note = '<p>' + _e(text.format(rate=format(wild_shinies['chance_percent'], 'g'))) + '</p>'
         body += _section(translate('Poké Places ({count})', language).format(count=len(spots)),
-                         _table(['#', tr('details'), tr('level', level=''), '%'],
+                         note + _table(['#', tr('details'), tr('level', level=''), '%'],
                                 [[translate(labels.get(row['spot'], row['spot']), language) + f" · {row['slot']}",
-                                  name(row['species']), '–'.join(map(str, row['levels'])), row['chance']]
+                                  name(row['species']) + (' ★' if row.get('shiny') else ''),
+                                  '–'.join(map(str, row['levels'])), row['chance']]
                                  for row in spots]))
     gifts = summary.get('gifts', ())
     if gifts:

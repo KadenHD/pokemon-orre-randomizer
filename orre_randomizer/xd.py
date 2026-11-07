@@ -28,6 +28,7 @@ from .xd_shiny_rules import apply_shiny_rules
 from .xd_shadow_shinies import apply_shadow_shiny_rules
 from .xd_field_actors import GATEON_SHADOW, patch_gateon_shadow, patch_lighthouse_dancers, patch_wakin_partner
 from .xd_poke_spot_actors import patch_poke_spot_actors
+from .xd_poke_spot_shinies import apply_poke_spot_shinies
 from .xd_shops import patch_stone_names, patch_stone_price, patch_stone_stock
 from .xd_species_gameplay import XDMoveRandomizer, detail_catalog, patch_species_gameplay, patch_tm_gameplay
 from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITEM_DIALOGUE, TEDDIURSA,
@@ -35,7 +36,7 @@ from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITE
                        TUTORIAL_SHADOW, hordel_candidates,
                        patch_starter_dialogue, patch_tutorial, trainer_dialogue_edits, tutorial_candidates)
 
-VERSION = "xd-story-sha256-v9"
+VERSION = "xd-story-sha256-v10"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -75,6 +76,11 @@ class XDOptions:
         "Change les rencontres des Poké Places. Doking demande le Pokémon de l’emplacement rare de chaque lieu.")
     poke_spots_full_pokedex: bool = rule("Piocher dans tout le Pokédex", "Poké Places",
         "Utilise tous les Pokémon autorisés par vos filtres. Désactivé : mélange les trois espèces d’origine de chaque lieu.", False)
+    custom_poke_spot_shinies: bool = rule("Personnaliser les chromatiques sauvages", "Poké Places",
+        "Utilise un taux indépendant pour les nouvelles rencontres sauvages. Désactivé : taux d’origine.", False)
+    poke_spot_shiny_chance_percent: float = _shared("shiny_chance_percent", default=5.0, group="Poké Places",
+        label="Taux de chromatiques sauvages (%)",
+        description="Le jeu tire le statut à chaque nouvelle rencontre. Le résultat reste le même sur le terrain et après capture.")
     accessible_evolutions: bool = rule("Rendre les évolutions accessibles", "Évolutions",
         "Adapte les évolutions par échange et les conditions impossibles à réaliser dans le jeu. Les évolutions propres à XD, dont celles d’Évoli, sont conservées.")
     unique_shadow_families: bool = _shared("unique_shadows")
@@ -96,11 +102,11 @@ class XDOptions:
     excluded_species: tuple[int, ...] = _shared("excluded_species")
     excluded_types: tuple[int, ...] = _shared("excluded_types")
     custom_shinies: bool = _shared("custom_shinies", description=
-        "La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places gardent le taux d’origine.")
+        "La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places ont leur propre réglage.")
     custom_shadow_shinies: bool = rule("Appliquer le taux aux Pokémon obscurs", "Chromatiques",
         "Lève le verrouillage de XD. La seed fixe le statut de chaque obscur, conservé après capture et purification. Les Pokémon déjà générés restent inchangés.", False)
     shiny_chance_percent: float = _shared("shiny_chance_percent", default=5.0,
-                                         description="La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places gardent le taux d’origine.")
+                                         description="La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places ont leur propre réglage.")
     trainer_theme_mode: str = _shared("trainer_theme_mode")
     trainer_force_evolved: bool = _shared("trainer_force_evolved")
     trainer_evolution_level: int = _shared("trainer_evolution_level")
@@ -545,7 +551,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     original_dol = dol
     dol, summary["shinies"] = apply_shiny_rules(original_dol, dol, region.game_id, seed, options)
     dol, summary["shadow_shinies"] = apply_shadow_shiny_rules(original_dol, dol, region.game_id, seed, options)
+    dol, summary["poke_spot_shinies"] = apply_poke_spot_shinies(original_dol, dol, region.game_id, options)
     new_rel, summary["poke_spots"], summary["evolutions"] = _rel(rel, seed, species, edges, symbols, options, eligible)
+    if options.custom_poke_spot_shinies and options.poke_spot_shiny_chance_percent in (0, 100):
+        for row in summary["poke_spots"]:
+            row["shiny"] = options.poke_spot_shiny_chance_percent == 100
     trade_requirements = dict(GIFT_TRADE_REQUIREMENTS)
     trade_requirements.update(zip(DUKING_TRADES, (row["species"] for row in summary["poke_spots"] if row["slot"] == 3),
                                   strict=True))

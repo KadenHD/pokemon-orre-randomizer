@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.14
+
+- Add an optional, independent wild shiny rate for XD's three Poké Spots.
+  Each new encounter keeps its result on the field, in battle and after capture.
+  The presets and older profiles retain the original odds.
+- Match the Phenac boy's impression of Justy to Justy's randomized team.
+- Improve the placement of short starters in the Outskirt Stand sidecar.
+  The prerecorded opening movie retains its original footage.
+
 ## 1.2.13
 
 - Show the randomized encounter on the field at all three XD Poké Spots.

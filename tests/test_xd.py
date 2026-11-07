@@ -11,7 +11,10 @@ from orre_randomizer import xd
 from orre_randomizer.engine.analyze_game import FormatError
 from orre_randomizer.journal import render_journal
 from orre_randomizer.preview import preview_xd
-from orre_randomizer.profiles import LEGACY_XD_ENGINE, PREVIOUS_XD_ENGINE, load_profile, parse_xd_profile, save_profile
+from orre_randomizer.profiles import (
+    LEGACY_XD_ENGINE, PREVIOUS_XD_ENGINE, PREVIOUS_XD_FIELD_ENGINE, XD_POKE_SPOT_SHINY_FIELDS,
+    load_profile, parse_xd_profile, save_profile,
+)
 from orre_randomizer.service import UserError, check_disc_identity
 from orre_randomizer.xd_shops import STONE_PRICE, patch_stone_price
 
@@ -24,6 +27,17 @@ def boot_for(game_id):
 
 
 class XDTests(unittest.TestCase):
+    def test_v9_report_preserves_native_wild_shiny_odds(self):
+        from dataclasses import asdict
+        region = xd.REGIONS["GXXP01"]
+        options = xd.XDOptions.recommended()
+        data = {"engine_version": PREVIOUS_XD_FIELD_ENGINE, "game_id": region.game_id,
+                "revision": 0, "source_iso_sha256": region.iso_sha256, "seed": "old-wild",
+                "options": {k: v for k, v in asdict(options).items() if k not in XD_POKE_SPOT_SHINY_FIELDS}}
+        profile = parse_xd_profile(json.dumps(data).encode(), report=True)
+        self.assertEqual(profile.options, options)
+        self.assertFalse(profile.options.custom_poke_spot_shinies)
+
     def test_v7_profiles_keep_full_spots_without_enabling_shadow_shinies(self):
         from dataclasses import asdict
         from orre_randomizer.profiles import PREVIOUS_XD_FULL_SPOT_ENGINE
@@ -33,6 +47,8 @@ class XDTests(unittest.TestCase):
                    "revision": 0, "source_iso_sha256": region.iso_sha256,
                    "seed": "v7-full-pool", "options": asdict(options)}
         payload["options"].pop("custom_shadow_shinies")
+        for key in XD_POKE_SPOT_SHINY_FIELDS:
+            payload["options"].pop(key)
         profile = parse_xd_profile(json.dumps(payload).encode(), report=True)
         self.assertEqual(profile.options, options)
         self.assertTrue(profile.options.poke_spots_full_pokedex)
@@ -49,6 +65,8 @@ class XDTests(unittest.TestCase):
                 "seed": "old-runtime", "options": asdict(options)}
         data["options"].pop("poke_spots_full_pokedex")
         data["options"].pop("custom_shadow_shinies")
+        for key in XD_POKE_SPOT_SHINY_FIELDS:
+            data["options"].pop(key)
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
         self.assertEqual(profile.options, options)
         self.assertFalse(profile.xd_spot_migration)
@@ -61,6 +79,8 @@ class XDTests(unittest.TestCase):
             payload["engine_version"] = PREVIOUS_XD_QOL_ENGINE
             payload["options"].pop("poke_spots_full_pokedex")
             payload["options"].pop("custom_shadow_shinies")
+            for key in XD_POKE_SPOT_SHINY_FIELDS:
+                payload["options"].pop(key)
             canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
             payload["configuration_sha256"] = hashlib.sha256(canonical).hexdigest()
             path.write_text(json.dumps(payload), encoding="utf-8")
@@ -142,6 +162,8 @@ class XDTests(unittest.TestCase):
         options.pop("custom_shadow_shinies")
         options.pop("randomize_hordel_gift")
         options.pop("randomize_tutorial_shadow")
+        for key in XD_POKE_SPOT_SHINY_FIELDS:
+            options.pop(key)
         data = {"engine_version": LEGACY_XD_ENGINE, "game_id": region.game_id, "revision": region.revision,
                 "source_iso_sha256": region.iso_sha256, "seed": "legacy", "options": options}
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
@@ -158,6 +180,8 @@ class XDTests(unittest.TestCase):
         options.pop("poke_spots_full_pokedex")
         options.pop("custom_shadow_shinies")
         options.pop("randomize_hordel_gift")
+        for key in XD_POKE_SPOT_SHINY_FIELDS:
+            options.pop(key)
         data = {"engine_version": PREVIOUS_XD_ENGINE, "game_id": region.game_id, "revision": region.revision,
                 "source_iso_sha256": region.iso_sha256, "seed": "previous", "options": options}
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)

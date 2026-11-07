@@ -145,7 +145,10 @@ mode that leaves the draw to the game. XD customization covers its starter,
 ordinary gifts and, with **Apply the rate to Shadow Pokémon**, all 83 Shadow
 IDs. Both randomizing presets enable this unlock. The seed fixes each Shadow's
 status, which is retained after capture and purification. Disable the separate
-Shadow option to keep XD's native lock. Wild Poké Spots keep native odds.
+Shadow option to keep XD's native lock. Wild Poké Spots keep native odds
+by default. Under **Advanced → Poké Spots**, enable **Customize wild shiny
+odds** to set a separate rate from 0% to 100%. Each new encounter keeps the
+same result on the field, in battle and after capture.
 Previously generated Shadow Pokémon retain their saved PID; use a new game
 for the preview to match every encounter. Shadow Lugia keeps its special dark
 appearance until purification.

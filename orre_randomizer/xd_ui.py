@@ -39,6 +39,7 @@ RULES = presentation_fields(XDOptions)
 MOVE_RULES = ("randomize_trainer_moves", "randomize_starter_moves", "randomize_gift_moves", "randomize_learnsets")
 DEPENDENCIES = {
     "poke_spots_full_pokedex": ("randomize_poke_spots",),
+    "poke_spot_shiny_chance_percent": ("custom_poke_spot_shinies",),
     "unique_shadow_families": ("randomize_shadows",),
     "boss_shadow_legendary_mode": ("randomize_shadows",),
     "boss_shadow_power_mode": ("randomize_shadows",),
@@ -756,7 +757,8 @@ class XDWorkspace(QWidget):
 
     def render_preview(self):
         ready = self.preview_result is not None
-        data = self.preview_result or baseline_rows(self.current_options())
+        options = self.current_options()
+        data = self.preview_result or baseline_rows(options)
         self.render_family_duplicates(data)
         tab = self.encounter_tabs.currentIndex()
         rolling = (self.preview_running and self.preview_key is not None and not ready
@@ -776,8 +778,13 @@ class XDWorkspace(QWidget):
         status_style = "color: #ffb4c4;" if self.preview_error else ""
         if self.preview_hint.styleSheet() != status_style:
             self.preview_hint.setStyleSheet(status_style)
-        self.preview_hint.setText(self.window.text(self.preview_message))
-        self.preview_hint.setVisible(not ready and (tab == 0 if self.preview_running else
+        show_wild_rate = ready and tab == 3 and options.custom_poke_spot_shinies
+        if show_wild_rate:
+            self.preview_hint.setText(self.window.text("Chromatiques sauvages : {rate} % par nouvelle rencontre.",
+                                                        rate=format(options.poke_spot_shiny_chance_percent, "g")))
+        else:
+            self.preview_hint.setText(self.window.text(self.preview_message))
+        self.preview_hint.setVisible(show_wild_rate or not ready and (tab == 0 if self.preview_running else
                                       self.preview_action != "Calculer l’aperçu"))
         self.preview_status.setText("✓ " + self.window.text("Aperçu à jour")
                                     if ready else "")
@@ -818,7 +825,7 @@ class XDWorkspace(QWidget):
         self.preview_portrait.setPixmap(self.window.preview_portrait(portrait_row, xd=True).pixmap(42, 42))
         self.preview_portrait.setAccessibleName(name_text)
         self.preview_portrait.setToolTip(encounter(starter, show_original=True) if starter else "?")
-        self.preview_shiny_status.setText(self.window.shiny_status_text(self.current_options(), xd=True))
+        self.preview_shiny_status.setText(self.window.shiny_status_text(options, xd=True))
 
         tree = self.preview_details
         position = tree.verticalScrollBar().value()

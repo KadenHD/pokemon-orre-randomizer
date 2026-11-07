@@ -35,7 +35,7 @@ CATEGORY_HELP = {
 }
 XD_CATEGORY_HELP = {
     "Poké Places": "Change les rencontres des Poké Places. Doking demande le Pokémon de l’emplacement rare de chaque lieu.",
-    "Chromatiques": "La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places gardent le taux d’origine.",
+    "Chromatiques": "La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places ont leur propre réglage.",
 }
 
 CATEGORY_ORDER = tuple(CATEGORY_HELP)[:2] + ("Poké Places",) + tuple(CATEGORY_HELP)[2:]

@@ -101,8 +101,8 @@
       "description": "The same shiny Wailord as the wild battle begins."
     },
     "colosseum-motorcycle-starters.png": {
-      "bytes": 514799,
-      "sha256": "2e48b5c1e7c54854f67efc40372fe255d8ae12b85547fdb54b4deb19869c89c2",
+      "bytes": 510369,
+      "sha256": "48e3d7898cf138bc4a793be172d8a3527fb69f83530f7523e299fd99cf998029",
       "game": "colosseum",
       "kind": "native-gameplay",
       "language": "fr",

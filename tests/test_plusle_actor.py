@@ -41,14 +41,14 @@ class FieldModelTests(unittest.TestCase):
             _field_model(bytes(model))
 
     def test_attachment_keeps_scaling_separate_from_the_root_and_idle(self):
-        field = _field_model(_model_fixture(), scale=0.125, attachment_lift=0.75)
+        field = _field_model(_model_fixture(), scale=0.125, attachment_offset=(1.0, 0.75, -1.0))
         joints = field[0x20:0x20 + u32(field, 4)]
         outer = u32(joints, 8)
         scaled = u32(joints, outer + 8)
         self.assertEqual(u32(joints, scaled + 8), 0x34)
         self.assertEqual(struct.unpack_from(">3f", joints, outer + 0x20), (1.0,) * 3)
         self.assertEqual(struct.unpack_from(">3f", joints, scaled + 0x20), (0.125,) * 3)
-        self.assertEqual(struct.unpack_from(">3f", joints, scaled + 0x2C), (0.0, 0.75, 0.0))
+        self.assertEqual(struct.unpack_from(">3f", joints, scaled + 0x2C), (1.0, 0.75, -1.0))
         relocations = set(struct.unpack_from(f">{u32(field, 8)}I", field, 0x20 + len(joints)))
         self.assertTrue({outer + 8, scaled + 8} <= relocations)
         for pointer_field, idle in ((12, 0x38), (16, 0x3C)):

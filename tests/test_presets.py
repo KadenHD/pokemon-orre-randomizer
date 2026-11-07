@@ -69,6 +69,8 @@ class PresetTests(unittest.TestCase):
                 if game == "xd":
                     expected["poke_spots_full_pokedex"] = False
                     expected["custom_shadow_shinies"] = False
+                    expected["custom_poke_spot_shinies"] = False
+                    expected["poke_spot_shiny_chance_percent"] = 5.0
                 self.assertEqual(json.loads(json.dumps(asdict(profile.options))), expected)
                 self.assertEqual(profile.seed, "rc2-preset-compatibility")
                 # New presets must never be substituted for imported RC values.
@@ -89,6 +91,8 @@ class PresetTests(unittest.TestCase):
                 payload["engine_version"] = PREVIOUS_XD_QOL_ENGINE
                 expected["poke_spots_full_pokedex"] = False
                 expected["custom_shadow_shinies"] = False
+                expected["custom_poke_spot_shinies"] = False
+                expected["poke_spot_shiny_chance_percent"] = 5.0
             payload.pop("configuration_sha256")
             payload["configuration_sha256"] = hashlib.sha256(json.dumps(
                 payload, ensure_ascii=False, sort_keys=True, separators=(",", ":"),

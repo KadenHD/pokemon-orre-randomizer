@@ -21,6 +21,8 @@ PREVIOUS_XD_QOL_ENGINE = "xd-story-sha256-v5"
 PREVIOUS_XD_SHUFFLE_ENGINE = "xd-story-sha256-v6"
 PREVIOUS_XD_FULL_SPOT_ENGINE = "xd-story-sha256-v7"
 PREVIOUS_XD_SHADOW_SHINY_ENGINE = "xd-story-sha256-v8"
+PREVIOUS_XD_FIELD_ENGINE = "xd-story-sha256-v9"
+XD_POKE_SPOT_SHINY_FIELDS = frozenset(("custom_poke_spot_shinies", "poke_spot_shiny_chance_percent"))
 XD_SPOT_MIGRATION = "Réglages XD chargés. Les Poké Places utilisent le nouveau tirage."
 SCHEMA_VERSION = 1
 MAX_PROFILE_BYTES = 64 * 1024
@@ -59,7 +61,9 @@ V16_APP_VERSIONS = ("0.18.0", "0.18.1", "0.18.2", "0.18.3", "0.18.4", "0.19.0", 
     "1.2.4", "1.2.5", "1.2.6", "1.2.7", "1.2.8")
 V17_ENGINE_VERSION = "story-gift-scenes-v17"
 V17_APP_VERSIONS = ("1.2.9", "1.2.10", "1.2.11", "1.2.12")
-CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, __version__)
+V18_APP_VERSION = "1.2.13"
+V18_ENGINE_VERSION = "story-field-actors-v18"
+CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, V18_APP_VERSION, __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -143,6 +147,7 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
     previous = (payload["app_version"] == PREVIOUS_APP_VERSION
                 and payload["engine_version"] == PREVIOUS_ENGINE_VERSION)
     current = ((payload["app_version"] == __version__ and payload["engine_version"] == ENGINE_VERSION)
+               or (payload["app_version"] == V18_APP_VERSION and payload["engine_version"] == V18_ENGINE_VERSION)
                or (payload["app_version"] in V17_APP_VERSIONS and payload["engine_version"] == V17_ENGINE_VERSION)
                or (payload["app_version"] in V16_APP_VERSIONS and payload["engine_version"] == V16_ENGINE_VERSION))
     details = (type(payload["app_version"]) is str and payload["app_version"] in DETAILS_APP_VERSIONS
@@ -244,7 +249,8 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
     try:
         payload = _decode_json(data)
         if type(payload) is not dict or payload.get("engine_version") not in (
-            xd.VERSION, PREVIOUS_XD_SHADOW_SHINY_ENGINE, PREVIOUS_XD_FULL_SPOT_ENGINE, PREVIOUS_XD_SHUFFLE_ENGINE,
+            xd.VERSION, PREVIOUS_XD_FIELD_ENGINE, PREVIOUS_XD_SHADOW_SHINY_ENGINE,
+            PREVIOUS_XD_FULL_SPOT_ENGINE, PREVIOUS_XD_SHUFFLE_ENGINE,
             PREVIOUS_XD_QOL_ENGINE, PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE,
         ):
             raise ValueError
@@ -264,9 +270,12 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         options = payload["options"]
         seed = payload["seed"]
         expected = {item.name for item in fields(xd.XDOptions)}
-        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_SHADOW_SHINY_ENGINE):
+        if payload["engine_version"] != xd.VERSION:
+            expected -= XD_POKE_SPOT_SHINY_FIELDS
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_FIELD_ENGINE, PREVIOUS_XD_SHADOW_SHINY_ENGINE):
             expected.remove("custom_shadow_shinies")
-        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_SHADOW_SHINY_ENGINE, PREVIOUS_XD_FULL_SPOT_ENGINE):
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_FIELD_ENGINE,
+                                             PREVIOUS_XD_SHADOW_SHINY_ENGINE, PREVIOUS_XD_FULL_SPOT_ENGINE):
             expected.remove("poke_spots_full_pokedex")
         if payload["engine_version"] in (PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE):
             expected.remove("randomize_hordel_gift")

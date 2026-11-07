@@ -6,7 +6,8 @@ import unittest
 
 from orre_randomizer import xd
 from orre_randomizer.engine.analyze_game import FormatError
-from orre_randomizer.profiles import PREVIOUS_XD_SHUFFLE_ENGINE, parse_xd_profile
+from orre_randomizer.profiles import PREVIOUS_XD_SHUFFLE_ENGINE, XD_POKE_SPOT_SHINY_FIELDS, parse_xd_profile
+from orre_randomizer.xd_poke_spot_shinies import apply_poke_spot_shinies
 from orre_randomizer.service import UserError
 from orre_randomizer.xd_poke_spot_actors import _patch_species_checks
 
@@ -84,10 +85,24 @@ class XDSpotTests(unittest.TestCase):
         self.assertEqual([row["species"] for row in spots],
                          [index for native in xd.SPOT_SPECIES.values() for index in native])
 
+    def test_wild_shiny_policy_is_opt_in_and_validated_without_species_changes(self):
+        native = xd.XDOptions.recommended()
+        patched, report = apply_poke_spot_shinies(b"original", b"earlier patches", "GXXP01", native)
+        self.assertEqual(patched, b"earlier patches")
+        self.assertFalse(report["enabled"])
+        custom = replace(xd.XDOptions.unchanged(), custom_poke_spot_shinies=True,
+                         poke_spot_shiny_chance_percent=0.0)
+        self.assertEqual(xd.validate_options(custom), custom)
+        self.assertFalse(custom.randomize_poke_spots)
+        with self.assertRaises(UserError):
+            xd.validate_options(replace(custom, poke_spot_shiny_chance_percent=100.1))
+
     def test_v6_reports_keep_native_shuffle_and_current_reports_require_explicit_pool(self):
         options = asdict(replace(xd.XDOptions.recommended(), poke_spots_full_pokedex=False, custom_shadow_shinies=False))
         options.pop("poke_spots_full_pokedex")
         options.pop("custom_shadow_shinies")
+        for key in XD_POKE_SPOT_SHINY_FIELDS:
+            options.pop(key)
         region = xd.REGIONS["GXXP01"]
         payload = {"engine_version": PREVIOUS_XD_SHUFFLE_ENGINE, "game_id": region.game_id,
                    "revision": 0, "source_iso_sha256": region.iso_sha256, "seed": "old-native", "options": options}

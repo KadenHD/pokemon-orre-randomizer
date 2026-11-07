@@ -18,9 +18,15 @@ generated encounters cannot be shiny; at 100%, they are guaranteed shiny.
 
 In XD, **Apply the rate to Shadow Pokémon** removes the native Shadow lock
 when customization is enabled. Both randomizing presets select it. Disabling
-this option keeps the lock without changing the starter or gift policy. Wild
-Poké Spots still use their native odds. Shadow Lugia retains its special dark
+this option keeps the lock without changing the starter or gift policy. Shadow Lugia retains its special dark
 model until purification; the underlying shiny status is preserved.
+
+In XD, **Poké Spots → Customize wild shiny odds** sets a separate rate for
+new ordinary wild encounters. Both presets retain the original odds by default.
+The game rolls at encounter generation and reuses the stored PID on the field,
+in battle and after capture. The seed fixes the roster, while the game determines
+each new encounter's shiny result. The preview can show a guaranteed result at
+0% or 100%. A wild Pokémon already waiting at a Poké Spot keeps its original PID.
 
 ## Preview and saves
 

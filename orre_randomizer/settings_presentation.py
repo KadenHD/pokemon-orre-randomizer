@@ -132,6 +132,8 @@ def effective_xd_setting_names(options):
             selected.add(name)
     if options.randomize_poke_spots:
         selected.add('poke_spots_full_pokedex')
+    if options.custom_poke_spot_shinies:
+        selected.update(('custom_poke_spot_shinies', 'poke_spot_shiny_chance_percent'))
     if options.custom_shinies:
         selected.add('custom_shadow_shinies')
     # XD's tutorial, Hordel and wild slots also consult the species filters.
@@ -171,7 +173,7 @@ def configuration_review(options, language="fr"):
         meta = metadata[name]
         label = translate(meta["label"], language)
         value = _value(name, options, language, meta)
-        if name == "shiny_chance_percent":
+        if name in ("shiny_chance_percent", "poke_spot_shiny_chance_percent"):
             value += " %"
         elif name.endswith("_multiplier"):
             value = "×" + value

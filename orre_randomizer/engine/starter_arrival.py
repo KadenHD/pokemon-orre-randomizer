@@ -93,15 +93,19 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
         # tighter field limits for especially wide or long battle models.
         height = max(1, u16(rel, row["offset"] + 0x0A))
         scale = min(companion_scale(national, 0.7), 0.7 * min(1.0, 18 / height))
-        # The motorcycle's joints use scene units (roughly one decimeter).
-        # Raise short riders, with extra clearance behind a broad front rider.
-        lift = max(0, 8 - height) * 5 / 6
-        if slot == 1 and front_is_large:
-            lift += 3.5
+        # Let short models clear the seat lip without lifting them above the
+        # sidecar. The rear joint faces inward, so both local axes contribute
+        # to a small shift toward the outside of the seat.
+        shortfall = max(0, 8 - height)
+        if height <= 3:
+            scale = max(scale, 0.9)
+        lift = shortfall * 0.5
+        outward = 2.0 if slot == 1 and front_is_large and height <= 3 else 0.0
         if slot == 0:
             front_is_large = national in OVERSIZED_FIELD_SPECIES or height > 18
         payload = load_actor_model(original_dol, game, u32(rel, row["offset"] + 0x2C),
-                                   read_archive, scale=scale, shiny=shiny, attachment_lift=lift)
+                                   read_archive, scale=scale, shiny=shiny,
+                                   attachment_offset=(outward, lift, -outward))
         resource = 0x7DF00400 + (slot << 16)
         actors[slot] = resource
         models[resource] = f"orre_intro_starter_{slot + 1}", payload
