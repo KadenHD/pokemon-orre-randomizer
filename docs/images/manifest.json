@@ -17,12 +17,20 @@
       "sha256": "6cfe0af76dd7919e04f8dc814968d41d667cca9e20fe45606750af4354f57b4d"
     },
     "xd-settings.png": {
-      "bytes": 54831,
-      "sha256": "59bc7799d281bf345cadb59c015d987a6978efd2990a0d638248b58e3448e12a"
+      "bytes": 65250,
+      "sha256": "347ba0aa01969f2d75e4559bbf089708fa19c146d47cf086597fa38e0d33d98b",
+      "kind": "application",
+      "app_version": "1.2.15",
+      "language": "en",
+      "description": "XD's Simple settings distinguish encounter frequency from wild shiny odds."
     },
     "pokemon-sheet.png": {
-      "bytes": 45088,
-      "sha256": "15b9523dbba64da7e75b6ddb454dd2aaf8e8bc85664eb612ef74fb604965c8ce"
+      "bytes": 45915,
+      "sha256": "0e844eb805f883735789a9a5d67ddd663c83443339f8c718f5c9b5602525e1e7",
+      "kind": "application",
+      "app_version": "1.2.15",
+      "language": "en",
+      "description": "Colosseum's Cyndaquil evolution sheet with the Fire badge and portraits for all three forms."
     },
     "shadow-pokemon.png": {
       "bytes": 116899,

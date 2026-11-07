@@ -74,6 +74,8 @@ leave no alternative.
 profiles keep their saved settings, including defaults from older versions.
 Selecting a preset applies the current defaults.
 
+![XD Simple settings with separate encounter frequencies and wild shiny odds](docs/images/xd-settings.png)
+
 ![Colosseum settings and starter preview](docs/images/colosseum-settings.png)
 
 Preview all 48 Colosseum Shadow Pokémon and their replacements before creating
@@ -139,11 +141,13 @@ Pokémon sheets read the final patched game data, including evolution routes,
 moves and TM compatibility. The Summary and Moves tabs show the original ability
 and move descriptions in your interface language.
 
+![Cyndaquil’s evolution sheet in Colosseum, with the original Fire badge](docs/images/pokemon-sheet.png)
+
 | Colosseum · Shadow Rush | XD · Shadow moves |
 | --- | --- |
 | ![Colosseum move sheet with Shadow Rush and its description](docs/images/colosseum-shadow-moves.png) | ![XD move sheet with Shadow moves, descriptions and type badges](docs/images/xd-shadow-moves.png) |
 
-These application captures show the French interface.
+The move sheets above show the French interface.
 
 ### Advanced settings
 
@@ -153,10 +157,6 @@ own; switching between Simple and Advanced keeps your settings.
 | Colosseum · move rules | XD · shiny rules |
 | --- | --- |
 | ![Colosseum advanced settings: moves, learnsets and battle safeguards](docs/images/colosseum-advanced.png) | ![XD advanced settings: custom shiny rate and optional Shadow unlock](docs/images/xd-advanced.png) |
-
-![XD settings](docs/images/xd-settings.png)
-
-![Pokémon sheet with evolution routes](docs/images/pokemon-sheet.png)
 
 ## Compatibility and languages
 
