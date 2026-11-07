@@ -49,8 +49,10 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
     with tempfile.TemporaryDirectory(prefix="diagnostic-prefs-", dir=report.parent) as folder:
         settings = QSettings(str(Path(folder)/"preferences.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
+        settings.setValue("interface/sounds", False)
         window = MainWindow(settings=settings, system_languages=["fr-FR"])
         try:
+            assert not window.music_requested and not window.audio.enabled
             data["music_tracks"] = {scene: path.name for scene, path in window.music_tracks.items() if path is not None}
             data["music_available"] = "colosseum" in data["music_tracks"]
             assert not window.windowIcon().pixmap(16, 16).isNull()

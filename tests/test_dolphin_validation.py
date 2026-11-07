@@ -68,7 +68,8 @@ class DolphinValidationTests(unittest.TestCase):
         result = self.run_job()
         self.assertTrue(result["successful_process_and_preservation"])
         self.assertEqual(result["return_code"], 0)
-        self.assertEqual(result["argv"], [str(self.emulator), "-u", str(self.profile), "-e", str(self.iso)])
+        self.assertEqual(result["argv"], [str(self.emulator), "-u", str(self.profile), "-e", str(self.iso),
+                                          "-C", "Dolphin.DSP.Volume=0"])
         self.assertIn("outside-known-directories.bin", result["personal_profile_before"])
         self.assertEqual(result["pid"], 12345)
         self.assertEqual(Path(result["stdout"]).read_bytes(), b"native stdout")

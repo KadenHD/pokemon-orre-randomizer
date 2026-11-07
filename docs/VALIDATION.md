@@ -97,6 +97,25 @@ keys; the older draw domains remain unchanged.
 These checks validate data, text, previews and disc construction. A newly played
 Duking exchange and full campaign for each possible draw are not claimed here.
 
+### Pending Poké Spot encounters (v1.2.15)
+
+In muted French PAL Dolphin sessions, the Spot Monitor registered a new
+Vulpix at Rock with a 0% wild shiny rate, and new shiny Taillow and Sentret
+at Oasis and Cave with a 100% rate. The test cards started just before the
+encounter timer. After saving, separate copies loaded the pending encounters
+at their respective spots with the rate reversed. The on-field message and
+model matched the battle species. All three captures were saved, and the
+captured entries retained the exact pending personality and owner IDs.
+
+### Phenac dialogue replays (v1.2.15)
+
+Muted French PAL sessions used separate copies of a player save, prepared at
+the two relevant story states. The boy outside the Pre Gym cheered for Chinchou
+and then explained he was imitating Justy. The first battle against Folly used
+Slakoth and Ekans. The game displayed both names in his defeat line, followed
+by the native continuation. The output ISO’s `openingdemo.thp` matched the
+original disc byte for byte.
+
 ## XD Shadow shiny unlock (v1.2.0)
 
 The [dedicated report](XD_SHADOW_SHINIES_VALIDATION.md) records guarded patches

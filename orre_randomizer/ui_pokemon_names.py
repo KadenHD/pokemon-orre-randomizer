@@ -26,6 +26,9 @@ class PreviewNameDelegate(QStyledItemDelegate):
         widget = item.widget
         style = widget.style() if widget else QApplication.style()
         text_area = style.subElementRect(QStyle.SubElement.SE_ItemViewItemText, item, widget)
+        # Match the inset Qt uses when painting plain item text beside a portrait.
+        text_margin = style.pixelMetric(QStyle.PixelMetric.PM_FocusFrameHMargin, item, widget) + 1
+        text_area.adjust(text_margin, 0, -text_margin, 0)
         item.text = ""
         style.drawControl(QStyle.ControlElement.CE_ItemViewItem, item, painter, widget)
         if text_area.isEmpty():
@@ -40,7 +43,9 @@ class PreviewNameDelegate(QStyledItemDelegate):
         context.palette = item.palette
         if item.state & QStyle.StateFlag.State_Selected:
             context.palette.setColor(QPalette.ColorRole.Text, item.palette.color(QPalette.ColorRole.HighlightedText))
-        top = text_area.y() + max(0.0, (text_area.height() - document.size().height()) / 2)
+        top = text_area.y()
+        if not item.displayAlignment & Qt.AlignmentFlag.AlignTop:
+            top += max(0.0, (text_area.height() - document.size().height()) / 2)
         painter.save()
         painter.setClipRect(text_area, Qt.ClipOperation.IntersectClip)
         painter.translate(text_area.x(), top)

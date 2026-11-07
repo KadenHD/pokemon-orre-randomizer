@@ -15,7 +15,7 @@ randomized Pokémon.
 
 | Game | Candidates reviewed | Result |
 | --- | --- | --- |
-| Colosseum | Phenac boy imitating Justy | `M1_out.fsys` function 17 uses message `0x4E2B`. Its Nosepass reference follows trainer row 34, party row 3541. The Folly victory message in the same archive is retained. |
+| Colosseum | Phenac boy imitating Justy | The boy’s interaction in `M1_out.fsys` uses message `0x4E2B`. Its Nosepass reference follows trainer row 34, party row 3541. The Folly victory message in the same archive is retained. |
 | Colosseum | Lab Makuhita, final Ho-Oh and Snagem escape assets | The Makuhita dialogue describes a resident Pokémon and an abandoned Shadow partnership. The final Ho-Oh and Mt. Battle prize are separate events. The Snagem escape is the original `openingdemo.thp`. |
 | XD | Phenac residents, Lilas's partners, Poké Spot special visitors and Shadow Lugia | The resident stories and special visitors use their own actor and script branches. Shadow Lugia keeps the dedicated story species and purification path. |
 | XD | Regular Poké Spots and known trainer companions | The existing field roster patches use the ordinary encounter branches. The new optional wild shiny rate acts on the PID stored by those branches before the Radar alert. |

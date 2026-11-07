@@ -38,7 +38,7 @@ def prepare(output: Path, source_profile: Path, *, copy_saves: bool = True) -> d
                    "SkipIPL = True\nSlotA = 1\nSlotB = 255\n" + card_config +
                    "[Display]\nFullscreen = False\nRenderToMain = True\n"
                    "[Interface]\nConfirmStop = False\n"
-                   "[DSP]\nVolume = 15\n"
+                   "[DSP]\nVolume = 0\nMute = True\n"
                    "[Analytics]\nPermissionAsked = True\n")
     (output / "Config/Dolphin.ini").write_text(dolphin_ini, encoding="utf-8")
     pad_ini = ("[GCPad1]\nDevice = DInput/0/Keyboard Mouse\nButtons/A = X\nButtons/B = Z\n"

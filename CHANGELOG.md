@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.15
+
+- Show Duking’s requested Pokémon, Poké Spot, encounter frequency and reward
+  together in XD’s preview and journal.
+- Align Pokémon names and trade details across both columns of XD’s gift preview.
+- Distinguish encounter frequency from wild shiny odds in the Simple settings.
+- Mute the desktop diagnostics and isolated Dolphin validation runs.
+
 ## 1.2.14
 
 - Add an optional, independent wild shiny rate for XD's three Poké Spots.

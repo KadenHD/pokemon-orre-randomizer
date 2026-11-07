@@ -58,6 +58,7 @@ class MusicTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory, patch("orre_randomizer.gui.music_track", side_effect=tracks.get), \
                 patch("orre_randomizer.gui.MenuMusic", side_effect=lambda parent, path: MenuMusic(parent, path, backend)):
             settings = QSettings(str(Path(directory) / "preferences.ini"), QSettings.Format.IniFormat)
+            settings.setValue("interface/sounds", False)
             window = MainWindow(settings=settings, start_on_home=True)
             try:
                 backend.open_file.assert_called_once_with(tracks["home"])

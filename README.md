@@ -23,10 +23,9 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.14** adds a separate wild shiny rate for XD's Poké Spots and
-improves the placement of Colosseum's randomized starters in the sidecar.
-Colosseum's arrival at Outskirt Stand shows the chosen starters.
-See the [release notes](docs/releases/v1.2.14.md).
+**Version 1.2.15** shows each of Duking’s trades alongside its Poké Spot and
+encounter frequency in XD’s preview and journal.
+See the [release notes](docs/releases/v1.2.15.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)

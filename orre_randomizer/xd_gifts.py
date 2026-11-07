@@ -55,7 +55,9 @@ _DUKING_NAME_WORDS = (
 )
 _DUKING_SPECIES_WORDS = ((0xB48, 0xD1C), (0xB98, 0xD60), (0xBE8, 0xDA4))
 _DUKING_REMAINING_NAMES = 0x1754
-DUKING_TRADES = ("duking-trapinch", "duking-surskit", "duking-wooper")
+DUKING_TRADE_SPOTS = {"duking-trapinch": "rock", "duking-surskit": "oasis", "duking-wooper": "cave"}
+DUKING_TRADES = tuple(DUKING_TRADE_SPOTS)
+SPOT_LABELS = {"rock": "Roche", "oasis": "Oasis", "cave": "Grotte"}
 HORDEL_SHADOW = 81
 TOGEPI, TOGETIC = 175, 176
 _HORDEL_GIFT_OFFSETS = {"GXXP01": 0x1C705C, "GXXE01": 0x1C5760, "GXXJ01": 0x1C0C70}
@@ -67,6 +69,12 @@ _HORDEL_OFFER_WORDS = ((TOGEPI, (0xF24, 0x1350, 0x18DC)),
 _HORDEL_OFFER_MESSAGES = (0xA42F, 0xA433, 0xA435, 0xA436)
 _HORDEL_MESSAGES = (0xA438, 0xA43B, 0xA43C, 0xA43E, 0xA443)
 _PRIZE_MESSAGES = (0x7A49, 0x7A4A, 0x7A4B)
+
+
+def duking_trade_encounters(spots):
+    """Index the rare encounter of each Poké Spot by Duking's trade key."""
+    rare = {row["spot"]: row for row in spots if row.get("slot") == 3}
+    return {key: rare[spot] for key, spot in DUKING_TRADE_SPOTS.items() if spot in rare}
 
 
 def _native_name(banks: Mapping[str, Mapping[int, str]], language: str, national: int) -> str:

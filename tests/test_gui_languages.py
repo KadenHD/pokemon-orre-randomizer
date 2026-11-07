@@ -31,6 +31,9 @@ class GuiLanguageTests(unittest.TestCase):
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory()
         self.settings_path = str(Path(self.folder.name) / "preferences.ini")
+        settings = QSettings(self.settings_path, QSettings.Format.IniFormat)
+        settings.setValue("interface/music", False)
+        settings.setValue("interface/sounds", False)
         self.window = self.make_window(["fr-FR"])
 
     def make_window(self, tags):

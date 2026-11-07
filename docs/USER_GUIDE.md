@@ -115,8 +115,11 @@ overworld and in battle, including their shiny form when the game rolls one.
 Large species use a smaller overworld model.
 
 Duking's species checks, dialogue and the gifts preview follow those rare slots,
-including when gift rewards themselves are kept unchanged. Dialogue uses the
-ROM's own languages. Disable **Draw from the full Pokédex** in Advanced to keep
+including when gift rewards themselves are kept unchanged. The preview and
+journal show the requested Pokémon, its Poké Spot, its share of encounters at
+that spot and the reward. The share of encounters is separate from wild shiny
+odds. Dialogue uses the ROM's own languages. Disable **Draw from the full
+Pokédex** in Advanced to keep
 the original three-species shuffle. Profiles from earlier engines retain that
 older shuffle when imported. At least three allowed species are needed for the
 full draw. The two special encounters and Mt. Battle prize requirements retain

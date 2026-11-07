@@ -63,7 +63,8 @@ V17_ENGINE_VERSION = "story-gift-scenes-v17"
 V17_APP_VERSIONS = ("1.2.9", "1.2.10", "1.2.11", "1.2.12")
 V18_APP_VERSION = "1.2.13"
 V18_ENGINE_VERSION = "story-field-actors-v18"
-CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, V18_APP_VERSION, __version__)
+V19_APP_VERSIONS = ("1.2.14", __version__)
+CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, V18_APP_VERSION, *V19_APP_VERSIONS)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -146,7 +147,7 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
               and payload["engine_version"] == LEGACY_ENGINE_VERSION)
     previous = (payload["app_version"] == PREVIOUS_APP_VERSION
                 and payload["engine_version"] == PREVIOUS_ENGINE_VERSION)
-    current = ((payload["app_version"] == __version__ and payload["engine_version"] == ENGINE_VERSION)
+    current = ((payload["app_version"] in V19_APP_VERSIONS and payload["engine_version"] == ENGINE_VERSION)
                or (payload["app_version"] == V18_APP_VERSION and payload["engine_version"] == V18_ENGINE_VERSION)
                or (payload["app_version"] in V17_APP_VERSIONS and payload["engine_version"] == V17_ENGINE_VERSION)
                or (payload["app_version"] in V16_APP_VERSIONS and payload["engine_version"] == V16_ENGINE_VERSION))

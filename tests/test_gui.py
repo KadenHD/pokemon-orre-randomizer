@@ -20,8 +20,10 @@ class GuiTests(unittest.TestCase):
 
     def setUp(self):
         self.preferences_dir = tempfile.TemporaryDirectory()
-        self.window = MainWindow(settings=QSettings(str(Path(self.preferences_dir.name) / "settings.ini"),
-                                                   QSettings.Format.IniFormat), system_languages=["fr-FR"])
+        settings = QSettings(str(Path(self.preferences_dir.name) / "settings.ini"), QSettings.Format.IniFormat)
+        settings.setValue("interface/music", False)
+        settings.setValue("interface/sounds", False)
+        self.window = MainWindow(settings=settings, system_languages=["fr-FR"])
 
     def tearDown(self):
         from PySide6.QtTest import QTest
@@ -46,7 +48,6 @@ class GuiTests(unittest.TestCase):
         from PySide6.QtTest import QTest
 
         window = self.window
-        window.music_toggle.setChecked(False)
         window.show_home()
         window.show()
         self.app.processEvents()
@@ -174,7 +175,7 @@ class GuiTests(unittest.TestCase):
 
     def test_xd_preview_keeps_the_same_result_across_language_changes(self):
         from unittest.mock import patch
-        from PySide6.QtCore import QThread
+        from PySide6.QtCore import QThread, Qt
         from PySide6.QtTest import QTest
 
         window = self.window
@@ -188,7 +189,8 @@ class GuiTests(unittest.TestCase):
             "starter": {"original": 133, "species": 283, "level": 10},
             "national_ids": {"283": 258},
             "decks": {"Story": {"shadows": [{"shadow_id": 2, "original": 37, "species": 25, "level": 21}]}},
-            "poke_spots": [{"spot": "rock", "original": 27, "species": 25, "levels": [10, 20], "chance": 50}],
+            "poke_spots": [{"spot": "rock", "slot": 3, "original": 332, "species": 25,
+                            "levels": [10, 20], "chance": 15}],
             "gifts": [{"key": "duking-trapinch", "required_species": 25, "original": 25, "species": 283, "level": 20},
                       {"key": "hordel-trade", "required_species": 25, "required_evolution": 26,
                        "original": 239, "species": 283, "level": 20}],
@@ -212,10 +214,16 @@ class GuiTests(unittest.TestCase):
             self.assertIn("Évoli → Gobou", xd.preview_portrait.toolTip())
             xd.encounter_tabs.setCurrentIndex(2)
             self.assertEqual(xd.preview_details.topLevelItemCount(), 2)
-            self.assertIn("Échange contre Togepi ou Togetic", xd.preview_details.topLevelItem(1).text(0))
+            duking, hordel = (xd.preview_details.topLevelItem(i) for i in range(2))
+            for row in (duking, hordel):
+                for column in range(2):
+                    self.assertEqual(row.textAlignment(column), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
+            self.assertIn("Gobou · Niv. 20\nDoking demande Pikachu · Roche\n15 % des rencontres", duking.text(1))
+            self.assertIn("Échange contre Togepi ou Togetic", hordel.text(0))
+            self.assertIn("\nÉchange contre Pikachu ou Raichu", hordel.text(1))
             window.language_combo.setCurrentIndex(window.language_combo.findData("en"))
             self.assertEqual(xd.encounter_tabs.currentIndex(), 2)
-            self.assertIn("Trade for Pikachu", xd.preview_details.topLevelItem(0).text(1))
+            self.assertIn("Duking wants Pikachu · Rock\n15% of encounters", xd.preview_details.topLevelItem(0).text(1))
             self.assertIn("Trade for Pikachu or Raichu", xd.preview_details.topLevelItem(1).text(1))
             self.assertIn("Mudkip", xd.preview_starter.text())
             xd.start_preview()

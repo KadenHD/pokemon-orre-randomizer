@@ -28,7 +28,7 @@ from .ui_workspace import (CreationLog, EncounterTable, RuleNavigation, configur
                            preview_toolbar, scroll_area, search_field, settings_workspace, starter_slot,
                            wizard_frame, wizard_page)
 from .xd import XDOptions, validate_options
-from .xd_gifts import GIFT_TRADE_REQUIREMENTS, TOGETIC
+from .xd_gifts import GIFT_TRADE_REQUIREMENTS, SPOT_LABELS, TOGETIC, duking_trade_encounters
 from .xd_preview import baseline_rows
 from .preview import ROULETTE_SPECIES
 from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS, PRESET_EVOLUTIONS,
@@ -65,7 +65,6 @@ DEPENDENCIES = {
                      "ban_self_destruct", "ban_ohko", "moves_mode"), MOVE_RULES),
 }
 
-SPOT_LABELS = {"rock": "Roche", "oasis": "Oasis", "cave": "Grotte"}
 
 
 class XDWorkspace(QWidget):
@@ -240,7 +239,8 @@ class XDWorkspace(QWidget):
         self.preset_shiny = window.note(PRESET_SHINIES)
         simple_layout.addWidget(self.preset_shiny)
         self.preset_native = window.note(
-            "Dans XD, Lugia obscur garde son espèce. Les échanges de Doking suivent les Poké Places, qui gardent le taux chromatique d’origine.")
+            "Lugia obscur garde son espèce. Doking demande le Pokémon rare de chaque Poké Place. "
+            "La fréquence d’apparition reste celle de l’emplacement. Le taux chromatique se règle séparément en mode Avancé.")
         simple_layout.addWidget(self.preset_native)
         simple_layout.addStretch(1)
         self.configuration_pages.addWidget(scroll_area(simple))
@@ -853,10 +853,22 @@ class XDWorkspace(QWidget):
             rows = [(row, f"{row['shadow_id']:02d}", "") for row in shadows]
         elif tab == 2:
             rows = []
+            trades = duking_trade_encounters(spots)
             for row in gifts:
                 original_offer = gift_origin(row, original=True)
-                seeded_offer = gift_origin(row)
-                suffix = f" · {seeded_offer}" if seeded_offer != original_offer else ""
+                trade = trades.get(row["key"])
+                if trade is not None:
+                    spot = self.window.text(SPOT_LABELS[trade["spot"]])
+                    requested = trade.get("species")
+                    offer = self.window.text("Doking demande {pokemon} · {spot}",
+                                             pokemon=name(requested) if requested is not None else "?", spot=spot)
+                    if "chance" in trade:
+                        frequency = self.window.text("{chance} % des rencontres", chance=trade["chance"])
+                        offer += f"\n{frequency}"
+                    suffix = f"\n{offer}"
+                else:
+                    seeded_offer = gift_origin(row)
+                    suffix = f"\n{seeded_offer}" if seeded_offer != original_offer else ""
                 rows.append((row, original_offer, suffix))
         elif tab == 3:
             rows = [(row, self.window.text(SPOT_LABELS.get(row["spot"], row["spot"])),
@@ -874,12 +886,17 @@ class XDWorkspace(QWidget):
                     words.extend(names[national] for names in SPECIES_NAMES.values() if national in names)
             child.setData(0, Qt.ItemDataRole.UserRole, search_key(" ".join(words)))
             child.setData(0, Qt.ItemDataRole.UserRole + 2, row)
-            child.setSizeHint(0, QSize(0, 46))
+            if tab == 2:
+                alignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
+                child.setTextAlignment(0, alignment)
+                child.setTextAlignment(1, alignment)
+            child.setSizeHint(0, QSize(0, 64 if suffix.count("\n") == 2 else 46))
             child.setToolTip(0, native)
             child.setToolTip(1, result)
             child.setIcon(1, self.window.preview_portrait(dict(row, national_dex=number), xd=True))
             if row.get("shiny"):
-                child.setData(1, RICH_NAME_ROLE, f"{encounter(row, rich=True)}{escape(suffix)}")
+                detail = escape(suffix).replace("\n", "<br>")
+                child.setData(1, RICH_NAME_ROLE, f"{encounter(row, rich=True)}{detail}")
         self.preview_search.setVisible(0 < tab < self.family_tab)
         tree.setVisible(0 < tab < self.family_tab)
         self.encounter_hint.setText(self.window.text("Calcul en cours…" if rolling else

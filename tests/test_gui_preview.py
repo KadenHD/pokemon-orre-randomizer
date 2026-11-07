@@ -44,6 +44,7 @@ class GuiPreviewTests(unittest.TestCase):
         self.source.write_bytes(b"synthetic; preview service mocked")
         settings = QSettings(str(Path(self.folder.name) / "preferences.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
+        settings.setValue("interface/sounds", False)
         self.window = MainWindow(settings=settings, system_languages=["fr-FR"])
         self.window.source.setText(str(self.source))
         self.window.seed.setText("été-🌟")

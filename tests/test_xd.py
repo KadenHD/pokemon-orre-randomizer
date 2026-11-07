@@ -153,6 +153,20 @@ class XDTests(unittest.TestCase):
         self.assertIn("Roche · 1", french)
         self.assertNotIn("Umbreon", english)
 
+    def test_xd_journal_pairs_duking_rewards_with_the_correct_rare_spot(self):
+        report = {"game": "xd", "summary": {
+            "starter": {"species": 133, "level": 10}, "national_ids": {"25": 25, "283": 258, "133": 133},
+            "gifts": [{"key": "duking-trapinch", "species": 283, "level": 20, "required_species": 25}],
+            "poke_spots": [
+                {"spot": "oasis", "slot": 3, "species": 283, "levels": [10, 20], "chance": 15},
+                {"spot": "rock", "slot": 1, "species": 283, "levels": [10, 20], "chance": 50},
+                {"spot": "rock", "slot": 3, "species": 25, "levels": [10, 20], "chance": 15},
+            ],
+        }}
+        english = render_journal(report, "en")
+        self.assertIn("Duking’s trades", english)
+        self.assertIn("<td>Pikachu</td><td>Rock</td><td>15% of encounters</td><td>Mudkip</td><td>20</td>", english)
+
     def test_legacy_xd_report_imports_with_poke_spot_migration_notice(self):
         from dataclasses import asdict
 

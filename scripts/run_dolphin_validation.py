@@ -175,7 +175,8 @@ def run_validation(emulator: Path, iso: Path, profile: Path, report: Path,
     before_personal = snapshot_profile(personal_profile)
     stdout_path = report.with_suffix(report.suffix + ".stdout.log")
     stderr_path = report.with_suffix(report.suffix + ".stderr.log")
-    argv = [str(emulator), "-u", str(profile), "-e", str(iso)]
+    argv = [str(emulator), "-u", str(profile), "-e", str(iso),
+            "-C", "Dolphin.DSP.Volume=0"]
     if debugger:
         argv.append("-d")
     result = {"schema_version": 1, "status": "prepared", "started_utc": utc_now(),

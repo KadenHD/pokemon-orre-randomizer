@@ -105,6 +105,7 @@ def _options(report: dict, language: str) -> str:
 def _xd_spoilers(summary: dict, language: str) -> str:
     from .i18n import translate
     from .locales.selection_names import SPECIES_NAMES
+    from .xd_gifts import SPOT_LABELS, duking_trade_encounters
 
     tr = lambda key, **params: detail_text(key, language, **params)
     national_ids = summary.get('national_ids', {})
@@ -124,7 +125,6 @@ def _xd_spoilers(summary: dict, language: str) -> str:
                                 [[row['shadow_id'], name(row['species']), row['level']] for row in shadows]))
     spots = summary.get('poke_spots', ())
     if spots:
-        labels = {'rock': 'Roche', 'oasis': 'Oasis', 'cave': 'Grotte'}
         wild_shinies = summary.get('poke_spot_shinies', {})
         note = ''
         if wild_shinies.get('enabled'):
@@ -132,12 +132,15 @@ def _xd_spoilers(summary: dict, language: str) -> str:
             note = '<p>' + _e(text.format(rate=format(wild_shinies['chance_percent'], 'g'))) + '</p>'
         body += _section(translate('Poké Places ({count})', language).format(count=len(spots)),
                          note + _table(['#', tr('details'), tr('level', level=''), '%'],
-                                [[translate(labels.get(row['spot'], row['spot']), language) + f" · {row['slot']}",
+                                [[translate(SPOT_LABELS.get(row['spot'], row['spot']), language) + f" · {row['slot']}",
                                   name(row['species']) + (' ★' if row.get('shiny') else ''),
                                   '–'.join(map(str, row['levels'])), row['chance']]
                                  for row in spots]))
     gifts = summary.get('gifts', ())
     if gifts:
+        encounters = duking_trade_encounters(spots)
+        trades, other_gifts = [], []
+
         def gift_label(row):
             label = name(row['species'])
             if row.get('required_species') is None:
@@ -150,9 +153,22 @@ def _xd_spoilers(summary: dict, language: str) -> str:
                 trade = translate('Échange contre {pokemon}', language).format(pokemon=pokemon)
             return f'{label} · {trade}'
 
-        body += _section(tr('gifts') + f" · {len(gifts)}",
-                         _table([tr('details'), tr('level', level='')],
-                                [[gift_label(row), row['level']] for row in gifts]))
+        for row in gifts:
+            encounter = encounters.get(row.get('key'))
+            if encounter is None or 'chance' not in encounter:
+                other_gifts.append([gift_label(row), row['level']])
+                continue
+            trades.append([name(encounter['species']), translate(SPOT_LABELS[encounter['spot']], language),
+                           translate('{chance} % des rencontres', language).format(chance=encounter['chance']),
+                           name(row['species']), row['level']])
+        if other_gifts:
+            body += _section(tr('gifts') + f" · {len(other_gifts)}",
+                             _table([tr('details'), tr('level', level='')], other_gifts))
+        if trades:
+            body += _section(translate('Échanges de Doking', language),
+                             _table([translate(label, language) for label in
+                                     ('Pokémon demandé', 'Poké Place', 'Fréquence d’apparition', 'Pokémon offert')]
+                                    + [tr('level', level='')], trades))
     return body
 
 

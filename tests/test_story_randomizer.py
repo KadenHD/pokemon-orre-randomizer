@@ -92,7 +92,9 @@ class EmptyProfileTests(unittest.TestCase):
             self.assertFalse((output / "GC/SRAM.raw").exists())
             self.assertEqual(card.read_bytes(), b"original memory card")
             self.assertEqual(sram.read_bytes(), b"original SRAM")
-            self.assertIn((output / "GC/MemoryCardA.EUR.raw").as_posix(), (output / "Config/Dolphin.ini").read_text())
+            config = (output / "Config/Dolphin.ini").read_text()
+            self.assertIn((output / "GC/MemoryCardA.EUR.raw").as_posix(), config)
+            self.assertIn("[DSP]\nVolume = 0\nMute = True\n", config)
 
 
 if __name__ == "__main__":

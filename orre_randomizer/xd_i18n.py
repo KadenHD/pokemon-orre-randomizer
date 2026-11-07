@@ -2,6 +2,20 @@
 
 
 ROWS = (
+    ("Doking demande {pokemon} · {spot}", "Duking wants {pokemon} · {spot}",
+     "Grand sucht {pokemon} · {spot}", "Germán pide {pokemon} · {spot}",
+     "Rodrigo chiede {pokemon} · {spot}", "ギンザルの希望：{pokemon}・{spot}"),
+    ("{chance} % des rencontres", "{chance}% of encounters", "{chance} % der Begegnungen",
+     "{chance} % de los encuentros", "{chance}% degli incontri", "遭遇の{chance}%"),
+    ("Échanges de Doking", "Duking’s trades", "Grands Tauschangebote", "Intercambios de Germán",
+     "Scambi di Rodrigo", "ギンザルの交換"),
+    ("Pokémon demandé", "Pokémon wanted", "Gesuchtes Pokémon", "Pokémon solicitado",
+     "Pokémon richiesto", "交換に出すポケモン"),
+    ("Poké Place", "Poké Spot", "Poké-Platz", "Poké Espacio", "Riserva Pokémon", "ポケスポット"),
+    ("Fréquence d’apparition", "Encounter frequency", "Begegnungshäufigkeit", "Frecuencia de aparición",
+     "Frequenza di apparizione", "出現率"),
+    ("Pokémon offert", "Pokémon offered", "Angebotenes Pokémon", "Pokémon ofrecido",
+     "Pokémon offerto", "もらえるポケモン"),
     ("Chromatiques sauvages : {rate} % par nouvelle rencontre.",
      "Wild shinies: {rate}% per new encounter.",
      "Schillernde Wild-Pokémon: {rate} % pro neuer Begegnung.",
