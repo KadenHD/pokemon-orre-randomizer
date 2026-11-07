@@ -7,6 +7,7 @@ import struct
 
 from .engine.analyze_game import FormatError, check_range, parse_fsys, u32
 from .engine.inspect_tables import u16
+from .engine.message_bank import patch_messages as _patch_messages
 from .engine.randomize_trainers import choose_species
 from .engine.rebuild_iso import decoded_member, repack_fsys
 
@@ -75,34 +76,6 @@ def _native_name(banks: Mapping[str, Mapping[int, str]], language: str, national
     return name
 
 
-def _patch_messages(source: bytes, edits: Mapping[int, Callable[[bytes], bytes]]) -> bytes:
-    """Retarget selected IDs without moving or re-encoding unrelated dialogue."""
-    if source[:4] != bytes(4):
-        raise FormatError("unexpected XD gift message header")
-    count = u16(source, 4)
-    check_range(source, 16, 8 * count, "XD gift message directory")
-    rows = {}
-    for position in range(16, 16 + 8 * count, 8):
-        identifier, pointer = struct.unpack_from(">II", source, position)
-        identifier &= 0xFFFFF
-        if identifier in rows or not 16 + 8 * count <= pointer < len(source) - 1:
-            raise FormatError("invalid XD gift message directory")
-        rows[identifier] = (position, pointer)
-    if not edits.keys() <= rows.keys():
-        raise FormatError("missing XD gift message")
-    starts = sorted({pointer for _, pointer in rows.values()} | {len(source)})
-    ends = dict(zip(starts, starts[1:]))
-    result = bytearray(source)
-    for identifier, edit in edits.items():
-        position, pointer = rows[identifier]
-        original = source[pointer:ends[pointer]]
-        updated = edit(original)
-        if updated != original:
-            struct.pack_into(">I", result, position + 4, len(result))
-            result.extend(updated)
-    return bytes(result)
-
-
 def _prize_label(original: bytes, expected: str, chosen: str) -> bytes:
     if original != expected.encode("utf-16-be") + b"\0\0":
         raise FormatError("unexpected original Mt. Battle prize label")
@@ -116,6 +89,9 @@ def _hordel_dialogue(original: bytes, language: str, chosen: str) -> bytes:
     old = expected.encode("utf-16-be")
     if original.count(old) != 1:
         raise FormatError("unexpected original Hordel reward name")
+    if language == "SP":
+        original = original.replace(" que he estado criando últimamente.".encode("utf-16-be"),
+                                    " que he criado.".encode("utf-16-be"))
     # Correct the original articles when a replacement starts with a consonant.
     article = ("l'" + expected).encode("utf-16-be")
     word = chosen.casefold()

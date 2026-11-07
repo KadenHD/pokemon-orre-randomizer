@@ -107,6 +107,95 @@ shiny status. This is function-level runtime evidence, not a newly played
 capture-to-purification sequence. The current suite and relocated Windows app
 passed 516 tests (two platform skips) and 204 UI states respectively.
 
+## Shadow Lugia replay (v1.2.10)
+
+The [French PAL replay](XD_SHADOW_SHINIES_VALIDATION.md#shadow-lugia-in-v1210)
+covers the final scene, a native capture, both final battles, purification in
+the chamber, and reloading the purified shiny Lugia from the PC after a full
+emulator restart. It used the default preset at 5% and prepared test cards.
+
+## Default preset campaign checkpoints (v1.2.10)
+
+Fresh French PAL games used separate, blank cards and the desktop Pokémon +
+moves preset. In XD, seed `xd-final-0` passed the opening simulator battle.
+The first lab save contained the reported level 10 Larvitar and its four moves.
+In Colosseum, seed `orre-campaign-preset` started with Dratini and Oddish and
+passed the opening fights at Outskirt Stand and Phenac City. After the Phenac
+fight, Gafar's French dialogue still named Whismur, although he used Nincada
+and Seedot. The rescue scene continued and the game saved normally at the
+Phenac Pokémon Center. These two checkpoints cover the opening of each game.
+
+## Phenac victory dialogue
+
+The post-battle message uses the final species from Folly's two team slots.
+If they are different, it names both in team order. The first page uses the
+ROM's localized species names and the following page is preserved byte for
+byte. Verification covered all five European language banks on two seeds and
+the American English and Japanese banks on one seed. Only the target message
+pointer and its appended replacement changed in each bank. A European
+no-change build matched the original ISO's SHA-256.
+
+Three fresh French PAL runs in muted Dolphin played through the opening
+battles to the victory message. Gafar named Nincada and Seedot on
+`orre-campaign-preset`, Ekans and Zigzagoon on `phenac-dialogue-2`, and
+Whismur on the no-change build. The rescue sequence continued after the new
+line on `phenac-dialogue-2`. A separate rebuild using the earlier campaign's
+exact options and seed reloaded its test card and reached the Phenac Colosseum
+reception.
+
+The XD campaign test card reloaded at the simulator with seed `xd-final-0`.
+The next lab cutscene completed, the player reached the regional map and
+returned, and the game saved outside the lab on the copied card.
+
+## Dialogue that follows a randomized species
+
+The audit extracted 494,940 native message entries from the European,
+American and Japanese retail discs of both games. The count includes menu
+text, language variants and duplicate banks. Native trainer tables and
+field scripts were used to review references to battle teams, including
+references expressed through types, moves or abilities.
+
+Colosseum updates the Johto starter rematches, related PDA mail and other
+Shadow reports, plus Gafar's first battle, the Phenac Gym opponents and the
+Snagem Hideout rematches. XD covers both lab outcomes, Mt. Battle and
+Colosseum opponents, Eagun's battle and the final Shadow Dragonite. The
+Gateon Port sailor can offer an evolution item to a player who started
+with another species, so that branch no longer assumes they released Eevee.
+Atill's Teddiursa remark reads Atill's team. Naps's tutorial has its own patch. The
+Mt. Battle remark about Castform and Wailord reads both final team slots.
+Remarks about type themes, abilities and move combinations are adapted when
+the randomized battle changes their premise.
+
+The direct trainer message IDs were cross-checked against the native party
+tables in all three regions of each game. Four Colosseum battle messages
+named species absent from their original parties. Rows 190 and 362, linked to
+battles 192 and 364, use the same placeholder party at slot 238. Their revised
+introductions avoid naming a species or move. Both of Reman's chants now use
+the first two Pokémon in trainer row 655. Function 32 of `D2_cloud_3` selects
+one of these chants for the first opponent. The patch updates the fight bank
+and its Mt. Battle copies. Fixed scene actors remain separate from trainer
+dialogue patches.
+
+Checks on all six discs with seed `dialogue-audit-1`, and on both European
+discs with `dialogue-audit-2`, found no added line breaks in the changed text.
+Where a longer name could crowd the lab or Phenac dialogue, the patch
+shortens the sentence within the native layout. Two European no-change
+builds matched their respective original SHA-256 hashes.
+
+In muted Dolphin, the French PAL Colosseum build loaded an isolated copy of
+the personal card and opened its PDA inbox. The original card was verified
+unchanged. In a new game with seed `orre-campaign-preset`, Gafar's defeat
+line read “GAFAR: NINGALE et GRAINIPIOT K.O. !” on one line, matching his
+two Pokémon in battle. The French PAL XD build completed the opening simulator
+fight with seed `xd-final-0`. Both lab dialogue pages named Larvitar
+(`EMBRYLEX`) in the native box. In a separate muted PAL replay with seed
+`dialogue-audit-1`, the player fought Rodolphe in Mt. Battle zone 82 on a
+prepared copy of the XD test card. His post-battle dialogue read
+“Mon duo, CHARMINA et GROLEM !”, the two team slots that originally held
+Castform and Wailord. The line fit the original box on one line. The four
+Colosseum battle message rewrites were checked in the regional ROM data,
+including each copy in the Mt. Battle archives.
+
 ## Limits
 
 Selected scenes and synthetic fixtures do not prove a complete playthrough or

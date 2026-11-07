@@ -9,6 +9,7 @@ import struct
 
 from .engine.analyze_game import FormatError, check_range, parse_fsys, parse_rel, u32
 from .engine.inspect_tables import localized_names, rel_symbols, u16
+from .engine.message_bank import patch_species_archive
 from .engine.pool_filters import allowed_replacement
 from .engine.randomize_story import experience_at_level
 from .engine.randomize_trainers import choose_species
@@ -27,8 +28,10 @@ from .xd_shiny_rules import apply_shiny_rules
 from .xd_shadow_shinies import apply_shadow_shiny_rules
 from .xd_shops import patch_stone_names, patch_stone_price, patch_stone_stock
 from .xd_species_gameplay import XDMoveRandomizer, detail_catalog, patch_species_gameplay, patch_tm_gameplay
-from .xd_story import (STARTER_DIALOGUE_ARCHIVE, TEDDIURSA, TUTORIAL_SHADOW, hordel_candidates,
-                       patch_starter_dialogue, patch_tutorial, tutorial_candidates)
+from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITEM_DIALOGUE, TEDDIURSA,
+                       TRAINER_REMARK_REWRITES,
+                       TUTORIAL_SHADOW, hordel_candidates,
+                       patch_starter_dialogue, patch_tutorial, trainer_dialogue_edits, tutorial_candidates)
 
 VERSION = "xd-story-sha256-v8"
 DRAW_VERSION = "xd-story-sha256-v1"
@@ -588,6 +591,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                   or trade_requirements != GIFT_TRADE_REQUIREMENTS)
     starter = summary["starter"]
     starter_changed = starter["species"] != starter["original"]
+    name_banks = None
     if edit_gifts or options.randomize_tutorial_shadow or starter_changed:
         name_banks, _ = localized_names(rel, symbols)
     if edit_gifts:
@@ -631,6 +635,9 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     # The western archive contains both language variants. Keep them in sync
     # even when the current game build prefers one suffix.
     suffixes = ("", "_EU") if region.game_id != "GXXJ01" else ("",)
+    changed_traits = options.randomize_abilities or options.randomize_types
+    deck_names = DECKS if options.randomize_trainers or deck_rules_active(options) or changed_traits else ("Story",)
+    trainer_dialogues = {}
     for suffix in suffixes:
         dark_name = f"DeckData_DarkPokemon{suffix}.bin"
         dark_index, dark = _member(deck_archive, members, dark_name)
@@ -646,7 +653,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                 if mirror != dark:
                     raise FormatError("XD Shadow deck copies disagree")
                 replacements.setdefault("common.fsys", {})[mirror_index] = new_dark
-        for name in DECKS if options.randomize_trainers or deck_rules_active(options) else ("Story",):
+        for name in deck_names:
             checkpoint(cancel)
             index, deck = _member(deck_archive, members, f"DeckData_{name}{suffix}.bin")
             shadow_slots = story_shadows if name == "Story" else {}
@@ -672,8 +679,40 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             if name in summary["decks"] and summary["decks"][name] != deck_report:
                 raise FormatError("XD deck variants disagree on randomized slots")
             summary["decks"][name] = deck_report
+            dialogue = trainer_dialogue_edits(
+                name, deck, updated, species, region.game_id, randomize_abilities=options.randomize_abilities,
+                randomize_types=options.randomize_types,
+            ) if updated != deck or changed_traits else {}
+            if suffix and trainer_dialogues[name] != dialogue:
+                raise FormatError("XD deck variants disagree on trainer dialogue")
+            trainer_dialogues[name] = dialogue
             if updated != deck:
                 replacements.setdefault("deck_archive.fsys", {})[index] = updated
+    dialogue_edits = {}
+    for edits in trainer_dialogues.values():
+        for archive, messages in edits.items():
+            dialogue_edits.setdefault(archive, {}).update(messages)
+    if starter_changed:
+        # The sailor also offers an item when the player has never owned an Eevee.
+        archive, identifier = STARTER_ITEM_DIALOGUE
+        dialogue_edits.setdefault(archive, {})[identifier] = {}
+    dragonite = next(row for row in summary["decks"]["Story"]["shadows"] if row["original"] == 149)
+    if dragonite["species"] != dragonite["original"]:
+        changes = {1149: 1000 + species[dragonite["species"]][0]}
+        for name, identifiers in DRAGONITE_DIALOGUE.items():
+            dialogue_edits.setdefault(name, {}).update(dict.fromkeys(identifiers, changes))
+    if dialogue_edits:
+        if name_banks is None:
+            name_banks, _ = localized_names(rel, symbols)
+        updated_dialogue = {}
+        for name, messages in dialogue_edits.items():
+            source = gift_updates[name] if name in gift_updates else read_archive(name)
+            payload = patch_species_archive(source, messages, name_banks, rewrites=TRAINER_REMARK_REWRITES)
+            if payload != source:
+                gift_updates[name] = payload
+                updated_dialogue[name] = sorted(messages)
+        if updated_dialogue:
+            summary["story_dialogue"] = updated_dialogue
     if options.stone_shops or options.randomize_shop_items:
         shop_suffixes = ("", "_fr", "_ge", "_it", "_sp") if region.game_id == "GXXP01" else ("",)
         for suffix in shop_suffixes:

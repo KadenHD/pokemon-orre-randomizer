@@ -23,9 +23,8 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.10** fixes shiny status for XD's Mt. Battle prizes and NPC trade
-rewards so they match the preview when shininess is tied to the seed. See the
-[release notes](docs/releases/v1.2.10.md).
+**Version 1.2.11** updates trainer dialogue and Shadow Pokémon reports to match
+the randomized teams in Colosseum and XD. See the [release notes](docs/releases/v1.2.11.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)

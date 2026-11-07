@@ -1,5 +1,15 @@
 # Changelog
 
+## 1.2.11
+
+- Update trainer dialogue and Shadow Pokémon reports to match randomized teams
+  in Colosseum and XD, including Mt. Battle, rematches and the Phenac Gym.
+- Adapt remarks about type themes, moves and abilities when the randomized
+  battle changes them.
+- Keep scripted references to XD's starter, tutorial Teddiursa and final Shadow
+  Dragonite in sync with the chosen species.
+- Shorten rewritten lines and use the names in the game's selected language.
+
 ## 1.2.10
 
 - Fix shiny status for XD's Mt. Battle prizes and NPC trade rewards so the

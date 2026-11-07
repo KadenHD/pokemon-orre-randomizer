@@ -7,6 +7,14 @@ identify every resource a shared engine routine can load at runtime.
 
 ## Colosseum
 
+### Folly's first battle in Phenac
+
+The entrance script in `M1_out.fsys` shows message `0x4E8D` after battle 14.
+The replacement text reads the final species from trainer row 12, party rows
+49 and 50. Both original slots hold Whismur. The patch updates the first page
+with names from the original ROM's species banks. It leaves the second page,
+script, later battles, and all other messages intact.
+
 ### Doking's gift in Pyrite
 
 The final gift constructor supplies the species for the rescue and handover.
@@ -114,7 +122,7 @@ belong to different events. [Regional gift validation](../REGIONAL_GIFTS_DOLPHIN
 | Hordel's Elekid reward | The received species and its name in messages `0xA438`, `0xA43B`, `0xA43C`, `0xA43E`, and `0xA443` in the same archive. |
 | Duking's three trades | The requested and received species names in `M2_guild_1F_2.fsys`, with the received names at script offsets `0xD30`, `0xD74`, and `0xDB8`. |
 | Three Mt. Battle prizes | The reward constructor and the name shown in menu and confirmation messages `0x7A49–0x7A4B` in `D2_crater_colo.fsys`. |
-| Eevee and tutorial Teddiursa | Eevee's lab dialogue at `M5_labo_2F:0x9C42`. Teddiursa's battle entry and name in the tutorial, rematch, and fight banks. |
+| Eevee and tutorial Teddiursa | The starter name in both simulator outcomes at `M5_labo_2F:0x9C42–0x9C43`. Teddiursa's battle entry and name in the tutorial and rematch. The separate Teddiursa message in the fight banks belongs to Atill's Mt. Battle team. |
 
 The three gift room archives contain no dedicated model for any of the vanilla
 gift species. Previous Dolphin tests exercised Hordel's gift and exchange and
@@ -149,5 +157,7 @@ and Aron were standard. The cards also retained the trainer IDs assigned by
 the native trade routines.
 
 Shadow Lugia is a separate case with a dedicated model and purification path.
+The [v1.2.10 replay](../XD_SHADOW_SHINIES_VALIDATION.md#shadow-lugia-in-v1210)
+checks its final scene, capture and purification with the default preset.
 Bonsly and Munchlax are scripted field Pokémon outside the randomizable gift
 pool. [XD investigation and runtime checks](XD.md)

@@ -37,6 +37,10 @@ from .engine.shiny_rules import apply_shiny_rules
 from .engine.item_rules import apply_field_items, patch_item_archive
 from .engine.item_text import apply_item_name_spacing
 from .engine.event_gifts import ARCHIVE_NAMES as EVENT_GIFT_ARCHIVES, patch_event_archive
+from .engine.colo_trainer_dialogue import TRAINER_REMARK_REWRITES, trainer_dialogue_edits
+from .engine.gafar_dialogue import ARCHIVE_NAME as GAFAR_DIALOGUE_ARCHIVE, patch_gafar_dialogue
+from .engine.message_bank import patch_species_archive
+from .engine.shadow_dialogue import SHADOW_REMARK_REWRITES, shadow_dialogue_edits
 from .engine.hooh_reward import patch_hooh_reward_scene
 from .engine.plusle_actor import ACTOR_ARCHIVES, load_actor_model, patch_actor
 from .engine.plusle_dialogue import ARCHIVE_NAMES as PLUSLE_DIALOGUE_ARCHIVES, patch_dialogue
@@ -608,6 +612,51 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                     cursor = align(cursor + len(payload), 0x8000)
                 summary["plusle_gift_scene"] = {"species": species_id, "national_dex": national_dex,
                     "actor_archives": list(ACTOR_ARCHIVES), "dialogue_archives": list(PLUSLE_DIALOGUE_ARCHIVES)}
+        if options.randomize_trainers:
+            checkpoint(cancel)
+            name = GAFAR_DIALOGUE_ARCHIVE
+            room = archive(name)
+            payload, species_ids = patch_gafar_dialogue(room, original, rel)
+            if payload != room:
+                if cursor + len(payload) > first_file:
+                    raise FormatError("no safe gap for Phenac dialogue archive")
+                patches.append((cursor, payload))
+                struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
+                summary["gafar_dialogue"] = {"archive": name, "species": list(species_ids)}
+                cursor = align(cursor + len(payload), 0x8000)
+        if options.randomize_trainers or options.randomize_types or options.randomize_trainer_moves:
+            trainer_dialogue, native_names = trainer_dialogue_edits(
+                original, rel, region.game_id, trainers_changed=options.randomize_trainers,
+                types_changed=options.randomize_types, moves_changed=options.randomize_trainer_moves,
+            )
+            for name, messages in trainer_dialogue.items():
+                checkpoint(cancel)
+                payload = patch_species_archive(archive(name), messages, native_names,
+                                                rewrites=TRAINER_REMARK_REWRITES)
+                if cursor + len(payload) > first_file:
+                    raise FormatError("no safe gap for trainer dialogue archive")
+                patches.append((cursor, payload))
+                struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
+                cursor = align(cursor + len(payload), 0x8000)
+            if trainer_dialogue:
+                summary["trainer_dialogue"] = {name: sorted(messages) for name, messages in trainer_dialogue.items()}
+        if rel != original:
+            dialogue_edits, dialogue_names = shadow_dialogue_edits(original, rel, region.game_id)
+            updated_dialogue = {}
+            for name, messages in dialogue_edits.items():
+                checkpoint(cancel)
+                room = archive(name)
+                payload = patch_species_archive(room, messages, dialogue_names, rewrites=SHADOW_REMARK_REWRITES)
+                if payload == room:
+                    continue
+                if cursor + len(payload) > first_file:
+                    raise FormatError("no safe gap for Shadow dialogue archive")
+                patches.append((cursor, payload))
+                struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
+                cursor = align(cursor + len(payload), 0x8000)
+                updated_dialogue[name] = sorted(messages)
+            if updated_dialogue:
+                summary["shadow_dialogue"] = updated_dialogue
         if fst != original_fst:
             patches.append((fst_offset, bytes(fst)))
     patches.sort(key=lambda p: p[0])

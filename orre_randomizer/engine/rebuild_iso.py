@@ -115,10 +115,15 @@ def repack_fsys(source: bytes, replacements: dict[int, bytes] | None = None) -> 
     for member in original["members"]:
         original_raw = decoded_member(source, member)
         raw = replacements.get(member["index"], original_raw)
-        encoded = compress_lzss(raw) if member["compression"] == "LZSS" else raw
-        # Independent decoder verification before accepting any encoded member.
-        if member["compression"] == "LZSS" and decompress_lzss(encoded) != raw:
-            raise FormatError("encoder roundtrip failed")
+        if raw == original_raw:
+            start = member["offset"]
+            encoded = source[start:start + member["stored_size"]]
+        elif member["compression"] == "LZSS":
+            encoded = compress_lzss(raw)
+            if decompress_lzss(encoded) != raw:
+                raise FormatError("encoder roundtrip failed")
+        else:
+            encoded = raw
         result.extend(b"\0" * (align(len(result)) - len(result)))
         offset = len(result)
         result.extend(encoded)

@@ -3,15 +3,170 @@ from collections import Counter
 from functools import partial
 import struct
 
-from .engine.analyze_game import FormatError, check_range
+from .engine.analyze_game import FormatError, check_range, u32
 from .engine.gameplay_rules import OHKO, SELF_DESTRUCT, damaging
+from .engine.inspect_tables import u16
 from .engine.species_rules import LEGENDARY_NATIONAL, WONDER_GUARD
+from .xd_battle_rules import DPKM_MOVES
 from .xd_gifts import _native_name, _patch_banks, _patch_script, patch_species_operand, replace_species_name
 
 
 TUTORIAL_SHADOW = 1
 TEDDIURSA = 216
 STARTER_DIALOGUE_ARCHIVE = "M5_labo_2F.fsys"
+STARTER_ITEM_DIALOGUE = ("M6_junk_1F.fsys", 0xA0E4)
+DRAGONITE_DIALOGUE = {
+    "D5_factory_1F.fsys": (0x851F,),
+    "M5_labo_1F.fsys": (0x9E53,),
+    "M6_tower_top.fsys": (0xA174, 0xA17B),
+}
+# Trainer row, original party slots (None skips a slot), and messages spoken
+# about those slots. Field and battle messages can refer to the same team.
+_TRAINER_DIALOGUE = {
+    "Hundred": (
+        (5, (306,), "fight_common.fsys", (0x565D, 0x565E)),
+        (6, (286, 191), "fight_common.fsys", (0x565F,)),
+        (11, (155,), "fight_common.fsys", (0x566A,)),
+        (17, (392,), "fight_common.fsys", (0x5675, 0x5676)),
+        (24, (287, 320), "fight_common.fsys", (0x5683,)),
+        (25, (388,), "fight_common.fsys", (0x5685, 0x5686)),
+        (26, (216,), "fight_common.fsys", (0x5688,)),
+        (32, (393,), "fight_common.fsys", (0x5693, 0x5694)),
+        (36, (88,), "fight_common.fsys", (0x569C,)),
+        (54, (399, 247), "fight_common.fsys", (0x56BF,)),
+        (55, (361, 303, 411, 109), "fight_common.fsys", (0x56C1,)),
+        (78, (287, 300, 331, 327), "fight_common.fsys", (0x56EF, 0x56F0)),
+        (94, (279, 285, 282, 154, 160, 157), "fight_common.fsys", (0x570F,)),
+        (11, (155,), "D2_valley_2.fsys", (0x7980,)),
+        (14, (298, 165), "D2_valley_2.fsys", (0x7986,)),
+        (17, (392,), "D2_valley_2.fsys", (0x798C, 0x798D)),
+        (25, (388,), "D2_valley_3.fsys", (0x799C,)),
+        (28, (312, 326), "D2_valley_3.fsys", (0x79A2, 0x79A3)),
+        (29, (195, 342), "D2_valley_3.fsys", (0x79A4,)),
+        (32, (393,), "D2_magma_1.fsys", (0x79AA, 0x79AB)),
+        (35, (411, 344), "D2_magma_1.fsys", (0x79B1,)),
+        (36, (88,), "D2_magma_1.fsys", (0x79B3,)),
+        (37, (317, 207), "D2_magma_1.fsys", (0x79B4,)),
+        (38, (44, 168, 193), "D2_magma_1.fsys", (0x79B6,)),
+        (38, (44,), "D2_magma_1.fsys", (0x79B7,)),
+        (42, (316,), "D2_magma_2.fsys", (0x79BE,)),
+        (44, (215, 278, 396), "D2_magma_2.fsys", (0x79C2,)),
+        (45, (26, 299), "D2_magma_2.fsys", (0x79C4,)),
+        (45, (None, 299), "D2_magma_2.fsys", (0x79C5,)),
+        (57, (40, 365), "D2_magma_3.fsys", (0x79DC,)),
+        (58, (294, 390, 205, 388), "D2_magma_3.fsys", (0x79DE,)),
+        (58, (None, 390, None, 388), "D2_magma_3.fsys", (0x79DF,)),
+        (59, (222, 373, 176), "D2_magma_3.fsys", (0x79E0,)),
+        (67, (55, 181, 375, 82), "D2_cloud_1.fsys", (0x79F1,)),
+        (68, (44, 192, 45), "D2_cloud_1.fsys", (0x79F2,)),
+        (78, (287, 300, 331, 327), "D2_cloud_2.fsys", (0x7A06, 0x7A07)),
+        (82, (None, None, 385, 314), "D2_cloud_3.fsys", (0x7A0F,)),
+        (85, (336,), "D2_cloud_3.fsys", (0x7A15,)),
+        (92, (248, 345, 28, 207, 384), "D2_cloud_4.fsys", (0x7A22,)),
+        (94, (279, 285, 282, 154, 160, 157), "D2_cloud_4.fsys", (0x7A26, 0x7A27)),
+    ),
+    "Colosseum": (
+        (17, (309, 111, 363), "fight_common.fsys", (0x5DDB,)),
+        (21, (304, 177, 280, 358), "fight_common.fsys", (0x5DE5,)),
+        (27, (385, 207, 345, 51), "fight_common.fsys", (0x5DF7,)),
+        (29, (200, 336, 307, 237), "fight_common.fsys", (0x5DFD,)),
+        (32, (299, 188, 321, 369), "fight_common.fsys", (0x5E06,)),
+        (35, (369, 314, 289, 184), "fight_common.fsys", (0x5E11,)),
+        (47, (None, 132), "fight_common.fsys", (0x5E35,)),
+        (54, (366, 94, 65, 400, 329, 319), "fight_common.fsys", (0x5E4A,)),
+        (61, (362, 397, 149, 334, 142, 145), "fight_common.fsys", (0x5E5D, 0x5E5F)),
+        (63, (297, 375, 139, 230, 338, 211), "fight_common.fsys", (0x5E63, 0x5E65)),
+    ),
+    "Story": (
+        (28, (25,), "M3_shrine_1F.fsys", (0x94CB, 0x94CC)),
+        (28, (25,), "M3_houseC_1F.fsys", (0x952A,)),
+    ),
+}
+_TEAM_CHALLENGE = ("Can you beat my team?", "Sauras-tu battre mon équipe ?",
+                   "Kannst du mein Team besiegen?", "Saprai battere la mia squadra?",
+                   "¿Podrás con mi equipo?", "わたしのチームに　かてるかな？")
+_TEAM_PRAISE = ("My Pokémon did a great job!", "Mes Pokémon se sont bien battus !",
+                "Meine Pokémon haben toll gekämpft!", "I miei Pokémon se la sono cavata bene!",
+                "¡Mis Pokémon han luchado muy bien!", "ポケモンたち　よくやった！")
+_TEAM_LOSS = ("You beat my team. Well done!", "Bravo, tu as battu mon équipe !",
+              "Gut gemacht! Du hast mein Team besiegt!", "Bravo, hai battuto la mia squadra!",
+              "¡Bien hecho! ¡Has vencido a mi equipo!", "わたしのチームに　かつとは　やるね！")
+_SPECIES_REMARKS = {
+    **dict.fromkeys((0x5685, 0x56BF, 0x56C1, 0x56EF, 0x570F, 0x7A27), _TEAM_PRAISE),
+    **dict.fromkeys((0x5DE5, 0x5DF7, 0x5DFD, 0x5E5D, 0x5E63, 0x799C, 0x79A2, 0x79AA,
+                     0x79B4, 0x79B6, 0x79C2, 0x79C4, 0x79DC, 0x79DE, 0x79E0, 0x7A22), _TEAM_CHALLENGE),
+    **dict.fromkeys((0x5E11, 0x5E4A, 0x5E65, 0x79AB), _TEAM_LOSS),
+    0x5683: ("Some matchups still make me shiver!", "Certains adversaires me font encore trembler !",
+             "Manche Gegner lassen mich zittern!", "Certi avversari mi fanno ancora tremare!",
+             "¡Hay rivales que aún me dan escalofríos!", "まだ　ぞっとする　あいても　いるよ！"),
+    0x5E06: ("Today's forecast? A tough battle!", "La météo du jour ? Un combat serré !",
+             "Meine Vorhersage? Ein harter Kampf!", "Le previsioni? Una lotta dura!",
+             "¿El pronóstico? ¡Un combate reñido!", "きょうの　よほうは　はげしいバトル！"),
+    0x5693: ("You had trouble with my {name}!", "Mon {name} t'a donné du fil à retordre !",
+             "Mein {name} hat es dir schwer gemacht!", "Il mio {name} ti ha dato filo da torcere!",
+             "¡Mi {name} te lo ha puesto difícil!", "{name}には　くろうしただろう！"),
+    0x5694: ("You knew how to handle my {name}!", "Tu as bien joué contre mon {name} !",
+             "Du hast mein {name} gut gekontert!", "Hai saputo affrontare il mio {name}!",
+             "¡Has sabido plantarle cara a mi {name}!", "{name}の　あいてを　よくできたね！"),
+    0x56F0: ("Oh, dear. My team lost.", "Oh là là, mon équipe a perdu.",
+             "Oje, mein Team hat verloren.", "Oh, no. La mia squadra ha perso.",
+             "Vaya, mi equipo ha perdido.", "あらら　わたしのチームが　まけちゃった。"),
+    0x798D: ("How did my {name} do?", "Il t'a plu, mon {name} ?",
+             "Wie fandest du mein {name}?", "Come ti è sembrato {name}?",
+             "¿Qué te ha parecido mi {name}?", "{name}は　どうだった？"),
+    0x79A4: ("Can you beat {name} and {partner}?", "Tu peux battre {name} et {partner} ?",
+             "Besiegst du {name} und {partner}?", "Sai battere {name} e {partner}?",
+             "¿Puedes con {name} y {partner}?", "{name}と　{partner}に　かてるかな？"),
+    0x79B7: ("My {name} loves the outdoors.", "Mon {name} aime le grand air.",
+             "Mein {name} ist gern draußen.", "A {name} piace stare all'aperto.",
+             "A mi {name} le gusta el aire libre.", "{name}は　そとが　だいすき。"),
+    0x79B3: ("Come and see my {name} again!", "Reviens voir mon {name} !",
+             "Besuch mein {name} doch wieder!", "Torna a trovare il mio {name}!",
+             "¡Vuelve a ver a mi {name}!", "また　{name}に　あいにきてね！"),
+    0x79BE: ("My {name} might surprise you!", "Mon {name} va te surprendre !",
+             "Mein {name} wird dich überraschen!", "Il mio {name} ti sorprenderà!",
+             "¡Mi {name} te va a sorprender!", "{name}に　びっくりするよ！"),
+    0x79C5: ("Isn't my {name} cute?", "Il est mignon, mon {name}, non ?",
+             "Ist mein {name} nicht süß?", "Non è carino il mio {name}?",
+             "¿A que es adorable mi {name}?", "{name}って　かわいいでしょう？"),
+    0x79F1: ("Time to let my Pokémon rest.", "Mes Pokémon ont bien mérité une pause.",
+             "Meine Pokémon haben eine Pause verdient.", "I miei Pokémon si meritano una pausa.",
+             "Mis Pokémon se merecen un descanso.", "ポケモンたちを　やすませてあげよう。"),
+    0x79F2: ("80 years of training. Show me!", "80 ans d'entraînement. À toi !",
+             "80 Jahre Training. Zeig's mir!", "80 anni di allenamento. Forza!",
+             "¡80 años entrenando! ¡Adelante!", "はちじゅうねんの　しゅぎょうじゃ！　いくぞ！"),
+    0x7A06: ("Watch what my {name} can do!", "Regarde ce que sait faire mon {name} !",
+             "Schau, was mein {name} kann!", "Guarda cosa sa fare il mio {name}!",
+             "¡Mira de qué es capaz mi {name}!", "{name}の　ちからを　みせてあげる！"),
+    0x7A07: ("You and my {name} fought well!", "Quel combat contre mon {name} !",
+             "Was für ein Kampf gegen mein {name}!", "Che lotta contro il mio {name}!",
+             "¡Qué combate contra mi {name}!", "{name}との　いいバトルだったよ！"),
+    0x7A0F: ("{name} and {partner}, my duo!", "Mon duo, {name} et {partner} !",
+             "{name} und {partner}, mein Duo!", "Che duo, {name} e {partner}!",
+             "¡Mi dúo, {name} y {partner}!", "{name}と　{partner}は　めいコンビ！"),
+    0x7A15: ("I'll train with my {name}!", "Je vais m'entraîner avec mon {name} !",
+             "Ich trainiere mit meinem {name}!", "Mi allenerò con il mio {name}!",
+             "¡Voy a entrenar con mi {name}!", "{name}と　トレーニングするわ！"),
+    0x7A26: ("Which of my Pokémon would you pick?", "Quel Pokémon choisirais-tu dans mon équipe ?",
+             "Welches meiner Pokémon würdest du wählen?", "Quale dei miei Pokémon sceglieresti?",
+             "¿Qué Pokémon elegirías de mi equipo?", "わたしのポケモンなら　どれをえらぶ？"),
+    0x5E35: ("I thought my {name} would win!", "Je pensais gagner avec mon {name} !",
+             "Ich dachte, mein {name} gewinnt!", "Pensavo di vincere con il mio {name}!",
+             "¡Creía que ganaría con mi {name}!", "{name}なら　かてると　おもったのに！"),
+    0x5E5F: ("Even my best moves weren't enough!", "Mes meilleures capacités n'ont pas suffi !",
+             "Selbst meine besten Attacken waren zu schwach!", "Neanche le mie mosse migliori sono bastate!",
+             "¡Ni mis mejores movimientos bastaron!", "とくいな　わざでも　だめだった！"),
+    STARTER_ITEM_DIALOGUE[1]: (
+        "Thanks for listening! Pick one of my items.", "Merci de m'avoir écouté. Choisis un objet !",
+        "Danke fürs Zuhören! Such dir etwas aus.", "Grazie di avermi ascoltato! Scegli un oggetto.",
+        "¡Gracias por escuchar! Elige un objeto.", "おれいだよ。ひとつ　えらんでね。",
+    ),
+}
+_TYPE_REMARKS = {0x5683, 0x5685, 0x5693, 0x5694, 0x56EF, 0x56F0, 0x570F,
+                 0x5DE5, 0x5DFD, 0x799C, 0x79AA, 0x79AB, 0x79B6, 0x79B7, 0x79F2,
+                 0x7A06, 0x7A07, 0x7A26, 0x7A27}
+_ABILITY_REMARKS = {0x56C1, 0x798D, 0x79A2, 0x79A4, 0x79BE, 0x79C2, 0x79C4, 0x79DC, 0x79E0}
+_MOVE_REMARKS = {0x5DF7, 0x5E06, 0x5E11, 0x5E4A, 0x5E5D, 0x5E5F, 0x5E63, 0x5E65, 0x79F1, 0x7A22}
 _IMMUNE_TYPES = {0: 7, 1: 7, 3: 8, 4: 2, 7: 0, 13: 4, 14: 17}
 _ABSORB_ABILITIES = {4: 26, 10: 18, 11: 11, 13: 10}
 _CONDITIONAL_ATTACKS = OHKO | SELF_DESTRUCT | {68, 117, 138, 173, 243, 255}
@@ -55,17 +210,94 @@ def hordel_candidates(eligible, edges, families, *, accessible_evolutions):
 
 def patch_starter_dialogue(source, game_id, national, name_banks):
     def edits(language):
-        native = _native_name(name_banks, language, 133).encode("utf-16-be")
+        old = _native_name(name_banks, language, 133)
+        native = old.encode("utf-16-be")
         chosen = _native_name(name_banks, language, national).encode("utf-16-be")
 
-        def replace_starter(original):
-            if original.count(native) != 2:
+        def replace_starter(original, count, shorten=()):
+            if original.count(native) != count:
                 raise FormatError("unexpected starter names in the XD lab dialogue")
+            for before, after in shorten:
+                if original.count(before) != 1:
+                    raise FormatError("unexpected XD lab dialogue line")
+                original = original.replace(before, after)
             return original.replace(native, chosen)
 
-        return {0x9C42: replace_starter}
+        # The longest starter names must fit on the existing lines.
+        compact = {
+            "FR": ("Tu l'as commandé comme si c'était ton ", "Tu l'as mené comme ton "),
+            "GE": ("könntest langsam anfangen, neben deinem ", "könntest beginnen, neben deinem "),
+            "IT": ("delle stesse dimensioni del tuo ", "grande come il tuo "),
+            "UK": ("raising other POKéMON besides your ", "raising others besides your "),
+        }
+        language_key = "UK" if language == "US" else language
+        shorten = []
+        if language_key in compact:
+            before, after = compact[language_key]
+            shorten.append(((before + old).encode("utf-16-be"), (after + old).encode("utf-16-be")))
+        elif language_key == "JP":
+            your = (b"\xff\xff\x04" + "自分".encode("utf-16-be") + b"\xff\xff\x05"
+                    + "じぶん".encode("utf-16-be") + b"\xff\xff\x06" + "の　".encode("utf-16-be"))
+            shorten.append((your + native, native))
+        return {0x9C42: partial(replace_starter, count=2, shorten=shorten),
+                0x9C43: partial(replace_starter, count=1)}
 
     return _patch_banks(source, game_id, edits)
+
+
+def trainer_dialogue_edits(deck_name, original, current, species, game_id, *,
+                           randomize_abilities=False, randomize_types=False):
+    """Use the post-policy party species for explicitly identified remarks."""
+    edits = {}
+    rewrite_facts = set()
+    if randomize_abilities:
+        rewrite_facts.update(_ABILITY_REMARKS)
+    if randomize_types:
+        rewrite_facts.update(_TYPE_REMARKS)
+    pokemon_start = 0x20 + u32(original, 0x14)
+    for trainer, expected, archive, identifiers in _TRAINER_DIALOGUE[deck_name]:
+        row = 0x20 + trainer * 0x38
+        names = {}
+        check_moves = not _MOVE_REMARKS.isdisjoint(identifiers)
+        changed_moves = False
+        for slot, old in enumerate(expected):
+            if old is None:
+                continue
+            position = pokemon_start + 0x20 * u16(original, row + 0x1C + slot * 2)
+            if original[row + 4] & (1 << slot) or u16(original, position) != old:
+                raise FormatError("unexpected XD team for trainer dialogue")
+            chosen = u16(current, position)
+            names[1000 + species[old][0]] = 1000 + species[chosen][0]
+            if check_moves:
+                changed_moves |= any(u16(original, position + move) != u16(current, position + move)
+                                     for move in DPKM_MOVES)
+        archives = (archive,)
+        if archive == "fight_common.fsys" and game_id == "GXXP01":
+            archives += tuple(f"fight_common_{language}.fsys" for language in ("fr", "ge", "it", "sp"))
+        changed = any(old != chosen for old, chosen in names.items())
+        for identifier in identifiers:
+            needs_edit = changed_moves if identifier in _MOVE_REMARKS else changed or identifier in rewrite_facts
+            if needs_edit:
+                for path in archives:
+                    edits.setdefault(path, {})[identifier] = names
+    return edits
+
+
+def _replace_species_remark(source, *, changes, language, translations):
+    speaker = b"\xff\xff\x59"
+    # Intro messages can end directly after the text. Field and result
+    # messages carry their native wait/close control before the terminator.
+    end = source[-5:] if source[-5:-3] == b"\xff\xff" else source[-2:]
+    if not source.startswith(speaker) or end not in (b"\0\0", b"\xff\xff\x02\0\0", b"\xff\xff\x6d\0\0"):
+        raise FormatError("unexpected XD trainer dialogue controls")
+    locale = ("UK", "FR", "GE", "IT", "SP", "JP").index("UK" if language == "US" else language)
+    prefix = "「" if language == "JP" else ": "
+    names = dict(zip(("name", "partner"), changes.values(), strict=False))
+    return speaker + (prefix + translations[locale].format(**names)).encode("utf-16-be") + end
+
+
+TRAINER_REMARK_REWRITES = {identifier: partial(_replace_species_remark, translations=translations)
+                           for identifier, translations in _SPECIES_REMARKS.items()}
 
 
 def patch_tutorial(game_id, chosen, national, name_banks, read_archive):
@@ -87,15 +319,8 @@ def patch_tutorial(game_id, chosen, national, name_banks, read_archive):
 
     lab = "M5_labo_1F.fsys"
     rematch = "D1_labo_B2.fsys"
-    archives = {
+    return {
         lab: _patch_banks(_patch_script(read_archive(lab), "M5_labo_1F", edit_script),
                           game_id, lambda lang: edits(lang, 0x9CDD)),
         rematch: _patch_banks(read_archive(rematch), game_id, lambda lang: edits(lang, 0x759E)),
     }
-    fight_banks = {"GXXP01": {"": "UK", "_fr": "FR", "_ge": "GE", "_it": "IT", "_sp": "SP"},
-                   "GXXE01": {"": "US"}, "GXXJ01": {"": "JP"}}
-    for suffix, language in fight_banks[game_id].items():
-        name = f"fight_common{suffix}.fsys"
-        archives[name] = _patch_banks(read_archive(name), game_id, lambda lang: edits(lang, 0x5688),
-                                      languages={language})
-    return archives

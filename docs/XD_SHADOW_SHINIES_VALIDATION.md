@@ -48,7 +48,37 @@ in capture, party/box insertion, purification or evolution. The enemy-owner hook
 runs after the native anti-shiny loop, avoiding a reroll loop. Existing saved
 Shadow PIDs are reused by the game and are not retroactively replaced.
 
-A fully played capture → save/reload → purification sequence for this new
-unlock, visual checks for every Shadow species, and a complete campaign on each
-region remain outside this validation. Shadow Lugia keeps its special dark
-model until purification. Wild Poké Spot odds are unchanged.
+A later v1.2.10 replay covers Shadow Lugia's capture and purification below.
+Visual checks for every Shadow species and complete campaigns across regions
+remain outside this validation. Wild Poké Spot odds are unchanged.
+
+## Shadow Lugia in v1.2.10
+
+The European revision 0 disc ran in French under Dolphin 2609a. The ROM used
+the desktop Pokémon + moves preset and seed `xd-final-0`. The preset's 5%
+rate marked Shadow ID 73 shiny. The preview and verified ISO report agreed
+on Lugia and level 50.
+
+A private test card started at Citadark Isle just before the final encounter,
+with the Snag Machine, a Master Ball and a strengthened team. Greevil's
+dialogue named XD001 and the scene and battle showed Lugia's special dark
+model. The Master Ball captured it through the normal battle menu. Both final
+battles were played, and the game wrote the result to the test card at the
+end of the story. Its party contained a shiny level 50 Lugia with Shadow ID
+73 and a full Heart Gauge.
+
+A copy of that save loaded at the lab with four Normal-type dancers in each
+of the nine Purification Chamber sets. Lugia's captured record and Heart
+Gauge were carried over unchanged. Lugia was placed in the first set through
+the native team and chamber menus. The game recognized it as ready and the
+normal ceremony revealed its pink shiny coloration and restored Psycho Boost.
+The game put the purified Lugia in the PC. A second in-game save recorded
+the same species, level, trainer ID, and PID, with an empty Heart Gauge and
+the National Ribbon. After a full emulator restart, Continue loaded that
+save and the PC still displayed the pink Lugia. The recorded shiny status
+matched the preview.
+
+The protected species remains relevant to the native path. The PAL chamber
+readiness routine at `0x8028ECCC` checks for species 249 and requires maximum
+tempo in all nine sets. This replay covers the current protected encounter
+and does not exercise replacement species.
