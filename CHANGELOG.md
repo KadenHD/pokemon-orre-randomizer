@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.17
+
+- Keep the interface responsive while ROM creation and report checks finish.
+- Retry the Windows installer compiler download and use the GitHub asset API
+  as a fallback, with the same SHA-256 check.
+- Run the release test suite from the extracted source archive and print a
+  thread traceback if it hangs.
+
 ## 1.2.16
 
 - Fix an intermittent freeze after generating an XD preview. The shared preview
