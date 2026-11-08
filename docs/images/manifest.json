@@ -90,13 +90,13 @@
       "seed": "orre-showcase-5"
     },
     "xd-advanced.png": {
-      "bytes": 52478,
-      "sha256": "85358945b6f13e076bde996efbe0a9b7f99639d304f353c62e22a5ec0af7ce33",
+      "bytes": 60208,
+      "sha256": "18e4a97a59e86d33ba3c86439ffa5dea2c4db6b48b4a377e75ff09692b054090",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Advanced shiny settings, including the optional Shadow shiny rate.",
+      "description": "Advanced move settings, matching the Colosseum tab.",
       "game": "xd",
       "seed": "orre-xd-showcase-3"
     },
@@ -138,16 +138,17 @@
     },
     "colosseum-motorcycle-arrival.gif": {
       "bytes": 1453276,
-      "sha256": "f2154735ebb15d371207640da96dbabdbc18cf2498bd8cb90fd2d7e2e3565ce4",
+      "sha256": "28cc55778a33042aaad51c45d67f4b63c225b7939ec9a915d9e74c6ed87f2b1a",
       "kind": "native-gameplay",
       "language": "en",
       "width": 488,
       "height": 356,
-      "description": "Real-time Outskirt Stand arrival from the same fresh game, sampled from Dolphin and encoded as a silent GIF.",
+      "description": "Real-time Outskirt Stand arrival in a silent, half-speed GIF.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
       "frames": 23,
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "duration_ms": 3940
     },
     "colosseum-plusle-gift.png": {
       "bytes": 772598,
@@ -221,6 +222,72 @@
       "game": "xd",
       "seed": "orre-xd-showcase-3",
       "source": "Dolphin 2609a, European retail base, English in-game language"
+    },
+    "colosseum-simple.png": {
+      "bytes": 90279,
+      "sha256": "5af9dc881d64432287cc9e1acaafb85492c5ada6c1e8e37bff8600cbe21d34a3",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "Simple settings and preset options in Colosseum.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5"
+    },
+    "xd-starter-preview.png": {
+      "bytes": 46054,
+      "sha256": "b318dcd3281407038e85e2f32f150c163f209364907d73fcd0ca9fd7c9e77e99",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "Starter preview with Torchic.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3"
+    },
+    "xd-shadow-pokemon.png": {
+      "bytes": 73933,
+      "sha256": "432621b1d0630a2fdfc5689c0df37a272178036f10996f653050680a944eb3c1",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "Original and randomized Shadow roster with shiny status.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3"
+    },
+    "colosseum-gifts.png": {
+      "bytes": 99328,
+      "sha256": "3f6f4e1d8ddc26b2bb6988dd1a5eba6403edfe42ce40d779fedf6581b14e77a9",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "Colosseum gift preview with Poliwhirl and the purification rewards.",
+      "game": "colosseum",
+      "seed": "orre-showcase-5"
+    },
+    "xd-gifts.png": {
+      "bytes": 85214,
+      "sha256": "3f983e567f1a684bad3947167cf8d6235b19f1091f0b8bfc21c245a189b99b53",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "description": "XD gift preview, with the trade requirements and their encounter rates.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3"
+    },
+    "xd-pokemon-sheet.png": {
+      "bytes": 31136,
+      "sha256": "c7b36759eaf4afe04f580c07b24670304702683fd3609ad7c3a39656641bb83c",
+      "kind": "application",
+      "language": "en",
+      "width": 740,
+      "height": 615,
+      "description": "Torchic’s evolution chain and the original Fire badge.",
+      "game": "xd",
+      "seed": "orre-xd-showcase-3"
     }
   }
 }

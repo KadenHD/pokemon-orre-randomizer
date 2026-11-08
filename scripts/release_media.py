@@ -11,7 +11,8 @@ DOCUMENTATION_IMAGES = frozenset(("home.png", "colosseum-settings.png",
                                  "xd-pokespot-shiny-field.png", "xd-pokespot-shiny-battle.png",
                                  "colosseum-motorcycle-starters.png", "colosseum-motorcycle-arrival.gif",
                                  "colosseum-plusle-gift.png", "colosseum-pyrite-dancers.png", "colosseum-pyrite-dancers.gif",
-                                 "xd-lighthouse-dancers.png"))
+                                 "xd-lighthouse-dancers.png", "colosseum-simple.png", "xd-starter-preview.png",
+                                 "xd-shadow-pokemon.png", "colosseum-gifts.png", "xd-gifts.png", "xd-pokemon-sheet.png"))
 
 
 def documentation_media(read_bytes):

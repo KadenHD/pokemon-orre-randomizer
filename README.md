@@ -49,7 +49,7 @@ ISO input and output work directly. Reading or writing **RVZ** requires
 The relevant page shows its path field, and the suggested output format matches
 your input. The app does not launch Dolphin or manage your saves.
 
-## Two presets, one balance policy
+## Choose what changes
 
 | | Pokémon + moves | Pokémon only |
 | --- | --- | --- |
@@ -74,19 +74,27 @@ leave no alternative.
 profiles keep their saved settings, including defaults from older versions.
 Selecting a preset applies the current defaults.
 
-![XD Simple settings with separate encounter frequencies and wild shiny odds](docs/images/xd-settings.png)
+| Colosseum · Simple settings | XD · Simple settings |
+| --- | --- |
+| ![Simple settings in Colosseum](docs/images/colosseum-simple.png) | ![Simple settings in XD](docs/images/xd-settings.png) |
 
-![Colosseum settings and starter preview](docs/images/colosseum-settings.png)
+### Preview your run
 
-Preview all 48 Colosseum Shadow Pokémon and their replacements before creating
-the ROM. Each row opens the replacement's Pokémon sheet with a single click.
+Check your starters, gifts and Shadow Pokémon before creating the ROM. Both
+games show the full Shadow roster, with 48 entries in Colosseum and 83 in XD.
+Click a Shadow Pokémon or gift to open its Pokémon sheet. In XD you can also
+check Poké Spot encounters and see what Duking wants in each trade.
 
-![Randomized Shadow Pokémon: original species and replacements](docs/images/shadow-pokemon.png)
+| Colosseum | XD |
+| --- | --- |
+| ![Colosseum starter preview](docs/images/colosseum-settings.png) | ![XD starter preview](docs/images/xd-starter-preview.png) |
+| ![Colosseum Shadow Pokémon preview](docs/images/shadow-pokemon.png) | ![XD Shadow Pokémon preview](docs/images/xd-shadow-pokemon.png) |
+| ![Colosseum gift preview](docs/images/colosseum-gifts.png) | ![XD gift and trade preview](docs/images/xd-gifts.png) |
 
 ## In game
 
-These English-language Dolphin captures show two seeded runs. Colosseum starts
-with Treecko and Totodile. XD starts with Torchic.
+Start a new game with a different team in either Colosseum or XD. Your starters,
+opponents and snag targets follow the settings you chose.
 
 | Pokémon Colosseum | Pokémon XD |
 | --- | --- |
@@ -94,21 +102,16 @@ with Treecko and Totodile. XD starts with Torchic.
 
 ### Randomized Pokémon in story scenes
 
-In Colosseum, the real-time arrival at Outskirt Stand puts Treecko and
-Totodile in the sidecar. The prerecorded opening movie uses the original
-footage.
+Your randomized Pokémon can show up outside battle, too. In supported scenes,
+the models and dialogue follow your run, from the starters riding in the
+sidecar at Outskirt Stand to the Pokémon Duking gives you in Pyrite. Miror B.'s
+dancers also change with his team in Pyrite Cave and at Gateon Port's lighthouse.
 
 ![Treecko and Totodile arriving by motorcycle at Outskirt Stand](docs/images/colosseum-motorcycle-arrival.gif)
 
 [View the motorcycle still](docs/images/colosseum-motorcycle-starters.png)
 
-Poliwhirl replaces Plusle in Colosseum. Duking names the same Pokémon shown
-beside him in the story scene.
-
 ![Duking and Poliwhirl in the randomized Plusle gift scene](docs/images/colosseum-plusle-gift.png)
-
-Miror B.'s dancers follow the randomized team in Pyrite Cave and at
-Gateon Port's lighthouse.
 
 | Colosseum · Pyrite Cave | XD · Gateon Port Lighthouse |
 | --- | --- |
@@ -116,16 +119,14 @@ Gateon Port's lighthouse.
 
 [View the Pyrite Cave still](docs/images/colosseum-pyrite-dancers.png)
 
-In XD, a shiny Marill appears at the Cave Poké Spot and keeps the same
-color when the wild battle starts.
+At XD's Poké Spots, you can spot a shiny in the field before you battle it.
 
 | Cave Poké Spot | Wild battle |
 | --- | --- |
 | ![Shiny Marill on the field at the Cave Poké Spot](docs/images/xd-pokespot-shiny-field.png) | ![The same shiny Marill in battle](docs/images/xd-pokespot-shiny-battle.png) |
 
-The [capture manifest](docs/images/manifest.json) lists the seeds and the
-source of each image. The [story-scene notes](docs/reverse-engineering/STORY_GIFT_SCENES.md)
-describe how the models and dialogue follow the randomizer.
+[Story-scene support](docs/reverse-engineering/STORY_GIFT_SCENES.md) ·
+[Showcase seeds](docs/images/manifest.json)
 
 ## What you can customize
 
@@ -155,20 +156,19 @@ Pokémon sheets read the final patched game data, including evolution routes,
 moves and TM compatibility. The Summary and Moves tabs show the original ability
 and move descriptions in your interface language.
 
-![Treecko’s evolution sheet in Colosseum, with the original Grass badge](docs/images/pokemon-sheet.png)
-
-| Colosseum · Shadow Rush | XD · Shadow moves |
+| Colosseum | XD |
 | --- | --- |
+| ![Treecko’s evolution sheet in Colosseum](docs/images/pokemon-sheet.png) | ![Torchic’s evolution sheet in XD](docs/images/xd-pokemon-sheet.png) |
 | ![Houndour’s move sheet with Shadow Rush and its description](docs/images/colosseum-shadow-moves.png) | ![Shiny Venonat’s move sheet with Shadow moves and type badges](docs/images/xd-shadow-moves.png) |
 
 ### Advanced settings
 
 Choose a category or search for an option. Each category can be reset on its
-own; switching between Simple and Advanced keeps your settings.
+own. Switch to Advanced whenever you want more control over the preset.
 
-| Colosseum · move rules | XD · shiny rules |
+| Colosseum · Move settings | XD · Move settings |
 | --- | --- |
-| ![Colosseum advanced settings: moves, learnsets and battle safeguards](docs/images/colosseum-advanced.png) | ![XD advanced settings: custom shiny rate and optional Shadow unlock](docs/images/xd-advanced.png) |
+| ![Colosseum advanced move settings](docs/images/colosseum-advanced.png) | ![XD advanced move settings](docs/images/xd-advanced.png) |
 
 ## Compatibility and languages
 
