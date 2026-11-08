@@ -59,7 +59,7 @@ your input. The app does not launch Dolphin or manage your saves.
 | Seeded 5% shiny chance for supported encounters | Enabled | Enabled |
 | Accessible evolutions and evolution stones in shops | Enabled | Enabled |
 | Starting moves, level-up learnsets and TMs | Randomized | Preserved |
-| Eligible treasure and shop items | Randomized | Preserved, with evolution stones added |
+| Eligible treasure and shop items | Randomized | Preserved |
 
 Both presets retain native opponent levels, battle EXP, purification speed and
 catch rates. Colosseum also balances its two starters as a pair, with distinct
