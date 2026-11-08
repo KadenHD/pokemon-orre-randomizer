@@ -16,6 +16,7 @@ from scripts.release_media import documentation_media
 FORBIDDEN = {".iso", ".rvz", ".gcm", ".fsys", ".dol", ".rel", ".raw", ".gci", ".sav"}
 SOURCE_ROOT = f"{REPOSITORY_NAME}/"
 BINARY_ROOT = f"{APP_EXECUTABLE}/_internal/"
+SOURCE_TEST_TIMEOUT = 600
 
 
 def application_media_allowed(name: str, binary: bool) -> bool:
@@ -24,6 +25,21 @@ def application_media_allowed(name: str, binary: bool) -> bool:
     if not binary:
         allowed.add(prefix + "icon.png")
     return name in allowed
+
+
+def verify_source_tests(directory: Path) -> str:
+    command = [sys.executable, "-X", "utf8", "-m", "unittest", "discover", "-s", "tests", "-v"]
+    print("Running tests from the extracted source archive.", flush=True)
+    try:
+        result = subprocess.run(command, cwd=directory, capture_output=True, timeout=SOURCE_TEST_TIMEOUT)
+    except subprocess.TimeoutExpired as error:
+        progress = (error.stderr or b"").decode("utf-8", errors="replace").splitlines()
+        tail = "\n".join(progress[-25:])
+        raise RuntimeError(f"Source archive tests exceeded {SOURCE_TEST_TIMEOUT} seconds.\n{tail}") from None
+    stderr = result.stderr.decode("utf-8", errors="replace")
+    if result.returncode:
+        raise RuntimeError(result.stdout.decode("utf-8", errors="replace") + stderr)
+    return stderr.rsplit("\n" + "-" * 70 + "\n", 1)[-1].strip()
 
 
 def main():
@@ -97,12 +113,7 @@ def main():
                 # A fresh owned directory, with paths verified above.
                 with tempfile.TemporaryDirectory(prefix="source-test-", dir=ROOT / "build") as temp:
                     archive.extractall(temp)
-                    clean = Path(temp) / REPOSITORY_NAME
-                    result = subprocess.run([sys.executable, "-m", "unittest", "discover", "-s", "tests", "-q"],
-                                            cwd=clean, capture_output=True, text=True)
-                    if result.returncode:
-                        raise RuntimeError(result.stdout + result.stderr)
-                    checks[-1]["tests_without_rom"] = result.stderr.strip()
+                    checks[-1]["tests_without_rom"] = verify_source_tests(Path(temp) / REPOSITORY_NAME)
     target = ROOT / "build" / ("desktop-release-public-audit.json" if public else "desktop-release-audit.json")
     target.write_text(json.dumps(checks, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(checks, indent=2))

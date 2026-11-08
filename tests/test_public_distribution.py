@@ -60,6 +60,23 @@ class PublicDistributionTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "Unexpected documentation screenshots"):
             documentation_media(lambda name: json.dumps(manifest).encode() if name == "manifest.json" else read(name))
 
+    def test_source_archive_reports_the_test_running_at_timeout(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            tests = root / "tests"
+            tests.mkdir()
+            (tests / "test_hanging.py").write_text(
+                "from threading import Event\n"
+                "from unittest import TestCase\n"
+                "class HangingTest(TestCase):\n"
+                "    def test_waits_forever(self):\n"
+                "        Event().wait()\n",
+                encoding="utf-8",
+            )
+            with patch.object(verify_release, "SOURCE_TEST_TIMEOUT", 2):
+                with self.assertRaisesRegex(RuntimeError, r"(?s)exceeded 2 seconds.*test_waits_forever"):
+                    verify_release.verify_source_tests(root)
+
     def test_public_media_exception_is_limited_to_exact_application_branding(self):
         for binary, prefix in ((False, f"{REPOSITORY_NAME}/"), (True, f"{APP_EXECUTABLE}/_internal/")):
             self.assertTrue(verify_release.application_media_allowed(prefix + "orre_randomizer/assets/app/icon.ico", binary))
