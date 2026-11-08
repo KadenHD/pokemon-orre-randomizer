@@ -237,6 +237,48 @@ class GuiTests(unittest.TestCase):
         self.assertIsNone(window.result)
         self.assertEqual(list(source.parent.glob("*.iso")), [source])
 
+    def test_xd_preview_keeps_gui_responsive_during_thread_cleanup(self):
+        from threading import Event
+        from unittest.mock import patch
+        from PySide6.QtCore import Qt, QTimer
+        from PySide6.QtTest import QTest
+
+        window = self.window
+        window.show_xd()
+        source = Path(self.preferences_dir.name) / "original.iso"
+        source.write_bytes(b"preview fixture")
+        window.xd.source.setText(str(source))
+        allow_result = Event()
+        release_cleanup = Event()
+        released_from_gui = []
+        timer = QTimer(window)
+        timer.setSingleShot(True)
+        timer.timeout.connect(release_cleanup.set)
+
+        def fake_preview(**_arguments):
+            allow_result.wait(2)
+            return {"starter": {"original": 133, "species": 25, "level": 10}}
+
+        def finish_cleanup():
+            released_from_gui.append(release_cleanup.wait(2))
+
+        with patch("orre_randomizer.preview.preview_xd", side_effect=fake_preview):
+            window.xd.start_preview()
+            try:
+                thread = window.preview_thread
+                thread.finished.connect(timer.start, Qt.ConnectionType.QueuedConnection)
+                thread.finished.connect(finish_cleanup, Qt.ConnectionType.DirectConnection)
+            finally:
+                allow_result.set()
+            for _ in range(300):
+                if window.preview_thread is None:
+                    break
+                QTest.qWait(10)
+
+        self.assertEqual(released_from_gui, [True])
+        self.assertIsNone(window.preview_thread)
+        self.assertIsNotNone(window.xd.preview_result)
+
     def test_xd_preview_ignores_a_late_result_after_editing_the_seed(self):
         from unittest.mock import patch
         from PySide6.QtTest import QTest

@@ -1363,7 +1363,6 @@ class MainWindow(QMainWindow):
         self.preview_worker.finished.connect(self.preview_thread.quit)
         self.preview_worker.finished.connect(self.preview_worker.deleteLater)
         self.preview_thread.finished.connect(self.preview_finished)
-        self.preview_thread.finished.connect(self.preview_thread.deleteLater)
         self.preview_thread.start()
 
     @Slot(dict, object)
@@ -1399,8 +1398,14 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def preview_finished(self):
-        if self.preview_thread is not None:
-            self.preview_thread.wait()
+        thread = self.preview_thread
+        if thread is None:
+            return
+        # Qt can still be cleaning up the thread after emitting finished.
+        if not thread.wait(0):
+            QTimer.singleShot(10, self, self.preview_finished)
+            return
+        thread.deleteLater()
         self.preview_thread = self.preview_worker = None
         owner = self.preview_owner
         self.preview_owner = None
