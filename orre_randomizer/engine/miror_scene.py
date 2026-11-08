@@ -40,7 +40,8 @@ def synchronize_cave_team(original, current):
     return bytes(updated), tuple(species), tuple(slots)
 
 
-def patch_cave_dancers(source, dol, game_id, dancers, shiny, species_table, rel, archive):
+def patch_cave_dancers(source, dol, game_id, dancers, shiny, species_table, rel, archive, *,
+                       unown_form_index=0, spinda_pids=(None,) * 4):
     members = parse_fsys(source)["members"]
     room = next(row for row in members if row["identifier_raw"].endswith("1c00"))
     template = next(row for row in members if row["name"] == "runpappa")
@@ -48,8 +49,8 @@ def patch_cave_dancers(source, dol, game_id, dancers, shiny, species_table, rel,
         raise FormatError("unexpected Ludicolo actor in the Pyrite cave")
     character_data = bytearray(decoded_member(source, room))
     models = []
-    actors = zip(dancers, shiny, _DANCER_MODELS, _DANCER_IDS, strict=True)
-    for slot, (species, is_shiny, actor_index, resource_id) in enumerate(actors):
+    actors = zip(dancers, shiny, _DANCER_MODELS, _DANCER_IDS, spinda_pids, strict=True)
+    for slot, (species, is_shiny, actor_index, resource_id, spinda_pid) in enumerate(actors):
         # The first character in this native four-entry group starts the
         # same script sequence on all three regional discs.
         positions = [i for i in range(0, len(character_data) - 16, 2)
@@ -63,7 +64,8 @@ def patch_cave_dancers(source, dol, game_id, dancers, shiny, species_table, rel,
             model = decoded_member(source, template)
         else:
             model = load_actor_model(dol, game_id, u32(rel, pos + 0x2C), archive,
-                                     scale=companion_scale(national, 0.8), shiny=is_shiny)
+                                     scale=companion_scale(national, 0.8), shiny=is_shiny,
+                                     unown_form_index=unown_form_index, spinda_pid=spinda_pid)
         models.append((resource_id, model))
     return append_actor_models(
         source, {room["index"]: bytes(character_data), template["index"]: models[0][1]},

@@ -42,6 +42,12 @@ from .engine.gafar_dialogue import ARCHIVE_NAME as GAFAR_DIALOGUE_ARCHIVE, patch
 from .engine.message_bank import patch_species_archive
 from .engine.shadow_dialogue import SHADOW_REMARK_REWRITES, shadow_dialogue_edits
 from .engine.hooh_reward import patch_hooh_reward_scene
+from .engine.colo_spinda import colo_spinda_gift_pid, colo_spinda_seeds, colo_spinda_trainer_pid
+from .engine.colo_spinda_field import apply_colo_spinda_starters
+from .engine.colo_unown import patch_unown_form
+from .engine.dna_lab import dna_appearances, dna_room_updates, dna_spinda_samples, patch_dna_analyzer
+from .engine.dna_keypad_runtime import apply_dna_keypad_runtime
+from .engine.unown_form import unown_form
 from .engine.eagun_scene import patch_eagun_scenes
 from .engine.starter_arrival import ARRIVAL_ARCHIVE, patch_starter_arrival
 from .engine.plusle_actor import ACTOR_ARCHIVES, OVERSIZED_FIELD_SPECIES, companion_scale, load_actor_model, patch_actor
@@ -64,7 +70,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "story-field-placement-v19"
+ENGINE_VERSION = "story-field-placement-v20"
 
 
 @dataclass(frozen=True, slots=True)
@@ -522,7 +528,10 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         dol, summary["special_gameplay"] = apply_dol_rules(
             original_dol, dol, original, rel, seed, options, starter_result=starter_result, gift_picks=gift_picks)
         rel, dol, summary["tms"] = apply_tm_rules(original, rel, original_dol, dol, seed, options)
-        dol, summary["shinies"] = apply_shiny_rules(original_dol, dol, options, seed=seed, trainer_aliases=dancer_slots)
+        spinda_seeds = colo_spinda_seeds(original, rel, original_dol, dol, seed, dancer_slots) if options.has_changes else {}
+        dol, shiny_report = apply_shiny_rules(original_dol, dol, options, seed=seed,
+                                              trainer_aliases=dancer_slots, spinda_seeds=spinda_seeds)
+        summary["shinies"] = shiny_report
         dol, summary["quality_of_life"] = apply_qol_rules(original_dol, dol, options)
         if options.readable_stone_names:
             rel, summary["item_names"] = apply_item_name_spacing(original, rel)
@@ -531,7 +540,33 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         if options.gift_hooh or options.custom_shinies:
             dol, rel, summary["hooh_reward_scene"] = patch_hooh_reward_scene(
                 original_dol, dol, original, rel, sync_native_gift=options.custom_shinies)
+        lab_appearances = dna_appearances(original, rel, options, shiny_report)
+        samples = {}
+        if lab_appearances:
+            samples = dna_spinda_samples(original, rel, lab_appearances, options, shiny_report)
+            dol = patch_dna_analyzer(original_dol, dol, lab_appearances, spinda_samples=samples,
+                                     spinda_pid=shiny_report.get("spinda_pid"))
+        form = unown_form(seed)
+        if options.has_changes:
+            dol = patch_unown_form(original_dol, dol, form)
+            summary["unown_form"] = form
+        decisions = shiny_report.get("seeded_decisions", {})
+        guaranteed_shiny = options.custom_shinies and options.shiny_chance_percent == 100
+        spinda_default = (None if options.custom_shinies and not options.seeded_shinies
+                          and options.shiny_chance_percent not in (0, 100) else guaranteed_shiny)
+        arrival = patch_starter_arrival(original_dol, dol, original, archive,
+                                        decisions.get("specials", {}), guaranteed_shiny, unown_form_index=form,
+                                        spinda_seeds=spinda_seeds, spinda_default=spinda_default)
+        if arrival and any(row.get("spinda_live_pid") for row in arrival[1]):
+            dol = apply_colo_spinda_starters(original_dol, dol, shiny_report["spinda_pid"]["resolver"], archive)
+        if samples:
+            dol = apply_dna_keypad_runtime(original_dol, dol, archive, samples, shiny_report["spinda_pid"])
         summary = final_report_summary(original, base_rel, rel, original_dol, dol, seed, options, summary)
+        if lab_appearances:
+            summary["dna_lab"] = {
+                str(old): {"species": species, "shiny": shiny}
+                for old, (species, shiny) in lab_appearances.items()
+            }
         if options.diverse_story_families:
             families = evolution_families(original, layout(original)[0])[0]
             members = {}
@@ -574,12 +609,15 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             patches.append((common_offset, new_common))
         struct.pack_into(">II", fst, old["index"] * 12 + 4, common_offset, len(new_common))
         cursor = align(common_offset + len(new_common) if relocated else sys_end, 0x8000)
+        scene_updates = (dna_room_updates(original, region.game_id, archive, lab_appearances,
+                                          unown_form_index=form, spinda_samples=samples) if lab_appearances else {})
         if options.stone_shops or options.randomize_shop_items:
             summary["shop_archives"] = []
             shop_archives = shop_archive_names(original)
             for i, name in enumerate(sorted(shop_archives)):
                 progress(30 + int(i * 24 / len(shop_archives)), Message("Boutiques : étape {number}/{total}…", number=i + 1, total=len(shop_archives)))
-                payload, shop_report = patch_item_archive(archive(name), original_dol, seed, options)
+                source = scene_updates.pop(name) if name in scene_updates else archive(name)
+                payload, shop_report = patch_item_archive(source, original_dol, seed, options)
                 summary["shop_archives"].append({"archive": name, **shop_report})
                 checkpoint(cancel)
                 if cursor + len(payload) > first_file:
@@ -587,7 +625,6 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 patches.append((cursor, payload))
                 struct.pack_into(">II", fst, by_name[name]["index"] * 12 + 4, cursor, len(payload))
                 cursor = align(cursor + len(payload), 0x8000)
-        scene_updates = {}
         summary["event_gifts"] = {"enabled": options.accessible_event_gifts, "archives": []}
         if options.accessible_event_gifts:
             for i, name in enumerate(EVENT_GIFT_ARCHIVES):
@@ -596,16 +633,13 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 checkpoint(cancel)
                 scene_updates[name] = payload
                 summary["event_gifts"]["archives"].append({"archive": name, **event_report})
-        decisions = summary["shinies"].get("seeded_decisions", {})
-        guaranteed_shiny = options.custom_shinies and options.shiny_chance_percent == 100
-        arrival = patch_starter_arrival(original_dol, dol, original, archive,
-                                        decisions.get("specials", {}), guaranteed_shiny)
         if arrival is not None:
             scene_updates[ARRIVAL_ARCHIVE], summary["starter_arrival"] = arrival
         trainer_shinies = decisions.get("trainer_slots", {})
         if options.randomize_trainers or options.custom_shinies:
             partner = patch_eagun_scenes(original, rel, original_dol, region.game_id, archive,
-                                         scene_updates, trainer_shinies, guaranteed_shiny)
+                                          scene_updates, trainer_shinies, guaranteed_shiny, unown_form_index=form,
+                                          spinda_seeds=spinda_seeds, spinda_default=spinda_default)
             if partner is not None:
                 summary["eagun_field_partner"] = partner
                 for report in summary["event_gifts"]["archives"]:
@@ -613,9 +647,13 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                         report["after_sha256"] = sha256(scene_updates[report["archive"]])
         shiny_dancers = tuple(trainer_shinies.get(str(slot), guaranteed_shiny) for slot, _ in dancer_slots)
         if dancers and (any(species != 297 for species in dancers) or any(shiny_dancers)):
+            dancer_pids = tuple(
+                colo_spinda_trainer_pid(original, rel, spinda_seeds, slot, mode) if mode is not None else None
+                for slot, mode in ((slot, trainer_shinies.get(str(slot), spinda_default)) for slot, _ in dancer_slots)
+            )
             scene_updates[MIROR_CAVE] = patch_cave_dancers(
                 archive(MIROR_CAVE), original_dol, region.game_id, dancers, shiny_dancers,
-                layout(original)[0]["species"], rel, archive,
+                layout(original)[0]["species"], rel, archive, unown_form_index=form, spinda_pids=dancer_pids,
             )
             summary["miror_cave_dancers"] = list(dancers)
             summary["miror_cave_shiny_models"] = list(shiny_dancers)
@@ -629,7 +667,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 # The captive Pokémon has to fit behind the cage bars.
                 scale = 0.5 * companion_scale(national_dex, 1.0) if national_dex in OVERSIZED_FIELD_SPECIES else 1.0
                 shiny = decisions.get("specials", {}).get("plusle", guaranteed_shiny)
-                model = load_actor_model(original_dol, region.game_id, model_id, archive, scale=scale, shiny=shiny)
+                spinda_mode = decisions.get("specials", {}).get("plusle", spinda_default)
+                spinda_pid = (colo_spinda_gift_pid(spinda_seeds, "plusle", spinda_mode)
+                              if spinda_mode is not None else None)
+                model = load_actor_model(original_dol, region.game_id, model_id, archive, scale=scale, shiny=shiny,
+                                         unown_form_index=form, spinda_pid=spinda_pid)
                 for name in PLUSLE_DIALOGUE_ARCHIVES:
                     checkpoint(cancel)
                     room = scene_updates[name] if name in scene_updates else archive(name)

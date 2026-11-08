@@ -14,8 +14,11 @@ import struct
 import tempfile
 import zlib
 
+from .engine.actor_palette import pkx_recipe, remap_rgb565
 from .engine.analyze_game import decompress_lzss, parse_fsys
+from .engine.spinda_art import _FACE_ORDER, _FACE_SIZE, spinda_face_texture
 from .engine.survey_assets import fst_inventory
+from .engine.unown_form import unown_suffix
 
 
 class ArtworkError(ValueError):
@@ -305,7 +308,7 @@ def load_cached_artwork(cache_dir: Path) -> dict[str, Path]:
 
 
 def extract_portraits(iso: Path, species_ids: tuple[int, ...], *, shiny: bool = False,
-                      is_xd: bool = False) -> dict[int, bytes]:
+                      is_xd: bool = False, unown_form_index: int = 0) -> dict[int, bytes]:
     """Read up to 64 42px faces in one archive pass, indexed by internal ID.
 
     Gen III internal IDs differ from national Pokédex numbers. The face archive
@@ -317,18 +320,18 @@ def extract_portraits(iso: Path, species_ids: tuple[int, ...], *, shiny: bool = 
     try:
         archive = _disc_files(Path(iso), {"poke_face.fsys"}, is_xd=is_xd)["poke_face.fsys"]
         members = parse_fsys(archive)["members"]
-        return {i: _portrait_png(archive, members, i, shiny=shiny) for i in set(species_ids)}
+        return {i: _portrait_png(archive, members, i, shiny=shiny, unown_form_index=unown_form_index)
+                for i in set(species_ids)}
     except ArtworkError:
         raise
     except (OSError, ValueError, RuntimeError, struct.error, zlib.error) as error:
         raise ArtworkError("Portrait extraction is unavailable.") from error
 
 
-def _portrait_png(archive: bytes, members: list[dict], index: int, *, shiny=False) -> bytes:
+def _portrait_png(archive: bytes, members: list[dict], index: int, *, shiny=False, unown_form_index=0) -> bytes:
     # Some species have two facing variants per row: 84x84 rather than 42x84.
     # The upper-left frame is ordinary; the lower row holds shiny variants.
-    # Unown is represented by its canonical A face, not a predicted PID form.
-    name = "face201a" if index == 201 else f"face{index:03d}"
+    name = f"face201{unown_suffix(unown_form_index)}" if index == 201 else f"face{index:03d}"
     raw = _member(archive, members, name)
     if len(raw) < 4:
         raise ArtworkError("Truncated portrait texture.")
@@ -339,6 +342,33 @@ def _portrait_png(archive: bytes, members: list[dict], index: int, *, shiny=Fals
     first = 42 if shiny else 0
     face = b"".join(pixels[y * width * 4:(y * width + 42) * 4] for y in range(first, first + 42))
     return _png((42, 42), face)
+
+
+def extract_spinda_patterns(iso: Path, requests: set[tuple[int, bool]], *,
+                            is_xd: bool = False) -> dict[tuple[int, bool], bytes]:
+    """Show the exact native face texture, separate from the fixed portrait."""
+    try:
+        archive = _disc_files(Path(iso), {"pkx_patcheel.fsys"}, is_xd=is_xd)["pkx_patcheel.fsys"]
+        members = parse_fsys(archive)["members"]
+        face, spot = (_member(archive, members, name) for name in ("face", "buti_a"))
+        recipe = pkx_recipe(_member(archive, members, "patcheel"), xd=is_xd) if any(
+            shiny for _, shiny in requests) else None
+        patterns = {}
+        for pid, shiny in sorted(requests):
+            words = struct.iter_unpack(">H", spinda_face_texture(face, spot, pid))
+            colors = {}
+            pixels = bytearray(4 * _FACE_SIZE ** 2)
+            for index, (color,) in zip(_FACE_ORDER, words, strict=True):
+                if color not in colors:
+                    tinted = remap_rgb565(color, *recipe) if shiny else color
+                    colors[color] = bytes(_rgb565(tinted))
+                pixels[index * 4:index * 4 + 4] = colors[color]
+            patterns[pid, shiny] = _png((_FACE_SIZE, _FACE_SIZE), bytes(pixels))
+        return patterns
+    except ArtworkError:
+        raise
+    except (OSError, ValueError, RuntimeError, struct.error, zlib.error) as error:
+        raise ArtworkError("Spinda pattern extraction is unavailable.") from error
 
 
 def extract_artwork(iso: Path, cache_dir: Path) -> dict[str, Path]:

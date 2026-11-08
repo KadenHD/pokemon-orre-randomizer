@@ -39,7 +39,7 @@ _GLOOM_CRY = bytes.fromhex("02010000 000084ed 02010000 0000002c 02010000 0000000
 
 
 def _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, normal_scale, *,
-                 shiny=False, height_limit=None):
+                 shiny=False, height_limit=None, unown_form_index=0, spinda_pid=None):
     national = species[chosen][0]
     scale = companion_scale(national, normal_scale)
     entry = species_table + 0x124 * chosen
@@ -49,8 +49,11 @@ def _field_model(rel, species_table, species, dol, game_id, read_archive, chosen
             raise FormatError("missing XD scripted Pokémon height")
         scale = min(scale, height_limit / height)
     model_id = u16(rel, entry + 0x2E)
-    return (load_actor_model(dol, game_id, model_id, read_archive, scale=scale, shiny=shiny),
-            {"species": chosen, "national_dex": national, "scale": scale})
+    report = {"species": chosen, "national_dex": national, "scale": scale}
+    if spinda_pid is not None:
+        report["spinda_pid"] = spinda_pid
+    return (load_actor_model(dol, game_id, model_id, read_archive, scale=scale, shiny=shiny,
+                             unown_form_index=unown_form_index, spinda_pid=spinda_pid), report)
 
 
 def _lighthouse_rel(raw, common, common_models):
@@ -90,10 +93,12 @@ def _lighthouse_script(raw, chosen):
     return bytes(updated)
 
 
-def patch_lighthouse_dancers(original, current, rel, symbols, species, dol, game_id, read_archive, updates):
+def patch_lighthouse_dancers(original, current, rel, symbols, species, dol, game_id, read_archive, updates,
+                             *, unown_form_index=0, spinda_pids=None):
     row = 0x20 + LIGHTHOUSE_TRAINER * 0x38
     start = 0x20 + u32(original, 0x14)
-    slots = [start + 0x20 * u16(original, row + 0x1C + slot * 2) for slot in range(5)]
+    indices = [u16(original, row + 0x1C + slot * 2) for slot in range(5)]
+    slots = [start + 0x20 * index for index in indices]
     if original[row + 4] & 0x1F or any(u16(original, position) != LUDICOLO for position in slots):
         raise FormatError("unexpected XD lighthouse battle team")
     # The first four of the five retail Ludicolo slots have actors on the roof.
@@ -116,7 +121,9 @@ def patch_lighthouse_dancers(original, current, rel, symbols, species, dol, game
             model = decoded_member(shared, stock)
             actor = {"species": pokemon, "national_dex": 272, "scale": 1.0}
         else:
-            model, actor = _field_model(rel, symbols[88]["offset"], species, dol, game_id, read_archive, pokemon, 0.8)
+            model, actor = _field_model(rel, symbols[88]["offset"], species, dol, game_id, read_archive, pokemon, 0.8,
+                                        unown_form_index=unown_form_index,
+                                        spinda_pid=(spinda_pids or {}).get(indices[index]))
         models[ident] = (f"orre_lighthouse_dancer_{index + 1}", model)
         report.append(actor)
     updates[LIGHTHOUSE_ARCHIVE] = append_actor_models(
@@ -133,7 +140,8 @@ def _gateon_cry(raw, chosen):
     return bytes(result)
 
 
-def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_archive, updates, shiny):
+def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_archive, updates, shiny,
+                        *, unown_form_index=0):
     if shadow["shadow_id"] != GATEON_SHADOW or shadow["original"] != _ZANGOOSE:
         raise FormatError("unexpected Gateon scripted Shadow slot")
     chosen = shadow["species"]
@@ -142,7 +150,7 @@ def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_
     # The low camera sits close to Barry's partner. Preserve the scene's
     # framing by limiting large replacements to a 7.2-decimeter field model.
     model, report = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
-                                 shiny=shiny, height_limit=7.2)
+                                 shiny=shiny, height_limit=7.2, unown_form_index=unown_form_index)
     # Both the room actor and the scripted model request resolve this shared
     # resource. Its stock references belong to this one Gateon scene.
     source = updates[_SHARED_ACTORS] if _SHARED_ACTORS in updates else read_archive(_SHARED_ACTORS)
@@ -155,17 +163,20 @@ def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_
     return dict(report, shiny=shiny)
 
 
-def patch_wakin_partner(original, current, rel, species_table, species, dol, game_id, read_archive, updates):
+def patch_wakin_partner(original, current, rel, species_table, species, dol, game_id, read_archive, updates,
+                        *, unown_form_index=0, spinda_pids=None):
     trainer = 0x20 + WAKIN_TRAINER * 0x38
     start = 0x20 + u32(original, 0x14)
-    slots = [start + 0x20 * u16(original, trainer + 0x1C + slot * 2) for slot in range(2)]
+    indices = [u16(original, trainer + 0x1C + slot * 2) for slot in range(2)]
+    slots = [start + 0x20 * index for index in indices]
     if original[trainer + 4] & 3 or any(u16(original, position) != GLOOM for position in slots):
         raise FormatError("unexpected XD Wakin battle team")
     chosen = u16(current, slots[0])
     if chosen == GLOOM:
         return None
     model, report = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
-                                 height_limit=8.0)
+                                 height_limit=8.0, unown_form_index=unown_form_index,
+                                 spinda_pid=(spinda_pids or {}).get(indices[0]))
 
     def cry(raw):
         if raw.count(_GLOOM_CRY) != 1:

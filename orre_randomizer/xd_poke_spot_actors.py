@@ -65,7 +65,8 @@ def _patch_species_checks(script, *, branches):
     return bytes(updated)
 
 
-def patch_poke_spot_actors(rows, original_dol, rel, species_offset, game_id, read_archive, updates):
+def patch_poke_spot_actors(rows, original_dol, rel, species_offset, game_id, read_archive, updates,
+                           *, unown_form_index=0):
     """Retarget only the regular encounter branches. Native special actors are separate."""
     shared_models = {}
     shiny_models = {}
@@ -90,12 +91,14 @@ def patch_poke_spot_actors(rows, original_dol, rel, species_offset, game_id, rea
             national = u16(rel, record + 0x0E)
             scale = companion_scale(national, 1.0)
             model_id = u16(rel, record + 0x2E)
-            room_models[resource] = load_actor_model(original_dol, game_id, model_id, read_archive, scale=scale)
+            room_models[resource] = load_actor_model(original_dol, game_id, model_id, read_archive, scale=scale,
+                                                     unown_form_index=unown_form_index)
             filter_index = spot_index * 3 + slot
             shiny_id = _FIRST_SHINY_MODEL + (filter_index << 16)
             shiny_models[shiny_id] = (
                 f"orre_spot_shiny_{filter_index + 1}",
-                load_actor_model(original_dol, game_id, model_id, read_archive, scale=scale, shiny=True),
+                load_actor_model(original_dol, game_id, model_id, read_archive, scale=scale, shiny=True,
+                                 unown_form_index=unown_form_index),
             )
             branches.append((old, species, resource, shiny_id, filter_index))
             report.append({"spot": spot, "species": species, "model_resource": resource,

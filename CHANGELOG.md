@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.18
+
+- Match Colosseum's DNA analyzer and door keypad to the randomized Shadow
+  encounters, including known shiny colors and matching Spinda spot patterns.
+- Draw Unown's letter or punctuation form from the seed and use it in battles,
+  supported scenes, the DNA lab and the desktop preview.
+- Match Spinda's spots to the Pokémon's in-game personality value in supported
+  scenes. Show its exact spot pattern in the Pokémon sheet when available.
+
 ## 1.2.17
 
 - Keep the interface responsive while ROM creation and report checks finish.

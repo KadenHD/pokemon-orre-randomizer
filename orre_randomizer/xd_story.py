@@ -294,9 +294,11 @@ def patch_starter_dialogue(source, game_id, national, name_banks):
     return _patch_banks(source, game_id, edits)
 
 
-def patch_eagun_actor(original, current, rel, species_table, species, dol, game_id, read_archive, updates):
+def patch_eagun_actor(original, current, rel, species_table, species, dol, game_id, read_archive, updates,
+                      *, unown_form_index=0, spinda_pids=None):
     row = 0x20 + _EAGUN_TRAINER * 0x38
-    position = 0x20 + u32(original, 0x14) + 0x20 * u16(original, row + 0x1C)
+    index = u16(original, row + 0x1C)
+    position = 0x20 + u32(original, 0x14) + 0x20 * index
     if original[row + 4] & 1 or u16(original, position) != 25:
         raise FormatError("unexpected XD team for Eagun's field partner")
     chosen = u16(current, position)
@@ -305,7 +307,9 @@ def patch_eagun_actor(original, current, rel, species_table, species, dol, game_
     national = species[chosen][0]
     scale = companion_scale(national, 0.65)
     model_id = u16(rel, species_table + 0x124 * chosen + 0x2E)
-    model = load_actor_model(dol, game_id, model_id, read_archive, scale=scale)
+    spinda_pid = (spinda_pids or {}).get(index)
+    model = load_actor_model(dol, game_id, model_id, read_archive, scale=scale,
+                             unown_form_index=unown_form_index, spinda_pid=spinda_pid)
     for archive in EAGUN_ACTOR_ARCHIVES:
         source = updates[archive] if archive in updates else read_archive(archive)
         source = patch_actor(source, model, identifier="0x18830400", name="pikachu")
@@ -313,7 +317,10 @@ def patch_eagun_actor(original, current, rel, species_table, species, dol, game_
             source, archive.removesuffix(".fsys"),
             partial(_patch_eagun_cry, chosen=chosen, messages=_EAGUN_CRY_MESSAGES[archive]),
         )
-    return {"species": chosen, "national_dex": national, "scale": scale}
+    report = {"species": chosen, "national_dex": national, "scale": scale}
+    if spinda_pid is not None:
+        report["spinda_pid"] = spinda_pid
+    return report
 
 
 def _patch_eagun_cry(source, *, chosen, messages):

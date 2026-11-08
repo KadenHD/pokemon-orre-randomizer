@@ -23,8 +23,9 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.17** keeps the interface responsive while ROM creation and
-report checks finish. See the [release notes](docs/releases/v1.2.17.md).
+**Version 1.2.18** brings randomized Shadow Pokémon to Colosseum's DNA lab
+and keeps Unown's letter and Spinda's spots consistent across supported scenes.
+See the [release notes](docs/releases/v1.2.18.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
@@ -105,6 +106,11 @@ Your randomized Pokémon can show up outside battle, too. In supported scenes,
 the models and dialogue follow your run, from the starters riding in the
 sidecar at Outskirt Stand to the Pokémon Duking gives you in Pyrite. Miror B.'s
 dancers also change with his team in Pyrite Cave and at Gateon Port's lighthouse.
+
+Colosseum's DNA analyzer and door keypad follow the randomized Shadow Pokémon.
+Unown's letter comes from the seed in both games. Spinda's spots follow its
+in-game personality value, and the Pokémon sheet shows the exact pattern when
+it can be determined before play. [Forms and shiny rules](docs/SHINIES.md)
 
 ![Treecko and Totodile arriving by motorcycle at Outskirt Stand](docs/images/colosseum-motorcycle-arrival.gif)
 

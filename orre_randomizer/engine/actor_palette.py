@@ -22,6 +22,16 @@ def pkx_recipe(pkx, *, xd):
     return route, gain
 
 
+def remap_rgb565(value, route, gain):
+    channels = (((value >> 11) * 255 + 16) // 31,
+                (((value >> 5) & 63) * 255 + 32) // 63,
+                ((value & 31) * 255 + 16) // 31, 255)
+    r, g, b = (min(255, (channels[route[i]] * (gain[i] + 1) + 64) // 128)
+               for i in range(3))
+    red, green, blue = ((r * 31 + 127) // 255, (g * 63 + 127) // 255, (b * 31 + 127) // 255)
+    return red << 11 | green << 5 | blue
+
+
 def tint_field_model(data, relocations, model, recipe):
     route, gain = recipe
     if route == (0, 1, 2, 3) and gain[:3] == (127, 127, 127):
@@ -41,8 +51,7 @@ def tint_field_model(data, relocations, model, recipe):
             return (component * ((1 << depth) - 1) + 127) // 255
 
         if fmt == 4:
-            r, g, b = color((unpack(value >> 11, 5), unpack(value >> 5, 6), unpack(value, 5), 255))
-            return pack(r, 5) << 11 | pack(g, 6) << 5 | pack(b, 5)
+            return remap_rgb565(value, route, gain)
         if value & 0x8000:
             r, g, b = color((unpack(value >> 10, 5), unpack(value >> 5, 5), unpack(value, 5), 255))
             return 0x8000 | pack(r, 5) << 10 | pack(g, 5) << 5 | pack(b, 5)

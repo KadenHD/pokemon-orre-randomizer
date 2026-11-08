@@ -6,6 +6,9 @@ import struct
 from .actor_palette import pkx_recipe, tint_field_model
 from .analyze_game import FormatError, check_range, cstring, parse_fsys, u32
 from .rebuild_iso import decoded_member, repack_fsys
+from .spinda import SPINDA
+from .spinda_art import replace_spinda_field_face, spinda_face_texture
+from .unown_form import unown_suffix
 
 
 ACTOR_ARCHIVES = ("M2_guild_1F_1.fsys", "M2_cave_1F_2.fsys")
@@ -42,7 +45,8 @@ def _model_resource(toc: bytes, group: int) -> str:
 
 
 def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, recipe=None,
-                 attachment_offset: tuple[float, float, float] | None = None) -> bytes:
+                 attachment_offset: tuple[float, float, float] | None = None,
+                 spinda_texture: bytes | None = None) -> bytes:
     # Movement and emote slots in battle models contain species-specific
     # attacks. Reuse the species' idle motion for the field actor.
     dat = pkx[header_size:]
@@ -63,6 +67,8 @@ def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, rec
     model_list = u32(data, scenes[0])
     model = u32(data, model_list)
     check_range(data, model, 16, "story Pokémon model set")
+    if spinda_texture is not None:
+        replace_spinda_field_face(data, relocations, model, spinda_texture)
     if recipe is not None:
         tint_field_model(data, relocations, model, recipe)
     if attachment_offset is not None:
@@ -119,7 +125,8 @@ def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, rec
 
 def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[[str], bytes],
                      *, scale: float = 1.0, shiny: bool = False,
-                     attachment_offset: tuple[float, float, float] | None = None) -> bytes:
+                     attachment_offset: tuple[float, float, float] | None = None,
+                     unown_form_index: int = 0, spinda_pid: int | None = None) -> bytes:
     xd = game_id in _XD_MODEL_TABLE
     if xd:
         table = _XD_MODEL_TABLE[game_id]
@@ -133,8 +140,9 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
         group, resource, _ = struct.unpack_from(">III", dol, table + model_id * 12)
     toc = archive("GSfsys.toc")
     if model_id == 201 and group == 0:
-        # Unown selects its model at runtime. Form A is its field stand-in.
-        name = "pkx_unknown_a.fsys"
+        # Its native table is resolved at runtime. Field actors need an
+        # explicit asset for the same form that the seeded resolver returns.
+        name = f"pkx_unknown_{unown_suffix(unown_form_index)}.fsys"
         payload = archive(name)
         members = parse_fsys(payload)["members"]
     else:
@@ -147,6 +155,13 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
     if len(members) != 1 or not members[0]["identifier_raw"].endswith("1e00"):
         raise FormatError("expected one story Pokémon battle model")
     pkx = decoded_member(payload, members[0])
+    spinda_texture = None
+    if model_id == SPINDA and spinda_pid is not None:
+        textures = {row["name"]: row for row in parsed["members"]}
+        if not {"face", "buti_a"} <= textures.keys():
+            raise FormatError("missing retail Spinda spot textures")
+        spinda_texture = spinda_face_texture(decoded_member(payload, textures["face"]),
+                                             decoded_member(payload, textures["buti_a"]), spinda_pid)
     recipe = None
     if shiny:
         # A subset of species (including Charizard and Ho-Oh) have a retail
@@ -165,7 +180,7 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
     if xd and (header_size < 0x40 or u32(pkx, header_size) != u32(pkx, 0)):
         raise FormatError("unexpected XD Pokémon DAT offset")
     return _field_model(pkx, header_size=header_size, scale=scale, recipe=recipe,
-                        attachment_offset=attachment_offset)
+                        attachment_offset=attachment_offset, spinda_texture=spinda_texture)
 
 
 def patch_actor(source: bytes, model: bytes, *, identifier: str = _ACTOR_ID, name: str = "prasle_b1") -> bytes:

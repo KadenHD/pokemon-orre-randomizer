@@ -102,10 +102,11 @@ class XDTests(unittest.TestCase):
             with self.subTest(game_id=game_id):
                 boot = boot_for(game_id)
                 self.assertEqual(check_disc_identity(boot, region.iso_sha256, is_xd=True), region)
-                self.assertEqual(xd.build_patches(
-                    Path("unopened.iso"), boot, "copy", xd.XDOptions.unchanged(),
-                    lambda *_: None, threading.Event(),
-                ), ([], {}))
+                copy_options = xd.XDOptions.unchanged()
+                for options in (copy_options, replace(copy_options, allow_gen1=True, starter_species=308)):
+                    self.assertEqual(xd.build_patches(
+                        Path("unopened.iso"), boot, "copy", options, lambda *_: None, threading.Event(),
+                    ), ([], {}))
                 with self.assertRaises(UserError):
                     check_disc_identity(boot, region.iso_sha256, is_xd=False)
                 with self.assertRaises(UserError):

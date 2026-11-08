@@ -17,15 +17,21 @@ from .engine.rebuild_iso import align, decoded_member, repack_fsys
 from .engine.regions import DISC_SIZE, Region
 from .engine.shadow_boss_rules import _match_families, _power_preference
 from .engine.species_rules import LEGENDARY_NATIONAL
+from .engine.spinda import SPINDA, spinda_pid_seed
 from .engine.survey_assets import fst_inventory
+from .engine.unown_form import unown_form
 from .options import Options, rule, setting
+from .settings_presentation import effective_xd_setting_names
 from .xd_battle_rules import (apply_deck_rules, apply_dol_battle_rules, apply_shadow_rules,
                               boss_shadows, deck_rules_active, shadow_rules_active)
 from .xd_gifts import (DUKING_TRADES, GIFT_BASELINES, GIFT_TRADE_REQUIREMENTS, HORDEL_SHADOW,
                        TOGEPI, patch_gifts, patch_hordel_gift)
 from .xd_item_rules import apply_field_items, apply_shop_items
 from .xd_shiny_rules import apply_shiny_rules
-from .xd_shadow_shinies import apply_shadow_shiny_rules
+from .xd_shadow_shinies import apply_shadow_shiny_rules, shadow_statuses
+from .xd_spinda import apply_spinda_pids
+from .xd_spinda_field import apply_spinda_poke_spots
+from .xd_spinda_trainers import apply_spinda_trainer_pids, spinda_deck_pids
 from .xd_field_actors import GATEON_SHADOW, patch_gateon_shadow, patch_lighthouse_dancers, patch_wakin_partner
 from .xd_poke_spot_actors import patch_poke_spot_actors
 from .xd_poke_spot_shinies import apply_poke_spot_shinies
@@ -35,8 +41,9 @@ from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITE
                        TRAINER_REMARK_REWRITES, patch_eagun_actor,
                        TUTORIAL_SHADOW, hordel_candidates,
                        patch_starter_dialogue, patch_tutorial, trainer_dialogue_edits, tutorial_candidates)
+from .xd_unown_form import patch_xd_unown_form
 
-VERSION = "xd-story-sha256-v10"
+VERSION = "xd-story-sha256-v11"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -517,7 +524,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
 
     options = validate_options(options)
     region = region_for_boot(boot)
-    if options == XDOptions.unchanged() and not include_details:
+    has_changes = bool(effective_xd_setting_names(options))
+    if not has_changes and not include_details:
         return [], {}
     dol_offset, fst_offset, fst_size, fst_max = (u32(boot, pos) for pos in range(0x420, 0x430, 4))
     with iso.open("rb") as stream:
@@ -549,8 +557,13 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                "decks": {}}
     summary["national_ids"] = {str(index): row[0] for index, row in species.items()}
     original_dol = dol
+    unown_form_index = 0
+    if has_changes:
+        unown_form_index = unown_form(seed)
+        dol = patch_xd_unown_form(original_dol, dol, region.game_id, unown_form_index)
+        summary["unown_form"] = unown_form_index
     dol, summary["shinies"] = apply_shiny_rules(original_dol, dol, region.game_id, seed, options)
-    dol, summary["shadow_shinies"] = apply_shadow_shiny_rules(original_dol, dol, region.game_id, seed, options)
+    shadow_status = shadow_statuses(seed, options)
     dol, summary["poke_spot_shinies"] = apply_poke_spot_shinies(original_dol, dol, region.game_id, options)
     new_rel, summary["poke_spots"], summary["evolutions"] = _rel(rel, seed, species, edges, symbols, options, eligible)
     if options.custom_poke_spot_shinies and options.poke_spot_shiny_chance_percent in (0, 100):
@@ -623,7 +636,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     if options.randomize_poke_spots and options.poke_spots_full_pokedex:
         summary["poke_spot_actors"] = patch_poke_spot_actors(
             summary["poke_spots"], original_dol, rel, symbols[88]["offset"],
-            region.game_id, read_archive, gift_updates,
+            region.game_id, read_archive, gift_updates, unown_form_index=unown_form_index,
         )
     if hordel_evolution is not None:
         name = "S1_shop_1F.fsys"
@@ -655,6 +668,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     changed_traits = options.randomize_abilities or options.randomize_types
     deck_names = DECKS if options.randomize_trainers or deck_rules_active(options) or changed_traits else ("Story",)
     trainer_dialogues = {}
+    spinda_trainers = {}
     for suffix in suffixes:
         dark_name = f"DeckData_DarkPokemon{suffix}.bin"
         dark_index, dark = _member(deck_archive, members, dark_name)
@@ -672,7 +686,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                 replacements.setdefault("common.fsys", {})[mirror_index] = new_dark
         for name in deck_names:
             checkpoint(cancel)
-            index, deck = _member(deck_archive, members, f"DeckData_{name}{suffix}.bin")
+            deck_file = f"DeckData_{name}{suffix}.bin"
+            index, deck = _member(deck_archive, members, deck_file)
             shadow_slots = story_shadows if name == "Story" else {}
             updated, deck_report = _deck(deck, name, shadow_slots, seed, species, families, reserved, options,
                                          eligible, fixed_shadows=fixed_shadows)
@@ -686,6 +701,10 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                 levels = {row["shadow_id"]: row["after"] for row in battle_report["trainer_level_edits"]}
                 for shadow in deck_report["shadows"]:
                     shadow["level"] = levels.get(shadow["shadow_id"], shadow["level"])
+            deck_pids = spinda_deck_pids(updated, shadow_slots, seed, name) if has_changes else {}
+            if deck_pids:
+                resource = int(members[deck_file]["identifier_raw"], 16)
+                spinda_trainers[resource] = deck_pids
             for shadow in deck_report["shadows"]:
                 sid = shadow["shadow_id"]
                 shadow["battle_level"] = shadow["level"]
@@ -706,22 +725,26 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             if name == "Story" and not suffix:
                 if updated != deck:
                     actor = patch_eagun_actor(deck, updated, rel, symbols[88]["offset"], species,
-                                              original_dol, region.game_id, read_archive, gift_updates)
+                                              original_dol, region.game_id, read_archive, gift_updates,
+                                              unown_form_index=unown_form_index, spinda_pids=deck_pids)
                     if actor is not None:
                         summary["eagun_field_partner"] = actor
                     dancers = patch_lighthouse_dancers(deck, updated, rel, symbols, species,
-                                                        original_dol, region.game_id, read_archive, gift_updates)
+                                                        original_dol, region.game_id, read_archive, gift_updates,
+                                                        unown_form_index=unown_form_index, spinda_pids=deck_pids)
                     if dancers:
                         summary["miror_lighthouse_dancers"] = dancers
                     wakin = patch_wakin_partner(deck, updated, rel, symbols[88]["offset"], species,
-                                                original_dol, region.game_id, read_archive, gift_updates)
+                                                original_dol, region.game_id, read_archive, gift_updates,
+                                                unown_form_index=unown_form_index, spinda_pids=deck_pids)
                     if wakin is not None:
                         summary["wakin_field_partner"] = wakin
-                shiny = summary["shadow_shinies"].get("statuses", {}).get(str(GATEON_SHADOW), False)
+                shiny = shadow_status.get(str(GATEON_SHADOW), False)
                 if options.randomize_shadows or shiny:
                     shadow = next(row for row in deck_report["shadows"] if row["shadow_id"] == GATEON_SHADOW)
                     actor = patch_gateon_shadow(shadow, rel, symbols[88]["offset"], species, original_dol,
-                                                region.game_id, read_archive, gift_updates, shiny)
+                                                region.game_id, read_archive, gift_updates, shiny,
+                                                unown_form_index=unown_form_index)
                     if actor is not None:
                         summary["gateon_field_shadow"] = actor
             if updated != deck:
@@ -780,7 +803,38 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         summary["starter"]["shiny"] = statuses["starter"]
         for row in summary["gifts"]:
             row["shiny"] = statuses[row["key"]]
-    shadow_status = summary["shadow_shinies"].get("statuses", {})
+    spinda_rewards, spinda_shadows = {}, {}
+    if has_changes:
+        if starter["species"] == SPINDA:
+            spinda_rewards["starter"] = spinda_pid_seed(seed, "xd:starter")
+        for row in summary["gifts"]:
+            if row["species"] == SPINDA:
+                spinda_rewards[row["key"]] = spinda_pid_seed(seed, f"xd:{row['key']}")
+        for row in summary["decks"]["Story"]["shadows"]:
+            if row["species"] == SPINDA:
+                sid = row["shadow_id"]
+                spinda_shadows[sid] = spinda_pid_seed(seed, f"xd:shadow:{sid}")
+    dol, spinda_hooks = apply_spinda_pids(original_dol, dol, region.game_id, spinda_rewards)
+    dol, spinda_trainer_hooks = apply_spinda_trainer_pids(original_dol, dol, region.game_id, spinda_trainers)
+    dol, summary["shadow_shinies"] = apply_shadow_shiny_rules(
+        original_dol, dol, region.game_id, seed, options, spinda_pids=spinda_shadows,
+    )
+    gateon_spinda = summary.get("gateon_field_shadow", {}).get("species") == SPINDA
+    dol, spinda_field_hooks = apply_spinda_poke_spots(
+        original_dol, dol, region.game_id, summary.get("poke_spot_actors", ()), read_archive,
+        gateon_pid=spinda_shadows.get(GATEON_SHADOW) if gateon_spinda else None,
+        gateon_shiny=shadow_status.get(str(GATEON_SHADOW), False),
+    )
+    if spinda_field_hooks:
+        summary["spinda_field_hooks"] = spinda_field_hooks
+    if spinda_rewards or spinda_shadows or spinda_trainers:
+        summary["spinda_pid"] = {
+            "reward_keys": sorted(spinda_rewards), "shadow_ids": sorted(spinda_shadows), "reward_hooks": spinda_hooks,
+            "trainer_slots": sum(map(len, spinda_trainers.values())), "trainer_hooks": spinda_trainer_hooks,
+        }
+        if spinda_rewards and not options.custom_shinies:
+            # The native reward mode leaves the PID intact. Its palette still depends on the OT.
+            summary["spinda_pid"]["known_reward_pids"] = spinda_rewards
     if shadow_status:
         for deck in summary["decks"].values():
             for row in deck["shadows"]:

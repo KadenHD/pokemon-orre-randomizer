@@ -8,7 +8,9 @@ from functools import wraps
 from pathlib import Path
 import threading
 
-from .artwork import ArtworkError, extract_portraits
+from .artwork import ArtworkError, extract_portraits, extract_spinda_patterns
+from .engine.colo_spinda import colo_spinda_gift_pid
+from .engine.spinda import SPINDA
 from . import service
 from .xd import VERSION as XD_VERSION, XDOptions
 from .options import Options, SPECIAL_OPTIONS
@@ -26,6 +28,26 @@ BASE_STARTERS = (("umbreon", 197, 26), ("espeon", 196, 25))
 BASE_GIFTS = (("plusle", 311), ("ho-oh", 250), ("celebi-event", 251), ("pikachu-event", 25))
 # All of these faces use their national number as the internal Gen III index.
 ROULETTE_SPECIES = (1, 4, 7, 25, 37, 43, 54, 58, 63, 92, 133, 147, 152, 155, 158, 172, 194, 246)
+
+
+def _add_spinda_patterns(iso, entries, *, is_xd=False):
+    known = []
+    for row, pid, status in entries:
+        if row.get("species") != SPINDA:
+            continue
+        row["spinda_pattern_status"] = status
+        if pid is not None:
+            known.append((row, (pid, bool(row.get("shiny")))))
+    if known:
+        try:
+            images = extract_spinda_patterns(iso, {key for _, key in known}, is_xd=is_xd)
+        except ArtworkError:
+            images = {}
+        for row, key in known:
+            if key in images:
+                row["spinda_pattern_png"] = images[key]
+            else:
+                row["spinda_pattern_status"] = "spinda_pattern_unavailable"
 
 
 def report_rom_matches(report: CreationReport, source: Path, dolphin_tool: Path | None,
@@ -177,6 +199,15 @@ def preview_starters(source: Path, seed: str, options: Options,
                 for row in encounters:
                     row["shiny"] = shiny_policy == "always"
 
+            spinda_seeds = summary.get("shinies", {}).get("spinda_pid", {}).get("seeds", {})
+            pattern_entries = [(row, None, "spinda_pattern_save") for row in starters + shadows]
+            for row in gifts:
+                pid = (colo_spinda_gift_pid(spinda_seeds, row["key"], row["shiny"])
+                       if shiny_policy != "in-game" else None)
+                pattern_entries.append((row, pid, "spinda_pattern_exact" if pid is not None
+                                        else "spinda_pattern_in_game"))
+            _add_spinda_patterns(iso, pattern_entries)
+
             # An evolution keeps the encounter's known chromatic status. Read
             # its whole chain while the verified ISO (including RVZ) is available.
             requests = []
@@ -185,6 +216,7 @@ def preview_starters(source: Path, seed: str, options: Options,
                 indices = (row["species"], *(step["target_species"] for step in chain))
                 requests.append((row, indices))
             portraits = {}
+            selected_form = summary.get("unown_form", 0)
             for shiny in (False, True):
                 species = tuple(dict.fromkeys(index for row, chain in requests if row["shiny"] == shiny
                                               for index in chain))
@@ -192,7 +224,10 @@ def preview_starters(source: Path, seed: str, options: Options,
                     service.checkpoint(cancel)
                     try:
                         batch = species[start:start + 64]
-                        images = extract_portraits(iso, batch, shiny=True) if shiny else extract_portraits(iso, batch)
+                        kwargs = {"shiny": True} if shiny else {}
+                        if 201 in batch:
+                            kwargs["unown_form_index"] = selected_form
+                        images = extract_portraits(iso, batch, **kwargs)
                     except ArtworkError:
                         continue
                     portraits.update({(index, shiny): image for index, image in images.items()})
@@ -263,10 +298,21 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
             prepared = service.PreparedPatches(source=source, source_sha256=digest, iso_sha256=image.iso_hash,
                 seed=seed, options=xd_options, patches=tuple(patches),
                 summary=deepcopy({key: value for key, value in summary.items() if key != 'detail_catalog'}))
+            starter = summary.get("starter")
+            shadows = summary.get("decks", {}).get("Story", {}).get("shadows", ())
+            gifts = summary.get("gifts", ())
+            poke_spots = summary.get("poke_spots", ())
+            known_pids = summary.get("spinda_pid", {}).get("known_reward_pids", {})
+            rewards = [(row, row.get("key")) for row in gifts]
+            if starter is not None:
+                rewards.append((starter, "starter"))
+            pattern_entries = [(row, None, "spinda_pattern_save") for row in shadows]
+            pattern_entries.extend((row, None, "spinda_pattern_in_game") for row in poke_spots)
+            pattern_entries.extend((row, known_pids.get(key), "spinda_pattern_palette" if key in known_pids
+                                    else "spinda_pattern_save") for row, key in rewards)
+            _add_spinda_patterns(image.iso, pattern_entries, is_xd=True)
             if catalog := summary.pop("detail_catalog", None):
-                starter = summary["starter"]
-                shadows = summary["decks"]["Story"]["shadows"]
-                rows = [starter, *shadows, *summary["gifts"], *summary["poke_spots"]]
+                rows = [starter, *shadows, *gifts, *poke_spots]
                 requests = []
                 for row in rows:
                     details = encounter_details(catalog, row["species"], level=row.get("level"),
@@ -275,6 +321,7 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                     chain = (row["species"], *(step["target_species"] for step in details["evolution_chain"]))
                     requests.append((row, chain))
                 progress(65, "Lecture des portraits…")
+                selected_form = summary.get("unown_form", 0)
                 for shiny in (False, True):
                     selected_rows = [(row, chain) for row, chain in requests if bool(row.get("shiny")) == shiny]
                     indices = tuple(dict.fromkeys(index for _, chain in selected_rows for index in chain))
@@ -282,8 +329,9 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                     for start in range(0, len(indices), 64):
                         service.checkpoint(cancel)
                         try:
-                            portraits.update(extract_portraits(image.iso, indices[start:start + 64],
-                                                              shiny=shiny, is_xd=True))
+                            batch = indices[start:start + 64]
+                            kwargs = {"unown_form_index": selected_form} if 201 in batch else {}
+                            portraits.update(extract_portraits(image.iso, batch, shiny=shiny, is_xd=True, **kwargs))
                         except ArtworkError:
                             continue
                     for row, chain in selected_rows:

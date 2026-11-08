@@ -10,6 +10,8 @@ import unittest
 from unittest.mock import patch
 
 from orre_randomizer import service
+from orre_randomizer.artwork import _png
+from orre_randomizer.detail_texts import detail_text, LANGUAGES
 from orre_randomizer.options import Options
 from orre_randomizer.pokemon_details import encounter_details
 from tests.test_pokemon_details import catalog_fixture
@@ -147,6 +149,28 @@ class V15GuiTests(unittest.TestCase):
                 self.assertEqual([widget.accessibleName() for widget in badge_widgets[:2]], ['Feuer', 'Wasser'])
                 self.assertIn(shadow_description, [widget.text() for widget in sheet.findChildren(QLabel, 'note')])
                 sheet.close()
+
+    def test_spinda_sheet_localizes_pattern_and_only_shows_the_verified_texture(self):
+        row = final_preview()['starters'][0]
+        row.update(species=308, national_dex=327)
+        for language in LANGUAGES:
+            self.window.language_combo.setCurrentIndex(self.window.language_combo.findData(language))
+            for status in ('spinda_pattern_palette', 'spinda_pattern_save'):
+                with self.subTest(language=language, status=status):
+                    data = dict(row, spinda_pattern_status=status)
+                    if status == 'spinda_pattern_palette':
+                        data['spinda_pattern_png'] = _png((2, 2), bytes((23, 34, 45, 255)) * 4)
+                    self.window.show_pokemon_detail(data)
+                    sheet = self.window.detail_window
+                    self.assertIn(detail_text(status, language),
+                                  [label.text() for label in sheet.findChildren(QLabel, 'note')])
+                    swatch = sheet.findChild(QLabel, 'sheetSpindaPattern')
+                    if status == 'spinda_pattern_palette':
+                        self.assertFalse(swatch.pixmap().isNull())
+                        self.assertEqual(swatch.accessibleName(), detail_text('spinda_pattern', language))
+                    else:
+                        self.assertIsNone(swatch)
+                    sheet.close()
 
     def test_starter_and_single_click_encounter_sheets_use_final_data_and_clear_on_stale(self):
         self.assertFalse(self.window.starter_detail_buttons['umbreon'].isEnabled())

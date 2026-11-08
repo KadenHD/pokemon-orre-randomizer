@@ -4,6 +4,7 @@ import struct
 
 from .actor_archive import append_actor_models
 from .analyze_game import FormatError, parse_fsys, u32
+from .colo_spinda_field import mark_spinda_starter_actor
 from .dol_regions import dol_layout, special_targets
 from .event_gifts import _call, _fingerprint, _POP, _push, _statement
 from .inspect_tables import u16
@@ -58,7 +59,8 @@ def _patch_program(source, actors):
     return bytes(code)
 
 
-def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions, guaranteed_shiny):
+def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions, guaranteed_shiny,
+                          *, unown_form_index=0, spinda_seeds=None, spinda_default=None):
     """Use the final starter constructor operands, preserving any untouched rider."""
     chosen = {}
     for slot, target in enumerate(special_targets(original_dol)[:2]):
@@ -68,7 +70,10 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
         species = word & 0xFFFF
         shiny = shiny_decisions.get(target["key"], guaranteed_shiny)
         if species != target["old"] or shiny:
-            chosen[slot] = species, shiny
+            spinda_seed = (spinda_seeds or {}).get(f"special:{target['key']}")
+            if shiny_decisions.get(target["key"], spinda_default) is None:
+                spinda_seed = None
+            chosen[slot] = species, shiny, spinda_seed
     if not chosen:
         return None
 
@@ -84,7 +89,7 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
     game = dol_layout(original_dol).game_id
     models, actors, report = {}, {}, []
     front_is_large = False
-    for slot, (species, shiny) in chosen.items():
+    for slot, (species, shiny, spinda_seed) in chosen.items():
         if species not in catalog:
             raise FormatError("invalid starter species for Outskirt Stand")
         row = catalog[species]
@@ -105,7 +110,9 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
             front_is_large = national in OVERSIZED_FIELD_SPECIES or height > 18
         payload = load_actor_model(original_dol, game, u32(rel, row["offset"] + 0x2C),
                                    read_archive, scale=scale, shiny=shiny,
-                                   attachment_offset=(outward, lift, -outward))
+                                   attachment_offset=(outward, lift, -outward), unown_form_index=unown_form_index)
+        if spinda_seed is not None:
+            payload = mark_spinda_starter_actor(payload, slot, spinda_seed, shiny)
         resource = 0x7DF00400 + (slot << 16)
         actors[slot] = resource
         models[resource] = f"orre_intro_starter_{slot + 1}", payload
@@ -113,6 +120,8 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
             struct.pack_into(">H", hidden, length, 0)
         report.append({"slot": slot + 1, "species": species, "national_dex": national,
                        "shiny": shiny, "scale": scale})
+        if spinda_seed is not None:
+            report[-1]["spinda_live_pid"] = True
     # A dedicated alias avoids changing the shared motorcycle used elsewhere.
     models[_BIKE_ALIAS] = ("orre_intro_bike", bytes(hidden))
     patched = _patch_program(decoded_member(room, program), actors)

@@ -135,6 +135,22 @@ class PokemonSheet(QDialog):
         self.tabs.setUsesScrollButtons(False)
         layout.addWidget(self.tabs, 1)
         summary = self.add_tab(translate("Résumé", language))
+        if pattern_status := row.get("spinda_pattern_status"):
+            summary.addWidget(text_label(tr("spinda_pattern"), "sheetHeading"))
+            pattern = QHBoxLayout()
+            pattern.setSpacing(12)
+            if pattern_png := row.get("spinda_pattern_png"):
+                image = QPixmap()
+                if image.loadFromData(pattern_png):
+                    swatch = QLabel()
+                    swatch.setObjectName("sheetSpindaPattern")
+                    swatch.setAccessibleName(tr("spinda_pattern"))
+                    swatch.setPixmap(image)
+                    pattern.addWidget(swatch)
+                else:
+                    pattern_status = "spinda_pattern_unavailable"
+            pattern.addWidget(text_label(tr(pattern_status), "note"), 1)
+            summary.addLayout(pattern)
         summary.addWidget(text_label(tr("abilities"), "sheetHeading"))
         descriptions = ability_descriptions(game, language)
         ability_ids = details.get("abilities", ())

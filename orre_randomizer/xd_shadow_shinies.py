@@ -8,6 +8,7 @@ import struct
 from .engine.analyze_game import FormatError, check_range, u32
 from .engine.shiny_rules import _Code, seeded_status
 from .xd_battle_rules import TEXT1_TO_RAM, append_xd_dol_text
+from .xd_spinda import _load_address, emit_spinda_pid_fit
 
 
 VERSION = "xd-shadow-shiny-status-v1"
@@ -42,28 +43,47 @@ def shadow_statuses(seed, options):
             for index in range(1, SHADOW_COUNT + 1)}
 
 
-def _pid_stub(address, pid_generator, flags, *, hero=False):
-    if len(flags) != SHADOW_COUNT + 1 or any(flag not in (0, 1) for flag in flags):
+def _pid_stub(address, pid_generator, flags, *, hero=False, spinda_pids=None):
+    if flags is not None and (len(flags) != SHADOW_COUNT + 1 or any(flag not in (0, 1) for flag in flags)):
         raise ValueError("invalid XD Shadow shiny flags")
     table = address + 0x100
     code = _Code(address)
     code.emit(0x9421FFC0, 0x7C0802A6, 0x90010044,
               0x90610008, 0x9081000C, 0x90A10010, 0x90E10014)
     code.emit(0xA17D0004 if hero else 0x57CB043E)  # param+4 or caller r30: Shadow ID
-    code.emit(0x280B0000 | SHADOW_COUNT)
-    code.conditional(0x41810000, "invalid")
-    code.emit(0x3D800000 | (table >> 16), 0x618C0000 | (table & 0xFFFF), 0x7CCC58AE)
-    code.jump("ready")
-    code.label("invalid")
-    code.emit(0x38C00000)
-    code.label("ready")
+    if flags is not None:
+        code.emit(0x280B0000 | SHADOW_COUNT)
+        code.conditional(0x41810000, "invalid")
+        _load_address(code, 12, table)
+        code.emit(0x7CCC58AE)
+        code.jump("ready")
+        code.label("invalid")
+        code.emit(0x38C00000)
+        code.label("ready")
+    if spinda_pids:
+        code.emit(0x91610018, 0x90C1001C)  # save Shadow ID and shiny mode over the native call
     code.emit(0x80610008, 0x8081000C, 0x80A10010, 0x80E10014)
     code.call(pid_generator)
+    if spinda_pids:
+        code.emit(0x81610018, 0x280B0000 | SHADOW_COUNT)
+        code.conditional(0x41810000, "pid_done")
+        _load_address(code, 12, address + 0x160)
+        code.emit(0x556B1838, 0x7D8C5A14, 0x800C0000, 0x28000000)
+        code.conditional(0x41820000, "pid_done")
+        code.emit(0x806C0004, 0x80C1001C, 0x80E10014)
+        emit_spinda_pid_fit(code)
+        code.label("pid_done")
     code.emit(0x80010044, 0x7C0803A6, 0x38210040, 0x4E800020)
     body = code.finish()
     if len(body) > 0x100:
         raise FormatError("XD Shadow shiny wrapper overlaps its flags")
-    return body + bytes(0x100 - len(body)) + flags + bytes((-len(flags)) % 32)
+    flags = flags or bytes(SHADOW_COUNT + 1)
+    payload = body + bytes(0x100 - len(body)) + flags + bytes(-len(flags) % 32)
+    if not spinda_pids:
+        return payload
+    rows = b"".join(struct.pack(">II", int(index in spinda_pids), spinda_pids.get(index, 0))
+                    for index in range(SHADOW_COUNT + 1))
+    return payload + rows + bytes(-len(rows) % 32)
 
 
 def _owner_stub(address, player_lookup, owner_setter):
@@ -90,24 +110,31 @@ def _owner_stub(address, player_lookup, owner_setter):
     return code.finish()
 
 
-def apply_shadow_shiny_rules(original, current, game_id, seed, options):
+def apply_shadow_shiny_rules(original, current, game_id, seed, options, *, spinda_pids=None):
     statuses = shadow_statuses(seed, options)
     report = {"version": VERSION, "enabled": bool(statuses)}
-    if not statuses:
+    if not statuses and not spinda_pids:
         return current, report
+    if spinda_pids and any(type(index) is not int or not 1 <= index <= SHADOW_COUNT
+                          or type(pid) is not int or not 0 <= pid <= 0xFFFFFFFF
+                          for index, pid in spinda_pids.items()):
+        raise ValueError("invalid XD Spinda Shadow PID candidates")
     layout = _LAYOUTS[game_id]
     if hashlib.sha256(original).hexdigest() != layout.original_sha256:
         raise FormatError("unexpected original XD Shadow shiny executable")
-    flags = bytes([0] + [int(statuses[str(index)]) for index in range(1, SHADOW_COUNT + 1)])
+    flags = bytes([0] + [int(statuses[str(index)]) for index in range(1, SHADOW_COUNT + 1)]) if statuses else None
     from .engine.gift_move_hooks import branch
-    definitions = (
+    definitions = [
         (layout.shadow_pid, layout.pid_generator,
-         lambda address, _continuation: _pid_stub(address, layout.pid_generator, flags)),
+         lambda address, _continuation: _pid_stub(address, layout.pid_generator, flags, spinda_pids=spinda_pids)),
         (layout.hero_shadow_pid, layout.pid_generator,
-         lambda address, _continuation: _pid_stub(address, layout.pid_generator, flags, hero=True)),
-        (layout.trainer_owner, layout.owner_setter,
-         lambda address, _continuation: _owner_stub(address, layout.player_lookup, layout.owner_setter)),
-    )
+         lambda address, _continuation: _pid_stub(address, layout.pid_generator, flags, hero=True,
+                                                   spinda_pids=spinda_pids)),
+    ]
+    if statuses:
+        definitions.append((layout.trainer_owner, layout.owner_setter,
+                            lambda address, _continuation: _owner_stub(address, layout.player_lookup,
+                                                                     layout.owner_setter)))
     hooks = []
     for address, target, builder in definitions:
         offset = address - TEXT1_TO_RAM
@@ -117,5 +144,8 @@ def apply_shadow_shiny_rules(original, current, game_id, seed, options):
             raise FormatError("unexpected XD Shadow shiny call instruction")
         hooks.append((address, expected, builder))
     output, report["hooks"] = append_xd_dol_text(original, current, game_id, hooks, link=True)
-    report.update(chance_percent=options.shiny_chance_percent, statuses=statuses)
+    if statuses:
+        report.update(chance_percent=options.shiny_chance_percent, statuses=statuses)
+    if spinda_pids:
+        report["spinda_ids"] = sorted(spinda_pids)
     return output, report

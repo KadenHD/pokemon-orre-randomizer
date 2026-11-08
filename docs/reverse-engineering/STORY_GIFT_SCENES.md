@@ -51,7 +51,7 @@ resource `0x06F90400`. The patch resolves the replacement's battle model using
 the regional DOL resource table and `GSfsys.toc`, then adapts its HSD data for
 the field actor. The scene keeps its original actor, camera and movement cues.
 The twelve field animation slots use the replacement's idle pose. The actor
-uses form A for Unown. It displays the gift's shiny color when the result is
+uses the form drawn from the seed for Unown. It displays the gift's shiny color when the result is
 known during ROM creation (a seeded draw or a guaranteed rate). If the game
 draws the result at runtime, the actor displays the normal color.
 

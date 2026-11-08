@@ -3,6 +3,7 @@
 import struct
 
 from .analyze_game import FormatError, parse_fsys, u32
+from .colo_spinda import colo_spinda_trainer_pid
 from .inspect_tables import localized_names, u16
 from .message_bank import patch_species_archive
 from .plusle_actor import companion_scale, load_actor_model, patch_actor
@@ -68,7 +69,8 @@ def _cry_caption(source, *, changes, language):
 
 
 def patch_eagun_scenes(original, current, dol, game_id, read_archive, updates,
-                       trainer_shinies, guaranteed_shiny):
+                       trainer_shinies, guaranteed_shiny, *, unown_form_index=0,
+                       spinda_seeds=None, spinda_default=None):
     tables, symbols = layout(original)
     trainers, party, species = (tables[name] for name in ("trainers", "trainer_pokemon", "species"))
     # The shrine starts an NPC battle between Eagun (780) and Skrub (779).
@@ -93,8 +95,12 @@ def patch_eagun_scenes(original, current, dol, game_id, read_archive, updates,
     if not 1 <= national_dex <= 386 or not voice or u16(original, original_species + 0xE) != _PIKACHU_VOICE:
         raise FormatError("unexpected Colosseum voice for Eagun's field partner")
     scale = companion_scale(national_dex, 0.65)
+    spinda_mode = trainer_shinies.get(str(slot), spinda_default)
+    spinda_pid = (colo_spinda_trainer_pid(original, current, spinda_seeds, slot, spinda_mode)
+                  if spinda_seeds and spinda_mode is not None else None)
     model = load_actor_model(dol, game_id, u32(original, chosen_species + 0x2C), read_archive,
-                             scale=scale, shiny=shiny)
+                             scale=scale, shiny=shiny, unown_form_index=unown_form_index,
+                             spinda_pid=spinda_pid)
     changes = {u32(original, original_species + 0x18): u32(original, chosen_species + 0x18)}
     names = localized_names(original, symbols)[0] if chosen != _PIKACHU else {}
     for archive, captions in _CAPTIONS.items():

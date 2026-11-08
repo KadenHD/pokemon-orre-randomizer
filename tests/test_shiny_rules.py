@@ -9,6 +9,8 @@ import struct
 import unittest
 
 from orre_randomizer.engine.analyze_game import FormatError, parse_dol
+from orre_randomizer.engine.dna_lab import _DNA_MODEL, _DNA_SHINY, _model_constructor
+from orre_randomizer.engine.dol_regions import PAL
 from orre_randomizer.engine.gift_move_hooks import patch_gift_moves, SECTION_RAM, _arena_guard
 from orre_randomizer.engine.shiny_rules import (COIN_RANGE, NATIVE_RNG, OT_EXIT,
     PID_GENERATOR, PID_CALLS, PLAYER_POINTER, TEXT_TO_RAM, chance_threshold,
@@ -75,6 +77,10 @@ class Machine:
             elif op in (14,15):
                 self.reg[rs]=((self.reg[ra] if ra else 0)+(signed<<(16 if op==15 else 0)))&MASK
             elif op==24:self.reg[ra]=self.reg[rs]|imm
+            elif op==26:self.reg[ra]=self.reg[rs]^imm
+            elif op==28:
+                self.reg[ra]=self.reg[rs]&imm
+                self.cr=(False,self.reg[ra]==0)
             elif op in (32,40):self.reg[rs]=self.read((self.reg[ra]+signed)&MASK,2 if op==40 else 4)
             elif op in (36,37):
                 address=(self.reg[ra]+signed)&MASK;self.write(address,self.reg[rs])
@@ -90,12 +96,16 @@ class Machine:
             elif op==31 and ((w>>1)&1023)==32:
                 self.cr=(self.reg[ra]<self.reg[rb],self.reg[ra]==self.reg[rb])
             elif op==31 and ((w>>1)&1023)==444:self.reg[ra]=self.reg[rs]|self.reg[rb]
-            elif op==31 and ((w>>1)&1023)==87:self.reg[rs]=self.read((self.reg[ra]+self.reg[rb])&MASK,1)
-            elif op==21:
+            elif op==31 and ((w>>1)&1023)==316:self.reg[ra]=self.reg[rs]^self.reg[rb]
+            elif op==31 and ((w>>1)&1023) in (23,87):
+                width=1 if ((w>>1)&1023)==87 else 4
+                self.reg[rs]=self.read((self.reg[ra]+self.reg[rb])&MASK,width)
+            elif op in (20,21):
                 shift=(w>>11)&31;mb=(w>>6)&31;me=(w>>1)&31
                 mask=sum(1<<(31-i) for i in range(32) if (mb<=i<=me if mb<=me else i>=mb or i<=me))
                 value=self.reg[rs]
-                self.reg[ra]=(((value<<shift)|(value>>(32-shift) if shift else value))&MASK)&mask
+                rotated=(((value<<shift)|(value>>(32-shift) if shift else value))&MASK)&mask
+                self.reg[ra]=rotated|(self.reg[ra]&~mask) if op==20 else rotated
             elif op==16:
                 bo=(w>>21)&31;bi=(w>>16)&31
                 condition=self.cr[0] if bi==0 else self.cr[1] if bi==2 else None
@@ -116,6 +126,28 @@ class Machine:
 
 
 class ShinyHookTests(unittest.TestCase):
+    def test_dna_analyzer_sets_palette_independently_of_the_native_form_resolver(self):
+        class ModelMachine(Machine):
+            def native(self, target):
+                pokemon, species = self.reg[3:5]
+                self.write(pokemon, species, 2)
+                self.write(pokemon + 4, 0xABCD2397)
+                self.write(pokemon + 0x14, 0x018923C7)
+                super().native(target)
+
+        stub, pokemon = SECTION_RAM + 32, 0x80601234
+        for shiny in (False, True):
+            for species in (49, 201):
+                with self.subTest(species=species, shiny=shiny):
+                    region = replace(PAL, native_constructor=PID_GENERATOR)
+                    machine = ModelMachine(_model_constructor(stub, region, {}, None), stub)
+                    machine.reg[3:8] = [pokemon, species | _DNA_MODEL | (_DNA_SHINY if shiny else 0), 10, 0, 0]
+                    machine.run()
+                    self.assertEqual(machine.read(pokemon, 2), species)
+                    pid, owner = machine.read(pokemon + 4), machine.read(pokemon + 0x14)
+                    self.assertEqual(is_shiny(pid, owner), shiny)
+                    self.assertEqual((pid >> 16, owner), (0xABCD, 0x018923C7))
+
     def test_seeded_status_is_per_encounter_stable_unicode_and_monotonic_in_rate(self):
         keys = ["special:umbreon", "special:espeon", "shadow:21", "trainer:123"]
         self.assertEqual([seeded_coin("été 🌟", key) for key in keys],

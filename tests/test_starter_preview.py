@@ -9,10 +9,12 @@ import unittest
 from unittest.mock import call, patch
 
 from orre_randomizer import artwork, service
-from orre_randomizer.preview import preview_starters
+from orre_randomizer.engine.colo_spinda import colo_spinda_gift_pid
+from orre_randomizer.preview import preview_starters, preview_xd
 from orre_randomizer.options import Options
 from orre_randomizer.locales.species_ja import SPECIES_NAMES
 from orre_randomizer.engine.regions import REGIONS
+from orre_randomizer.xd import XDOptions
 from tests.test_artwork import fsys, portrait, texture
 
 
@@ -154,6 +156,54 @@ class StarterPreviewTests(unittest.TestCase):
         self.assertTrue(all(row["shiny"] for row in result["shadows"] + result["gifts"]))
         extract.assert_called_once_with(self.source, (277, 196), shiny=True)
 
+    def test_colo_spinda_pattern_uses_the_fixed_gift_owner_only(self):
+        starter = self.summary["special_gameplay"]["specials"][0]
+        starter.update(species=308, national_dex=327)
+        self.summary["special_gameplay"]["specials"].append(dict(starter, key="plusle"))
+        self.summary["final_shadow_picks"] = [dict(starter, species_index=308, shadow_id=1)]
+        seeds = {"special:umbreon": 42, "special:plusle": 43, "shadow:1": 44}
+        self.summary["shinies"] = {"spinda_pid": {"seeds": seeds}}
+        for chance in (5, 100):
+            with self.subTest(chance=chance), ExitStack() as stack:
+                self.pipeline(stack)
+                pid = colo_spinda_gift_pid(seeds, "plusle", True)
+                extract = stack.enter_context(patch("orre_randomizer.preview.extract_spinda_patterns",
+                    return_value={(pid, True): b"exact gift"}))
+                result = preview_starters(self.source, "spinda", replace(Options(),
+                    custom_shinies=True, seeded_shinies=False, shiny_chance_percent=chance))
+                for row in (result["starters"][0], result["shadows"][0]):
+                    self.assertEqual(row["spinda_pattern_status"], "spinda_pattern_save")
+                    self.assertNotIn("spinda_pattern_png", row)
+                gift = result["gifts"][0]
+                if chance == 100:
+                    self.assertEqual(gift["spinda_pattern_status"], "spinda_pattern_exact")
+                    self.assertEqual(gift["spinda_pattern_png"], b"exact gift")
+                    extract.assert_called_once_with(self.source, {(pid, True)}, is_xd=False)
+                else:
+                    self.assertEqual(gift["spinda_pattern_status"], "spinda_pattern_in_game")
+                    self.assertNotIn("spinda_pattern_png", gift)
+                    extract.assert_not_called()
+
+    def test_xd_spinda_pattern_keeps_native_reward_positions_and_defers_other_rows(self):
+        summary = dict(starter={"species": 308}, gifts=[{"species": 308, "key": "hordel-trade"}],
+                       decks={"Story": {"shadows": [{"species": 308, "shadow_id": 1}]}},
+                       poke_spots=[{"species": 308}],
+                       spinda_pid={"known_reward_pids": {"starter": 0, "hordel-trade": 123}})
+        plans = []
+        with (patch.object(service, "check_header"),
+              patch.object(service, "check_disc_identity", return_value=REGIONS[0]),
+              patch.object(service, "build_xd_patches", return_value=([], summary)),
+              patch("orre_randomizer.preview.extract_spinda_patterns",
+                    return_value={(0, False): b"starter", (123, False): b"gift"}) as extract):
+            result = preview_xd(self.source, "spinda", XDOptions(), on_prepared=plans.append)
+        extract.assert_called_once_with(self.source, {(0, False), (123, False)}, is_xd=True)
+        for key, row in (("starter", result["starter"]), ("gift", result["gifts"][0])):
+            self.assertEqual(row["spinda_pattern_status"], "spinda_pattern_palette")
+            self.assertEqual(row["spinda_pattern_png"], key.encode())
+        self.assertEqual(result["decks"]["Story"]["shadows"][0]["spinda_pattern_status"], "spinda_pattern_save")
+        self.assertEqual(result["poke_spots"][0]["spinda_pattern_status"], "spinda_pattern_in_game")
+        self.assertNotIn("spinda_pattern_status", plans[0].summary["starter"])
+
     def test_event_gift_access_metadata_follows_options_without_changing_final_draw(self):
         sample = self.summary["special_gameplay"]["specials"][0]
         self.summary["special_gameplay"]["specials"].extend(
@@ -230,6 +280,22 @@ class StarterPreviewTests(unittest.TestCase):
                 artwork.extract_portraits(self.source, (277,), shiny=1)
         self.assertEqual(artwork._png_pixels(normal, (42, 42)), bytes(ordinary) * 42**2)
         self.assertEqual(artwork._png_pixels(alternate, (42, 42)), bytes(shiny) * 42**2)
+
+    def test_unown_preview_uses_the_builds_form_and_matching_palette(self):
+        ordinary, shiny = (11, 23, 37, 255), (181, 53, 97, 255)
+        self.summary["unown_form"] = 27
+        self.summary["special_gameplay"]["specials"][0].update(species=201, national_dex=201)
+        texture = portrait(ordinary, shiny)
+        archive = fsys([("face201qu", texture), ("face196", texture)])
+        with ExitStack() as stack:
+            self.pipeline(stack)
+            stack.enter_context(patch("orre_randomizer.preview.extract_portraits", wraps=artwork.extract_portraits))
+            stack.enter_context(patch.object(artwork, "_disc_files", return_value={"poke_face.fsys": archive}))
+            for chance, color in ((0, ordinary), (100, shiny)):
+                options = replace(Options.recommended(), custom_shinies=True, seeded_shinies=False,
+                                  shiny_chance_percent=chance)
+                row = preview_starters(self.source, "seed", options)["starters"][0]
+                self.assertEqual(artwork._png_pixels(row["portrait_png"], (42, 42)), bytes(color) * 42**2)
 
     def test_preview_distinguishes_guaranteed_shinies_from_runtime_rolls(self):
         for enabled, chance, policy in ((False, 100, "original"), (True, 0, "never"),
