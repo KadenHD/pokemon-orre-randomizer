@@ -36,7 +36,7 @@ def verify_source_tests(directory: Path) -> str:
         progress = (error.stderr or b"").decode("utf-8", errors="replace").splitlines()
         tail = "\n".join(progress[-25:])
         raise RuntimeError(f"Source archive tests exceeded {SOURCE_TEST_TIMEOUT} seconds.\n{tail}") from None
-    stderr = result.stderr.decode("utf-8", errors="replace")
+    stderr = result.stderr.decode("utf-8", errors="replace").replace("\r\n", "\n")
     if result.returncode:
         raise RuntimeError(result.stdout.decode("utf-8", errors="replace") + stderr)
     return stderr.rsplit("\n" + "-" * 70 + "\n", 1)[-1].strip()
