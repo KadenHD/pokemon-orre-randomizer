@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.2.16
+
+- Fix an intermittent freeze after generating an XD preview. The shared preview
+  now keeps the interface responsive while its background thread shuts down.
+- Limit the extracted source archive's test run and report the last test output
+  if it times out.
+- Compare Colosseum and XD side by side in the README and slow down the
+  motorcycle showcase.
+
 ## 1.2.15
 
 - Show Duking’s requested Pokémon, Poké Spot, encounter frequency and reward

@@ -23,9 +23,8 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.15** shows each of Duking’s trades alongside its Poké Spot and
-encounter frequency in XD’s preview and journal.
-See the [release notes](docs/releases/v1.2.15.md).
+**Version 1.2.16** fixes an intermittent freeze after generating an XD preview.
+See the [release notes](docs/releases/v1.2.16.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
