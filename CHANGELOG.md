@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.19
+
+- Match more trainer dialogue to the final teams and battle tactics in both
+  games, including field conversations and remarks about moves or abilities.
+- Keep XD's Battle Simulator lessons and Battle CDs playable with randomized
+  types, abilities and base stats by using original data for virtual rentals.
+- Keep the saved Spinda's pattern and shiny palette in XD's Gateon Port scene.
+
 ## 1.2.18
 
 - Match Colosseum's DNA analyzer and door keypad to the randomized Shadow

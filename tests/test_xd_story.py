@@ -1,7 +1,44 @@
+import struct
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
 
-from orre_randomizer.xd_story import hordel_candidates, tutorial_candidates
+from orre_randomizer.xd_battle_rules import DPKM_MOVES
+from orre_randomizer.xd_story import (
+    TRAINER_REMARK_REWRITES, hordel_candidates, trainer_dialogue_edits, tutorial_candidates,
+)
+
+
+class XDTrainerDialogueTests(unittest.TestCase):
+    def test_skill_swap_line_survives_unrelated_changes_until_the_last_user_loses_it(self):
+        original = bytearray(0xC8)
+        struct.pack_into(">I", original, 0x14, 0x48)
+        struct.pack_into(">HH", original, 0x3C, 1, 2)
+        for slot, species in enumerate((1, 2), 1):
+            entry = 0x68 + slot * 0x20
+            struct.pack_into(">H", original, entry, species)
+            struct.pack_into(">H", original, entry + DPKM_MOVES[0], 285)
+        current = bytearray(original)
+        struct.pack_into(">H", current, 0x88 + DPKM_MOVES[0], 33)
+        species = {1: (1,), 2: (2,)}
+        fixture = {"Colosseum": ((0, (1, 2), "fight_common.fsys", (0x5E48,)),)}
+        with patch("orre_randomizer.xd_story._TRAINER_DIALOGUE", fixture):
+            self.assertEqual(trainer_dialogue_edits("Colosseum", original, current, species, "GXXP01"), {})
+            struct.pack_into(">H", current, 0xA8 + DPKM_MOVES[0], 33)
+            edits = trainer_dialogue_edits("Colosseum", original, current, species, "GXXP01")
+        self.assertEqual(set(edits), {"fight_common.fsys", *(f"fight_common_{lang}.fsys" for lang in ("fr", "ge", "it", "sp"))})
+        self.assertTrue(all(set(remarks) == {0x5E48} for remarks in edits.values()))
+
+    def test_two_page_remark_keeps_the_native_second_page_and_close_control(self):
+        speaker = b"\xff\xff\x59"
+        page = b"\xff\xff\x03" + speaker + ": I like them!".encode("utf-16-be")
+        close = b"\xff\xff\x02\0\0"
+        source = speaker + ": Dark and Rock are cool!".encode("utf-16-be") + page + close
+        rewrite = TRAINER_REMARK_REWRITES[0x799A]
+        english = rewrite(source, changes={}, language="UK")
+        self.assertEqual(english, rewrite(source, changes={}, language="US"))
+        self.assertTrue(english.endswith(page + close))
+        self.assertTrue(english.startswith(speaker + ": I love battling with these two Pokémon!".encode("utf-16-be")))
 
 
 class XDHordelTests(unittest.TestCase):

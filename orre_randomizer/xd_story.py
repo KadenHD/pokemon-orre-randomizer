@@ -56,16 +56,20 @@ _TRAINER_DIALOGUE = {
         (36, (88,), "fight_common.fsys", (0x569C,)),
         (54, (399, 247), "fight_common.fsys", (0x56BF,)),
         (55, (361, 303, 411, 109), "fight_common.fsys", (0x56C1,)),
+        (58, (None, 390, None, 388), "fight_common.fsys", (0x56C7,)),
         (78, (287, 300, 331, 327), "fight_common.fsys", (0x56EF, 0x56F0)),
+        (91, (297, 230, 375, 374, 171, 329), "fight_common.fsys", (0x5709, 0x570A)),
         (94, (279, 285, 282, 154, 160, 157), "fight_common.fsys", (0x570F,)),
         (11, (155,), "D2_valley_2.fsys", (0x7980,)),
+        (13, (360,), "D2_valley_2.fsys", (0x7984,)),
         (14, (298, 165), "D2_valley_2.fsys", (0x7986,)),
         (17, (392,), "D2_valley_2.fsys", (0x798C, 0x798D)),
+        (24, (287, 320), "D2_valley_3.fsys", (0x799A,)),
         (25, (388,), "D2_valley_3.fsys", (0x799C,)),
         (28, (312, 326), "D2_valley_3.fsys", (0x79A2, 0x79A3)),
         (29, (195, 342), "D2_valley_3.fsys", (0x79A4,)),
         (32, (393,), "D2_magma_1.fsys", (0x79AA, 0x79AB)),
-        (35, (411, 344), "D2_magma_1.fsys", (0x79B1,)),
+        (35, (411, 344), "D2_magma_1.fsys", (0x79B0, 0x79B1)),
         (36, (88,), "D2_magma_1.fsys", (0x79B3,)),
         (37, (317, 207), "D2_magma_1.fsys", (0x79B4,)),
         (38, (44, 168, 193), "D2_magma_1.fsys", (0x79B6,)),
@@ -78,7 +82,8 @@ _TRAINER_DIALOGUE = {
         (58, (294, 390, 205, 388), "D2_magma_3.fsys", (0x79DE,)),
         (58, (None, 390, None, 388), "D2_magma_3.fsys", (0x79DF,)),
         (59, (222, 373, 176), "D2_magma_3.fsys", (0x79E0,)),
-        (67, (55, 181, 375, 82), "D2_cloud_1.fsys", (0x79F1,)),
+        (66, (363, None, 292), "D2_cloud_1.fsys", (0x79EE,)),
+        (67, (55, 181, 375, 82), "D2_cloud_1.fsys", (0x79F0, 0x79F1)),
         (68, (44, 192, 45), "D2_cloud_1.fsys", (0x79F2,)),
         (78, (287, 300, 331, 327), "D2_cloud_2.fsys", (0x7A06, 0x7A07)),
         (82, (None, None, 385, 314), "D2_cloud_3.fsys", (0x7A0F,)),
@@ -87,16 +92,34 @@ _TRAINER_DIALOGUE = {
         (94, (279, 285, 282, 154, 160, 157), "D2_cloud_4.fsys", (0x7A26, 0x7A27)),
     ),
     "Colosseum": (
+        (9, (172, 172, 216, 238), "fight_common.fsys", (0x5DC1, 0x5DC2)),
+        (10, (152, 155, 158), "fight_common.fsys", (0x5DC4, 0x5DC6)),
+        (15, (298, 295, 385), "fight_common.fsys", (0x5DD4,)),
         (17, (309, 111, 363), "fight_common.fsys", (0x5DDB,)),
         (21, (304, 177, 280, 358), "fight_common.fsys", (0x5DE5,)),
+        (22, (39, 183, 341), "fight_common.fsys", (0x5DE9, 0x5DEA)),
+        (25, (232, 342, 368, 349), "fight_common.fsys", (0x5DF2, 0x5DF3)),
+        (26, (355, 365, 381, 111), "fight_common.fsys", (0x5DF4, 0x5DF6)),
         (27, (385, 207, 345, 51), "fight_common.fsys", (0x5DF7,)),
         (29, (200, 336, 307, 237), "fight_common.fsys", (0x5DFD,)),
+        (30, (202, 284, 357, 303), "fight_common.fsys", (0x5E01,)),
+        (31, (226, 296, 325, 311), "fight_common.fsys", (0x5E03, 0x5E04, 0x5E05)),
         (32, (299, 188, 321, 369), "fight_common.fsys", (0x5E06,)),
+        (33, (234, 40, 213, 195, 241), "fight_common.fsys", (0x5E09,)),
         (35, (369, 314, 289, 184), "fight_common.fsys", (0x5E11,)),
-        (47, (None, 132), "fight_common.fsys", (0x5E35,)),
-        (54, (366, 94, 65, 400, 329, 319), "fight_common.fsys", (0x5E4A,)),
+        (41, (47, 307, 80, 124, 229, 394), "fight_common.fsys", (0x5E21, 0x5E22)),
+        (42, (308, 199, 345, 108, 352, 235), "fight_common.fsys", (0x5E24, 0x5E25)),
+        (43, (234, 176, 178, 352, 26, 12), "fight_common.fsys", (0x5E28,)),
+        (45, (248,), "fight_common.fsys", (0x5E2D,)),
+        (46, (87, 99, 51, 34, 127, 131), "fight_common.fsys", (0x5E30, 0x5E31)),
+        (47, (None, 132), "fight_common.fsys", (0x5E33, 0x5E35)),
+        (53, (196, 197, 135, 134, 136, 133), "fight_common.fsys", (0x5E46,)),
+        (54, (366, 94, 65, 400, 329, 319), "fight_common.fsys", (0x5E48, 0x5E4A)),
         (61, (362, 397, 149, 334, 142, 145), "fight_common.fsys", (0x5E5D, 0x5E5F)),
+        (62, (300, 103, 189, 244, 36, 282), "fight_common.fsys", (0x5E60, 0x5E61)),
         (63, (297, 375, 139, 230, 338, 211), "fight_common.fsys", (0x5E63, 0x5E65)),
+        (66, (145, 146, 144, 243, 244, 245), "fight_common.fsys", (0x5E6C,)),
+        (67, (105, None, 338), "fight_common.fsys", (0x5E6F, 0x5E70)),
     ),
     "Story": (
         (_EAGUN_TRAINER, (25,), EAGUN_ACTOR_ARCHIVES[0], (0x94CB, 0x94CC, *_EAGUN_CRY_MESSAGES[EAGUN_ACTOR_ARCHIVES[0]])),
@@ -116,6 +139,9 @@ _TEAM_PRAISE = ("My Pokémon did a great job!", "Mes Pokémon se sont bien battu
 _TEAM_LOSS = ("You beat my team. Well done!", "Bravo, tu as battu mon équipe !",
               "Gut gemacht! Du hast mein Team besiegt!", "Bravo, hai battuto la mia squadra!",
               "¡Bien hecho! ¡Has vencido a mi equipo!", "わたしのチームに　かつとは　やるね！")
+_TYPE_DUO = ("I love battling with these two Pokémon!", "J'adore me battre avec ces deux Pokémon !",
+             "Mit diesen beiden Pokémon kämpfe ich gern!", "Adoro lottare con questi due Pokémon!",
+             "¡Me encanta luchar con estos dos Pokémon!", "この　２ひきで　バトルするのが　すきだよ！")
 _SPECIES_REMARKS = {
     **dict.fromkeys((mid for messages in _EAGUN_CRY_MESSAGES.values() for mid in messages),
                     ("{name}!", "{name} !", "{name}!", "{name}!", "¡{name}!", "{name}！")),
@@ -127,22 +153,108 @@ _SPECIES_REMARKS = {
     0x84E9: ("Heh! My {name} comes in handy!", "Plutôt pratique, mon {name} !",
              "Hehe! Mein {name} ist echt nützlich!", "Eh eh! Il mio {name} è proprio utile!",
              "¡Je, je! ¡Mi {name} sí que es útil!", "へへっ。{name}は　やくにたつだろ？"),
-    **dict.fromkeys((0x5685, 0x56BF, 0x56C1, 0x56EF, 0x570F, 0x7A27), _TEAM_PRAISE),
-    **dict.fromkeys((0x5DE5, 0x5DF7, 0x5DFD, 0x5E5D, 0x5E63, 0x799C, 0x79A2, 0x79AA,
+    **dict.fromkeys((0x5685, 0x56BF, 0x56C1, 0x56C7, 0x56EF, 0x570F,
+                     0x5DE9, 0x5E31, 0x5E61, 0x7A27), _TEAM_PRAISE),
+    **dict.fromkeys((0x5DE5, 0x5DF7, 0x5DFD, 0x5E21, 0x5E30, 0x5E5D, 0x5E63, 0x799C, 0x79A2, 0x79AA,
                      0x79B4, 0x79B6, 0x79C2, 0x79C4, 0x79DC, 0x79DE, 0x79E0, 0x7A22), _TEAM_CHALLENGE),
-    **dict.fromkeys((0x5E11, 0x5E4A, 0x5E65, 0x79AB), _TEAM_LOSS),
+    **dict.fromkeys((0x5DEA, 0x5E11, 0x5E4A, 0x5E65, 0x79AB), _TEAM_LOSS),
     0x5683: ("Some matchups still make me shiver!", "Certains adversaires me font encore trembler !",
              "Manche Gegner lassen mich zittern!", "Certi avversari mi fanno ancora tremare!",
              "¡Hay rivales que aún me dan escalofríos!", "まだ　ぞっとする　あいても　いるよ！"),
+    0x5709: ("Now that's a win worth celebrating!", "Voilà une victoire qui se fête !",
+             "Diesen Sieg kann man feiern!", "Questa vittoria merita una festa!",
+             "¡Esta victoria merece una celebración!", "この　しょうりは　おいわいだ！"),
+    0x570A: ("I'll need a moment after that loss...", "Il me faut un instant pour m'en remettre…",
+             "Nach der Niederlage brauche ich kurz Ruhe…", "Mi serve un momento per riprendermi…",
+             "Necesito un momento para reponerme…", "ちょっと　ひとやすみ　しようかな……。"),
+    0x5DC1: ("I'm first in line! Try to keep up!", "Je passe en premier ! Essaie de suivre !",
+             "Ich bin zuerst dran! Versuch mitzuhalten!", "Sono la prima! Cerca di starmi dietro!",
+             "¡Voy la primera! ¡Intenta seguirme el ritmo!", "いちばんては　わたしよ！　ついてこれる？"),
+    0x5DC2: ("Well? Did I surprise you?", "Alors ? Je t'ai surpris ?",
+             "Na? Habe ich dich überrascht?", "Allora? Ti ho sorpreso?",
+             "¿Y bien? ¿Te he sorprendido?", "どう？　びっくりしたでしょ？"),
+    0x5DC4: ("Heh heh. Take a look at my trio!", "Héhé. Regarde un peu mon trio !",
+             "Hehe. Schau dir mein Trio an!", "Eh eh. Guarda che trio!",
+             "Je, je. ¡Mira qué trío!", "ふっふっふ。　オイラのトリオを　みてくれ！"),
+    0x5DC6: ("My trio!", "Mon trio !", "Mein Trio!", "Il mio trio!", "¡Mi trío!", "オイラのトリオがー！"),
+    0x5DD4: ("Call the shots and the battle is yours!", "Qui mène la danse mène le combat !",
+             "Wer den Takt vorgibt, gewinnt den Kampf!", "Chi detta il ritmo vince la lotta!",
+             "¡Quien marca el ritmo gana el combate!", "ながれを　つかんだ　ほうが　かつのさ！"),
+    0x5DF2: ("Once we got going, there was no stopping us!", "Une fois lancés, on était imbattables !",
+             "Als wir loslegten, waren wir nicht aufzuhalten!", "Una volta partiti, chi ci fermava più?",
+             "¡Una vez lanzados, nadie podía pararnos!", "いきおいに　のったら　とまらなかったぞ！"),
+    0x5DF3: ("We started well, then it all fell apart!", "Tout allait bien, puis patatras !",
+             "Es fing gut an, dann ging alles schief!", "Era iniziata bene, poi è andato tutto storto!",
+             "¡Empezamos bien y luego todo se torció!", "いい　すべりだし　だったのにー！"),
+    0x5DF4: ("Throw off their rhythm and the battle's yours!", "Casse leur rythme et le combat est à toi !",
+             "Bring sie aus dem Takt und du gewinnst!", "Spezza il loro ritmo e la lotta è tua!",
+             "¡Rómpeles el ritmo y el combate será tuyo!", "あいての　ペースを　みだすのさ！"),
+    0x5DF6: ("Urgh! You never fell for my plan!", "Grr ! Tu n'es jamais tombé dans mon piège !",
+             "Mist! Mein Plan ist gescheitert!", "Uffa! Non sei caduto nella mia trappola!",
+             "¡Uf! ¡No has caído en mi trampa!", "くー！　オレの　さくせんが　みやぶられた！"),
+    0x5E01: ("The trick is knowing when to strike back!", "Tout l'art est de savoir quand riposter !",
+             "Man muss wissen, wann man zurückschlägt!", "Il segreto è sapere quando contrattaccare!",
+             "¡El truco es saber cuándo contraatacar!", "いつ　きりかえすかが　だいじなんじゃ。"),
+    0x5E03: ("What a lovely day to show off!", "Quel beau jour pour faire sensation !",
+             "Ein herrlicher Tag für einen großen Auftritt!", "Che giornata per fare colpo!",
+             "¡Qué día tan bonito para lucirse!", "きょうは　あたしの　みせばね！"),
+    0x5E04: ("Chin up! That was quite a show!", "Haut les cœurs ! Quel spectacle !",
+             "Kopf hoch! Was für ein Auftritt!", "Su col morale! Che spettacolo!",
+             "¡Ánimo! ¡Ha sido todo un espectáculo!", "げんきだして！　いい　しょうぶだったわ！"),
+    0x5E05: ("I needed a little more sparkle!", "Il me manquait un peu d'éclat !",
+             "Mir fehlte ein bisschen Glanz!", "Mi mancava un pizzico di splendore!",
+             "¡Me ha faltado un poco de brillo!", "もうすこし　かがやきが　たりなかったわ～！"),
     0x5E06: ("Today's forecast? A tough battle!", "La météo du jour ? Un combat serré !",
              "Meine Vorhersage? Ein harter Kampf!", "Le previsioni? Una lotta dura!",
              "¿El pronóstico? ¡Un combate reñido!", "きょうの　よほうは　はげしいバトル！"),
+    0x5E09: ("Practice makes perfect!", "C'est en s'entraînant qu'on progresse !",
+             "Übung macht den Meister!", "La pratica rende perfetti!",
+             "¡La práctica hace al maestro!", "れんしゅう　あるのみ！"),
+    0x5E22: ("You'll need to do better than that!", "Il va falloir faire mieux que ça !",
+             "Da musst du schon mehr zeigen!", "Dovrai fare di meglio!",
+             "¡Tendrás que hacerlo mejor!", "もうすこし　がんばってくれよ！"),
+    0x5E24: ("I'll stick to my strategy!", "Je m'en tiens à ma stratégie !",
+             "Ich bleibe bei meiner Strategie!", "Seguirò la mia strategia!",
+             "¡Me ceñiré a mi estrategia!", "オレの　さくせんで　たたかうぜ！"),
+    0x5E25: ("Did my team catch you off guard? Hahaha!", "Mon équipe t'a pris de court ? Ha ha ha !",
+             "Hat dich mein Team überrascht? Hahaha!", "La mia squadra ti ha sorpreso? Ah ah ah!",
+             "¿Te ha sorprendido mi equipo? ¡Ja, ja, ja!", "オレのチームに　おどろいたか？　わっはっは！"),
+    0x5E28: ("Heh! You weren't ready for my strategy!", "Héhé ! Ma tactique t'a pris de court !",
+             "Hehe! Damit hast du wohl nicht gerechnet!", "Eh eh! La mia strategia ti ha spiazzato!",
+             "¡Je, je! ¡Mi táctica te ha sorprendido!", "ふふん！　オレのさくせんに　やられたな！"),
+    0x5E2D: ("You've heard of me? Time to see why!", "Tu connais ma réputation ? En garde !",
+             "Schon von mir gehört? Gleich weißt du, warum!", "Hai sentito parlare di me? Ora capirai perché!",
+             "¿Has oído hablar de mí? ¡Ahora verás por qué!", "オレの　うわさを　きいたか？　いくぜ！"),
+    0x5E33: ("Isn't it amazing what Pokémon can do?", "Les Pokémon savent nous étonner, hein ?",
+             "Erstaunlich, was Pokémon alles können, oder?", "È incredibile cosa sanno fare i Pokémon, vero?",
+             "¿No te asombra lo que hacen los Pokémon?", "ポケモンって　ほんとうに　ふしぎですよね？"),
+    0x5E46: ("A good Trainer trusts their Pokémon.", "Un bon Dresseur fait confiance à ses Pokémon.",
+             "Ein guter Trainer vertraut seinen Pokémon.", "Un buon Allenatore si fida dei suoi Pokémon.",
+             "Un buen Entrenador confía en sus Pokémon.", "トレーナーは　ポケモンを　しんじるもんじゃ。"),
+    0x5E48: ("A clever trick makes for a great battle!", "Une bonne tactique, ça pimente le combat !",
+             "Mit einer guten Taktik macht Kämpfen Spaß!", "Una buona tattica rende la lotta più avvincente!",
+             "¡Una buena táctica anima el combate!", "さくせんが　バトルを　もりあげるぞ！"),
+    0x5E60: ("I put all my energy into every battle!", "Je me donne à fond à chaque combat !",
+             "In jedem Kampf gebe ich alles!", "In ogni lotta ci metto tutta la mia energia!",
+             "¡Lo doy todo en cada combate!", "どんなバトルにも　ぜんりょくを　そそぐわ！"),
+    0x5E6C: ("Watch closely! This will be a grand battle!", "Regarde bien ! Ce sera un grand combat !",
+             "Pass gut auf! Das wird ein großer Kampf!", "Attento! Sarà una lotta memorabile!",
+             "¡Atento! ¡Este será un gran combate!", "よく　みなさい！　いい　バトルになるぞ！"),
+    0x5E6F: ("Let's see if you can break our defenses!", "Voyons si tu peux percer notre défense !",
+             "Mal sehen, ob du unsere Abwehr überwindest!", "Vediamo se riesci a superare la nostra difesa!",
+             "¡Veamos si puedes romper nuestra defensa!", "わたしたちの　まもりを　やぶれるかな？"),
+    0x5E70: ("A true Trainer knows how to seize the moment!", "Un vrai Dresseur sait saisir sa chance !",
+             "Ein guter Trainer nutzt seine Chance!", "Un vero Allenatore sa cogliere l'attimo!",
+             "¡Un buen Entrenador aprovecha su ocasión!", "トレーナーは　チャンスを　のがさない！"),
     0x5693: ("You had trouble with my {name}!", "Mon {name} t'a donné du fil à retordre !",
              "Mein {name} hat es dir schwer gemacht!", "Il mio {name} ti ha dato filo da torcere!",
              "¡Mi {name} te lo ha puesto difícil!", "{name}には　くろうしただろう！"),
     0x5694: ("You knew how to handle my {name}!", "Tu as bien joué contre mon {name} !",
              "Du hast mein {name} gut gekontert!", "Hai saputo affrontare il mio {name}!",
              "¡Has sabido plantarle cara a mi {name}!", "{name}の　あいてを　よくできたね！"),
+    0x7984: ("All right, kid. Let's see what you've got!", "Allez, petit. Montre-moi ce que tu sais faire !",
+             "Na los, Kleiner. Zeig, was du kannst!", "Forza, ragazzo. Fammi vedere cosa sai fare!",
+             "¡Vamos, chico! ¡Demuéstrame lo que vales!", "さあ　ぼうず。　うでまえを　みせてくれ！"),
     0x56F0: ("Oh, dear. My team lost.", "Oh là là, mon équipe a perdu.",
              "Oje, mein Team hat verloren.", "Oh, no. La mia squadra ha perso.",
              "Vaya, mi equipo ha perdido.", "あらら　わたしのチームが　まけちゃった。"),
@@ -152,6 +264,9 @@ _SPECIES_REMARKS = {
     0x79A4: ("Can you beat {name} and {partner}?", "Tu peux battre {name} et {partner} ?",
              "Besiegst du {name} und {partner}?", "Sai battere {name} e {partner}?",
              "¿Puedes con {name} y {partner}?", "{name}と　{partner}に　かてるかな？"),
+    0x79B0: ("Meet {name} and {partner}!", "Voici {name} et {partner} !",
+             "Das sind {name} und {partner}!", "Ecco {name} e {partner}!",
+             "¡Aquí están {name} y {partner}!", "わたしのコンビ　{name}と　{partner}よ！"),
     0x79B7: ("My {name} loves the outdoors.", "Mon {name} aime le grand air.",
              "Mein {name} ist gern draußen.", "A {name} piace stare all'aperto.",
              "A mi {name} le gusta el aire libre.", "{name}は　そとが　だいすき。"),
@@ -164,6 +279,12 @@ _SPECIES_REMARKS = {
     0x79C5: ("Isn't my {name} cute?", "Il est mignon, mon {name}, non ?",
              "Ist mein {name} nicht süß?", "Non è carino il mio {name}?",
              "¿A que es adorable mi {name}?", "{name}って　かわいいでしょう？"),
+    0x79EE: ("Dance, {name} and {partner}!", "Dansez, {name} et {partner} !",
+             "Tanzt, {name} und {partner}!", "Ballate, {name} e {partner}!",
+             "¡A bailar, {name} y {partner}!", "{name}と　{partner}と　おどらないか？"),
+    0x79F0: ("Tired? A battle will wake you up!", "Fatigué ? Un combat va te réveiller !",
+             "Müde? Ein Kampf macht dich wach!", "Stanco? Una lotta ti sveglierà!",
+             "¿Cansado? ¡Un combate te espabilará!", "つかれたかい？　バトルで　めを　さまそう！"),
     0x79F1: ("Time to let my Pokémon rest.", "Mes Pokémon ont bien mérité une pause.",
              "Meine Pokémon haben eine Pause verdient.", "I miei Pokémon si meritano una pausa.",
              "Mis Pokémon se merecen un descanso.", "ポケモンたちを　やすませてあげよう。"),
@@ -212,10 +333,35 @@ _ITEM_EEVEE_REFERENCES = {
     },
 }
 _TYPE_REMARKS = {0x5683, 0x5685, 0x5693, 0x5694, 0x56EF, 0x56F0, 0x570F,
-                 0x5DE5, 0x5DFD, 0x799C, 0x79AA, 0x79AB, 0x79B6, 0x79B7, 0x79F2,
+                 0x5DE5, 0x5DFD, 0x5E6F, 0x5E70, 0x799A, 0x799C, 0x79AA, 0x79AB, 0x79B6, 0x79B7, 0x79F2,
                  0x7A06, 0x7A07, 0x7A26, 0x7A27}
-_ABILITY_REMARKS = {0x56C1, 0x798D, 0x79A2, 0x79A4, 0x79BE, 0x79C2, 0x79C4, 0x79DC, 0x79E0}
+_ABILITY_REMARKS = {0x56C1, 0x5E24, 0x5E2D, 0x5E6F, 0x5E70, 0x7984, 0x798D,
+                    0x79A2, 0x79A4, 0x79BE, 0x79C2, 0x79C4, 0x79DC, 0x79E0}
 _MOVE_REMARKS = {0x5DF7, 0x5E06, 0x5E11, 0x5E4A, 0x5E5D, 0x5E5F, 0x5E63, 0x5E65, 0x79F1, 0x7A22}
+_CONFUSING_MOVES = {48, 60, 93, 109, 146, 186, 207, 223, 260, 298, 324, 352}
+_PARALYZING_MOVES = {9, 34, 78, 84, 85, 86, 87, 122, 137, 192, 209, 225, 340}
+_SLEEP_MOVES = {47, 79, 95, 142, 147, 281, 320}
+_SLOWING_MOVES = {61, 81, 132, 145, 184, 196, 317}
+# At least one move from each group must survive for the original tactic.
+_REMARK_REQUIRED_MOVES = {
+    **dict.fromkeys((0x5DC1, 0x5DC2), (_PARALYZING_MOVES | {351},)),  # Shock Wave
+    0x5DD4: ({240, 241, 258, 201},),  # Weather moves
+    **dict.fromkeys((0x5DF2, 0x5DF3), ({111}, {205, 301})),  # Defense Curl + Rollout / Ice Ball
+    0x5DF4: (_SLOWING_MOVES,),
+    0x5DF6: (_SLOWING_MOVES, {23, 29, 44, 125, 157, 158, 252, 302, 326}),
+    0x5E01: ({68, 243},),  # Counter or Mirror Coat
+    **dict.fromkeys((0x5709, 0x570A, 0x5E03, 0x5E04, 0x5E05, 0x79F0), ({240},)),  # Rain Dance
+    0x5E09: ({156}, {214}),  # Rest and Sleep Talk
+    **dict.fromkeys((0x5E21, 0x5E22), (_SLEEP_MOVES,)),
+    0x5E25: (_CONFUSING_MOVES,),
+    0x5E28: (_CONFUSING_MOVES, _PARALYZING_MOVES),
+    **dict.fromkeys((0x5E30, 0x5E31), (OHKO,)),
+    0x5E33: ({144},),  # Transform
+    0x5E46: ({270},),  # Helping Hand
+    0x5E48: ({285},),  # Skill Swap
+    **dict.fromkeys((0x5E60, 0x5E61), ({241},)),  # Sunny Day
+}
+_SANDSTORM_COMBO_REMARK = 0x5DF7  # Castform's Forecast and the team's Sand Veil abilities
 _IMMUNE_TYPES = {0: 7, 1: 7, 3: 8, 4: 2, 7: 0, 13: 4, 14: 17}
 _ABSORB_ABILITIES = {4: 26, 10: 18, 11: 11, 13: 10}
 _CONDITIONAL_ATTACKS = OHKO | SELF_DESTRUCT | {68, 117, 138, 173, 243, 255}
@@ -338,7 +484,7 @@ def _patch_eagun_cry(source, *, chosen, messages):
 
 def trainer_dialogue_edits(deck_name, original, current, species, game_id, *,
                            randomize_abilities=False, randomize_types=False):
-    """Use the post-policy party species for explicitly identified remarks."""
+    """Adapt remarks tied to the post-policy team or its battle tactics."""
     edits = {}
     rewrite_facts = set()
     if randomize_abilities:
@@ -349,7 +495,10 @@ def trainer_dialogue_edits(deck_name, original, current, species, game_id, *,
     for trainer, expected, archive, identifiers in _TRAINER_DIALOGUE[deck_name]:
         row = 0x20 + trainer * 0x38
         names = {}
-        check_moves = not _MOVE_REMARKS.isdisjoint(identifiers) or any(mid in _WAKIN_COMMANDS for mid in identifiers)
+        required_moves = {mid: _REMARK_REQUIRED_MOVES[mid] for mid in identifiers if mid in _REMARK_REQUIRED_MOVES}
+        check_moves = required_moves or not _MOVE_REMARKS.isdisjoint(identifiers) or any(
+            mid in _WAKIN_COMMANDS for mid in identifiers)
+        remaining_moves = set()
         changed_moves = False
         for slot, old in enumerate(expected):
             if old is None:
@@ -360,14 +509,20 @@ def trainer_dialogue_edits(deck_name, original, current, species, game_id, *,
             chosen = u16(current, position)
             names[1000 + species[old][0]] = 1000 + species[chosen][0]
             if check_moves:
-                changed_moves |= any(u16(original, position + move) != u16(current, position + move)
-                                     for move in DPKM_MOVES)
+                moves = tuple(u16(current, position + move) for move in DPKM_MOVES)
+                changed_moves |= moves != tuple(u16(original, position + move) for move in DPKM_MOVES)
+                if required_moves:
+                    remaining_moves.update(moves)
         archives = (archive,)
         if archive == "fight_common.fsys" and game_id == "GXXP01":
             archives += tuple(f"fight_common_{language}.fsys" for language in ("fr", "ge", "it", "sp"))
         changed = any(old != chosen for old, chosen in names.items())
         for identifier in identifiers:
             needs_edit = changed_moves if identifier in _MOVE_REMARKS else changed or identifier in rewrite_facts
+            if identifier in required_moves:
+                needs_edit = changed_moves and any(group.isdisjoint(remaining_moves) for group in required_moves[identifier])
+            if identifier == _SANDSTORM_COMBO_REMARK:
+                needs_edit |= changed or randomize_abilities
             needs_edit |= identifier in _WAKIN_COMMANDS and changed_moves
             if needs_edit:
                 for path in archives:
@@ -375,7 +530,7 @@ def trainer_dialogue_edits(deck_name, original, current, species, game_id, *,
     return edits
 
 
-def _replace_species_remark(source, *, changes, language, translations, last_page=False):
+def _replace_species_remark(source, *, changes, language, translations, last_page=False, first_page=False):
     speaker = b"\xff\xff\x59"
     previous = b""
     if last_page:
@@ -387,6 +542,10 @@ def _replace_species_remark(source, *, changes, language, translations, last_pag
     end = source[-5:] if source[-5:-3] == b"\xff\xff" else source[-2:]
     if not source.startswith(speaker) or end not in (b"\0\0", b"\xff\xff\x02\0\0", b"\xff\xff\x6d\0\0"):
         raise FormatError("unexpected XD trainer dialogue controls")
+    if first_page:
+        next_page = b"\xff\xff\x03" + speaker
+        if next_page in source:
+            end = source[source.index(next_page):]
     locale = ("UK", "FR", "GE", "IT", "SP", "JP").index("UK" if language == "US" else language)
     prefix = "「" if language == "JP" else ": "
     names = dict(zip(("name", "partner"), changes.values(), strict=False))
@@ -410,6 +569,7 @@ TRAINER_REMARK_REWRITES = {
     **{identifier: partial(_replace_species_remark, translations=translations)
        for identifier, translations in _SPECIES_REMARKS.items()},
     _WAKIN_COMMANDS[0]: partial(_replace_species_remark, translations=_WAKIN_SHIP_COMMAND, last_page=True),
+    0x799A: partial(_replace_species_remark, translations=_TYPE_DUO, first_page=True),
     **{identifier: partial(_replace_item_eevee_reference, references=references)
        for identifier, references in _ITEM_EEVEE_REFERENCES.items()},
 }

@@ -2,6 +2,7 @@
 from functools import partial
 
 from .analyze_game import FormatError, u32
+from .gameplay_rules import MOVE_FIELDS
 from .inspect_tables import localized_names, u16
 from .randomize_trainers import layout
 
@@ -11,6 +12,7 @@ _MOUNT_BATTLE = (
     *(f"D2_{area}_{index}.fsys" for area, count in (("valley", 3), ("magma", 3), ("cloud", 4), ("rest", 9))
       for index in range(1, count + 1)),
 )
+_DANCE_MOVES = {14, 80, 240, 297, 298, 349}
 _LINES = {
     # Rows 190 and 362 point to the shared placeholder team. Avoid claiming
     # which species will be sent out or which move it knows in these battles.
@@ -27,6 +29,9 @@ _LINES = {
              "¿Quieres enfrentarte a mi {first}?", "ボクの　{first}と　バトルする？"),
     0x4E9B: ("Go, {first}!", "Allez, {first} !", "Los, {first}!", "Forza, {first}!",
              "¡Vamos, {first}!", "いけっ　{first}！"),
+    0x5AB6: ("My POKéMON put on a show!", "Mes POKéMON font le spectacle !",
+             "Vorhang auf für meine POKéMON!", "In scena, miei POKéMON!",
+             "¡Mis POKéMON darán espectáculo!", "あたいのポケモンの　ショーだよ！"),
     # D2_cloud_3 function 32 picks 0x581A for its first opponent. Both
     # original chants are linked to the same Mt. Battle trainer, Reman.
     0x581A: ("{first}, {second}…",) * 5 + ("{first}、{second}……",),
@@ -34,17 +39,25 @@ _LINES = {
 }
 
 
-def _rewrite(source, *, changes, language, lines):
-    speaker, end = b"\xff\xff\x59", b"\xff\xff\x02\0\0"
-    if not source.startswith(speaker) or not source.endswith(end):
-        raise FormatError("unexpected Colosseum battle dialogue controls")
+def _rewrite(source, *, changes, language, lines, speaker_names=None):
     index = ("UK", "FR", "GE", "IT", "SP", "JP").index("UK" if language == "US" else language)
-    prefix = "「" if language == "JP" else ": "
+    separator = "「" if language == "JP" else ": "
+    speaker = speaker_names[index].encode("utf-16-be") if speaker_names else b"\xff\xff\x59"
+    prefix = speaker + separator.encode("utf-16-be")
+    end = b"\xff\xff\x02\0\0"
+    if not source.startswith(prefix) or not source.endswith(end):
+        raise FormatError("unexpected Colosseum battle dialogue controls")
     names = dict(zip(("first", "second"), changes.values()))
-    return speaker + (prefix + lines[index].format(**names)).encode("utf-16-be") + end
+    return prefix + lines[index].format(**names).encode("utf-16-be") + end
 
 
 TRAINER_REMARK_REWRITES = {identifier: partial(_rewrite, lines=lines) for identifier, lines in _LINES.items()}
+TRAINER_REMARK_REWRITES[0x5AB7] = partial(
+    _rewrite,
+    speaker_names=("TOTI", "LOLA", "YULIA", "ROSALIA", "LUPE", "ユロ"),
+    lines=("So much for my big show!", "Mon spectacle a fait un flop !", "Das war's mit meiner Show!",
+           "Spettacolo finito!", "¡Se acabó el espectáculo!", "ショーは　おしまいだね！"),
+)
 
 
 def trainer_dialogue_edits(original, current, game_id, *, trainers_changed, types_changed, moves_changed):
@@ -79,8 +92,29 @@ def trainer_dialogue_edits(original, current, game_id, *, trainers_changed, type
         messages[0x3FCB] = {}
 
     suffixes = ("", "_fr", "_ge", "_it", "_sp") if game_id == "GC6P01" else ("",)
-    archives = tuple(f"fight_common{suffix}.fsys" for suffix in suffixes) + _MOUNT_BATTLE
-    edits = dict.fromkeys(archives, messages) if messages else {}
+    fight_archives = tuple(f"fight_common{suffix}.fsys" for suffix in suffixes)
+    edits = dict.fromkeys(fight_archives + _MOUNT_BATTLE, messages) if messages else {}
+    if moves_changed:
+        # Toti uses the same introduction for both Pyrite battles. Every
+        # original member has a dance move, even on the rematch team.
+        keeps_dance = True
+        for index, first_slot in ((120, 2352), (121, 4516)):
+            row = trainers["offset"] + trainers["stride"] * index
+            if u16(original, row + 4) != first_slot or u16(current, row + 4) != first_slot:
+                raise FormatError("unexpected Colosseum Toti team")
+            if u32(original, row + 0x2C) != 0x5AB7:
+                raise FormatError("unexpected Colosseum Toti defeat dialogue")
+            for offset, dance in enumerate((349, 80, 14)):
+                position = party["offset"] + party["stride"] * (first_slot + offset)
+                if dance not in {u16(original, position + field) for field in MOVE_FIELDS}:
+                    raise FormatError("unexpected Colosseum Toti moves")
+                keeps_dance &= not _DANCE_MOVES.isdisjoint(
+                    u16(current, position + field) for field in MOVE_FIELDS
+                )
+        if not keeps_dance:
+            edits["M2_building_3F.fsys"] = {0x5AB6: {}}
+            for archive in fight_archives:
+                edits[archive] = {**edits.get(archive, {}), 0x5AB7: {}}
     if trainers_changed:
         # The boy in Phenac reenacts Justy's fight before the gym is cleared.
         # His cheer uses Justy's sixth Pokémon, the native Nosepass.

@@ -23,9 +23,9 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.18** brings randomized Shadow Pokémon to Colosseum's DNA lab
-and keeps Unown's letter and Spinda's spots consistent across supported scenes.
-See the [release notes](docs/releases/v1.2.18.md).
+**Version 1.2.19** updates trainer dialogue to follow randomized teams and
+keeps XD's Battle Simulator lessons consistent with their rental Pokémon.
+See the [release notes](docs/releases/v1.2.19.md).
 
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)

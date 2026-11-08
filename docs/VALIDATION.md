@@ -195,6 +195,57 @@ one of these chants for the first opponent. The patch updates the fight bank
 and its Mt. Battle copies. Fixed scene actors remain separate from trainer
 dialogue patches.
 
+The follow-up audit included field dialogue and remarks that imply a team
+without naming its Pokémon. Candidates were checked against the speaker's
+native party, moves, types and abilities, plus the script branch that displays
+the message. Checking those links distinguishes a real team strategy from a
+trainer's personal preference, a fixed story actor or an unused message.
+The party used for dialogue is the final one after team policies. For example,
+Colosseum updates Folly's line when the fully evolved opponents setting alone
+turns his Whismur into Exploud.
+
+Toti's introduction and defeat at Pyrite keep their dance theme when her
+two parties still have dance moves. In XD, the Mt. Battle field lines account
+for real team details, such as Gratin's trapping strategy, Ebilo's flower and
+butterfly pair, and Tulon's Rain Dance. The Orre Colosseum lines distinguish
+changes to party composition from changes to the moves or abilities a tactic
+requires.
+
+The follow-up used seed `orre-dialogue-context` on all six verified retail
+discs. Both randomization presets, a moves-only configuration and the
+unchanged preset were checked for each game. Colosseum also ran with only
+fully evolved opponents enabled, and XD ran with only types and abilities
+randomized. The emitted language banks preserved page counts for the new
+edits and added no explicit line breaks. The unchanged preset emitted no
+patches. Width estimates also covered the longest pairs of species names in
+the new XD field lines.
+
+Muted PAL Dolphin runs replayed Lola's introduction and defeat in Pyrite on
+a copy of the personal Colosseum card. In XD, copies of the Mt. Battle QA card
+rendered the new zone 13, 66 and 67 lines. Zone 66 named Machoke and Graveler,
+which both appeared in the battle. The test images placed the player near the
+targets and invoked the native booth scripts for the XD encounters. The
+protected source cards and personal profile matched their original hashes
+afterward.
+
+### XD Battle Simulator
+
+All 12 lessons use fixed rental teams. The advanced species settings used to
+change their types, abilities and base stats through the shared species table.
+Virtual battles now use the retail table for those rentals. Normal battles
+continue to use the randomized table. The opening simulator battle and Battle
+CDs use the same virtual battle modes.
+
+Generated builds of the European, American and Japanese editions preserved the
+12 rental teams and their original lesson text in the six playable languages,
+with types, abilities and base stats randomized outside the simulator. A test
+runs the regional PowerPC hook before, during and after the virtual encounters.
+
+In muted Dolphin, the French PAL lesson on matching Pokémon and move types
+completed with Rattata using Quick Attack to defeat Makuhita. The same build
+uses Electric-type Rattata in the adventure, while the virtual lesson used
+its original Normal-type data.
+
 Checks on all six discs with seed `dialogue-audit-1`, and on both European
 discs with `dialogue-audit-2`, found no added line breaks in the changed text.
 Where a longer name could crowd the lab or Phenac dialogue, the patch

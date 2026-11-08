@@ -29,6 +29,7 @@ from .xd_gifts import (DUKING_TRADES, GIFT_BASELINES, GIFT_TRADE_REQUIREMENTS, H
 from .xd_item_rules import apply_field_items, apply_shop_items
 from .xd_shiny_rules import apply_shiny_rules
 from .xd_shadow_shinies import apply_shadow_shiny_rules, shadow_statuses
+from .xd_simulator import protect_simulator_species
 from .xd_spinda import apply_spinda_pids
 from .xd_spinda_field import apply_spinda_poke_spots
 from .xd_spinda_trainers import apply_spinda_trainer_pids, spinda_deck_pids
@@ -573,6 +574,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     trade_requirements.update(zip(DUKING_TRADES, (row["species"] for row in summary["poke_spots"] if row["slot"] == 3),
                                   strict=True))
     new_rel, summary["species_gameplay"] = patch_species_gameplay(new_rel, symbols, seed, species, families, options)
+    if any(summary["species_gameplay"][field] for field in ("types_changed", "abilities_changed", "base_stats_changed")):
+        dol, summary["battle_simulator"] = protect_simulator_species(original_dol, dol, rel, symbols, region.game_id)
     new_rel, dol, summary["tm_gameplay"] = patch_tm_gameplay(new_rel, dol, symbols, region.game_id, seed, species, options)
     new_rel, summary["field_items"] = apply_field_items(rel, new_rel, seed, options)
     move_randomizer = XDMoveRandomizer(new_rel, symbols, species, options)
@@ -744,7 +747,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                     shadow = next(row for row in deck_report["shadows"] if row["shadow_id"] == GATEON_SHADOW)
                     actor = patch_gateon_shadow(shadow, rel, symbols[88]["offset"], species, original_dol,
                                                 region.game_id, read_archive, gift_updates, shiny,
-                                                unown_form_index=unown_form_index)
+                                                unown_form_index=unown_form_index,
+                                                use_saved_spinda_palette=bool(shadow_status))
                     if actor is not None:
                         summary["gateon_field_shadow"] = actor
             if updated != deck:
@@ -824,6 +828,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         original_dol, dol, region.game_id, summary.get("poke_spot_actors", ()), read_archive,
         gateon_pid=spinda_shadows.get(GATEON_SHADOW) if gateon_spinda else None,
         gateon_shiny=shadow_status.get(str(GATEON_SHADOW), False),
+        gateon_saved_palette=bool(shadow_status),
     )
     if spinda_field_hooks:
         summary["spinda_field_hooks"] = spinda_field_hooks
@@ -850,7 +855,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         story_families[families[row["species"]]].append(row["key"])
     summary["family_duplicates"] = [keys for keys in story_families.values() if len(keys) > 1]
     progress(25, "Compression des données du jeu…")
-    patches = [(dol_offset, dol)] if dol != original_dol else []
+    patches = []
     # Preserve all declared files, the apploader, executable, and FST. When
     # recompression outgrows an archive's slot, allocate from a free disc gap.
     system_end = max(fst_offset + max(fst_size, fst_max), dol_offset + region.dol_size,
@@ -875,13 +880,21 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                 return offset
         raise FormatError("no safe disc gap for rebuilt XD data")
 
-    relocated_fst = len(dol) > len(original_dol)
-    if relocated_fst:
-        if (fst_offset < dol_offset + len(original_dol)
-                or dol_offset + len(dol) > ranges[0][0]):
-            raise FormatError("grown XD DOL overlaps an original disc file")
-        fst_offset = allocate(max(fst_size, fst_max))
-        patches.append((0x424, struct.pack(">I", fst_offset)))
+    relocated_fst = False
+    if len(dol) > len(original_dol):
+        dol_end = dol_offset + len(dol)
+        if fst_offset < dol_offset + len(original_dol) or dol_end > ranges[0][0]:
+            # The original DOL and FST can stay in place when a large hook
+            # requires a new executable slot beyond the system area.
+            dol_offset = allocate(len(dol))
+            patches.append((0x420, struct.pack(">I", dol_offset)))
+        else:
+            gaps = [(max(start, dol_end), stop) for start, stop in gaps if dol_end < stop]
+            fst_offset = allocate(max(fst_size, fst_max))
+            patches.append((0x424, struct.pack(">I", fst_offset)))
+            relocated_fst = True
+    if dol != original_dol:
+        patches.append((dol_offset, dol))
 
     updates = dict(gift_updates)
     for name, members in replacements.items():

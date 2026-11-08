@@ -63,7 +63,12 @@ XD wild encounters keep the game's per-appearance PID. The Poké Spot model
 reads that same PID before the encounter begins.
 
 Matching 3D scenes use the same PID where the game or seed provides enough
-information. The DNA analyzer can read a stored Shadow PID or reproduce a
+information. When custom Shadow shiny rules are enabled in XD, Spinda's Gateon
+Port model uses the seed before the first battle. After the encounter has a
+saved PID, both the spots and the palette follow that PID and the player's
+trainer IDs, even when the configured shiny rate changes.
+
+Colosseum's DNA analyzer can read a stored Shadow PID or reproduce a
 seeded draw with the current player. The keypad uses that same result to draw
 the spot layout on the matching tile. Before an unseeded encounter has been
 generated, the keypad uses the original Spinda portrait.

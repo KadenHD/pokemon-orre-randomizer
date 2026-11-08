@@ -110,6 +110,21 @@ team reference or Shadow mapping also retain their original species. Virtual,
 Bingo, Imasugu, and Sample are distinct from the Story, Colosseum, and
 Hundred decks.
 
+### Battle Simulator
+
+The lab's lesson menu lists the twelve Virtual encounters in disc table rows
+56–67. Each has two fixed teams, its own lesson text, and a fixed move and
+item setup. The global type, ability and base-stat settings previously changed
+the species data those teams use. This could remove Koffing's Levitate or
+Rattata's Normal type from the very lesson that demonstrates it.
+
+With any of those three settings active, the species lookup uses native data
+only for battle records 13 and 14. These are the fixed Virtual contexts used
+by the lab lessons, the opening simulation and Battle CDs. The game sets the
+encounter ID before building the teams and clears it after the battle. The
+localized lesson text and Virtual decks are retained byte for byte. The three
+retail regions use the same Virtual IDs and different guarded DOL offsets.
+
 ## Species, evolutions, and Poké Spots
 
 The species table contains 415 records of `0x124` bytes at relocation index

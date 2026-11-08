@@ -682,7 +682,12 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 summary["plusle_gift_scene"] = {"species": species_id, "national_dex": national_dex,
                     "actor_scale": scale, "shiny_model": shiny,
                     "actor_archives": list(ACTOR_ARCHIVES), "dialogue_archives": list(PLUSLE_DIALOGUE_ARCHIVES)}
-        if options.randomize_trainers:
+        trainer_species_changed = options.randomize_trainers or any(
+            row["original_species"] != row["after_species"] for row in summary["trainer_policies"]["edits"]
+        ) or any(
+            row["old_species_index"] != row["new_species_index"] for row in summary["bosses"]["edits"]
+        )
+        if trainer_species_changed:
             checkpoint(cancel)
             name = GAFAR_DIALOGUE_ARCHIVE
             room = scene_updates[name] if name in scene_updates else archive(name)
@@ -690,9 +695,9 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             if payload != room:
                 scene_updates[name] = payload
                 summary["gafar_dialogue"] = {"archive": name, "species": list(species_ids)}
-        if options.randomize_trainers or options.randomize_types or options.randomize_trainer_moves:
+        if rel != original:
             trainer_dialogue, native_names = trainer_dialogue_edits(
-                original, rel, region.game_id, trainers_changed=options.randomize_trainers,
+                original, rel, region.game_id, trainers_changed=trainer_species_changed,
                 types_changed=options.randomize_types, moves_changed=options.randomize_trainer_moves,
             )
             for name, messages in trainer_dialogue.items():

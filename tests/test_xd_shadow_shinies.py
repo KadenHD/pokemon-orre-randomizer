@@ -9,11 +9,14 @@ import unittest
 from unittest.mock import patch
 
 from orre_randomizer.engine.shiny_rules import _Code
+from orre_randomizer.xd_field_actors import GATEON_SPINDA_SHINY_RESOURCE
 from orre_randomizer.xd_shadow_shinies import (
     SHADOW_COUNT, _owner_stub, _pid_stub, shadow_statuses,
 )
 from orre_randomizer.xd_spinda import _pid_hook, _reward_hook
-from orre_randomizer.xd_spinda_field import _LAYOUTS as FIELD_LAYOUTS, _field_hook, _load_gateon_pid
+from orre_randomizer.xd_spinda_field import (
+    _GATEON_RESOURCE, _LAYOUTS as FIELD_LAYOUTS, _field_hook, _gateon_palette_hook, _load_gateon_pid,
+)
 from orre_randomizer.xd_spinda_trainers import _trainer_pid_hook, spinda_deck_pids
 
 
@@ -427,6 +430,48 @@ class XDShadowShinyTests(unittest.TestCase):
                 else:
                     self.assertEqual(pid & 0xFFFF, 0x5678)
                     self.assertLess((pid ^ pid >> 16 ^ owner ^ owner >> 16) & 0xFFFF, 8)
+
+    def test_gateon_selects_full_model_from_saved_status_before_native_load(self):
+        owner, player = 0xCDBFA8DE, 0x80901000
+        owner_xor = (owner ^ owner >> 16) & 0xFFFF
+        for startup in (False, True):
+            for default in (False, True):
+                for seen, available, pid_xor in ((False, True, 0), (True, False, 0),
+                                                 (True, True, 7), (True, True, 8)):
+                    with self.subTest(startup=startup, default=default, seen=seen,
+                                      available=available, pid_xor=pid_xor):
+                        layout = FIELD_LAYOUTS["GXXP01"]
+                        payload = _gateon_palette_hook(ADDRESS, RETURN, layout, startup=startup, default_shiny=default)
+                        machine = WrapperMachine(payload)
+                        machine.reg[6 if startup else 5] = _GATEON_RESOURCE
+                        before = machine.reg.copy()
+                        machine.store(player + 0x2C, owner, 4)
+
+                        def probe(arguments, result):
+                            def call(state):
+                                self.assertEqual(state.reg[3:3 + len(arguments)], list(arguments))
+                                state.clobber_volatile()
+                                state.reg[3] = result
+                            return call
+
+                        machine.callbacks = {layout.shadow_seen: probe((30,), seen),
+                                             layout.player_lookup: probe((0, 2), player if available else 0),
+                                             layout.shadow_pid: probe((30,), owner_xor ^ pid_xor)}
+                        machine.run()
+                        register = 30 if startup else 27
+                        shiny = pid_xor < 8 if seen and available else default
+                        before[register] = GATEON_SPINDA_SHINY_RESOURCE if shiny else _GATEON_RESOURCE
+                        self.assert_abi(machine, before)
+                        self.assertEqual(machine.reg[3:7], before[3:7])
+                        self.assertEqual([address for address, _ in machine.calls],
+                                         [layout.shadow_seen, layout.player_lookup, layout.shadow_pid][:
+                                             1 + int(seen) + int(seen and available)])
+
+        machine = WrapperMachine(_gateon_palette_hook(ADDRESS, RETURN, layout, startup=True, default_shiny=True))
+        original_resource = machine.reg[6]
+        machine.run()
+        self.assertEqual(machine.reg[30], original_resource)
+        self.assertEqual(machine.calls, [])
 
     def test_owner_wrapper_aligns_only_valid_shadows_to_the_player(self):
         for shadow_id in (0, 1, 73, 81, 83, 84, 65535):

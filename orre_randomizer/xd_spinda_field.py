@@ -10,7 +10,7 @@ from .engine.shiny_rules import _Code
 from .engine.spinda import SPINDA
 from .engine.spinda_runtime import spinda_face_writer
 from .xd_battle_rules import TEXT1_TO_RAM, append_xd_dol_text
-from .xd_field_actors import GATEON_SHADOW, _ZANGOOSE_RESOURCE
+from .xd_field_actors import GATEON_SHADOW, GATEON_SPINDA_SHINY_RESOURCE, _ZANGOOSE_RESOURCE
 from .xd_spinda import _load_address, _tail_call, emit_spinda_pid_fit
 
 
@@ -45,6 +45,44 @@ _EPILOGUE = (0xBB210024, 0x80010044, 0x7C0803A6, 0x38210040, 0x4E800020)
 _OPEN_EPILOGUE = (0xBB61000C, 0x80010024, 0x7C0803A6, 0x38210020, 0x4E800020)
 _SPOT_INDEX = {"rock": 0, "oasis": 1, "cave": 2}
 _GATEON_ACTOR = 0xFFFF  # distinct from the three live Poké Spot indices
+_GATEON_RESOURCE = int(_ZANGOOSE_RESOURCE, 16)
+_READ_RESOURCE = 0x7CBB2B78  # mr r27,r5 in peopleReadObject
+_OPEN_RESOURCE = 0x7CDE3378  # mr r30,r6 in peopleOpenSub
+
+
+def _gateon_palette_hook(address, continuation, layout, *, startup, default_shiny):
+    """Choose the entire model before the native lookup, including idle textures."""
+    code = _Code(address)
+    resource_register = 30 if startup else 27
+    code.emit(_OPEN_RESOURCE if startup else _READ_RESOURCE)
+    _load_address(code, 12, _GATEON_RESOURCE)
+    code.emit(0x7C006040 | resource_register << 16)  # cmplw selected resource,r12
+    code.conditional(0x40820000, "native")
+    code.emit(0x9421FFE0, 0x7C0802A6, 0x90010024,
+              0x90610008, 0x9081000C, 0x90A10010, 0x90C10014)
+    default = "shiny" if default_shiny else "restore"
+    code.emit(0x38600000 | GATEON_SHADOW)
+    code.call(layout.shadow_seen)
+    code.emit(0x28030000)
+    code.conditional(0x41820000, default)
+    code.emit(0x38600000, 0x38800002)
+    code.call(layout.player_lookup)
+    code.emit(0x28030000)
+    code.conditional(0x41820000, default)
+    code.emit(0x80E3002C, 0x90E10018, 0x38600000 | GATEON_SHADOW)
+    code.call(layout.shadow_pid)
+    code.emit(0x80E10018, 0x54E4843E, 0x7C843A78, 0x5465843E, 0x7C842A78,
+              0x7C841A78, 0x5484043E, 0x28040008)  # same PID/OT XOR as battle
+    code.conditional(0x40800000, "restore")
+    code.label("shiny")
+    _load_address(code, resource_register, GATEON_SPINDA_SHINY_RESOURCE)
+    code.label("restore")
+    code.emit(0x80610008, 0x8081000C, 0x80A10010, 0x80C10014,
+              0x80010024, 0x7C0803A6, 0x38210020)
+    code.label("native")
+    _tail_call(code, continuation)
+    body = code.finish()
+    return body + bytes(-len(body) % 32)
 
 
 def _select_pixel_buffer(code):
@@ -146,7 +184,8 @@ def _field_hook(address, continuation, layout, resources, face, spot, recipe, *,
     return payload + bytes(-len(payload) % 32)
 
 
-def apply_spinda_poke_spots(original, current, game_id, rows, read_archive, *, gateon_pid=None, gateon_shiny=False):
+def apply_spinda_poke_spots(original, current, game_id, rows, read_archive, *, gateon_pid=None,
+                           gateon_shiny=False, gateon_saved_palette=False):
     """Install the Poké Spot bridge and, if selected, the Gateon Shadow actor."""
     resources = [
         (row[key], _SPOT_INDEX[row["spot"]], shiny)
@@ -158,12 +197,22 @@ def apply_spinda_poke_spots(original, current, game_id, rows, read_archive, *, g
         if type(gateon_pid) is not int or not 0 <= gateon_pid <= 0xFFFFFFFF or type(gateon_shiny) is not bool:
             raise ValueError("invalid XD Gateon Spinda personality candidate")
         gateon = gateon_pid, gateon_shiny
-        resources.append((int(_ZANGOOSE_RESOURCE, 16), _GATEON_ACTOR, gateon_shiny))
+        resources.append((_GATEON_RESOURCE, _GATEON_ACTOR, gateon_shiny and not gateon_saved_palette))
+        if gateon_saved_palette:
+            resources.append((GATEON_SPINDA_SHINY_RESOURCE, _GATEON_ACTOR, True))
     if not resources:
         return current, []
-    if len({resource for resource, _, _ in resources}) != len(resources) or len(resources) > 7:
+    if len({resource for resource, _, _ in resources}) != len(resources) or len(resources) > 8:
         raise FormatError("unexpected XD Spinda field resources")
     layout = _LAYOUTS[game_id]
+    palette_hooks = ()
+    if gateon is not None and gateon_saved_palette:
+        palette_hooks = (
+            (layout.people_epilogue - 0x150, _READ_RESOURCE, lambda address, continuation:
+             _gateon_palette_hook(address, continuation, layout, startup=False, default_shiny=gateon_shiny)),
+            (layout.open_epilogue - 0x58, _OPEN_RESOURCE, lambda address, continuation:
+             _gateon_palette_hook(address, continuation, layout, startup=True, default_shiny=gateon_shiny)),
+        )
     signatures = {
         layout.people_epilogue: _EPILOGUE,
         layout.open_epilogue: _OPEN_EPILOGUE,
@@ -187,7 +236,7 @@ def apply_spinda_poke_spots(original, current, game_id, rows, read_archive, *, g
     members = {row["name"]: row for row in parse_fsys(archive)["members"]}
     face, spot, model = (decoded_member(archive, members[name]) for name in ("face", "buti_a", "patcheel"))
     recipe = pkx_recipe(model, xd=True)
-    return append_xd_dol_text(original, current, game_id, (
+    return append_xd_dol_text(original, current, game_id, (*palette_hooks,
         (layout.people_epilogue, _EPILOGUE[0], lambda address, continuation:
          _field_hook(address, continuation, layout, resources, face, spot, recipe, gateon=gateon)),
         (layout.open_epilogue, _OPEN_EPILOGUE[0], lambda address, continuation:

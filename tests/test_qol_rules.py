@@ -51,6 +51,8 @@ class HookMachine:
                 self.reg[rd] = ((self.reg[ra] if ra else 0) + (signed << (16 if op == 15 else 0))) & MASK
             elif op == 24:
                 self.reg[ra] = self.reg[rd] | imm
+            elif op == 40:
+                self.reg[rd] = self.load((self.reg[ra] + signed) & MASK, 2)
             elif op in (10, 11):
                 left = self.reg[ra]
                 if op == 11 and left & 0x80000000:
@@ -59,6 +61,8 @@ class HookMachine:
                 self.cr0 = [left < right, left > right, left == right, False]
             elif op == 31 and xo == 235:
                 self.reg[rd] = (self.reg[ra] * self.reg[rb]) & MASK
+            elif op == 31 and xo == 266:
+                self.reg[rd] = (self.reg[ra] + self.reg[rb]) & MASK
             elif op == 31 and xo == 459:
                 self.reg[rd] = self.reg[ra] // self.reg[rb]
             elif op == 31 and xo == 444:

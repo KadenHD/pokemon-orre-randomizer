@@ -8,6 +8,7 @@ from .engine.analyze_game import FormatError, check_range, parse_fsys, parse_rel
 from .engine.inspect_tables import rel_symbols, u16
 from .engine.plusle_actor import companion_scale, load_actor_model, patch_actor
 from .engine.rebuild_iso import decoded_member
+from .engine.spinda import SPINDA
 from .xd_gifts import _patch_script, patch_species_operand
 
 
@@ -27,6 +28,7 @@ GATEON_SHADOW = 30
 _GATEON_ARCHIVE = "M6_out.fsys"
 _ZANGOOSE = 380
 _ZANGOOSE_RESOURCE = "0x18490400"
+GATEON_SPINDA_SHINY_RESOURCE = 0x23090400  # follows the nine Poké Spot aliases
 _ZANGOOSE_CRY = bytes.fromhex("02010000 0000017c 1101fff6 09250010")
 
 WAKIN_TRAINER = 144
@@ -141,20 +143,29 @@ def _gateon_cry(raw, chosen):
 
 
 def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_archive, updates, shiny,
-                        *, unown_form_index=0):
+                        *, unown_form_index=0, use_saved_spinda_palette=False):
     if shadow["shadow_id"] != GATEON_SHADOW or shadow["original"] != _ZANGOOSE:
         raise FormatError("unexpected Gateon scripted Shadow slot")
     chosen = shadow["species"]
     if chosen == _ZANGOOSE and not shiny:
         return None
+    dynamic_palette = chosen == SPINDA and use_saved_spinda_palette
     # The low camera sits close to Barry's partner. Preserve the scene's
     # framing by limiting large replacements to a 7.2-decimeter field model.
     model, report = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
-                                 shiny=shiny, height_limit=7.2, unown_form_index=unown_form_index)
+                                 shiny=shiny and not dynamic_palette, height_limit=7.2,
+                                 unown_form_index=unown_form_index)
     # Both the room actor and the scripted model request resolve this shared
     # resource. Its stock references belong to this one Gateon scene.
     source = updates[_SHARED_ACTORS] if _SHARED_ACTORS in updates else read_archive(_SHARED_ACTORS)
-    updates[_SHARED_ACTORS] = patch_actor(source, model, identifier=_ZANGOOSE_RESOURCE, name="zangoose")
+    updated = patch_actor(source, model, identifier=_ZANGOOSE_RESOURCE, name="zangoose")
+    if dynamic_palette:
+        shiny_model, _ = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
+                                      shiny=True, height_limit=7.2, unown_form_index=unown_form_index)
+        updated = append_actor_models(updated, {}, source, int(_ZANGOOSE_RESOURCE, 16), {
+            GATEON_SPINDA_SHINY_RESOURCE: ("orre_gateon_spinda_shiny", shiny_model),
+        })
+    updates[_SHARED_ACTORS] = updated
     if chosen != _ZANGOOSE:
         source = updates[_GATEON_ARCHIVE] if _GATEON_ARCHIVE in updates else read_archive(_GATEON_ARCHIVE)
         updates[_GATEON_ARCHIVE] = _patch_script(
