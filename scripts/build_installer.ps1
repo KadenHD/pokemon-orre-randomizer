@@ -47,7 +47,18 @@ try {
 
     $bootstrap = Join-Path $work 'innosetup-6.7.3.exe'
     $compilerDirectory = Join-Path $work 'compiler'
-    Invoke-WebRequest -Uri 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' -OutFile $bootstrap
+    $download = @{ OutFile = $bootstrap; MaximumRetryCount = 2; RetryIntervalSec = 3; TimeoutSec = 35 }
+    try {
+        Invoke-WebRequest -Uri 'https://github.com/jrsoftware/issrc/releases/download/is-6_7_3/innosetup-6.7.3.exe' @download
+    } catch {
+        Write-Warning 'Inno Setup download failed. Trying the GitHub release asset API.'
+        $api = @{ Headers = @{ Accept = 'application/octet-stream' } }
+        if ($env:GH_TOKEN) {
+            $api.Authentication = 'Bearer'
+            $api.Token = ConvertTo-SecureString $env:GH_TOKEN -AsPlainText -Force
+        }
+        Invoke-WebRequest -Uri 'https://api.github.com/repos/jrsoftware/issrc/releases/assets/430321419' @download @api
+    }
     if ((Get-FileHash -LiteralPath $bootstrap).Hash -ne '9c73c3bae7ed48d44112a0f48e66742c00090bdb5bef71d9d3c056c66e97b732') {
         throw 'The downloaded Inno Setup compiler does not match its pinned hash.'
     }

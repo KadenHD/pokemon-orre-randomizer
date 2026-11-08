@@ -1503,14 +1503,19 @@ class MainWindow(QMainWindow):
         tool = owner.tool.text().strip()
         owner.report_check = ReportRomCheck(self, owner.creation_report, Path(owner.source.text().strip()),
                                             Path(tool) if tool else None, self.preview_cache)
-        owner.report_check.finished.connect(lambda: self.report_rom_checked(owner=owner))
+        owner.report_check.finished.connect(lambda: self.report_rom_checked(owner=owner),
+                                            Qt.ConnectionType.QueuedConnection)
         owner.report_check.start()
 
     @Slot()
     def report_rom_checked(self, *, owner=None):
         owner = owner or self
         check = owner.report_check
-        check.wait()
+        if check is None:
+            return
+        if not check.wait(0):
+            QTimer.singleShot(10, self, lambda: self.report_rom_checked(owner=owner))
+            return
         owner.report_check = None
         check.deleteLater()
         if self.close_after_cancel:
@@ -1689,7 +1694,6 @@ class MainWindow(QMainWindow):
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.finished)
-        self.thread.finished.connect(self.thread.deleteLater)
         self.thread.start()
 
     @Slot(int, object)
@@ -1719,10 +1723,13 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def finished(self):
-        # finished() can be queued before the native thread's final cleanup.
-        # Keep its wrapper alive and wait before enabling/releasing the UI.
-        if self.thread is not None:
-            self.thread.wait()
+        thread = self.thread
+        if thread is None:
+            return
+        if not thread.wait(0):
+            QTimer.singleShot(10, self, self.finished)
+            return
+        thread.deleteLater()
         self.busy = False
         self.worker = None
         self.thread = None

@@ -28,6 +28,6 @@ jobs:
       - name: Check that Qt can start offscreen
         run: python -c "from PySide6.QtWidgets import QApplication; app = QApplication([])"
       - run: python scripts/build_native.py
-      - run: python -m unittest discover -s tests -v
+      - run: python -X utf8 scripts/run_tests.py
       - run: python scripts/build_desktop.py --edition public --source-only
       - run: python scripts/verify_release.py --edition public

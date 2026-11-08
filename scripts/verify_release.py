@@ -28,7 +28,8 @@ def application_media_allowed(name: str, binary: bool) -> bool:
 
 
 def verify_source_tests(directory: Path) -> str:
-    command = [sys.executable, "-X", "utf8", "-m", "unittest", "discover", "-s", "tests", "-v"]
+    runner = Path(__file__).resolve().with_name("run_tests.py")
+    command = [sys.executable, "-X", "utf8", str(runner)]
     print("Running tests from the extracted source archive.", flush=True)
     try:
         result = subprocess.run(command, cwd=directory, capture_output=True, timeout=SOURCE_TEST_TIMEOUT)
