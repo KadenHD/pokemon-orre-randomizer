@@ -4,6 +4,7 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 import unittest
 from pathlib import Path
 import tempfile
+import time
 try:
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings
     from PySide6.QtWidgets import QApplication
@@ -25,13 +26,18 @@ class GuiTests(unittest.TestCase):
         settings.setValue("interface/sounds", False)
         self.window = MainWindow(settings=settings, system_languages=["fr-FR"])
 
+    def pump_until(self, condition):
+        deadline = time.monotonic() + 5
+        while not condition() and time.monotonic() < deadline:
+            self.app.processEvents()
+            time.sleep(0.005)
+        self.assertTrue(condition(), "The Qt worker did not finish.")
+
     def tearDown(self):
-        from PySide6.QtTest import QTest
         self.window.cancel_preview()
-        for _ in range(100):
-            if self.window.preview_thread is None:
-                break
-            QTest.qWait(10)
+        if self.window.busy:
+            self.window.cancel()
+        self.pump_until(lambda: self.window.preview_thread is None and not self.window.busy)
         self.window.close()
         self.window.deleteLater()
         QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
@@ -117,7 +123,6 @@ class GuiTests(unittest.TestCase):
     def test_xd_creation_uses_its_options_in_the_shared_worker(self):
         from unittest.mock import patch
         from PySide6.QtCore import QThread
-        from PySide6.QtTest import QTest
 
         window = self.window
         window.show_xd()
@@ -135,10 +140,7 @@ class GuiTests(unittest.TestCase):
 
         with patch("orre_randomizer.gui.randomize", side_effect=fake_randomize):
             xd.start()
-            for _ in range(100):
-                if not window.busy:
-                    break
-                QTest.qWait(10)
+            self.pump_until(lambda: not window.busy)
 
         self.assertFalse(window.busy)
         self.assertIsNot(captured["thread"], self.app.thread())
@@ -176,7 +178,6 @@ class GuiTests(unittest.TestCase):
     def test_xd_preview_keeps_the_same_result_across_language_changes(self):
         from unittest.mock import patch
         from PySide6.QtCore import QThread, Qt
-        from PySide6.QtTest import QTest
 
         window = self.window
         window.show_xd()
@@ -203,10 +204,7 @@ class GuiTests(unittest.TestCase):
 
         with patch("orre_randomizer.preview.preview_xd", side_effect=fake_preview) as calculate:
             xd.start_preview()
-            for _ in range(100):
-                if window.preview_thread is None:
-                    break
-                QTest.qWait(10)
+            self.pump_until(lambda: window.preview_thread is None)
             self.assertFalse(window.busy)
             self.assertIsNot(started_on[0], self.app.thread())
             self.assertTrue(xd.preview_button.isHidden())
@@ -238,10 +236,8 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(list(source.parent.glob("*.iso")), [source])
 
     def test_xd_workers_keep_gui_responsive_during_thread_cleanup(self):
-        from threading import Event
         from unittest.mock import patch
-        from PySide6.QtCore import Qt, QTimer
-        from PySide6.QtTest import QTest
+        from PySide6.QtCore import QTimer
 
         window = self.window
         window.show_xd()
@@ -257,40 +253,30 @@ class GuiTests(unittest.TestCase):
         )
         for start, thread_attr, result_attr, target, result in jobs:
             with self.subTest(thread=thread_attr):
-                allow_result = Event()
-                release_cleanup = Event()
-                released_from_gui = []
-                timer = QTimer(window)
-                timer.setSingleShot(True)
-                timer.timeout.connect(release_cleanup.set)
-
-                def fake_task(**_arguments):
-                    allow_result.wait(2)
-                    return result
-
-                def finish_cleanup():
-                    released_from_gui.append(release_cleanup.wait(2))
-
-                with patch(target, side_effect=fake_task):
+                wait_timeouts = []
+                gui_events = []
+                with patch(target, return_value=result):
                     start()
-                    try:
-                        thread = getattr(window, thread_attr)
-                        thread.finished.connect(timer.start, Qt.ConnectionType.QueuedConnection)
-                        thread.finished.connect(finish_cleanup, Qt.ConnectionType.DirectConnection)
-                    finally:
-                        allow_result.set()
-                    for _ in range(300):
-                        if getattr(window, thread_attr) is None:
-                            break
-                        QTest.qWait(10)
+                    thread = getattr(window, thread_attr)
+                    native_wait = thread.wait
 
-                self.assertEqual(released_from_gui, [True])
-                self.assertIsNone(getattr(window, thread_attr))
+                    def wait_while_cleanup_is_pending(timeout=None):
+                        wait_timeouts.append(timeout)
+                        if len(wait_timeouts) == 1:
+                            QTimer.singleShot(0, window, lambda: gui_events.append(True))
+                        # Model delayed native cleanup without blocking a slot on the worker thread.
+                        return bool(gui_events) and native_wait(0)
+
+                    with patch.object(thread, "wait", side_effect=wait_while_cleanup_is_pending):
+                        self.pump_until(lambda: getattr(window, thread_attr) is None)
+
+                self.assertEqual(gui_events, [True])
+                self.assertGreaterEqual(len(wait_timeouts), 2)
+                self.assertTrue(all(timeout == 0 for timeout in wait_timeouts), wait_timeouts)
                 self.assertEqual(getattr(xd, result_attr), result)
 
     def test_xd_preview_ignores_a_late_result_after_editing_the_seed(self):
         from unittest.mock import patch
-        from PySide6.QtTest import QTest
 
         window = self.window
         window.show_xd()
@@ -312,10 +298,7 @@ class GuiTests(unittest.TestCase):
             xd.refresh_navigation()
             self.assertFalse(xd.create_button.isEnabled())
             xd.seed.setText("changed while loading")
-            for _ in range(100):
-                if window.preview_thread is None:
-                    break
-                QTest.qWait(10)
+            self.pump_until(lambda: window.preview_thread is None)
 
         self.assertEqual(observed_cancellation, [True])
         self.assertFalse(window.busy)
