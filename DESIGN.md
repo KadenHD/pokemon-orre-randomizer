@@ -203,6 +203,10 @@ the application header stays outside it. Both game tiles, the optional release
 download and the credit share this content area. Below 800 px the tiles stack
 vertically; they remain side by side at wider sizes. The body stays bounded to
 1,200 px and has no horizontal scrollbar.
+During an update, a separate page replaces this scroll area. Its neutral
+cut-corner panel is centered in the available body space and bounded to 560 px.
+It stays visible at the minimum window size without scrolling or resizing the
+window. The header remains visible with its controls disabled.
 
 ## Elevation & Depth
 
@@ -223,6 +227,10 @@ cursor spacing.
 Starter and event cards leave 12 px between the portrait and its text, then
 8 px before the Pokémon-sheet button. Keep the same spacing for known and
 unknown portraits.
+Added-model portraits follow the selected game's format in every preview and
+sheet: opaque square in Colosseum, circular with transparent corners in XD.
+Use the shared model-artwork formatter and retain the complete silhouette.
+DNA whole-body artwork is a separate resource; see docs/CUSTOM_MODELS.md.
 
 ## Components
 
@@ -322,10 +330,15 @@ version and supplies the accessible name. Game selection remains the main action
 The release check runs asynchronously once per application session. No button
 appears while checking, when current, offline or on failure; there is no modal
 prompt. Activating the button streams a size- and SHA-256-verified official
-package, applies it in place and restarts the app. A progress row allows download
-cancellation; preparation explains the upcoming restart. Errors stay inline with
-retry available. Source checkouts do not offer executable self-updates. Other
-running jobs must finish first, and game/profile controls stay disabled while updating.
+package, applies it in place and restarts the app. The centered update page groups
+the target version, current stage, progress and a single Cancel action. Cancel
+and Escape work only during download. Preparation and restart show an
+indeterminate bar without a cancel button. Game navigation, profile actions,
+language/audio controls and file drops remain disabled; manual closing is
+ignored until the verified helper is ready to restart. Restore the exact previous
+control states and keyboard focus on cancellation or error. Errors return to the
+home view with an inline message and retry available. Source checkouts do not
+offer executable self-updates. Other running jobs must finish first.
 
 ## Do's and Don'ts
 

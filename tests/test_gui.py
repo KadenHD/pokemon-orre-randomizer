@@ -47,6 +47,39 @@ class GuiTests(unittest.TestCase):
         QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
         self.preferences_dir.cleanup()
 
+    def test_added_shadow_lugia_portrait_keeps_game_shape_in_list_and_sheet(self):
+        from PySide6.QtWidgets import QLabel
+        from orre_randomizer.resources import bundle_root, shadow_lugia_portrait
+        from orre_randomizer.pokemon_details import encounter_details
+        from tests.test_pokemon_details import catalog_fixture
+        if not (bundle_root() / "models/dark-lugia.png").is_file():
+            self.skipTest("requires optional game interface pack")
+        for xd in (False, True):
+            (self.window.show_xd if xd else self.window.show_colosseum)()
+            for shiny in (False, True):
+                with self.subTest(xd=xd, shiny=shiny):
+                    game = "xd" if xd else "colosseum"
+                    details = encounter_details(catalog_fixture(), 1, level=50, shadow=True)
+                    details.update(national_dex=249, evolution_chain=[])
+                    row = dict(species=249, national_dex=249, original=249, shadow_id=73,
+                               level=50, shiny=shiny, details=details,
+                               portrait_png=shadow_lugia_portrait(shiny=shiny, game=game))
+                    icon = self.window.preview_portrait(row, xd=xd)
+                    if xd:
+                        panel = self.window.xd
+                        panel.preview_result = dict(decks={"Story": {"shadows": [row]}})
+                        panel.encounter_tabs.setCurrentIndex(1)
+                        panel.render_preview()
+                        icon = panel.preview_details.topLevelItem(0).icon(1)
+                    self.assertEqual(icon.pixmap(42, 42).toImage().pixelColor(0, 0).alpha(), 0 if xd else 255)
+                    self.window.show_pokemon_detail(row)
+                    portrait = self.window.detail_window.findChild(QLabel, "sheetPortrait")
+                    image = portrait.pixmap().toImage()
+                    self.assertEqual(image.pixelColor(0, 0).alpha(), 0 if xd else 255)
+                    self.assertEqual(image.pixelColor(image.width() // 2, image.height() // 2).alpha(), 255)
+                    self.window.detail_window.close()
+                    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+
     def test_empty_form_reports_recoverable_error(self):
         self.window.start()
         self.assertFalse(self.window.busy)

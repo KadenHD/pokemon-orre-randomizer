@@ -34,6 +34,8 @@ available. One click downloads and verifies the official package, updates the
 installed or portable app in place, and restarts it. No installer needs to be
 downloaded or opened by hand. The background GitHub check sends no ROMs, paths,
 seeds or saves, and the randomizer works normally offline.
+Update progress stays centered in a dedicated view. Navigation and other
+controls are locked until it finishes; downloading can be cancelled.
 
 No ROMs or links to ROM downloads are provided. Use the randomizer only with game
 images you are legally entitled to use. You are responsible for how you obtain,

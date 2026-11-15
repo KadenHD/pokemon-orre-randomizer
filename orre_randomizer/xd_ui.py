@@ -466,7 +466,7 @@ class XDWorkspace(QWidget):
             self.go_step(self.step + 1)
 
     def go_step(self, index):
-        if self.window.busy:
+        if self.window.busy or self.window.home.updating:
             self.refresh_navigation()
             return
         if index > self.step:
@@ -664,7 +664,7 @@ class XDWorkspace(QWidget):
 
     @Slot()
     def start_preview(self):
-        if self.window.busy:
+        if self.window.busy or self.window.home.updating:
             return
         if hasattr(self, 'known_preview') and self.known_preview.request_full():
             return
@@ -1079,7 +1079,7 @@ class XDWorkspace(QWidget):
         self.window.render_report_rom_status(owner=self)
 
     def start(self):
-        if self.window.busy:
+        if self.window.busy or self.window.home.updating:
             return
         if self.window.preview_thread is not None:
             self.set_status("Un calcul est déjà en cours. Réessayez dans un instant.")

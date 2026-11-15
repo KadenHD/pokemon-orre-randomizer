@@ -2,7 +2,7 @@
 from PySide6.QtCore import QPointF, QRectF, QSize, Qt, QTimer, QUrl
 from PySide6.QtGui import QColor, QDesktopServices, QFont, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
 from PySide6.QtWidgets import (QBoxLayout, QHBoxLayout, QLabel, QProgressBar, QPushButton,
-                              QSizePolicy, QStyle, QStyleOptionButton, QVBoxLayout, QWidget)
+                              QSizePolicy, QStackedWidget, QStyle, QStyleOptionButton, QVBoxLayout, QWidget)
 
 from .i18n import Message
 from .resources import home_logos
@@ -10,6 +10,7 @@ from .ui_workspace import bounded, scroll_area
 from .update_service import allowed_download
 from .update_apply import automatic_updates_supported
 from .ui_updates import UpdateInstaller
+from .ui_theme import MenuPanel
 
 
 class GameChoice(QPushButton):
@@ -157,6 +158,9 @@ class GameSelection(QWidget):
         super().__init__()
         self.window = window
         self.update_release = None
+        self.updating = False
+        self.blocked_controls = []
+        self.saved_focus = None
         content = QWidget()
         layout = QVBoxLayout(content)
         layout.setContentsMargins(8, 12, 8, 12)
@@ -197,25 +201,49 @@ class GameSelection(QWidget):
         self.update_button.clicked.connect(self.download_update)
         self.update_button.hide()
         layout.addWidget(self.update_button, 0, Qt.AlignmentFlag.AlignHCenter)
+        self.update_notice = QLabel()
+        self.update_notice.setWordWrap(True)
+        self.update_notice.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.update_notice.setTextFormat(Qt.TextFormat.PlainText)
+        self.update_notice.hide()
+        layout.addWidget(self.update_notice)
+        self.update_page = QWidget()
+        update_layout = QVBoxLayout(self.update_page)
+        update_layout.setContentsMargins(16, 16, 16, 16)
+        update_layout.addStretch(1)
+        self.update_panel = MenuPanel(home=True)
+        self.update_panel.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
+        panel_layout = QVBoxLayout(self.update_panel)
+        panel_layout.setContentsMargins(24, 24, 24, 24)
+        panel_layout.setSpacing(16)
+        self.update_title = QLabel()
+        self.update_title.setObjectName("section")
+        self.update_title.setWordWrap(True)
+        self.update_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.update_title.setTextFormat(Qt.TextFormat.PlainText)
+        panel_layout.addWidget(self.update_title)
         self.update_status = QLabel()
         self.update_status.setWordWrap(True)
         self.update_status.setAlignment(Qt.AlignmentFlag.AlignCenter)
         self.update_status.setTextFormat(Qt.TextFormat.PlainText)
         self.update_status.hide()
-        layout.addWidget(self.update_status)
+        panel_layout.addWidget(self.update_status)
         self.update_controls = QWidget()
-        progress_row = QHBoxLayout(self.update_controls)
+        progress_row = QVBoxLayout(self.update_controls)
         progress_row.setContentsMargins(0, 0, 0, 0)
+        progress_row.setSpacing(16)
         self.update_progress = QProgressBar()
         self.update_progress.setObjectName("updateProgress")
         self.update_progress.setRange(0, 100)
         self.update_cancel = QPushButton()
         self.update_cancel.setObjectName("updateCancel")
         window.bind(self.update_cancel.setText, "Annuler")
-        progress_row.addWidget(self.update_progress, 1)
-        progress_row.addWidget(self.update_cancel)
+        progress_row.addWidget(self.update_progress)
+        progress_row.addWidget(self.update_cancel, 0, Qt.AlignmentFlag.AlignHCenter)
         self.update_controls.hide()
-        layout.addWidget(self.update_controls)
+        panel_layout.addWidget(self.update_controls)
+        update_layout.addWidget(bounded(self.update_panel, 560))
+        update_layout.addStretch(1)
         self.installer = UpdateInstaller(self)
         self.installer.progress.connect(self.update_progress.setValue)
         self.installer.state_changed.connect(self.update_state_changed)
@@ -233,7 +261,10 @@ class GameSelection(QWidget):
         outer.setContentsMargins(0, 0, 0, 0)
         self.scroll = scroll_area(bounded(content))
         self.scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
-        outer.addWidget(self.scroll)
+        self.pages = QStackedWidget()
+        self.pages.addWidget(self.scroll)
+        self.pages.addWidget(self.update_page)
+        outer.addWidget(self.pages)
         self.update_visibility_timer = QTimer(self)
         self.update_visibility_timer.setSingleShot(True)
         self.update_visibility_timer.timeout.connect(self.keep_update_visible)
@@ -250,6 +281,8 @@ class GameSelection(QWidget):
             label = self.window.text("Mettre à jour vers {version}", version=self.update_release.version)
             self.update_button.setText(label)
             self.update_button.setAccessibleName(label)
+            self.update_title.setText(self.window.text("Mise à jour vers {version}", version=self.update_release.version))
+            self.update_panel.setAccessibleName(self.update_title.text())
             self.update_button.setToolTip(self.window.text(
                 "Télécharger, installer et redémarrer l’outil. Vos ROM et sauvegardes sont conservées."))
         messages = {
@@ -270,17 +303,24 @@ class GameSelection(QWidget):
                        "prepare": "Préparation de la mise à jour. L’outil va redémarrer…",
                        "ready": "Redémarrage pour terminer la mise à jour…"}.get(self.installer.state, "")
         self.update_status.setText(self.window.text(message))
-        self.update_status.setVisible(bool(message))
-        self.update_progress.setAccessibleName(self.window.text("Téléchargement de la mise à jour…"))
+        self.update_status.setVisible(self.updating)
+        self.update_panel.setAccessibleDescription(self.update_status.text())
+        self.update_notice.setText(self.window.text(message) if not self.updating else "")
+        self.update_notice.setVisible(bool(message) and not self.updating)
+        self.update_progress.setAccessibleName(self.window.text(message if self.updating else "Téléchargement de la mise à jour…"))
         if message and hasattr(self, "update_visibility_timer"):
             self.update_visibility_timer.start(0)
 
     def keep_update_visible(self):
-        control = self.update_controls if self.update_controls.isVisible() else self.update_status
+        if self.updating:
+            return
+        control = self.update_notice
         if control.isVisible():
             self.scroll.ensureWidgetVisible(control, 0, 12)
 
     def download_update(self):
+        if self.updating or self.window.game_views.currentWidget() is not self:
+            return
         if self.update_release is not None and allowed_download(self.update_release):
             if (self.window.busy or self.window.preview_thread is not None
                     or self.window.report_check is not None or self.window.xd.report_check is not None):
@@ -291,15 +331,46 @@ class GameSelection(QWidget):
 
     def update_state_changed(self, state):
         active = state in ("download", "prepare", "ready")
+        if active and not self.updating:
+            controls = (self.scroll, self.colosseum, self.xd, self.window.colosseum, self.window.xd,
+                        self.window.profile_menu, self.window.music_toggle, self.window.sound_toggle,
+                        self.window.language_combo, self.window.import_profile_button,
+                        self.window.export_profile_button, self.window.import_report_button)
+            self.blocked_controls = [(control, control.isEnabled()) for control in controls]
+            self.saved_focus = self.window.focusWidget()
+            self.saved_accept_drops = self.window.acceptDrops()
+            for control, _enabled in self.blocked_controls:
+                control.setEnabled(False)
+            self.window.profile_menu.menu().close()
+            self.window.setAcceptDrops(False)
+        elif not active and self.updating:
+            for control, enabled in self.blocked_controls:
+                control.setEnabled(enabled)
+            self.blocked_controls = []
+            self.window.setAcceptDrops(self.saved_accept_drops)
+        self.updating = active
         self.update_error = None
         self.updated_version = None
         self.update_button.setEnabled(not active)
-        self.update_controls.setVisible(state in ("download", "prepare"))
+        self.pages.setCurrentWidget(self.update_page if active else self.scroll)
+        self.update_controls.setVisible(active)
         self.update_cancel.setEnabled(state == "download")
+        self.update_cancel.setVisible(state == "download")
         self.update_progress.setRange(0, 100 if state == "download" else 0)
-        for widget in (self.colosseum, self.xd, self.window.colosseum, self.window.xd, self.window.profile_menu):
-            widget.setEnabled(not active)
         self.retranslate()
+        if active:
+            (self.update_cancel if state == "download" else self.update_panel).setFocus(Qt.FocusReason.OtherFocusReason)
+        elif self.saved_focus is not None and self.saved_focus.isVisible() and self.saved_focus.isEnabled():
+            self.saved_focus.setFocus(Qt.FocusReason.OtherFocusReason)
+        self.saved_focus = self.saved_focus if active else None
+
+    def keyPressEvent(self, event):
+        if self.updating and event.key() == Qt.Key.Key_Escape:
+            if self.installer.state == "download":
+                self.installer.cancel()
+            event.accept()
+            return
+        super().keyPressEvent(event)
 
     def update_failed(self, reason):
         self.update_state_changed("error")

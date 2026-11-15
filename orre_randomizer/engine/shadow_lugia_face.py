@@ -10,10 +10,10 @@ from .analyze_game import FormatError, parse_fsys, u32
 from .rebuild_iso import decoded_member
 from .shadow_lugia_palette import make_shadow_lugia_portrait
 from ..portrait_matte import matte_shadow_lugia_portrait
+from ..model_artwork import XD_ARTWORK_SIZE, format_model_portrait
 
 VERSION = "shadow-lugia-black-matte-face-v4"
 XD_VERSION = "shadow-lugia-specimen-round-face-v6"
-XD_ARTWORK_SIZE = 36
 ARCHIVE = "poke_face.fsys"
 GROUP = 0x5C0
 SOURCE_RESOURCE = 0x21581200
@@ -209,30 +209,11 @@ def make_xd_shadow_lugia_round_portrait(pixels: bytes, *, reference: bytes) -> b
     mask, fill only the inside with black, and center a 36px rendering of the
     complete source artwork. Integer area averaging retains contributions
     from every source pixel without inventing a crop or an external library.
-    Colosseum and the interface's square portrait do not use this function.
+    The interface uses the same format in its XD workspace.
     """
-    source_size = 42
     matte = matte_shadow_lugia_portrait(pixels, reference=reference)
-    size = XD_ARTWORK_SIZE
-    padding = (source_size-size)//2
-    spans = []
-    for destination in range(size):
-        left, right = destination*source_size, (destination+1)*source_size
-        spans.append([(sample, min((sample+1)*size, right)-max(sample*size, left))
-                      for sample in range(left//size, (right-1)//size+1)])
-    output = bytearray(source_size*source_size*4)
-    output[3::4] = reference[3::4]
-    area = source_size*source_size
-    for y, vertical in enumerate(spans):
-        for x, horizontal in enumerate(spans):
-            at = ((y+padding)*source_size+x+padding)*4
-            if not output[at+3]:
-                continue
-            for channel in range(3):
-                total = sum(matte[(sy*source_size+sx)*4+channel]*wx*wy
-                            for sy, wy in vertical for sx, wx in horizontal)
-                output[at+channel] = (total+area//2)//area
-    return bytes(output)
+    return format_model_portrait(matte, game="xd", alpha_mask=reference[3::4],
+                                 artwork_size=XD_ARTWORK_SIZE)
 
 
 def make_shadow_lugia_face_texture(source: bytes, *, shiny=True) -> bytes:

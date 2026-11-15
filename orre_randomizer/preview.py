@@ -367,7 +367,7 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
             for row in shadows:
                 if row.get("shadow_id") and row.get("species") == 249:
                     from .resources import shadow_lugia_portrait
-                    row["portrait_png"] = shadow_lugia_portrait(shiny=bool(row.get("shiny")))
+                    row["portrait_png"] = shadow_lugia_portrait(shiny=bool(row.get("shiny")), game="xd")
             if service.file_hash(source, cancel) != digest:
                 raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
     if on_prepared is not None:

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-15T19:31:59.052776Z",
+  "generatedAt": "2026-11-15T21:01:51.718661Z",
   "title": "Design System: Pokémon Orre Randomizer",
   "extensions": {
     "colorMeta": {
@@ -640,9 +640,16 @@
       "name": "Home release update",
       "kind": "button",
       "refersTo": "button-home-update",
-      "description": "Optional in-place update below both game tiles. Uses the neutral home palette and a localized version label; downloads, verifies, installs and restarts.",
+      "description": "Optional in-place update below both game tiles. Starts a centered protected progress view, then returns home on cancellation or error.",
       "html": "<button class=\"ds-home-update\">Update to the latest version</button>",
       "css": ".ds-home-update{background:#202327;color:#eceef2;border:1px solid #727782;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif}.ds-home-update:hover,.ds-home-update:focus-visible{background:#30343a;border:2px solid #cbd0d8;padding:3px 11px;outline:none}.ds-home-update:active{background:#17191c}"
+    },
+    {
+      "name": "Centered update progress",
+      "kind": "custom",
+      "description": "Active update view: neutral clipped frame, bounded to 560 px and centered in the body. Other controls are locked. Cancel is available only during download.",
+      "html": "<section class=\"ds-update\" aria-busy=\"true\" aria-label=\"Updating to the next version\"><svg aria-hidden=\"true\" viewBox=\"0 0 560 210\" preserveAspectRatio=\"none\"><path d=\"M12 1H548L559 12V198L548 209H12L1 198V12Z\" fill=\"#191b1e\" stroke=\"#cbd0d8\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\"/><path d=\"M13 5H547L555 13V197L547 205H13L5 197V13Z\" fill=\"none\" stroke=\"#727782\" vector-effect=\"non-scaling-stroke\"/></svg><div><h3>Updating to the next version</h3><p>Downloading update...</p><progress value=\"22\" max=\"100\" aria-label=\"Download progress\">22%</progress><button>Cancel</button></div></section>",
+      "css": ".ds-update{position:relative;max-width:560px;width:100%;margin:auto;color:#eceef2;font:14px \"Segoe UI\",sans-serif;text-align:center}.ds-update>svg{position:absolute;inset:0;width:100%;height:100%}.ds-update>div{position:relative;padding:24px;display:grid;gap:16px}.ds-update h3{font-size:23px;font-weight:650;margin:0}.ds-update p{margin:0}.ds-update progress{width:100%;height:24px;accent-color:#535b66}.ds-update button{justify-self:center;background:#202327;color:#eceef2;border:1px solid #727782;border-radius:4px;padding:4px 12px;font:inherit;min-height:28px}.ds-update button:hover,.ds-update button:focus-visible{background:#30343a;border:2px solid #cbd0d8;padding:3px 11px;outline:none}"
     }
   ],
   "narrative": {

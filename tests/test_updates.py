@@ -85,7 +85,7 @@ class ReleaseSelectionTests(unittest.TestCase):
                 self.assertIsNone(release_update(broken, '1.0.0', kind))
 
 try:
-    from PySide6.QtCore import QObject, QSettings, Signal, QCoreApplication, QEvent, QTimer, QUrl
+    from PySide6.QtCore import QObject, QSettings, Signal, QCoreApplication, QEvent, QTimer, QUrl, Qt
     from PySide6.QtNetwork import QNetworkReply, QNetworkRequest
     from PySide6.QtWidgets import QApplication
     from orre_randomizer.ui_updates import UpdateChecker, UpdateInstaller
@@ -173,6 +173,8 @@ class UpdateQtTests(unittest.TestCase):
 
     def tearDown(self):
         if self.window is not None:
+            self.window.home.installer.state = 'idle'
+            self.window.home.update_state_changed('idle')
             self.window.close()
             self.window.deleteLater()
         self.checker.close()
@@ -381,7 +383,88 @@ class UpdateQtTests(unittest.TestCase):
         window.home.installer.state = 'error'
         window.home.update_failed('checksum')
         self.assertTrue(window.home.update_button.isEnabled())
-        self.assertFalse(window.home.update_status.isHidden())
+        self.assertFalse(window.home.update_notice.isHidden())
+
+    def test_update_locks_navigation_header_profiles_drops_and_close_until_cancelled(self):
+        from PySide6.QtTest import QTest
+        window = self.make_window()
+        self.reply.complete(metadata('9.8.7'))
+        window.show()
+        self.app.processEvents()
+        window.sound_toggle.setEnabled(False)
+        original_source = window.source.text()
+        window.home.download_update()
+        self.app.processEvents()
+        self.assertTrue(window.home.updating)
+        self.assertIs(window.home.pages.currentWidget(), window.home.update_page)
+        self.assertFalse(window.home.scroll.isVisible())
+        for control in (window.music_toggle, window.sound_toggle, window.language_combo,
+                        window.profile_menu, window.import_profile_button,
+                        window.export_profile_button, window.import_report_button,
+                        window.colosseum, window.xd, window.open_colosseum, window.open_xd):
+            self.assertFalse(control.isEnabled())
+        self.assertFalse(window.acceptDrops())
+        with patch('orre_randomizer.gui.QFileDialog.getOpenFileName') as open_file, \
+                patch('orre_randomizer.gui.QFileDialog.getSaveFileName') as save_file, \
+                patch.object(window.known_preview, 'request_full') as colosseum_preview, \
+                patch.object(window.xd.known_preview, 'request_full') as xd_preview:
+            for action in (window.show_colosseum, window.show_xd, window.show_home,
+                           window.choose_profile, window.choose_profile_destination,
+                           window.choose_creation_report, window.start, window.xd.start,
+                           window.start_preview, window.xd.start_preview):
+                action()
+            window.go_step(2)
+            window.xd.go_step(2)
+            window.import_profile_button.trigger()
+            window.import_report_button.trigger()
+            window.export_profile_button.trigger()
+            open_file.assert_not_called()
+            save_file.assert_not_called()
+            colosseum_preview.assert_not_called()
+            xd_preview.assert_not_called()
+        self.assertIs(window.game_views.currentWidget(), window.home)
+        self.assertEqual((window.step, window.xd.step), (0, 0))
+        for handler in (window.dragEnterEvent, window.dropEvent):
+            event = Mock()
+            handler(event)
+            event.ignore.assert_called_once()
+            event.mimeData.assert_not_called()
+            event.acceptProposedAction.assert_not_called()
+        self.assertEqual(window.source.text(), original_source)
+        self.assertFalse(window.close())
+        self.assertTrue(window.isVisible())
+        QTest.keyClick(window.home.update_cancel, Qt.Key.Key_Escape)
+        self.app.processEvents()
+        self.assertFalse(window.home.updating)
+        self.assertEqual(window.home.installer.state, 'idle')
+        self.assertIs(window.home.pages.currentWidget(), window.home.scroll)
+        self.assertTrue(window.language_combo.isEnabled())
+        self.assertFalse(window.sound_toggle.isEnabled())
+        self.assertTrue(window.import_profile_button.isEnabled())
+        self.assertTrue(window.acceptDrops())
+
+    def test_preparation_blocks_escape_and_close_but_error_restores_access(self):
+        from PySide6.QtTest import QTest
+        window = self.make_window()
+        self.reply.complete(metadata('9.8.7'))
+        window.show()
+        window.home.installer.state = 'prepare'
+        window.home.update_state_changed('prepare')
+        self.app.processEvents()
+        self.assertFalse(window.home.update_cancel.isVisible())
+        self.assertFalse(window.close())
+        with patch.object(window.home.installer, 'cancel') as cancel:
+            QTest.keyClick(window.home.update_panel, Qt.Key.Key_Escape)
+            cancel.assert_not_called()
+        window.home.installer.fail('checksum')
+        self.app.processEvents()
+        self.assertFalse(window.home.updating)
+        self.assertTrue(window.home.update_notice.isVisible())
+        self.assertTrue(window.home.update_button.isEnabled())
+        self.assertTrue(window.language_combo.isEnabled())
+        window.home.installer.state = 'ready'
+        window.home.update_state_changed('ready')
+        self.assertTrue(window.close())
 
     def test_download_redirects_require_https_and_github_asset_hosts(self):
         for url, allowed in (('https://release-assets.githubusercontent.com/asset?signature=test', True),
@@ -409,8 +492,8 @@ class UpdateQtTests(unittest.TestCase):
             window.resize(width, height)
             for language in LANGUAGES:
                 window.language_combo.setCurrentIndex(window.language_combo.findData(language))
-                for state in ('download', 'prepare', 'checksum', 'disk', 'complete'):
-                    if state in ('download', 'prepare'):
+                for state in ('download', 'prepare', 'ready', 'checksum', 'disk', 'complete'):
+                    if state in ('download', 'prepare', 'ready'):
                         window.home.installer.state = state
                         window.home.update_state_changed(state)
                     elif state == 'complete':
@@ -421,15 +504,19 @@ class UpdateQtTests(unittest.TestCase):
                     self.app.processEvents()
                     with self.subTest(size=(width, height), language=language, state=state):
                         self.assertEqual(window.home.scroll.horizontalScrollBar().maximum(), 0)
-                        label = window.home.update_status
+                        label = window.home.update_status if window.home.updating else window.home.update_notice
                         self.assertFalse(label.isHidden())
                         self.assertGreater(label.height(), 0)
-                        if state in ('download', 'prepare'):
+                        if state in ('download', 'prepare', 'ready'):
                             self.assertFalse(window.home.update_controls.isHidden())
-                            window.home.keep_update_visible()
-                            self.app.processEvents()
-                            cancel = window.home.update_cancel
-                            self.assertTrue(window.rect().contains(cancel.mapTo(window, cancel.rect().bottomRight())))
+                            panel = window.home.update_panel
+                            center = panel.mapTo(window.home.pages, panel.rect().center())
+                            target = window.home.pages.rect().center()
+                            self.assertLessEqual(abs(center.x() - target.x()), 2)
+                            self.assertLessEqual(abs(center.y() - target.y()), 2)
+                            self.assertTrue(window.rect().contains(panel.mapTo(window, panel.rect().bottomRight())))
+                            self.assertEqual((window.width(), window.height()), (width, height))
+                            self.assertEqual(window.home.update_cancel.isVisible(), state == 'download')
                         # Exact catalog lookup, including the dynamically rendered message.
                         if state == 'download':
                             self.assertEqual(label.text(), translate('Téléchargement de la mise à jour…', language))

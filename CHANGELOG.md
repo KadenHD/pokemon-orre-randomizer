@@ -1,6 +1,17 @@
 # Changelog
 
-## Unreleased
+## 1.2.23 - 2026-11-15
+
+- Use XD's circular portrait for added Shadow Lugia appearances in previews
+  and Pokémon sheets, including the shiny variant. Keep Colosseum's square
+  format and existing native textures. Share the added-portrait formatter and
+  whole-body validation, and document the required battle, field, animation
+  and DNA resources for every future added model.
+- Center update progress in a dedicated home view instead of adding it below
+  the game cards. Lock game navigation, profiles, language, audio controls,
+  file drops and manual closing while updating. Allow cancellation during
+  download, restore previous controls on cancellation or error, and let the
+  verified helper close the app when it is ready to restart.
 
 ## 1.2.22 - 2026-11-15
 

@@ -308,7 +308,11 @@ class ShadowLugiaFaceTests(unittest.TestCase):
         self.assertEqual(hashlib.sha256(source).hexdigest(),json.loads(manifest.read_text('utf8'))['portrait']['decoded_sha256'])
         original=_texture(source,(42,84))
         for shiny in (False,True):
-            actual=_texture(make_shadow_lugia_face_texture(source,shiny=shiny),(42,84))
+            encoded=make_shadow_lugia_face_texture(source,shiny=shiny)
+            record=json.loads(manifest.read_text('utf8'))['native_faces']['xd']
+            self.assertEqual(hashlib.sha256(encoded).hexdigest(),
+                             record['generated_sha256' if shiny else 'normal_generated_sha256'])
+            actual=_texture(encoded,(42,84))
             self.assertEqual(actual[3::4],original[3::4])
             for start in (0,42*42*4):
                 frame=original[start:start+42*42*4]

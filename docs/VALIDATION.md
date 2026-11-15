@@ -22,6 +22,39 @@ historical evidence rather than the current feature specification.
 
 Counts evolve; the Actions run for a release tag records that build's results.
 
+### Added-model artwork formats (v1.2.23)
+
+The targeted group passed 165 tests across 15 isolated modules without skips.
+It covers species-independent square/circular formatting, both Shadow Lugia
+variants in the actual Qt list and sheet, separate DNA body validation, native
+texture hashes and existing model/field identity selectors in both games.
+Eight muted Qt captures cover both games, both variants and preview/sheet
+views using real bundled portraits and synthetic encounter details. No ROM,
+save or network access was needed for these captures. Native integration tests
+read local originals where available. No personal save, live installed update
+or Dolphin session was opened for this app-format correction.
+
+The native XD face encoder still matches the published normal and shiny
+resource hashes. The resource contract in [CUSTOM_MODELS.md](CUSTOM_MODELS.md)
+also requires separate whole-body artwork and explicit native model, field
+animation and scene validation for future additions. This does not claim
+automatic compatibility of an arbitrary new model or new native playthroughs.
+
+### Centered update progress (v1.2.23)
+
+The affected desktop regression group passed 100 tests across seven isolated
+modules. It covers update entry points, blocked game/profile actions and file
+drops, previous disabled-state restoration, Escape/cancellation, preparation
+errors and the verified restart handoff. The existing Windows-helper tests use
+disposable apps to exercise installation, rollback and user-file preservation.
+
+Forty-eight real Qt captures cover download, preparation, restart and error
+states in all six languages at 1040×800 and 680×540. The active panel stays
+centered without changing the window size; game selection is hidden and the
+header controls are disabled. Captures use registered Windows fonts, muted
+audio, private preferences and simulated networking. This is not a live update
+of the installed application, and no personal ROM or save is opened.
+
 ### Preset copy and wild shiny defaults (v1.2.22)
 
 The targeted local checks passed 84 tests across eight modules without skips.

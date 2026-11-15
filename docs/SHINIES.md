@@ -53,9 +53,11 @@ evolution portraits. Shadow Lugia uses its original dark portrait or a matching
 recolored white shiny portrait; its provenance is in the bundled model manifest.
 The portrait keeps the 3D variant's black eye mask, red iris and white neck
 and jaw. Normal and shiny Shadow Lugia portraits have a black background inside
-their frames. Colosseum and the application use opaque square tiles. XD retains
-its original circular alpha mask and fits the complete head inside it with a
-small margin. The baked purple disc is removed from both derived variants.
+their frames. Colosseum uses opaque square tiles. XD retains its original
+circular alpha mask and fits the complete head inside it with a small margin.
+The application's previews and Pokémon sheets use the selected game's format,
+including both Shadow Lugia variants. The baked purple disc is removed from
+both derived variants.
 The native outer Shadow frame stays intact. Purified Lugia normally uses its
 ordinary portrait. In both games, **Advanced → Shinies → Keep Lugia's Shadow
 appearance** retains the dark model and portrait after purification, including

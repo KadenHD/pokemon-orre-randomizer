@@ -67,15 +67,18 @@ class GameSurface(QWidget):
 class MenuPanel(QFrame):
     """Silver clipped corners, with Qt children remaining fully accessible."""
 
-    def __init__(self, *, xd=False):
+    def __init__(self, *, xd=False, home=False):
         super().__init__()
         self.xd = xd
+        self.home = home
 
     def paintEvent(self, event):
         painter = QPainter(self)
         painter.setRenderHint(QPainter.RenderHint.Antialiasing)
         border, trim, fill = ("#c5b6a9", "#6c4945", "#24191a") if self.xd else (
             "#b6ccc4", "#54726c", "#082b24")
+        if self.home:
+            border, trim, fill = "#cbd0d8", "#727782", "#191b1e"
         for inset, color, width in ((1, border, 2), (5, trim, 1)):
             box = QRectF(self.rect()).adjusted(inset, inset, -inset, -inset)
             x, y, r, b = box.left(), box.top(), box.right(), box.bottom()
@@ -207,6 +210,8 @@ def xd_stylesheet():
     }.items():
         style = style.replace(original, replacement)
     return style + """
+QLabel#previewPortrait, QLabel#sheetEvolutionPortrait { border-radius: 24px; }
+QLabel#sheetPortrait { border-radius: 37px; }
 QLabel#sheetShadowType {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1, stop: 0 #cfafe9, stop: 1 #a47acb);
     color: #000000; border-color: #d2b5eb; font-size: 17px;

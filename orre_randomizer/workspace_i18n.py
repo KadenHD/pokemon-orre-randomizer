@@ -12,6 +12,8 @@ ROWS = (
      "指定の確率とシードで色違い状態を固定します。"),
     ("Mettre à jour vers {version}", "Update to {version}", "Auf {version} aktualisieren",
      "Actualizar a {version}", "Aggiorna a {version}", "{version} に更新"),
+    ("Mise à jour vers {version}", "Updating to {version}", "Aktualisierung auf {version}",
+     "Actualizando a {version}", "Aggiornamento a {version}", "{version} に更新中"),
     ("Télécharger, installer et redémarrer l’outil. Vos ROM et sauvegardes sont conservées.",
      "Download, install and restart the app. Your ROMs and saves are preserved.",
      "Herunterladen, installieren und die App neu starten. ROMs und Spielstände bleiben erhalten.",

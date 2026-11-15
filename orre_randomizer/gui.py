@@ -509,7 +509,7 @@ class MainWindow(QMainWindow):
         return home
 
     def show_home(self):
-        if self.busy:
+        if self.busy or self.home.updating:
             return
         self.game_views.setCurrentWidget(self.home)
         self.logo.hide()
@@ -523,7 +523,7 @@ class MainWindow(QMainWindow):
         self.update_checker.check_once()
 
     def show_colosseum(self):
-        if self.busy:
+        if self.busy or self.home.updating:
             return
         self.game_views.setCurrentWidget(self.colosseum)
         self.brand_logo.hide()
@@ -537,7 +537,7 @@ class MainWindow(QMainWindow):
         self.source.setFocus()
 
     def show_xd(self):
-        if self.busy:
+        if self.busy or self.home.updating:
             return
         self.game_views.setCurrentWidget(self.xd)
         self.brand_logo.hide()
@@ -779,7 +779,7 @@ class MainWindow(QMainWindow):
             self.output_scroll.ensureVisible(0, top + min(72, self.review_details.height()), 0, 12)
 
     def go_step(self, index):
-        if self.busy or not 0 <= index <= 2:
+        if self.busy or self.home.updating or not 0 <= index <= 2:
             return
         try:
             if index > self.step:
@@ -1374,7 +1374,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def start_preview(self):
-        if self.busy:
+        if self.busy or self.home.updating:
             return
         if hasattr(self, 'known_preview') and self.known_preview.request_full():
             return
@@ -1545,6 +1545,8 @@ class MainWindow(QMainWindow):
         self.set_status("Seed et réglages repris depuis le rapport.")
 
     def choose_creation_report(self):
+        if self.home.updating:
+            return
         path, _ = QFileDialog.getOpenFileName(self, self.text("Reprendre depuis un rapport…"), "",
                                              self.text("Rapport de création (*.iso.json *.rvz.json);;Fichiers JSON (*.json)"))
         if path:
@@ -1616,11 +1618,15 @@ class MainWindow(QMainWindow):
         self.set_status("Profil enregistré : {path}.", path=path)
 
     def choose_profile(self):
+        if self.home.updating:
+            return
         path, _ = QFileDialog.getOpenFileName(self, self.text("Importer un profil"), "", self.profile_filter())
         if path:
             self.import_profile(Path(path))
 
     def choose_profile_destination(self):
+        if self.home.updating:
+            return
         game = "xd" if self.game_views.currentWidget() is self.xd else "colosseum"
         path, _ = QFileDialog.getSaveFileName(self, self.text("Exporter le profil"), f"{game}-profile.json",
                                              self.profile_filter(), options=QFileDialog.Option.DontConfirmOverwrite)
@@ -1700,12 +1706,18 @@ class MainWindow(QMainWindow):
             field.setText(path)
 
     def dragEnterEvent(self, event):
+        if self.home.updating:
+            event.ignore()
+            return
         urls = event.mimeData().urls()
         if (self.game_views.currentWidget() in (self.colosseum, self.xd) and not self.busy and len(urls) == 1
                 and urls[0].isLocalFile() and Path(urls[0].toLocalFile()).suffix.lower() in (".iso", ".rvz")):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
+        if self.home.updating:
+            event.ignore()
+            return
         path = event.mimeData().urls()[0].toLocalFile()
         if self.game_views.currentWidget() is self.xd:
             self.xd.source.setText(path)
@@ -1716,7 +1728,7 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def start(self):
-        if self.busy or self.preview_thread is not None:
+        if self.busy or self.home.updating or self.preview_thread is not None:
             return
         self.creation_log.reset()
         self.sync_format()
@@ -1862,6 +1874,9 @@ class MainWindow(QMainWindow):
         dialog.show()
 
     def closeEvent(self, event):
+        if self.home.updating and self.home.installer.state != "ready":
+            event.ignore()
+            return
         if hasattr(self, 'known_preview'):
             self.known_preview.timer.stop()
             self.xd.known_preview.timer.stop()

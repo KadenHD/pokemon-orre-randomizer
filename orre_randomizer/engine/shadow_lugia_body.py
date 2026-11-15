@@ -6,6 +6,7 @@ import json
 from pathlib import Path
 
 from ..artwork import ArtworkError, _png_pixels
+from ..model_artwork import validate_model_body
 from .analyze_game import FormatError
 
 
@@ -31,7 +32,7 @@ def shadow_lugia_body_pixels(shiny: bool) -> bytes:
     except (OSError, KeyError, TypeError, ValueError, ArtworkError) as error:
         raise FormatError("the native Shadow Lugia whole-body asset is unavailable") from error
     # A transparent margin keeps the complete native silhouette inside a tile.
-    border = (*range(64), *range(4032, 4096), *range(0, 4096, 64), *range(63, 4096, 64))
-    if not any(pixels[3::4]) or any(pixels[index * 4 + 3] for index in border):
-        raise FormatError("the native Shadow Lugia whole-body silhouette is clipped")
-    return pixels
+    try:
+        return validate_model_body(pixels)
+    except ValueError as error:
+        raise FormatError("the native Shadow Lugia whole-body silhouette is clipped") from error

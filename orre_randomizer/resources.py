@@ -9,6 +9,7 @@ import zlib
 from .artwork import ArtworkError, _png_pixels, load_cached_artwork
 from .i18n import LANGUAGES
 from .menu_sounds import MenuSoundError, load_cached_menu_sounds
+from .model_artwork import XD_ARTWORK_SIZE, format_model_portrait
 
 
 def application_icon() -> Path | None:
@@ -26,11 +27,25 @@ def bundle_root() -> Path:
     return Path(__file__).resolve().parent / "assets" / "game"
 
 
-@lru_cache(maxsize=2)
-def shadow_lugia_portrait(*, shiny=False) -> bytes:
-    """UI-matted Dark Lugia face; the ROM uses separate native textures."""
+@lru_cache(maxsize=4)
+def shadow_lugia_portrait(*, shiny=False, game="colosseum") -> bytes:
+    """Dark Lugia face in the selected game's native portrait shape."""
+    if game not in ("colosseum", "xd"):
+        raise ValueError("unsupported portrait game")
     path = bundle_root() / ("models/dark-lugia-shiny-ui.png" if shiny else "models/dark-lugia-ui.png")
-    return path.read_bytes() if path.is_file() and not path.is_symlink() else b""
+    if not path.is_file() or path.is_symlink():
+        return b""
+    image = path.read_bytes()
+    if game == "colosseum":
+        return image
+    reference = bundle_root() / "models/dark-lugia.png"
+    if not reference.is_file() or reference.is_symlink():
+        return b""
+    from .artwork import _png
+    pixels = format_model_portrait(_png_pixels(image, (42, 42)), game=game,
+                                  alpha_mask=_png_pixels(reference.read_bytes(), (42, 42))[3::4],
+                                  artwork_size=XD_ARTWORK_SIZE)
+    return _png((42, 42), pixels)
 
 
 def type_badge(game: str, language: str, type_id: int) -> Path | None:

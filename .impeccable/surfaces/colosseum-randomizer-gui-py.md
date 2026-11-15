@@ -21,7 +21,7 @@ unsupported system languages fall back to English.
 | --- | --- |
 | Three persistent steps | Shared wizard frame; active step includes the Poké Ball cursor |
 | Game-specific identity | Original game logo, theme and bundled interface media; neutral home gradient |
-| Home update | One neutral secondary button below both tiles for newer verified stable Windows releases; downloads, verifies, applies and restarts, with inline progress/cancel/error states |
+| Home update | One neutral secondary button below both tiles; a centered protected view handles download, preparation and restart, with inline errors back on home |
 | Settings views | Configuration and Pokémon preview share the seed row |
 | Three presets | Pokémon + moves, Pokémon only, Unchanged copy; explanations appear directly below |
 | Custom values | Clearly identified; Simple/Advanced switches preserve them |
@@ -58,6 +58,10 @@ See docs/INTERFACE_PARITY.md for the shared behavior and intentional exceptions.
 Verification covers all six languages, both sizes, pending/loading/ready/error
 states, search, cancellation, preserved values, report comparison and sheets.
 Native ROM and save files remain outside the interface-maintenance workflow.
+Added-model portraits are square in Colosseum and round in XD, including the
+sheet's outer portrait frame and both shiny variants. Share image formatting
+with the native encoder. DNA whole-body artwork and field models follow the
+separate resource and validation contract in docs/CUSTOM_MODELS.md.
 The Events preview reuses the existing portrait and Pokémon-sheet controls.
 Its bonus event can be toggled without leaving the preview; pending random
 members show question marks; resolved fixed members show their actual portraits
@@ -75,12 +79,18 @@ the two tiles and above the credit, with the same neutral palette as header
 controls. The localized version label also serves as its accessible name.
 The once-per-session asynchronous check has no modal or visible loading row;
 current, offline, failed and invalid responses leave the button hidden.
-One click downloads, verifies, applies and restarts the app. Downloading is
-cancellable; preparation and restart explain what happens next. Errors show
-inline and allow retry. Source checkouts do not replace themselves. Returning
+One click downloads, verifies, applies and restarts the app. A dedicated page
+replaces the game cards during the update. Center its neutral cut-corner panel,
+bounded to 560 px, inside the available body. Keep the target version, stage,
+progress and Cancel together. Downloading is cancellable by button or Escape;
+preparation and restart have no cancel action. Disable game/profile actions,
+language, music, sounds and file drops, and block manual closing until the helper
+is ready. Restore previous enabled states and focus on cancellation or error.
+Errors show inline on home and allow retry. Source checkouts do not replace themselves. Returning
 home retains an already available update without starting another check.
 
 The application header stays visible while one home-body area scrolls vertically
 when needed. Tiles stack below 800 px and sit side by side otherwise; the tiles,
-download and credit share this scroll area. Do not add a nested update scroller
+update button and credit share this scroll area when idle. Active update
+progress is on its separate centered page. Do not add a nested update scroller
 or a horizontal scrollbar. Existing shared content bounds remain 1,200 px.

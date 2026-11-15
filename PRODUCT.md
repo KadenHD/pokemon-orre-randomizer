@@ -63,8 +63,10 @@ scenarios from full-playthrough claims; see [validation](docs/VALIDATION.md).
 
 Windows builds offer an in-place update on Home for newer stable releases.
 A user click downloads, verifies and applies the official installed or portable
-package, then restarts the app. Preserve user files and preferences; keep
-download progress, cancellation and recoverable errors in the home scroll area.
+package, then restarts the app. A centered progress view temporarily replaces
+game selection and locks all other controls and file drops. Downloads can be
+cancelled; cancellation or errors restore the previous control states and home
+view. Preserve user files and preferences throughout the update.
 
 The [README](README.md) presents the public product; [DESIGN.md](DESIGN.md)
 records interface conventions. Application code, original branding and the

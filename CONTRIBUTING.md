@@ -46,6 +46,14 @@ Seeds are exact UTF-8 strings. Case and whitespace matter. When a change alters
 the results of a seed, bump the engine version and keep evidence of reproducibility.
 Preserve evolution family graphs and synchronize every alias of a Shadow Pokémon.
 
+## Added models and appearance variants
+
+Follow the [custom-model resource contract](docs/CUSTOM_MODELS.md) for every
+addition: game-specific portraits, separate DNA whole-body artwork, matching
+normal/shiny variants, battle and field models, animations and scene validation.
+Use the shared artwork formatters instead of adding a view-specific crop or
+reusing a combat portrait where the game expects the full body.
+
 ## Interface translations
 
 Follow the [interface writing conventions](docs/INTERFACE_COPY.md) for labels,

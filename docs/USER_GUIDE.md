@@ -10,8 +10,12 @@ edition updates from the official ZIP in its current folder. Existing shortcuts
 keep the same target. The check sends no game files, paths, seeds or saves;
 offline and unavailable checks stay silent. Source checkouts are updated through Git.
 
-The download shows progress and can be cancelled. ROM creation and previews
-must finish first. The updater requires the package's expected size and GitHub
+During an update, a centered progress panel replaces the game choices. Other
+controls, profile actions, file drops and manual closing are locked. Cancel the
+download with **Cancel** or Escape to return to home. Preparation cannot be
+cancelled; the app closes automatically when the verified helper is ready to
+restart. Cancellation or errors restore your previous controls. ROM creation
+and previews must finish first. The updater requires the expected size and GitHub
 SHA-256 digest, then verifies the complete download before starting its helper.
 Invalid or incomplete downloads are discarded. The portable helper waits for
 this exact app process to exit, backs up bundled files, and restores them if

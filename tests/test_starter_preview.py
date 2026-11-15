@@ -207,6 +207,18 @@ class StarterPreviewTests(unittest.TestCase):
                 self.assertEqual(gift["spinda_pattern_png"], b"exact gift")
                 extract.assert_called_once_with(self.source, {(pid, True)}, is_xd=False)
 
+    def test_xd_shadow_lugia_preview_requests_the_round_game_format(self):
+        for shiny in (False, True):
+            summary = dict(decks={"Story": {"shadows": [
+                {"species": 249, "shadow_id": 73, "shiny": shiny}]}})
+            with (self.subTest(shiny=shiny), patch.object(service, "check_header"),
+                  patch.object(service, "check_disc_identity", return_value=REGIONS[0]),
+                  patch.object(service, "build_xd_patches", return_value=([], summary)),
+                  patch("orre_randomizer.resources.shadow_lugia_portrait", return_value=b"round") as portrait):
+                result = preview_xd(self.source, "round-lugia", XDOptions())
+            portrait.assert_called_once_with(shiny=shiny, game="xd")
+            self.assertEqual(result["decks"]["Story"]["shadows"][0]["portrait_png"], b"round")
+
     def test_xd_spinda_pattern_keeps_native_reward_positions_and_defers_other_rows(self):
         summary = dict(starter={"species": 308}, gifts=[{"species": 308, "key": "hordel-trade"}],
                        decks={"Story": {"shadows": [{"species": 308, "shadow_id": 1}]}},
