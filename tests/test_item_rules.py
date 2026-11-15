@@ -1,6 +1,7 @@
 """Item assignment properties and optional PAL archive/pipeline integration."""
 from dataclasses import replace
 from pathlib import Path
+import struct
 import unittest
 from unittest.mock import patch
 
@@ -10,7 +11,7 @@ from orre_randomizer.engine.gameplay_rules import apply_rel_rules
 from orre_randomizer.engine.inspect_tables import u16
 from orre_randomizer.engine.randomize_trainers import layout, original_common
 from orre_randomizer.engine.rebuild_iso import decoded_member
-from orre_randomizer.engine.shop_stones import ARCHIVE_NAMES, STONE_IDS, patch_rel, read_shops
+from orre_randomizer.engine.shop_stones import ARCHIVE_NAMES, STONE_IDS, pack_shop_lists, patch_rel, read_shops
 from orre_randomizer.options import Options
 
 
@@ -117,6 +118,51 @@ class PalItemRuleTests(unittest.TestCase):
                 self.assertGreater(row["price"], 0)
                 self.assertNotIn(row["bag"], (5, 6))
 
+    def test_shop_only_guard_does_not_protect_original_ball_treasures(self):
+        options = Options.recommended()
+        self.assertTrue(options.shop_keep_capture_items)
+        self.assertFalse(options.keep_capture_items)
+        ball_records = [index for index in range(74)
+                        if (row := self.catalog.get(u16(self.original, self.start + index * 0x1C + 0xE)))
+                        and row["safe"] and row["category"] == "balls"]
+        self.assertTrue(ball_records)
+        for seed in ("shop-a", "shop-b", "shop-c"):
+            result, _ = item_rules.apply_field_items(self.original, self.original, self.dol, seed, options)
+            for index in ball_records:
+                pos = self.start + index * 0x1C + 0xE
+                self.assertNotEqual(u16(result, pos), u16(self.original, pos))
+
+    def test_imported_legacy_scope_reproduces_the_original_six_shop_bytes(self):
+        # Captured from the preceding six-shop implementation with this seed,
+        # before the shop-only Ball option and nine-shop scope were introduced.
+        old_stocks = [
+            [14, 15, 16, 17, 18],
+            [3, 4, 23, 14, 15, 16, 17, 18],
+            [2, 6, 8, 10, 3, 4, 23, 14, 15, 16, 17, 18],
+            [329, 216, 318, 81, 150, 206, 197, 159, 93, 94, 95, 96, 97, 98],
+            [44, 205, 70, 289, 190, 308, 325],
+            [181, 216, 159, 145, 318, 81, 150, 206, 197, 93, 94, 95, 96, 97, 98],
+            [181, 216, 159, 145, 156, 3, 49, 27, 65, 186, 543, 544, 545],
+            [146, 2, 181, 159, 145, 40, 314, 20, 86, 133, 173, 316, 109, 189],
+            [30, 31, 32, 33],
+            [40, 314, 20, 86, 133, 173, 316, 109, 189],
+            [26, 27, 28],
+        ]
+        coupons = [301, 312, 317, 323, 320, 169, 170, 171, 172, 200, 185, 196, 180, 183, 179, 187, 198, 186]
+        old_stocks.extend([coupons] * 3)
+        options = replace(Options.recommended(), legacy_shop_scope=True,
+                          shop_keep_capture_items=False, shop_keep_healing=False)
+        original, _ = patch_rel(self.shop_rel, options.stone_shops)
+        output, report = item_rules.patch_cash_shops(original, self.dol, "shop-a", options)
+        self.assertEqual([shop["items"] for shop in read_shops(output, item_rules.SHOP_LAYOUT)], old_stocks)
+        self.assertEqual(report["selected_cash_shops"], [3, 4, 5, 6, 7, 9])
+        packed, starts, _ = pack_shop_lists(old_stocks, 122)
+        expected = bytearray(original)
+        struct.pack_into(">122H", expected, 0x2AC, *packed)
+        for index, start in enumerate(starts):
+            struct.pack_into(">H", expected, 0x3A0 + index * 4 + 2, start)
+        self.assertEqual(output, expected)
+
     def test_all_74_treasures_preserve_every_nonitem_byte_and_progression_items(self):
         settings = replace(Options(), randomize_field_items=True, keep_capture_items=False)
         result, report = item_rules.apply_field_items(self.original, self.original, self.dol,
@@ -203,7 +249,7 @@ class PalItemRuleTests(unittest.TestCase):
             for old, new in zip(before, after, strict=True):
                 self.assertEqual((old["type"], old["subtype"]), (new["type"], new["subtype"]))
                 self.assertEqual(len(new["items"]), len(set(new["items"])))
-                if old["index"] not in (3, 4, 5, 6, 7, 9):
+                if old["index"] not in (0, 1, 2, 3, 4, 5, 6, 7, 9):
                     self.assertEqual(new["items"], old["items"])
                 else:
                     self.assertEqual(new["items"], [mapping.get(item, item) for item in old["items"]])

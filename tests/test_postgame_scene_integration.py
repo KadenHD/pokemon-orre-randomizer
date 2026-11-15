@@ -182,6 +182,17 @@ class NativeSceneIntegrationTests(unittest.TestCase):
                     self.assertEqual(repeated["messages"], [])
                     self.assertNotIn(179, [number for number, _ in repeated["calls"]])
 
+    def test_native_worker_departure_condition_is_preserved(self):
+        for game_id, archive, _ in self.sources:
+            original = decoded_member(archive, parse_fsys(archive)['members'][1])
+            output, _report = boss._patch_script(original, original)
+            self.assertEqual(output[0x32D:0x37C], original[0x32D:0x37C])
+            for progressed in (0, 1):
+                with self.subTest(game=game_id, story_progressed=progressed):
+                    state = execute(output, 0x32D, {2678: progressed}, stop_at=0x37C)
+                    self.assertEqual(state['visibility'], [[77, 0, 0]] if progressed else [])
+                    self.assertEqual(state['flags'], {2678: progressed})
+
     def test_two_added_actors_preserve_the_four_native_records_and_eagun_gift_redirect(self):
         for game_id, archive, _ in self.sources:
             original = decoded_member(archive, parse_fsys(archive)["members"][0])

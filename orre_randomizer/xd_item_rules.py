@@ -120,7 +120,7 @@ def apply_shop_items(original: bytes, current: bytes, game_id: str, seed: str, o
                  for item, (category, price) in items.items()}
     selected = {item for index in CASH_SHOPS for item in shops[index]["items"]}
     protected = {item for item in selected if item not in items
-                 or (options.keep_capture_items and items[item][0] == "balls")
+                 or ((options.keep_capture_items or options.shop_keep_capture_items) and items[item][0] == "balls")
                  or (options.shop_keep_healing and items[item][0] == "healing")}
     mapping = item_mapping(SHOP_VERSION + "\0" + seed, selected - protected, catalogue, options, protected)
     output = bytearray(current)

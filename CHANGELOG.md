@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.2.21 - 2026-11-15
+
+- Frame Eagun during his own lines in Colosseum's bonus quest and turn him
+  toward the player. Keep Nascour in his own shots and retain both original
+  character models. Keep all three characters in the final group shot after
+  Nascour leaves, throughout the partner's and Eagun's remaining lines.
+- After the quest, let Eagun resume purification rewards directly instead of
+  repeating his quest thanks on every interaction or area visit. With event
+  rewards disabled, he gives purification advice instead.
+- Add space between Pokémon portraits, names and sheet buttons in previews.
+  Automatically load portraits and sheets for fixed encounters from the
+  selected ROM, with their seeded shiny appearance, while leaving randomized
+  replacements hidden until the preview is requested.
+- Keep all original shop Poké Balls in both randomizing presets and both games.
+  Add an independent advanced switch for shops, without protecting Ball
+  treasures. Include Colosseum's nine ordinary cash shop inventories and
+  preserve the previous scope when importing an older profile.
+
 ## 1.2.20 - 2026-11-15
 
 - Enable Colosseum's bonus quest in both randomizing presets, keeping its

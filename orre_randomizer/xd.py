@@ -159,6 +159,7 @@ class XDOptions:
     randomize_shop_items: bool = _shared("randomize_shop_items", description=
         "Change les objets des boutiques prises en charge. Les autres listes, les monnaies spéciales et les pierres restent inchangées.")
     shop_keep_healing: bool = _shared("shop_keep_healing")
+    shop_keep_capture_items: bool = _shared("shop_keep_capture_items")
     items_similar_value: bool = _shared("items_similar_value")
     keep_capture_items: bool = _shared("keep_capture_items")
     boss_stronger: bool = _shared("boss_stronger")
@@ -180,7 +181,7 @@ class XDOptions:
                    poke_spots_full_pokedex=True, custom_shadow_shinies=True,
                    randomize_hordel_gift=True, randomize_abilities=True, randomize_held_items=True,
                    moves_mode="chaos", ensure_stab_move=False,
-                   keep_capture_items=False, items_similar_value=False, balance_species=False,
+                   keep_capture_items=False, shop_keep_capture_items=True, items_similar_value=False, balance_species=False,
                    starter_stage="any", starter_three_stage_families=False)
 
     @classmethod

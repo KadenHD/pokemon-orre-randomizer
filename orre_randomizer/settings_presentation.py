@@ -102,7 +102,7 @@ def effective_setting_names(options):
     add(('types_family_consistent',), options.randomize_types)
     add(('useful_held_items_only',), options.randomize_held_items)
     add(('items_similar_value','keep_capture_items'), options.randomize_field_items or options.randomize_shop_items)
-    add(('shop_keep_healing',), options.randomize_shop_items)
+    add(('shop_keep_healing','shop_keep_capture_items'), options.randomize_shop_items)
     add(('tm_compatibility_mode',), options.randomize_tm_moves or options.tm_compatibility_mode!='original')
     add(('tm_ensure_offensive',), options.tm_compatibility_mode!='original')
     add(('shiny_chance_percent',), options.custom_shinies)

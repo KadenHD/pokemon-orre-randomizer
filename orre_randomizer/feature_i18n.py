@@ -2,6 +2,27 @@
 LANGS = ("en", "de", "es", "it", "ja")
 # Each row follows LANGS. French labels and descriptions live in Options.
 OPTION_ROWS = {
+ "legacy_shop_scope": (
+  ("Legacy shop scope", "Früherer Ladenumfang", "Ámbito de tiendas anterior", "Ambito precedente dei negozi", "旧バージョンのショップ範囲"),
+  ("Keep the six-shop scope of imported legacy profiles. This field is retained only to reproduce those runs.",
+   "Behält den Umfang von sechs Läden aus importierten alten Profilen bei. Dieses Feld dient nur dazu, diese Spieldurchläufe zu reproduzieren.",
+   "Conserva las seis tiendas incluidas en los perfiles antiguos importados. Este campo solo permite reproducir esas partidas.",
+   "Conserva l’ambito di sei negozi dei vecchi profili importati. Questo campo serve solo a riprodurre quelle partite.",
+   "読み込んだ旧プロファイルと同じ6種類のショップを対象にします。過去のプレイを再現するためだけの項目です。")),
+ "randomize_shop_items": (
+  ("Change items sold in shops", "Verkaufsartikel ändern", "Cambiar los objetos a la venta", "Cambia gli strumenti in vendita", "ショップのどうぐを変更"),
+  ("Change items in the nine supported cash shop inventories. Other stock, special currencies and evolution stones are kept.",
+   "Ändert Artikel in den neun unterstützten Ladeninventaren. Andere Sortimente, Spezialwährungen und Entwicklungssteine bleiben erhalten.",
+   "Cambia los objetos de las nueve tiendas compatibles. Se conservan los demás inventarios, las monedas especiales y las piedras evolutivas.",
+   "Cambia gli strumenti nei nove inventari dei negozi supportati. Gli altri assortimenti, le valute speciali e le pietre evolutive restano invariati.",
+   "対応する9種類のショップの品ぞろえを変更します。その他の品ぞろえ、特別な通貨、進化の石は維持されます。")),
+ "shop_keep_capture_items": (
+  ("Keep original Poké Balls in shops", "Vorhandene Pokébälle in Läden behalten", "Conservar las Poké Balls originales en tiendas", "Conserva le Poké Ball originali nei negozi", "ショップの元のボールを維持"),
+  ("Keep every Poké Ball already sold in shops. This setting does not affect chests.",
+   "Behält alle bereits in Läden angebotenen Pokébälle bei. Diese Einstellung hat keinen Einfluss auf Schatztruhen.",
+   "Conserva todas las Poké Balls que ya se venden en las tiendas. Este ajuste no afecta a los cofres.",
+   "Conserva tutte le Poké Ball già in vendita nei negozi. Questa impostazione non riguarda i forzieri.",
+   "ショップで元から販売されているすべてのボールを維持します。宝箱には影響しません。")),
  "diverse_story_families": (
   ("Avoid duplicate families in Story Mode", "Doppelte Familien im Story-Modus vermeiden", "Evitar familias repetidas en el modo Historia", "Evita famiglie doppie nella storia", "ストーリーで進化系統の重複を避ける"),
   ("Try to give every starter, Shadow Pokémon and gift a different family. Manual choices and other rules take priority if duplicates are unavoidable.",

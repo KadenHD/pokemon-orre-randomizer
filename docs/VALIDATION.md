@@ -22,6 +22,46 @@ historical evidence rather than the current feature specification.
 
 Counts evolve; the Actions run for a release tag records that build's results.
 
+### Fixed previews, shop Balls and Eagun framing (v1.2.21)
+
+The final v1.2.21 local suite passed 910 tests across 106 isolated modules,
+with two Windows symlink skips. The 55-test scene and reward regression group
+also passed, including repeat-visit and native worker-visibility checks.
+These counts describe source validation; release archives and the frozen
+Windows executable are checked separately by the packaging workflow.
+
+Production previews from original European data in both games were checked at
+0%, 5% and 100% shiny rates. Fixed encounters use the exact calculated row,
+portrait and sheet; randomized replacements remain unknown until requested.
+Six-language layout checks covered both games and two window sizes, with a
+12-pixel portrait/text gap and 8 pixels before sheet buttons.
+
+Shop data checks covered 48 cases across all six supported regional discs,
+including retained original Balls, randomized other stock, opt-out behavior and
+independent Ball treasures. Twelve older-profile cases retained the previous
+shop scope; the preserved European fixture reproduced its shop bytes exactly.
+Original source files retained their hashes.
+
+Muted Dolphin comparisons found that Eagun and Nascour already loaded distinct,
+correct native models. The misleading dialogue camera showed Nascour during
+Eagun's lines. The correction frames Eagun separately and turns him toward the
+player, without replacing or recreating either actor. Native checks use a private
+profile, the No Audio Output backend and copied QA memory cards.
+The corrected European run completed the battle and captured bonus Shadow ID96.
+After Nascour's departure, the partner's line and both Eagun lines kept all three
+characters inside the same group shot. Original capture and purification totals
+remained at 48, with the bonus capture recorded separately.
+On a separate, explicitly staged post-quest QA card, native flag 2678 correctly
+hid the original entrance worker. The earlier checkpoint had left it clear;
+the ROM retains that original story condition unchanged.
+Eagun directly offered and delivered a randomized purification gift after the
+quest, without the extra thank-you bubble. Leaving the shrine through the cave
+and returning used the ordinary map transitions and retained that gift receipt.
+The remaining gift was then offered directly, with no quest thanks in front of
+it. The staged checkpoint still contained an unclaimed native EIN File dialogue;
+that original handoff was completed normally before the subsequent interaction,
+without a ROM change or a progression bypass.
+
 ### Default policies and bonus encounter (v1.2.20)
 
 Local source validation covered 883 tests in 104 isolated modules, with two

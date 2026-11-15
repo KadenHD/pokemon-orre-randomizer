@@ -30,6 +30,9 @@ POST_BATTLE_CAMERA = ((10.0, 36.0, 64.0), (-0.50, 0.18, 0.0))
 # group's centre (7.3, 10, 24.1) for an over-the-shoulder conversation.
 AFTERMATH_CAMERA = ((10.0, 36.0, 64.0), (-0.576475203, 0.067566167, 0.0))
 RELIC_CAMERA = ((12.0, 35.0, 55.0), (-0.475, 0.647, 0.0))
+# Eagun stands to the east of the stone. The commander's close-up puts him
+# outside the frame, so his lines need their own unobstructed camera.
+EAGUN_CAMERA = ((32.0, 34.0, 48.0), (-0.481634655, 0.608689308, 0.0))
 HERO_APPROACH = (10.0, 0.0, 28.06)
 PARTNER_APPROACH = (2.9, 0.0, 29.37)
 # The original CCD is flat, including the visually descending steps. Its narrow
@@ -137,13 +140,22 @@ def refresh_guard(base: int, refresh: bytes, *, resume: int,
 
 def talk(key: str) -> bytes:
     # Import lazily so installation code can build CMS without import cycles.
-    from .postgame_scene_text import ACTOR_IDS, MESSAGE_IDS, SPEAKERS
+    from .postgame_scene_text import ACTOR_IDS, CAPTURE_AFTER_EXIT_KEYS, MESSAGE_IDS, SPEAKERS
     speaker = SPEAKERS[key]
     group = 0 if speaker in ("hero", "partner") else events._local(1)
     actor = ACTOR_IDS[speaker]
     facing = (face_character(events._local(1), LUGIA_ACTOR, events._local(1), 1)
               if key in _LUGIA_EAGUN_LINES else b"")
-    return (facing + events._statement(54, group, actor, MESSAGE_IDS[key])
+    if speaker == "eagun":
+        facing += face_character(group, actor, 0, HERO_ACTOR)
+    elif speaker == "boss":
+        facing += face_character(events._local(1), 1, group, actor)
+    # The final exchange has already moved both heroes beside Eagun. Retain
+    # its group shot: the arrival camera cuts them off at the right edge.
+    shot = (AFTERMATH_CAMERA if key in CAPTURE_AFTER_EXIT_KEYS else
+            EAGUN_CAMERA if speaker == "eagun" else
+            RELIC_CAMERA if speaker == "boss" else SHRINE_CAMERA)
+    return (camera(*shot) + pause(20) + facing + events._statement(54, group, actor, MESSAGE_IDS[key])
             + events._statement(55, group, actor))
 
 

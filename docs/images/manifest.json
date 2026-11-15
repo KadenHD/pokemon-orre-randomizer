@@ -1,5 +1,5 @@
 {
-  "app_version": "1.2.20",
+  "app_version": "1.2.21",
   "language": "en",
   "description": "English application and gameplay captures, with text-free XD purification images. Each entry records its capture version; unchanged earlier images are retained.",
   "files": {
@@ -15,16 +15,18 @@
       "source": "Actual v1.2.20 application with private muted preferences; English offscreen capture, no ROM opened."
     },
     "colosseum-settings.png": {
-      "bytes": 84299,
-      "sha256": "d4fd5cef46109067de55041d5f8b349195b0df5151bd7f102bea0f16a13df602",
+      "bytes": 83090,
+      "sha256": "a97fce279dcfca9b0be2cff23178374ece2ecbea9b7269b0712e03540198f832",
       "kind": "application",
       "language": "en",
+      "game": "colosseum",
       "width": 1100,
       "height": 800,
-      "description": "The starter preview with Treecko and Totodile.",
-      "game": "colosseum",
-      "seed": "orre-showcase-5",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.21",
+      "seed": "known-preview-native-v1221",
+      "shiny_chance_percent": 5,
+      "description": "Starter preview with current portrait and sheet-button spacing.",
+      "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
     },
     "xd-settings.png": {
       "bytes": 64669,
@@ -260,16 +262,18 @@
       "preset": "Current recommended preset"
     },
     "xd-starter-preview.png": {
-      "bytes": 46054,
-      "sha256": "b318dcd3281407038e85e2f32f150c163f209364907d73fcd0ca9fd7c9e77e99",
+      "bytes": 46763,
+      "sha256": "b9401749069e9be037a3f2bdc24559c0fcf2836ad855f0eb56f17fc48bb703d1",
       "kind": "application",
       "language": "en",
+      "game": "xd",
       "width": 1100,
       "height": 800,
-      "description": "Starter preview with Torchic.",
-      "game": "xd",
-      "seed": "orre-xd-showcase-3",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.21",
+      "seed": "known-preview-native-v1221",
+      "shiny_chance_percent": 5,
+      "description": "Starter preview with current portrait and sheet-button spacing.",
+      "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
     },
     "xd-shadow-pokemon.png": {
       "bytes": 73933,
@@ -416,6 +420,47 @@
       "captured_in_version": "1.2.20",
       "shiny": true,
       "appearance_kept_after_purification": true
+    },
+    "colosseum-fixed-preview.png": {
+      "bytes": 92732,
+      "sha256": "43b854bd2709743d1b3148a07f7f2cb2aacc06a044fd9fa765ef1516985d6f78",
+      "kind": "application",
+      "language": "en",
+      "game": "colosseum",
+      "width": 1100,
+      "height": 800,
+      "captured_in_version": "1.2.21",
+      "seed": "known-preview-native-v1221",
+      "shiny_chance_percent": 100,
+      "description": "Fixed legendary Shadows show exact shiny portraits before the full preview. Unknown randomized rows remain hidden. Advanced 100% shiny example.",
+      "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
+    },
+    "xd-fixed-preview.png": {
+      "bytes": 66143,
+      "sha256": "d026eb06a1a517426ef81fed789d7092070d109088bef0b1797ae2c750015795",
+      "kind": "application",
+      "language": "en",
+      "game": "xd",
+      "width": 1100,
+      "height": 800,
+      "captured_in_version": "1.2.21",
+      "seed": "known-preview-native-v1221",
+      "shiny_chance_percent": 100,
+      "description": "Fixed legendary Shadows show exact shiny portraits before the full preview. Unknown randomized rows remain hidden. Advanced 100% shiny example.",
+      "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
+    },
+    "colosseum-shadow-lugia-aftermath.png": {
+      "bytes": 442758,
+      "sha256": "e0872352d27617f500fb044f5fca55b87f76c331e8d0069208d5636b1b0f81fd",
+      "kind": "native-gameplay",
+      "language": "en",
+      "game": "colosseum",
+      "width": 722,
+      "height": 528,
+      "captured_in_version": "1.2.21 candidate",
+      "seed": "postgame-lugia-qa",
+      "description": "Final exchange after capturing Shadow Lugia; all three characters remain framed.",
+      "source": "Actual muted European Dolphin validation of the v1.2.21 camera fix, captured from the local candidate before the application version bump. Private copied QA card; native screenshot without visual edits."
     }
   }
 }

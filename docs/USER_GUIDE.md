@@ -30,6 +30,16 @@ stage is eligible: starters do not need to be base forms or belong to three-stag
 families. Power matching is disabled. Only move, TM and item randomization differ.
 The full preset changes held items and ordinary Ball treasures as well; empty
 held-item slots remain empty and progression items stay protected.
+Both presets keep all Poké Balls already sold in shops. In **Advanced > Shops**,
+turn off **Keep original Poké Balls in shops** to include them in shop
+randomization. This option does not affect treasure contents. The separate
+**Keep original Poké Balls** option protects Balls in both chests and shops;
+turn off both safeguards for unrestricted shop randomization.
+Colosseum randomizes the nine ordinary cash inventories (indices 0-7 and 9).
+The three type-2 shop lists are included; the herbalist, vending machine and
+coupon inventories are preserved. XD keeps its eleven supported cash inventories.
+Imported older Colosseum profiles retain their original six-shop scope and exact
+shop draws. Selecting a fresh preset uses the expanded nine-shop scope.
 Treasure contents are fixed when the ROM is created; loading a different image
 through an old Dolphin save state can restore data from the previous run. Use
 the normal in-game save/load flow when comparing randomized images. See the
@@ -81,6 +91,11 @@ setting makes it stale. The animation ends on the computed result without
 another random draw. The lists show starters, Shadow Pokémon, gifts and, in XD,
 Poké Spots. A single click opens a Pokémon sheet. A small red star marks a shiny;
 a question mark represents a replacement not yet calculated.
+
+After selecting an original ROM, fixed encounters load automatically in the
+background. Their portraits, shiny stars and sheets use the same result as ROM
+creation. Randomized replacements stay hidden until you calculate the preview.
+Changing the seed, ROM or settings discards the previous result.
 
 The **Summary** tab shows original descriptions under each ability. The **Moves**
 tab shows them for current moves, level-up moves and compatible TMs, where the

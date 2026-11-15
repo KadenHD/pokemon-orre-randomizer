@@ -117,6 +117,7 @@ class XDWorkspace(QWidget):
         self.workspace_tabs, self.seed, views = settings_workspace(settings, window)
         self.workspace_tabs.currentChanged.connect(views.setCurrentIndex)
         self.workspace_tabs.currentChanged.connect(lambda _index: self.set_status() if self.step == 1 else None)
+        self.workspace_tabs.currentChanged.connect(lambda _index: self.render_preview())
         self.build_configuration(views)
         preview = QWidget()
         preview_layout = QVBoxLayout(preview)
@@ -398,6 +399,8 @@ class XDWorkspace(QWidget):
             self.window.profile_menu.setEnabled(not self.window.busy)
         self.status.setText(text(self.status_message or self.step_help()))
         self.refresh_review()
+        if hasattr(self, 'known_preview'):
+            self.known_preview.schedule()
 
     def step_help(self):
         if self.step == 1 and self.workspace_tabs.currentIndex() == 1:
@@ -659,7 +662,11 @@ class XDWorkspace(QWidget):
 
     @Slot()
     def start_preview(self):
-        if self.window.busy or self.window.preview_thread is not None:
+        if self.window.busy:
+            return
+        if hasattr(self, 'known_preview') and self.known_preview.request_full():
+            return
+        if self.window.preview_thread is not None:
             return
         self.refresh_preview_identity()
         if self.preview_result is not None:
@@ -740,6 +747,9 @@ class XDWorkspace(QWidget):
         self.render_preview()
 
     def cancel_preview(self):
+        if hasattr(self, 'known_preview') and self.known_preview.running:
+            self.known_preview.cancel_preview()
+            return
         if not self.preview_running:
             return
         self.window.preview_cancel_event.set()
@@ -757,9 +767,13 @@ class XDWorkspace(QWidget):
         self.refresh_navigation()
 
     def render_preview(self):
+        if hasattr(self, 'known_preview'):
+            self.known_preview.schedule()
         ready = self.preview_result is not None
         options = self.current_options()
-        data = self.preview_result or baseline_rows(options)
+        data = self.preview_rows()
+        known = getattr(self, 'known_preview', None)
+        loading_known = bool(known and known.running)
         self.render_family_duplicates(data)
         tab = self.encounter_tabs.currentIndex()
         rolling = (self.preview_running and self.preview_key is not None and not ready
@@ -770,12 +784,14 @@ class XDWorkspace(QWidget):
             self.roulette_timer.stop()
         self.preview_button.setText(self.window.text(self.preview_action))
         self.preview_button.setVisible(not self.preview_running and not ready)
-        self.preview_button.setEnabled(not self.window.busy and self.window.preview_thread is None and not ready)
-        self.preview_cancel.setVisible(self.preview_running and not ready)
+        self.preview_button.setEnabled(not self.window.busy and (self.window.preview_thread is None or loading_known) and not ready)
+        self.preview_cancel.setVisible((self.preview_running or loading_known) and not ready)
         self.preview_cancel.setText(self.window.text("Annulation de l’aperçu…" if
             self.preview_running and self.window.preview_cancel_event.is_set() else "Annuler l’aperçu"))
-        self.preview_cancel.setEnabled(rolling)
-        self.preview_progress.setVisible(self.preview_running and not ready and tab == 0)
+        self.preview_cancel.setEnabled((rolling or loading_known) and not self.window.preview_cancel_event.is_set())
+        self.preview_progress.setVisible((self.preview_running or loading_known) and not ready)
+        if loading_known and not self.preview_running:
+            self.preview_progress.setRange(0, 0)
         status_style = "color: #ffb4c4;" if self.preview_error else ""
         if self.preview_hint.styleSheet() != status_style:
             self.preview_hint.setStyleSheet(status_style)
@@ -787,8 +803,8 @@ class XDWorkspace(QWidget):
             self.preview_hint.setText(self.window.text(self.preview_message))
         self.preview_hint.setVisible(show_wild_rate or not ready and (tab == 0 if self.preview_running else
                                       self.preview_action != "Calculer l’aperçu"))
-        self.preview_status.setText("✓ " + self.window.text("Aperçu à jour")
-                                    if ready else "")
+        self.preview_status.setText("✓ " + self.window.text("Aperçu à jour") if ready else
+                                    self.window.text("Calcul en cours…") if loading_known else "")
         self.preview_status.setToolTip(self.window.text(self.preview_message))
         self.preview_status.setVisible(bool(self.preview_status.text()))
         ids = data.get("national_ids", {})
@@ -969,7 +985,7 @@ class XDWorkspace(QWidget):
                 item.setIcon(1, icon)
 
     def open_starter_details(self):
-        row = (self.preview_result or {}).get("starter")
+        row = self.preview_rows().get("starter")
         if row:
             self.open_sheet(row)
 
@@ -977,6 +993,13 @@ class XDWorkspace(QWidget):
         row = item.data(0, Qt.ItemDataRole.UserRole + 2)
         if row:
             self.open_sheet(row)
+
+    def preview_rows(self):
+        if self.preview_result is not None:
+            return self.preview_result
+        if hasattr(self, 'known_preview'):
+            return self.known_preview.rows(self.current_options())
+        return baseline_rows(self.current_options())
 
     def open_sheet(self, row):
         if row.get("details"):

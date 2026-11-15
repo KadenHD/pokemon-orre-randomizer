@@ -81,10 +81,29 @@ Losing also leaves the encounter available. After a native capture, Nascour
 acknowledges Cipher's failure and walks to the shrine exit before being removed;
 the partner and Eagun respond afterwards. The capture flag drives permanent
 disappearance when the map loads again.
+During the confrontation, Eagun turns toward the player during his lines and has
+a separate camera shot; Nascour's lines return to the confrontation view. After
+Nascour leaves, all three remaining lines retain the aftermath group camera;
+switching back to the arrival camera cuts the heroes off at the right edge.
+Both actors retain their native
+models. A misleading shot of Nascour during Eagun's dialogue initially suggested
+a model swap, but the live actor resources, model descriptors and joint pointers
+were distinct and matched the original assets.
 While Nascour is present, Eagun asks the player to snag Lugia instead of
 repeating the original purification requirement. The optional event-gift handler
 remains available before the threat and after the capture; its original body
 is retained and reached through a wrapper.
+After capture the wrapper now goes straight to that gift handler, with no extra
+quest thank-you bubble on repeated interactions or room reloads. If accessible
+event gifts are disabled, Eagun gives the localized purification advice instead.
+The gratitude remains in the final scene.
+
+The original worker at the entrance uses the native disappearance flag 2678.
+Its visibility branch at shrine CMS `0x32D..0x37C` is unchanged in all three
+regions. An incompletely staged QA card left that flag clear and made him
+visible with his old Mt. Battle dialogue; this was a test-checkpoint issue,
+not a new actor or a quest visibility override. Regression checks retain both
+outcomes of the original condition without rewriting story flags in the ROM.
 
 The native Ho-Oh checker still reads its fixed original 48-ID list. In the
 European executable its routine is at `0x801F2C0C`, the list at `0x803C26C8`, and

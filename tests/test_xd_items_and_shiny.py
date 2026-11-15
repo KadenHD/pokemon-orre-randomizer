@@ -26,7 +26,8 @@ class XDItemRulesTests(unittest.TestCase):
             struct.pack_into(">H", self.rel, pos + 6, price)
             struct.pack_into(">2I", self.rel, pos + 0x10, item + 5000, item + 6000)
         self.options = SimpleNamespace(randomize_field_items=True, randomize_shop_items=True,
-                                       items_similar_value=True, keep_capture_items=True, shop_keep_healing=True)
+                                       items_similar_value=True, keep_capture_items=True, shop_keep_healing=True,
+                                       shop_keep_capture_items=False)
 
     def test_treasures_change_only_item_ids_and_keep_progression(self):
         original = (1, 2, 13, 93, 508, 511, 538)

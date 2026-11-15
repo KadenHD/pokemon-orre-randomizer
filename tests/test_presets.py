@@ -43,6 +43,7 @@ class PresetTests(unittest.TestCase):
             self.assertEqual(first["starter_stage"], "any")
             self.assertFalse(first["starter_three_stage_families"])
             self.assertFalse(first["keep_capture_items"])
+            self.assertTrue(first["shop_keep_capture_items"])
             self.assertFalse(first["items_similar_value"])
             self.assertFalse(first["ensure_stab_move"])
             self.assertEqual(first["moves_mode"], "chaos")
@@ -89,7 +90,9 @@ class PresetTests(unittest.TestCase):
                 expected = dict(payload["options"])
                 expected["randomize_legendary_shadows"] = True
                 expected["keep_shadow_lugia_after_purification"] = False
+                expected["shop_keep_capture_items"] = False
                 if game == "colosseum":
+                    expected["legacy_shop_scope"] = True
                     expected["postgame_shadow_lugia"] = False
                     expected["postgame_randomize_team"] = payload["options"]["randomize_trainers"]
                     expected["postgame_randomize_lugia"] = False
@@ -114,7 +117,9 @@ class PresetTests(unittest.TestCase):
             expected = dict(payload["options"])
             expected["randomize_legendary_shadows"] = True
             expected["keep_shadow_lugia_after_purification"] = False
+            expected["shop_keep_capture_items"] = False
             if game == "colosseum":
+                expected["legacy_shop_scope"] = True
                 expected["postgame_shadow_lugia"] = False
                 expected["postgame_randomize_team"] = payload["options"]["randomize_trainers"]
                 expected["postgame_randomize_lugia"] = False
@@ -138,6 +143,8 @@ class PresetTests(unittest.TestCase):
         payload = json.loads((FIXTURES / "rc2-colosseum-species.json").read_text("utf-8"))
         payload["app_version"] = "1.0.0"
         expected = dict(payload["options"], postgame_shadow_lugia=False,
+                        shop_keep_capture_items=False,
+                        legacy_shop_scope=True,
                         keep_shadow_lugia_after_purification=False,
                         randomize_legendary_shadows=True,
                         postgame_randomize_team=payload["options"]["randomize_trainers"],

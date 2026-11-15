@@ -90,10 +90,13 @@ def remove_shadow_policy_fields(payload):
     """Reconstruct the complete option bundle before the legendary policy existed."""
     for name in SHADOW_POLICY_FIELDS:
         payload["options"].pop(name)
+    payload["options"].pop("shop_keep_capture_items")
+    payload["options"].pop("legacy_shop_scope")
 
 
 def legacy_policy_options(options):
     return replace(options, randomize_legendary_shadows=True,
+                   shop_keep_capture_items=False, legacy_shop_scope=True,
                    postgame_randomize_team=options.randomize_trainers,
                    postgame_randomize_lugia=False)
 
@@ -442,7 +445,7 @@ class ProfileTests(unittest.TestCase):
                         postgame_shadow_lugia=False, keep_shadow_lugia_after_purification=False,
                         randomize_legendary_shadows=True,
                         postgame_randomize_team=payload['options']['randomize_trainers'],
-                        postgame_randomize_lugia=False)
+                        postgame_randomize_lugia=False, shop_keep_capture_items=False, legacy_shop_scope=True)
         self.assertEqual(json.loads(self.encode(asdict(parsed.options))), expected)
         exported = profile_data(parsed.seed, parsed.options)
         self.assertEqual(exported['app_version'], __version__)
@@ -552,7 +555,7 @@ class CreationReportTests(unittest.TestCase):
         self.assertEqual(migrated.seed, report['seed'])
         self.assertTrue(migrated.options.seeded_shinies)
         self.assertEqual(migrated.options.shiny_chance_percent, 37.5)
-        old_options = {key: value for key, value in report["options"].items() if key not in SHADOW_POLICY_FIELDS | {"postgame_shadow_lugia", "keep_shadow_lugia_after_purification"}}
+        old_options = {key: value for key, value in report["options"].items() if key not in SHADOW_POLICY_FIELDS | {"postgame_shadow_lugia", "keep_shadow_lugia_after_purification", "shop_keep_capture_items", "legacy_shop_scope"}}
         archived = dict(report, application_version="1.2.8", engine_version="story-family-diversity-v16", options=old_options)
         self.assertEqual(parse_creation_report(json.dumps(archived).encode()), result)
         archived = dict(report, application_version="1.2.9", engine_version="story-gift-scenes-v17", options=old_options)
@@ -671,6 +674,7 @@ class ShadowPolicyProfileTests(unittest.TestCase):
             self.assertEqual(parse_xd_profile(self.encode(self.xd_payload(options))).options, options)
         payload = self.xd_payload()
         payload["options"].pop("randomize_legendary_shadows")
+        payload["options"].pop("shop_keep_capture_items")
         self.sign(payload)
         parsed = parse_xd_profile(self.encode(payload))
         self.assertEqual(parsed.options, replace(XDOptions(), randomize_legendary_shadows=True))
@@ -692,6 +696,9 @@ class ShadowPolicyProfileTests(unittest.TestCase):
             values = asdict(options)
             for name in ({"randomize_legendary_shadows"} if is_xd else SHADOW_POLICY_FIELDS):
                 values.pop(name)
+            values.pop("shop_keep_capture_items")
+            if not is_xd:
+                values.pop("legacy_shop_scope")
             report = dict(application_version="1.2.20", engine_version=xd.VERSION if is_xd else ENGINE_VERSION,
                           game_id=region.game_id, revision=region.revision, source_sha256="a" * 64,
                           source_iso_sha256=region.iso_sha256, seed="old-report", options=values)
@@ -705,6 +712,7 @@ class ShadowPolicyProfileTests(unittest.TestCase):
         payload["engine_version"] = PREVIOUS_XD_LUGIA_ENGINE
         payload["options"].pop("keep_shadow_lugia_after_purification")
         payload["options"].pop("randomize_legendary_shadows")
+        payload["options"].pop("shop_keep_capture_items")
         self.assertTrue(parse_xd_profile(self.encode(self.sign(payload))).options.randomize_legendary_shadows)
         payload["options"]["randomize_legendary_shadows"] = False
         with self.assertRaises(UserError):
@@ -714,6 +722,73 @@ class ShadowPolicyProfileTests(unittest.TestCase):
             payload["options"]["randomize_legendary_shadows"] = invalid
             with self.subTest(value=invalid), self.assertRaises(UserError):
                 parse_xd_profile(self.encode(self.sign(payload)))
+
+
+class ShopCaptureProfileTests(unittest.TestCase):
+    encode = ProfileTests.encode
+    sign = ProfileTests.sign
+
+    def payload(self, is_xd, enabled):
+        from orre_randomizer.xd import XDOptions
+        options = replace(XDOptions.recommended() if is_xd else Options.recommended(),
+                          shop_keep_capture_items=enabled, keep_capture_items=False)
+        with tempfile.TemporaryDirectory() as folder:
+            return save_profile(Path(folder) / "shop.json", "shop-balls-🌟", options), options
+
+    def test_shop_policy_roundtrips_independently_of_the_global_guard(self):
+        from orre_randomizer.profiles import parse_xd_profile
+        for is_xd in (False, True):
+            parser = parse_xd_profile if is_xd else parse_profile
+            for enabled in (False, True):
+                with self.subTest(xd=is_xd, enabled=enabled):
+                    payload, options = self.payload(is_xd, enabled)
+                    self.assertEqual(parser(self.encode(payload)).options, options)
+
+    def test_signed_previous_schema_keeps_its_original_shop_behavior(self):
+        from orre_randomizer.profiles import parse_xd_profile
+        for is_xd in (False, True):
+            parser = parse_xd_profile if is_xd else parse_profile
+            payload, options = self.payload(is_xd, True)
+            payload["options"].pop("shop_keep_capture_items")
+            if not is_xd:
+                payload["options"].pop("legacy_shop_scope")
+            self.sign(payload)
+            expected = replace(options, shop_keep_capture_items=False)
+            if not is_xd:
+                expected = replace(expected, legacy_shop_scope=True)
+            self.assertEqual(parser(self.encode(payload)).options, expected)
+            self.assertEqual(parser(self.encode(self.sign({**payload, "options": asdict(expected)}))).options, expected)
+            payload["seed"] = "unsigned-change"
+            target = "orre_randomizer.profiles.xd.validate_options" if is_xd else "orre_randomizer.profiles.validate_options"
+            with patch(target) as validate, self.assertRaises(UserError):
+                parser(self.encode(payload))
+            validate.assert_not_called()
+
+    def test_shop_policy_never_repairs_other_missing_fields_or_accepts_non_booleans(self):
+        from orre_randomizer.profiles import parse_xd_profile
+        for is_xd in (False, True):
+            parser = parse_xd_profile if is_xd else parse_profile
+            for invalid in (0, 1, "true", None):
+                payload, _ = self.payload(is_xd, True)
+                payload["options"]["shop_keep_capture_items"] = invalid
+                with self.subTest(xd=is_xd, invalid=invalid), self.assertRaises(UserError):
+                    parser(self.encode(self.sign(payload)))
+            payload, _ = self.payload(is_xd, True)
+            for name in ("shop_keep_capture_items", "shop_keep_healing"):
+                payload["options"].pop(name)
+            with self.assertRaises(UserError):
+                parser(self.encode(self.sign(payload)))
+
+        for missing in ("shop_keep_capture_items", "legacy_shop_scope"):
+            payload, _ = self.payload(False, True)
+            payload["options"].pop(missing)
+            with self.subTest(partial_shop_bundle=missing), self.assertRaises(UserError):
+                parse_profile(self.encode(self.sign(payload)))
+        for invalid in (0, 1, "true", None):
+            payload, _ = self.payload(False, True)
+            payload["options"]["legacy_shop_scope"] = invalid
+            with self.subTest(legacy_scope=invalid), self.assertRaises(UserError):
+                parse_profile(self.encode(self.sign(payload)))
 
 
 if __name__ == "__main__":

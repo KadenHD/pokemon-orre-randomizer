@@ -93,7 +93,7 @@ class LugiaEligibilityTests(unittest.TestCase):
 
     def test_eagun_distinguishes_waiting_threat_and_rescue(self):
         captured_flags = dict.fromkeys((2125 + sid for sid in SHADOW_IDS), 1)
-        for count, captured, index in ((47, 0, 9), (48, 0, 12), (48, 1, 10)):
+        for count, captured, index in ((47, 0, 9), (48, 0, 12), (48, 1, 8)):
             flags = flags_for_count(count) | captured_flags | {lugia.CAPTURE_FLAG: captured}
             result = execute(boss._eagun_interaction(0), 0, flags)
             self.assertEqual(result['messages'], [lugia.MESSAGE_IDS[index]])
@@ -107,12 +107,30 @@ class LugiaEligibilityTests(unittest.TestCase):
         code = wrapper + bytes(fallback - len(wrapper)) + events._interaction(fallback, 10, 25)
         captures = dict.fromkeys((2125 + sid for sid in SHADOW_IDS), 1)
         for count, caught, gifts, prefix in ((25, 0, [5], []), (48, 0, [], [lugia.MESSAGE_IDS[12]]),
-                                            (48, 1, [5], [lugia.MESSAGE_IDS[10]])):
+                                            (48, 1, [5], [])):
             flags = flags_for_count(count) | captures | {lugia.CAPTURE_FLAG: caught}
             result = execute(code, 0, flags)
             self.assertEqual(result['gifts'], gifts)
             self.assertEqual(result['messages'][:len(prefix)], prefix)
             self.assertEqual(result['flags'].get(2740, 0), int(bool(gifts)))
+
+    def test_after_capture_repeat_visits_go_directly_to_remaining_rewards(self):
+        from orre_randomizer.engine import event_gifts as events
+        fallback = 0x4000
+        wrapper = boss._eagun_interaction(0, fallback)
+        code = wrapper + bytes(fallback - len(wrapper)) + events._interaction(fallback, 10, 25)
+        flags = flags_for_count(48) | {lugia.CAPTURE_FLAG: 1}
+        received = []
+        for _visit in range(4):
+            # Each call starts with fresh room/thread locals, like re-entry.
+            result = execute(code, 0, flags)
+            self.assertNotIn(lugia.MESSAGE_IDS[10], result['messages'])
+            self.assertNotIn(lugia.MESSAGE_IDS[12], result['messages'])
+            self.assertTrue(result['messages'])
+            received.extend(result['gifts'])
+            self.assertEqual(result['flags'][lugia.CAPTURE_FLAG], 1)
+            flags = result['flags']
+        self.assertEqual(received, [events.GIFT_IDS['pikachu-event'], events.GIFT_IDS['celebi-event']])
 
     def test_disabled_rule_never_reads_or_mutates_artifacts(self):
         source = b'not a native ROM'

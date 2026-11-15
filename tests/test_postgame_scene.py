@@ -1,4 +1,5 @@
 """Pure CMS ABI and control-flow checks for the optional shrine staging."""
+import math
 import struct
 import unittest
 
@@ -51,6 +52,40 @@ def instruction_boundaries(code, base):
 
 
 class NativeSceneHelperTests(unittest.TestCase):
+    def test_eagun_lines_face_the_player_and_frame_eagun_instead_of_nascour(self):
+        for key, speaker in text.SPEAKERS.items():
+            if speaker != "eagun":
+                continue
+            with self.subTest(key=key):
+                calls = native_calls(scene.talk(key))
+                position = next(row[2] for row in calls if row[1] == 40)
+                rotation = next(row[2] for row in calls if row[1] == 41)
+                # Follow the camera ray to Eagun's actual native z=15 plane.
+                # A commander's shot instead intersects near x=-14, not x=9.
+                distance_z = position[2] - 15.0
+                framed_x = position[0] - math.tan(rotation[1]) * distance_z
+                if key in text.CAPTURE_AFTER_EXIT_KEYS:
+                    self.assertEqual(scene.talk(key)[:len(scene.camera(*scene.AFTERMATH_CAMERA))],
+                                     scene.camera(*scene.AFTERMATH_CAMERA))
+                else:
+                    self.assertAlmostEqual(framed_x, 9.0, delta=0.05)
+                self.assertIn([("local", 1), 1, 0, scene.HERO_ACTOR, 1.0],
+                              [row[2] for row in calls if row[1] == 165])
+                self.assertIn([("local", 1), 1], [row[2] for row in calls if row[1] == 55])
+                # The fix must never replace, close or recreate Eagun's model.
+                self.assertFalse({112, 113} & {row[1] for row in calls})
+
+    def test_after_capture_keeps_all_three_characters_in_the_group_shot(self):
+        for key in text.CAPTURE_AFTER_EXIT_KEYS:
+            with self.subTest(key=key):
+                calls = native_calls(scene.talk(key))
+                position = next(row[2] for row in calls if row[1] == 40)
+                rotation = next(row[2] for row in calls if row[1] == 41)
+                self.assertEqual(position, list(scene.AFTERMATH_CAMERA[0]))
+                for x, _y, z in (scene.HERO_APPROACH, scene.PARTNER_APPROACH, (9.0, 0.0, 15.0)):
+                    bearing = math.atan2(position[0] - x, position[2] - z)
+                    self.assertLess(abs(bearing - rotation[1]), math.radians(9))
+
     def test_float_move_turn_wait_and_camera_match_verified_native_signatures(self):
         calls = native_calls(scene.move(0, 100, (10.0, 0.0, 28.06))
                              + scene.wait_for_movement(0, 100)

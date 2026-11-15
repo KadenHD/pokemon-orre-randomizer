@@ -1,5 +1,13 @@
 # Found objects and shops: PAL perimeter v0.4
 
+Current scope update: new profiles now include the nine ordinary cash inventories
+`0,1,2,3,4,5,6,7,9`, including type-2 dialogue shops `0..2`. The shop-only Ball
+safeguard is enabled in both desktop presets; opting out also randomizes their
+eligible Balls. Imported legacy profiles retain the original six-shop scope via
+the retired `legacy_shop_scope` setting. Herbalists, vending machines and coupon
+lists remain outside the randomizer's scope. The measurements below describe
+the original v0.4 investigation.
+
 Research on **October 31, 2026**, read-only on originals. No engine, option, screen, disk or Dolphin
 profile modified. The only files produced are this note and references under
 `analysis/generated/v04-item-references/`.

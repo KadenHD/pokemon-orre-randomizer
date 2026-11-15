@@ -1,4 +1,4 @@
-"""Seeded PAL treasure items and six verified cash shop inventories.
+"""Seeded regional treasure items and nine ordinary cash shop inventories.
 
 Item IDs in scripts have a different namespace from the DOL item table. Only
 known, priced, ordinary items are candidates. Flags, quantities, room IDs,
@@ -24,7 +24,8 @@ VERSION = "items-sha256-v1"
 ITEM_TABLE = 0x3ADDA0
 ITEM_COUNT = 397
 ITEM_STRIDE = 0x28
-CASH_SHOPS = (3, 4, 5, 6, 7, 9)
+CASH_SHOPS = (0, 1, 2, 3, 4, 5, 6, 7, 9)
+LEGACY_CASH_SHOPS = (3, 4, 5, 6, 7, 9)
 SHOP_LAYOUT = {"item_offset": 0x2AC, "item_count": 122,
                "shop_offset": 0x3A0, "shop_count": 14}
 
@@ -57,7 +58,8 @@ def item_catalog(original_dol: bytes) -> dict[int, dict]:
 
 def _protected(raw: int, catalog: dict, options, *, shop: bool = False) -> bool:
     row = catalog.get(raw)
-    return (not row or not row["safe"] or options.keep_capture_items and row["category"] == "balls"
+    return (not row or not row["safe"]
+            or (options.keep_capture_items or shop and options.shop_keep_capture_items) and row["category"] == "balls"
             or shop and options.shop_keep_healing and row["category"] == "healing")
 
 
@@ -136,14 +138,16 @@ def apply_field_items(original: bytes, current: bytes, original_dol: bytes,
 
 def patch_cash_shops(current: bytes, original_dol: bytes, seed: str, options) -> tuple[bytes, dict]:
     before = read_shops(current, SHOP_LAYOUT)
-    if any((before[index]["type"], before[index]["subtype"]) != (0, 0) for index in CASH_SHOPS):
-        raise FormatError("cash shop descriptors differ from the verified PAL table")
+    cash_shops = LEGACY_CASH_SHOPS if options.legacy_shop_scope else CASH_SHOPS
+    if any((before[index]["type"], before[index]["subtype"]) != ((2, 0) if index < 3 else (0, 0))
+           for index in cash_shops):
+        raise FormatError("cash shop descriptors differ from the verified regional table")
     catalog = item_catalog(original_dol)
     stocks = [row["items"].copy() for row in before]
-    selected = {raw for index in CASH_SHOPS for raw in stocks[index]}
+    selected = {raw for index in cash_shops for raw in stocks[index]}
     protected = {raw for raw in selected if _protected(raw, catalog, options, shop=True)}
     mapping = item_mapping(seed, selected - protected, catalog, options, protected)
-    for index in CASH_SHOPS:
+    for index in cash_shops:
         stocks[index] = [mapping.get(raw, raw) for raw in stocks[index]]
         if len(stocks[index]) != len(set(stocks[index])):
             raise FormatError("shop rules introduced duplicate stock")
@@ -159,11 +163,11 @@ def patch_cash_shops(current: bytes, original_dol: bytes, seed: str, options) ->
     for old, new in zip(before, after, strict=True):
         if (old["type"], old["subtype"]) != (new["type"], new["subtype"]):
             raise FormatError("shop dialogue or currency type changed")
-        if old["index"] not in CASH_SHOPS and old["items"] != new["items"]:
+        if old["index"] not in cash_shops and old["items"] != new["items"]:
             raise FormatError("a protected shop inventory changed")
     if any(a != b and index not in allowed for index, (a, b) in enumerate(zip(current, output, strict=True))):
         raise FormatError("shop rules exceeded stock/start-index whitelist")
-    return bytes(output), {"version": VERSION, "selected_cash_shops": list(CASH_SHOPS),
+    return bytes(output), {"version": VERSION, "selected_cash_shops": list(cash_shops),
                            "mapping": [{"before": old, "after": mapping[old]} for old in sorted(mapping)],
                            "protected_items": sorted(protected), "packed_entries": used,
                            "before": before, "after": after, "protected_shops_unchanged": True,

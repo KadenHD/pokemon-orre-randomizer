@@ -95,7 +95,9 @@ class Options:
     randomize_field_items: bool = rule("Changer les objets des coffres", "Objets trouvés", "Remplace les objets ordinaires des coffres. Garde les quantités, les objets clés et les pierres. Les récompenses de l’histoire restent inchangées.", False)
     items_similar_value: bool = rule("Garder une valeur proche", "Objets trouvés", "Dans les coffres et les boutiques, garde la catégorie de l’objet et un prix entre la moitié et le double du prix d’origine.")
     keep_capture_items: bool = rule("Garder les Balls d’origine", "Objets trouvés", "Conserve les Balls déjà présentes dans les coffres et les boutiques. Les objets rares sans prix sont toujours conservés.")
-    randomize_shop_items: bool = rule("Changer les objets vendus", "Boutiques", "Change les objets des six boutiques prises en charge. Les autres listes, les monnaies spéciales et les pierres restent inchangées.", False)
+    randomize_shop_items: bool = rule("Changer les objets vendus", "Boutiques", "Change les objets des neuf boutiques prises en charge. Les autres listes, les monnaies spéciales et les pierres restent inchangées.", False)
+    shop_keep_capture_items: bool = rule("Garder les Balls d’origine en boutique", "Boutiques", "Conserve toutes les Balls déjà vendues. Ce réglage ne concerne pas les coffres.", False)
+    legacy_shop_scope: bool = field(default=False, metadata={"label": "Ancien périmètre des boutiques", "group": "Boutiques", "description": "Conserve le périmètre de six boutiques des anciens profils importés. Ce champ est conservé uniquement pour reproduire ces parties.", "kind": "bool", "retired": True})
     shop_keep_healing: bool = rule("Garder les soins en boutique", "Boutiques", "Conserve les soins et les objets de combat déjà vendus.")
     boss_stronger: bool = rule("Renforcer les boss de l’histoire", "Boss", "Pour les Pokémon non obscurs : +10 % de niveau après le réglage général, IV d’au moins 20 et EV d’au moins 64 si le total reste légal. Ne change pas les obscurs ni la taille des équipes.", False)
     boss_team_variety: bool = rule("Éviter les familles en double chez les boss", "Boss", "Remplace les doublons de famille parmi leurs Pokémon non obscurs. Respecte les Pokémon autorisés et conserve les obscurs.", False)
@@ -121,7 +123,7 @@ class Options:
                    moves_mode="chaos", ensure_stab_move=False,
                    randomize_tm_moves=True, tm_compatibility_mode="random",
                    randomize_field_items=True, randomize_shop_items=True, boss_team_variety=True,
-                   keep_capture_items=False, items_similar_value=False,
+                   keep_capture_items=False, shop_keep_capture_items=True, items_similar_value=False,
                    starter_stage="any", starter_three_stage_families=False,
                    starter_distinct_families=True)
 

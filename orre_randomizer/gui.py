@@ -43,6 +43,7 @@ from .ui_music import MenuMusic
 from .ui_exclusions import ExcludedSelection, search_key
 from .ui_pokemon_details import PokemonSheet
 from .ui_bonus_event import BonusEventPreview
+from .ui_known_preview import KnownPreview
 from .ui_home import GameSelection
 from .ui_updates import UpdateChecker
 from .gift_presentation import order_purification_gifts
@@ -463,6 +464,9 @@ class MainWindow(QMainWindow):
         for control in self.findChildren(QComboBox) + self.findChildren(QSpinBox) + self.findChildren(QDoubleSpinBox) + self.findChildren(QTabBar):
             control.setFocusPolicy(Qt.FocusPolicy.StrongFocus)
             control.installEventFilter(self.wheel_guard)
+        self.known_preview = KnownPreview(self, self)
+        self.xd.known_preview = KnownPreview(self, self.xd, xd=True)
+        self.game_views.currentChanged.connect(self.schedule_known_previews)
         if start_on_home:
             self.show_home()
         self.game_views.currentChanged.connect(self.refresh_music_scene)
@@ -686,6 +690,18 @@ class MainWindow(QMainWindow):
         self.workspace_pages.setCurrentIndex(index)
         self.refresh_settings_help()
         self.keep_rule_visible()
+        self.render_preview()
+
+    def schedule_known_previews(self):
+        for workspace in (self, self.xd):
+            workspace.known_preview.schedule()
+
+    def preview_rows(self):
+        if self.preview_result is not None:
+            return self.preview_result
+        if hasattr(self, 'known_preview'):
+            return self.known_preview.rows(self.current_options())
+        return baseline_rows(self.current_options())
 
     def change_preview_group(self, index):
         page = 3 if index == self.bonus_event_tab else 2 if index == self.family_tab else int(index != 0)
@@ -733,6 +749,8 @@ class MainWindow(QMainWindow):
         self.create_button.setDefault(self.step == 2)
         self.refresh_review()
         self.update_preview_controls()
+        if hasattr(self, 'known_preview'):
+            self.known_preview.schedule()
 
     def refresh_review(self):
         if not hasattr(self, "review_details"):
@@ -1107,7 +1125,10 @@ class MainWindow(QMainWindow):
         return source, self.seed.text(), self.current_options(), self.tool.text().strip(), identity
 
     def update_preview_controls(self):
-        running = self.preview_thread is not None and getattr(self, 'preview_owner', self) is self
+        known = getattr(self, 'known_preview', None)
+        loading_known = bool(known and known.running)
+        running = self.preview_thread is not None and (getattr(self, 'preview_owner', self) is self
+                                                      or loading_known and known.reveal_requested)
         ready = self.preview_result is not None and self.preview_key == self.preview_configuration()
         rolling = running and self.preview_key is not None and not ready and not self.preview_cancel_event.is_set()
         if rolling and not self.roulette_timer.isActive():
@@ -1116,8 +1137,8 @@ class MainWindow(QMainWindow):
             self.roulette_timer.stop()
         self.preview_button.setText(self.text(self._preview_action))
         self.preview_button.setVisible(not running and not ready)
-        self.preview_button.setEnabled(not self.busy and self.preview_thread is None and not ready)
-        self.preview_status.setVisible(ready)
+        self.preview_button.setEnabled(not self.busy and (self.preview_thread is None or loading_known) and not ready)
+        self.preview_status.setVisible(ready or loading_known)
         self.preview_hint.setVisible(not ready and not running and self._preview_action != "Calculer l’aperçu")
         self.preview_status.setToolTip(self.text(self._preview_message))
         status = (self.text("Aperçu à jour") if ready else
@@ -1126,15 +1147,19 @@ class MainWindow(QMainWindow):
         self.preview_status.setText(("✓ " if ready else "") + status)
         self.preview_status.setAccessibleName(status)
         self.preview_progress.setAccessibleName(status)
-        self.preview_progress.setVisible(running and not ready and self.preview_tabs.currentIndex() in (0, self.bonus_event_tab))
+        self.preview_progress.setVisible((running or loading_known) and not ready)
+        if loading_known and not running:
+            self.preview_progress.setRange(0, 0)
         self.preview_cancel_button.setText(self.text("Annulation de l’aperçu…" if self.preview_cancel_event.is_set()
                                                     else "Annuler l’aperçu"))
-        self.preview_cancel_button.setVisible(running and not ready)
-        self.preview_cancel_button.setEnabled(running and not self.preview_cancel_event.is_set())
-        self.create_button.setEnabled(not self.busy and not running)
+        self.preview_cancel_button.setVisible((running or loading_known) and not ready)
+        self.preview_cancel_button.setEnabled((running or loading_known) and not self.preview_cancel_event.is_set())
+        self.create_button.setEnabled(not self.busy and self.preview_thread is None)
 
     def render_preview(self):
-        result = self.preview_result or baseline_rows(self.current_options())
+        if hasattr(self, 'known_preview'):
+            self.known_preview.schedule()
+        result = self.preview_rows()
         rows = {row["key"]: row for row in result["starters"]}
         for key, button in self.starter_detail_buttons.items():
             row = rows.get(key, {})
@@ -1194,7 +1219,7 @@ class MainWindow(QMainWindow):
         image = QPixmap()
         if row.get("portrait_png"):
             image.loadFromData(row["portrait_png"])
-        elif not xd and (key := {197: "umbreon", 196: "espeon", 25: "pikachu"}.get(row.get("national_dex"))) in self.artwork:
+        elif not xd and not row.get('shiny') and (key := {197: "umbreon", 196: "espeon", 25: "pikachu"}.get(row.get("national_dex"))) in self.artwork:
             image.load(str(self.artwork[key]))
         if image.isNull():
             return self.xd_unknown_portrait if xd else self.unknown_portrait
@@ -1273,7 +1298,7 @@ class MainWindow(QMainWindow):
         tree = self.encounters_tree
         tree.clear()
         tree.setHeaderLabels([self.text("Pokémon d’origine"), self.text("Avec cette seed")])
-        result = self.preview_result or baseline_rows(self.current_options())
+        result = self.preview_rows()
         field = "gifts" if self.preview_tabs.currentIndex() == 2 else "shadows"
         rows = result.get(field, [])
         if field == "gifts":
@@ -1339,11 +1364,15 @@ class MainWindow(QMainWindow):
             self.preview_key = self.preview_result = self.preview_plan = None
             self._preview_action = "Actualiser l’aperçu"
             self._preview_message = "Seed ou réglages modifiés. Actualisez l’aperçu."
-            self.render_preview()
+        self.render_preview()
 
     @Slot()
     def start_preview(self):
-        if self.busy or self.preview_thread is not None:
+        if self.busy:
+            return
+        if hasattr(self, 'known_preview') and self.known_preview.request_full():
+            return
+        if self.preview_thread is not None:
             return
         # Include file identity changes, and never recompute an already current result.
         self.invalidate_preview()
@@ -1436,6 +1465,14 @@ class MainWindow(QMainWindow):
         self.preview_thread = self.preview_worker = None
         owner = self.preview_owner
         self.preview_owner = None
+        if isinstance(owner, KnownPreview):
+            owner.finished_preview()
+            self.update_preview_controls()
+            self.xd.render_preview()
+            self.schedule_known_previews()
+            if self.close_after_cancel:
+                self.close()
+            return
         if owner is self.xd:
             self.xd.finished_preview()
             self.update_preview_controls()
@@ -1451,6 +1488,10 @@ class MainWindow(QMainWindow):
 
     @Slot()
     def cancel_preview(self):
+        owner = getattr(self, 'preview_owner', None)
+        if isinstance(owner, KnownPreview):
+            owner.cancel_preview()
+            return
         if getattr(self, 'preview_owner', None) is self.xd:
             self.xd.cancel_preview()
             return
@@ -1791,7 +1832,7 @@ class MainWindow(QMainWindow):
             QDesktopServices.openUrl(QUrl.fromLocalFile(str(result["journal"])))
 
     def show_starter_detail(self, key):
-        rows = self.preview_result.get("starters", []) if self.preview_result else []
+        rows = self.preview_rows().get("starters", [])
         row = next((row for row in rows if row["key"] == key), None)
         if row:
             self.show_pokemon_detail(row)
@@ -1815,6 +1856,9 @@ class MainWindow(QMainWindow):
         dialog.show()
 
     def closeEvent(self, event):
+        if hasattr(self, 'known_preview'):
+            self.known_preview.timer.stop()
+            self.xd.known_preview.timer.stop()
         self.update_checker.close()
         self.home.installer.close()
         self.report_rom_timer.stop()

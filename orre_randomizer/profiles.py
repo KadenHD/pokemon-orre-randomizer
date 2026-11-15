@@ -31,6 +31,7 @@ LUGIA_APPEARANCE_APP_VERSION = "1.2.20"
 # historical bundle may be absent; a partial bundle is a malformed profile.
 SHADOW_POLICY_FIELDS = frozenset(("randomize_legendary_shadows", "postgame_randomize_team",
                                   "postgame_randomize_lugia"))
+SHOP_POLICY_FIELDS = frozenset(("shop_keep_capture_items", "legacy_shop_scope"))
 XD_POKE_SPOT_SHINY_FIELDS = frozenset(("custom_poke_spot_shinies", "poke_spot_shiny_chance_percent"))
 XD_SPOT_MIGRATION = "Réglages XD chargés. Les Poké Places utilisent le nouveau tirage."
 SCHEMA_VERSION = 1
@@ -199,8 +200,15 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         raise UserError("Ce profil ne correspond pas aux versions prises en charge de Colosseum.")
     values = payload["options"]
     expected_fields = {item.name for item in fields(Options)}
+    # The shop-only safeguard was added without changing the engine version.
+    # Accept the complete preceding schema, never a partially missing bundle.
+    legacy_shop_policy = (not current_engine or type(values) is dict
+                          and not SHOP_POLICY_FIELDS.intersection(values))
+    if legacy_shop_policy:
+        expected_fields.difference_update(SHOP_POLICY_FIELDS)
     legacy_shadow_policy = not current_engine
-    if current_engine and type(values) is dict and set(values) == expected_fields - SHADOW_POLICY_FIELDS:
+    if (current_engine and legacy_shop_policy and type(values) is dict
+            and set(values) == expected_fields - SHADOW_POLICY_FIELDS):
         legacy_shadow_policy = True
     if legacy_shadow_policy:
         expected_fields.difference_update(SHADOW_POLICY_FIELDS)
@@ -240,6 +248,9 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         if type(digest) is not str or digest != expected:
             raise UserError("L’empreinte du profil ne correspond pas à son contenu. Réexportez le profil d’origine.")
     values = dict(values)
+    if legacy_shop_policy:
+        values["shop_keep_capture_items"] = False
+        values["legacy_shop_scope"] = True
     if legacy_shadow_policy:
         values.update(randomize_legendary_shadows=True,
                       postgame_randomize_team=values["randomize_trainers"],
@@ -308,8 +319,12 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         options = payload["options"]
         seed = payload["seed"]
         expected = {item.name for item in fields(xd.XDOptions)}
+        legacy_shop_policy = (payload["engine_version"] != xd.VERSION or type(options) is dict
+                              and "shop_keep_capture_items" not in options)
+        if legacy_shop_policy:
+            expected.remove("shop_keep_capture_items")
         legacy_shadow_policy = payload["engine_version"] != xd.VERSION
-        if (payload["engine_version"] == xd.VERSION and type(options) is dict
+        if (payload["engine_version"] == xd.VERSION and legacy_shop_policy and type(options) is dict
                 and set(options) == expected - {"randomize_legendary_shadows"}):
             legacy_shadow_policy = True
         if legacy_shadow_policy:
@@ -331,6 +346,8 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         if type(options) is not dict or set(options) != expected:
             raise ValueError
         options = dict(options)
+        if legacy_shop_policy:
+            options["shop_keep_capture_items"] = False
         if legacy_shadow_policy:
             options["randomize_legendary_shadows"] = True
     except (ValueError, TypeError, KeyError, UnicodeError, RecursionError) as error:

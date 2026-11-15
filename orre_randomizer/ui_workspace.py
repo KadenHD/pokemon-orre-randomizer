@@ -367,7 +367,9 @@ def preview_toolbar(layout, window, labels, start, stop):
 
 def starter_slot(window, label, open_details):
     slot = QVBoxLayout()
+    slot.setSpacing(8)
     identity = QHBoxLayout()
+    identity.setSpacing(12)
     portrait = QLabel()
     portrait.setFixedSize(48, 48)
     portrait.setAlignment(Qt.AlignmentFlag.AlignCenter)

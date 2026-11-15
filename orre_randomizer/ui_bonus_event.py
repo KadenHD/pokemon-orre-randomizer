@@ -47,7 +47,9 @@ class BonusEventPreview(QWidget):
         active = options.postgame_shadow_lugia
         with QSignalBlocker(self.enabled):
             self.enabled.setChecked(active)
-        self.enabled.setEnabled(not self.window.busy and self.window.preview_thread is None)
+        known = getattr(self.window, 'known_preview', None)
+        background = bool(known and known.running and not known.reveal_requested)
+        self.enabled.setEnabled(not self.window.busy and (self.window.preview_thread is None or background))
         self.off_note.setVisible(not active)
         self.team.setVisible(active)
         event = result.get("postgame_shadow_lugia", {}) if result else {}
@@ -87,9 +89,11 @@ class BonusEventPreview(QWidget):
             self.window.show_pokemon_detail(self.rows[index])
 
     def animate(self, sample):
-        if self.rows or not self.enabled.isChecked():
+        if not self.enabled.isChecked():
             return
         for index in self.randomized_slots:
+            if self.rows and self.rows[index].get('national_dex') is not None:
+                continue
             portrait, name, _button = self.slots[index]
             text, icon = sample(index)
             name.setTextFormat(Qt.TextFormat.PlainText)

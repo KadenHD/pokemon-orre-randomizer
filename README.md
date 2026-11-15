@@ -64,7 +64,7 @@ your input. The app does not launch Dolphin or manage your saves.
 | Seeded 5% shiny chance for supported encounters | Enabled | Enabled |
 | Accessible evolutions and evolution stones in shops | Enabled | Enabled |
 | Starting moves, level-up learnsets and TMs | Randomized | Preserved |
-| Eligible treasure and shop items | Randomized | Preserved |
+| Eligible treasure and shop items (original shop Poké Balls stay available) | Randomized | Preserved |
 | Items already held by opponents, including Shadow Pokémon | Randomized | Preserved |
 | Colosseum's bonus quest | Enabled; fixed team and Shadow Lugia | Enabled; fixed team and Shadow Lugia |
 
@@ -95,6 +95,11 @@ exclusions are enabled by default and can be changed in Advanced.
 
 The full preset also randomizes ordinary Ball treasures. Key items, Time Flutes,
 guaranteed Evolution stones and other progression rewards remain protected.
+Both presets keep every Poké Ball originally sold in shops. Turn off **Keep
+original Poké Balls in shops** in Advanced to randomize those slots too; this
+shop-only setting never protects Ball treasures.
+Colosseum includes all nine regular cash shop inventories, including the three
+type-2 shop lists. Herbalists, vending machines and coupon shops stay unchanged.
 Pokémon without a held item stay empty-handed.
 Treasure replacements draw across eligible item categories and prices; enable
 similar-value matching in Advanced to constrain the pool.
@@ -112,6 +117,16 @@ lists its final evolution requirements, with normal or shiny portraits.
 
 Check your starters, gifts and Shadow Pokémon before creating the ROM. Both
 games show the full Shadow roster, with 48 entries in Colosseum and 83 in XD.
+With an original ROM selected, Pokémon kept by your settings load automatically,
+including their sheets and seeded shiny appearance. Randomized replacements
+stay hidden until you calculate the preview.
+
+The fixed-encounter examples below use a 100% shiny rate.
+
+| Colosseum - fixed encounters | XD - fixed encounters |
+| --- | --- |
+| ![Fixed Colosseum encounters before the full preview](docs/images/colosseum-fixed-preview.png) | ![Fixed XD encounters before the full preview](docs/images/xd-fixed-preview.png) |
+
 Colosseum's **Events** tab lets you preview or disable the
 [Shadow Lugia quest](#a-new-postgame-battle-in-colosseum), including the boss's team.
 Click a Shadow Pokémon or gift to open its Pokémon sheet. In XD you can also
@@ -203,7 +218,9 @@ Cipher has one last plan for the Relic Stone. After you snag and purify all
 warning from Eagun. Return to Agate to face Nascour and **level-70 Shadow
 Lugia** in a new scene with your partner and Eagun.
 
-![Nascour threatens the Relic Stone with a non-shiny Shadow Lugia](docs/images/colosseum-shadow-lugia-event.gif)
+| Cipher's last stand | After the capture |
+| --- | --- |
+| ![Nascour threatens the Relic Stone with a non-shiny Shadow Lugia](docs/images/colosseum-shadow-lugia-event.gif) | ![Eagun and both heroes after the final battle](docs/images/colosseum-shadow-lugia-aftermath.png) |
 
 Both randomizing presets enable this quest with its intended six-Pokémon team
 at levels 65-70 and Shadow Lugia as the final target. Under **Advanced → Starters
@@ -212,7 +229,8 @@ first five Pokémon or **Randomize the bonus battle's Lugia** to replace the
 final Shadow Pokémon. Both switches are off by default. The scene model,
 dialogue and encounter follow the final replacement.
 Miss the capture and you can challenge him again. Snag the final Shadow Pokémon
-and Nascour leaves the shrine for good. It can then be purified normally;
+and Nascour leaves the shrine for good. Eagun resumes his purification rewards.
+The new Shadow Pokémon can then be purified normally;
 the original Ho-Oh requirements still count the original 48. Use **Pokémon
 preview → Events** to inspect the team or disable the quest.
 [Quest guide](docs/USER_GUIDE.md#colosseums-optional-shadow-lugia-event)

@@ -101,6 +101,7 @@ class XDSpotTests(unittest.TestCase):
         options = asdict(replace(xd.XDOptions.recommended(), poke_spots_full_pokedex=False, custom_shadow_shinies=False))
         options.pop("keep_shadow_lugia_after_purification")
         options.pop("randomize_legendary_shadows")
+        options.pop("shop_keep_capture_items")
         options.pop("poke_spots_full_pokedex")
         options.pop("custom_shadow_shinies")
         for key in XD_POKE_SPOT_SHINY_FIELDS:

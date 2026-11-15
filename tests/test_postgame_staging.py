@@ -20,12 +20,16 @@ class NativeStagingCallsTests(unittest.TestCase):
         for key in text.ORDERED_KEYS:
             with self.subTest(key=key):
                 state = execute(scene.talk(key) + b"\x05", 0, {}, talk_resources=(1, 4),
-                                builtins={165: lambda *_: 0, 62: lambda *_: 0})
+                                builtins={number: lambda *_: 0 for number in (36, 40, 41, 165, 62)})
                 calls = state["calls"]
-                facing = [(number, arguments) for number, arguments in calls if number == 165]
+                facing = [(number, arguments) for number, arguments in calls
+                          if number == 165 and arguments[:2] == [77, scene.LUGIA_ACTOR]]
                 if key in ("arrival_warning", "arrival_stand"):
                     self.assertEqual(facing, [(165, [77, 5, 77, 1, 1.0])])
-                    self.assertEqual(calls[:2], [(165, [77, 5, 77, 1, 1.0]), (62, [77, 5, 1])])
+                    turn = calls.index(facing[0])
+                    self.assertEqual(calls[turn + 1], (62, [77, 5, 1]))
+                    speech = next(index for index, (number, _) in enumerate(calls) if number == 54)
+                    self.assertLess(turn + 1, speech)
                 else:
                     self.assertEqual(facing, [])
                 self.assertEqual(state["messages"], [text.MESSAGE_IDS[key]])
@@ -66,9 +70,11 @@ class NativeStagingCallsTests(unittest.TestCase):
         self.assertEqual(state["globals"][scene.SCENE_GLOBAL], 0)
         facing = [(index, args) for index, (number, args) in enumerate(calls)
                   if number == 165]
-        self.assertEqual([args[:4] for _, args in facing], [
-            [77, 1, 0, 100], [0, 100, 77, 1], [0, 101, 77, 1]])
-        self.assertTrue(all(index > hidden for index, _ in facing))
+        self.assertEqual([args[:4] for index, args in facing if index > hidden], [
+            [77, 1, 0, 100], [0, 100, 77, 1], [0, 101, 77, 1],
+            [77, 1, 0, 100], [77, 1, 0, 100]])
+        self.assertTrue(all(args[:4] == [77, 1, 77, 4]
+                            for index, args in facing if index < hidden))
 
     def test_capture_restages_both_heroes_before_the_first_camera_yield(self):
         from tests.test_postgame_scene import native_calls

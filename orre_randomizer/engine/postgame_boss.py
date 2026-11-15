@@ -255,7 +255,11 @@ def _eagun_interaction(base, fallback=None):
     code.jump("return", when_false=True)
     code.emit(events._call(81, CAPTURE_FLAG))
     code.jump("uncaptured", when_false=True)
-    code.emit(events._statement(32) + _talk(MESSAGE_IDS[10]) + events._statement(33))
+    # The final scene already thanks both heroes. On subsequent visits, go
+    # straight to ordinary purification rewards without another quest bubble.
+    # Without event gifts, retain useful purification advice instead.
+    if fallback is None:
+        code.emit(events._statement(32) + _talk(MESSAGE_IDS[8]) + events._statement(33))
     code.jump("fallback" if fallback is not None else "return")
     code.mark("uncaptured")
     code.emit(_ready())
