@@ -1,7 +1,7 @@
 {
   "app_version": "1.2.20",
   "language": "en",
-  "description": "English application and gameplay captures, with a text-free XD purification image. Each entry records its capture version; unchanged earlier images are retained.",
+  "description": "English application and gameplay captures, with text-free XD purification images. Each entry records its capture version; unchanged earlier images are retained.",
   "files": {
     "home.png": {
       "bytes": 149717,
@@ -11,7 +11,8 @@
       "width": 1100,
       "height": 800,
       "description": "Home and both game cards.",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.20",
+      "source": "Actual v1.2.20 application with private muted preferences; English offscreen capture, no ROM opened."
     },
     "colosseum-settings.png": {
       "bytes": 84299,
@@ -26,8 +27,8 @@
       "captured_in_version": "1.2.15"
     },
     "xd-settings.png": {
-      "bytes": 65582,
-      "sha256": "9d70c3ca60125c2ff8d0a403fb926fd0c0c0e8a1868d4023c6acc4615ecbcd04",
+      "bytes": 64669,
+      "sha256": "8ae595d47b5e2b04fbee5af59226f991d64841cb29c36050d4a6bc5d1a4de223",
       "kind": "application",
       "language": "en",
       "width": 1100,
@@ -35,7 +36,9 @@
       "description": "Simple mode explains the preset, wild encounter frequency and separate shiny odds.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.20",
+      "source": "Actual v1.2.20 application with private muted preferences; English offscreen capture, no ROM opened.",
+      "preset": "Current recommended preset"
     },
     "shadow-pokemon.png": {
       "bytes": 109814,
@@ -243,8 +246,8 @@
       "captured_in_version": "1.2.15"
     },
     "colosseum-simple.png": {
-      "bytes": 90279,
-      "sha256": "5af9dc881d64432287cc9e1acaafb85492c5ada6c1e8e37bff8600cbe21d34a3",
+      "bytes": 89348,
+      "sha256": "8a9e6c4023b1b61170a4eb030992727820c57d10b11c6dfacfcdd7d08d004715",
       "kind": "application",
       "language": "en",
       "width": 1100,
@@ -252,7 +255,9 @@
       "description": "Simple settings and preset options in Colosseum.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.20",
+      "source": "Actual v1.2.20 application with private muted preferences; English offscreen capture, no ROM opened.",
+      "preset": "Current recommended preset"
     },
     "xd-starter-preview.png": {
       "bytes": 46054,
@@ -330,34 +335,41 @@
     },
     "colosseum-shadow-lugia-event.gif": {
       "kind": "native-gameplay",
-      "language": "en",
       "game": "colosseum",
-      "description": "Nascour and the custom shiny Shadow Lugia at the Relic Stone. Native animation sampled at its original speed; black side borders removed.",
-      "source": "Dolphin English PAL gameplay on an isolated test save; excerpt from the validated complete quest film.",
-      "source_video_sha256": "b7ff19e09f8d6d29da3ed41ec127b1252972e9e7770080b82b62dc2a0e5052cd",
-      "source_start_seconds": 302.0,
+      "language": "en",
+      "shiny": false,
+      "description": "Nascour and non-shiny Shadow Lugia at the Relic Stone. Native animation sampled at normal speed.",
+      "source": "Fresh Dolphin recording from v1.2.20 recommended preset with a 0% shiny rate; isolated English QA checkpoint.",
+      "seed": "postgame-lugia-qa",
+      "shiny_chance_percent": 0,
+      "source_video_sha256": "eec1d21e8984d314638ca33443884efa85580e831f90c4cc1460b34b66db04f5",
+      "source_start_seconds": 404.52,
       "source_duration_seconds": 4.4,
       "audio": false,
-      "bytes": 3657272,
-      "sha256": "6ecfe3d4425e8aea97b5df5e9cff1dc7ab8ac3c2c1128c9c04c92cc9025f2cd6",
+      "bytes": 2814397,
+      "sha256": "aa4633ffe4467b673feb2eb23096202659bc76a87fdd85f3959b4306a25b8e4c",
       "width": 600,
       "height": 438,
-      "captured_in_version": "1.2.20",
-      "frames": 44
+      "frames": 44,
+      "gif_duration_seconds": 4.4,
+      "captured_in_version": "1.2.20"
     },
     "xd-purified-shadow-lugia.png": {
       "kind": "native-gameplay",
       "language": "none",
       "game": "xd",
-      "description": "Actual Purify Chamber ceremony with the custom shiny Shadow Lugia appearance retained. This frame has no on-screen text.",
-      "source": "Dolphin PAL gameplay on an isolated test save; actual purification with Keep Lugia Shadow appearance enabled.",
+      "description": "Non-shiny Lugia retaining its dark Shadow appearance during the native Purify Chamber ceremony. No text is visible.",
+      "source": "Fresh muted Dolphin PAL capture on an isolated QA save; purification and unchanged saved identity confirmed after the ceremony.",
       "source_game_language": "fr",
       "visible_text": "none",
-      "bytes": 375192,
-      "sha256": "5399f12e94549967d63ac8b2b5e7799bb212003f18c02bd5f40b4aff3f8cc6a1",
+      "bytes": 369305,
+      "sha256": "355b610168668f04463c80eb73ef6529716bca7587a0e4be5e9ee42126616518",
       "width": 724,
       "height": 528,
-      "captured_in_version": "1.2.20"
+      "captured_in_version": "1.2.20",
+      "shiny": false,
+      "purified": true,
+      "appearance_kept_after_purification": true
     },
     "colosseum-dna-keypad.png": {
       "bytes": 199160,
@@ -388,6 +400,22 @@
       "source_game_language": "fr",
       "visible_text": "none",
       "fixture_note": "This prepared QA roster repeats Lugia to compare every puzzle tile and both shiny states. It is not a default-preset example."
+    },
+    "xd-shiny-shadow-lugia.png": {
+      "kind": "native-gameplay",
+      "language": "none",
+      "game": "xd",
+      "description": "Custom shiny Shadow Lugia (XD001) model retained during purification in XD. This frame has no on-screen text.",
+      "source": "Dolphin PAL gameplay on an isolated test save; actual purification with Keep Lugia Shadow appearance enabled.",
+      "source_game_language": "fr",
+      "visible_text": "none",
+      "bytes": 375192,
+      "sha256": "5399f12e94549967d63ac8b2b5e7799bb212003f18c02bd5f40b4aff3f8cc6a1",
+      "width": 724,
+      "height": 528,
+      "captured_in_version": "1.2.20",
+      "shiny": true,
+      "appearance_kept_after_purification": true
     }
   }
 }

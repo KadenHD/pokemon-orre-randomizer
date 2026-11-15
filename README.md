@@ -190,7 +190,11 @@ ordinary models. [Shiny and form rules](docs/SHINIES.md)
 
 | Shiny settings | Purified Lugia with its Shadow appearance kept |
 | --- | --- |
-| ![English shiny settings with a 5% rate and the optional Shadow appearance setting](docs/images/colosseum-shiny-settings.png) | ![White-and-black Lugia completing purification in XD](docs/images/xd-purified-shadow-lugia.png) |
+| ![English shiny settings with a 5% rate and the optional Shadow appearance setting](docs/images/colosseum-shiny-settings.png) | ![Non-shiny Lugia keeping its dark Shadow appearance after purification in XD](docs/images/xd-purified-shadow-lugia.png) |
+
+**Custom shiny Shadow Lugia (XD001) model**
+
+![The custom white-and-black Shadow Lugia model retained after purification in XD](docs/images/xd-shiny-shadow-lugia.png)
 
 ### A new postgame battle in Colosseum
 
@@ -199,7 +203,7 @@ Cipher has one last plan for the Relic Stone. After you snag and purify all
 warning from Eagun. Return to Agate to face Nascour and **level-70 Shadow
 Lugia** in a new scene with your partner and Eagun.
 
-![Nascour threatens the Relic Stone with a shiny Shadow Lugia](docs/images/colosseum-shadow-lugia-event.gif)
+![Nascour threatens the Relic Stone with a non-shiny Shadow Lugia](docs/images/colosseum-shadow-lugia-event.gif)
 
 Both randomizing presets enable this quest with its intended six-Pokémon team
 at levels 65-70 and Shadow Lugia as the final target. Under **Advanced → Starters

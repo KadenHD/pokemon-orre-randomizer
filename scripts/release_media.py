@@ -14,7 +14,7 @@ DOCUMENTATION_IMAGES = frozenset(("home.png", "colosseum-settings.png",
                                  "xd-lighthouse-dancers.png", "colosseum-simple.png", "xd-starter-preview.png",
                                  "xd-shadow-pokemon.png", "colosseum-gifts.png", "xd-gifts.png", "xd-pokemon-sheet.png",
                                  "colosseum-shadow-lugia-event.gif", "colosseum-shiny-settings.png",
-                                 "xd-purified-shadow-lugia.png", "colosseum-dna-keypad.png",
+                                 "xd-purified-shadow-lugia.png", "xd-shiny-shadow-lugia.png", "colosseum-dna-keypad.png",
                                  "colosseum-dna-keypad-purified.png"))
 
 
