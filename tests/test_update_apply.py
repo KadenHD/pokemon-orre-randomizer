@@ -55,7 +55,7 @@ class WindowsUpdateHelperTests(unittest.TestCase):
     def setUpClass(cls):
         cls.tools = tempfile.TemporaryDirectory(prefix='orre-updater-test-tools-')
         cls.addClassCleanup(cls.tools.cleanup)
-        root = Path(cls.tools.name)
+        root = Path(cls.tools.name).resolve(strict=True)
         cls.versions = {}
         for version in ('old', 'new'):
             code = root / f'{version}.cs'
@@ -92,7 +92,9 @@ return 0; } }''')
     def setUp(self):
         self.folder = tempfile.TemporaryDirectory(prefix='orre-updater-test-')
         self.addCleanup(self.folder.cleanup)
-        self.root = Path(self.folder.name)
+        # Match start_helper(): hosted Windows TEMP may use an 8.3 path alias,
+        # while Process.MainModule.FileName reports the full executable path.
+        self.root = Path(self.folder.name).resolve(strict=True)
         self.target = self.root / 'Portable app with spaces é'
         self.work = self.root / 'private-job'
         self.target.mkdir()
