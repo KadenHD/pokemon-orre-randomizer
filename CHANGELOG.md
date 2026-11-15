@@ -4,6 +4,9 @@
 
 ## 1.2.22 - 2026-11-15
 
+- Stop the test runner at the global deadline when Windows reports a slightly
+  early process timeout. Do not start another worker with the remaining fraction
+  of time; retain the failure and the explicit untested-modules diagnostic.
 - Refresh the Impeccable design reference, surface brief and generated index.
   Align current guides on seeded shinies, per-encounter Poké Spot rolls, fixed
   previews and shared preset protections.

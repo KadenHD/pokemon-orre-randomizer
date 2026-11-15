@@ -82,6 +82,12 @@ def run(*, module_timeout: float = MODULE_TIMEOUT, suite_timeout: float = SUITE_
             except subprocess.TimeoutExpired:
                 failures.append(f"{module}: timed out after {limit:.1f}s")
                 print(failures[-1], file=sys.stderr, flush=True)
+                # A suite-limited wait consumes the remaining budget even if
+                # Windows reports its timeout a few milliseconds early. Do not
+                # start another worker with that unusable fragment of time.
+                if remaining <= module_timeout:
+                    failures.append("Whole-suite deadline exceeded; modules remain untested")
+                    break
                 continue
             completed += 1
             if not report.is_file():

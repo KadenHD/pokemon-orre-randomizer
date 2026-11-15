@@ -1,9 +1,12 @@
 """Process isolation must not hide failures, crashes, hangs or untested modules."""
 from pathlib import Path
+from contextlib import redirect_stderr
+import io
 import subprocess
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 
 RUNNER = Path(__file__).resolve().parents[1] / "scripts/run_tests.py"
@@ -60,3 +63,24 @@ class TestRunnerTests(unittest.TestCase):
         self.assertNotEqual(result.returncode, 0)
         self.assertIn("Whole-suite deadline exceeded; modules remain untested", result.stderr)
         self.assertNotIn("test_later (", result.stderr)
+
+    def test_early_suite_timeout_does_not_launch_another_worker(self):
+        from scripts import run_tests
+
+        with tempfile.TemporaryDirectory() as directory:
+            modules = [Path(directory) / name for name in ("test_a.py", "test_b.py")]
+            for module in modules:
+                module.touch()
+            clock = iter((100.0, 100.01))
+            output = io.StringIO()
+            with patch.object(Path, "glob", return_value=modules), \
+                    patch.object(run_tests.time, "monotonic", side_effect=lambda: next(clock, 100.399)), \
+                    patch.object(run_tests.subprocess, "run", side_effect=subprocess.TimeoutExpired("worker", .39)) as worker, \
+                    redirect_stderr(output):
+                result = run_tests.run(module_timeout=2, suite_timeout=.4)
+
+        self.assertEqual(result, 1)
+        self.assertEqual(worker.call_count, 1)
+        self.assertIn("Whole-suite deadline exceeded; modules remain untested", output.getvalue())
+        self.assertIn("0/2 isolated modules", output.getvalue())
+        self.assertNotIn("[2/2]", output.getvalue())
