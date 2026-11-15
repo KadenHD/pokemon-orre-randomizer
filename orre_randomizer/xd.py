@@ -179,9 +179,11 @@ class XDOptions:
                    randomize_field_items=True, randomize_shop_items=True, custom_shinies=True,
                    boss_team_variety=True, randomize_tutorial_shadow=True,
                    poke_spots_full_pokedex=True, custom_shadow_shinies=True,
+                   custom_poke_spot_shinies=True, poke_spot_shiny_chance_percent=5.0,
                    randomize_hordel_gift=True, randomize_abilities=True, randomize_held_items=True,
                    moves_mode="chaos", ensure_stab_move=False,
                    keep_capture_items=False, shop_keep_capture_items=True, items_similar_value=False, balance_species=False,
+                   allow_legendaries=False,
                    starter_stage="any", starter_three_stage_families=False)
 
     @classmethod

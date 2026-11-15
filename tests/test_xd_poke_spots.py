@@ -85,8 +85,8 @@ class XDSpotTests(unittest.TestCase):
         self.assertEqual([row["species"] for row in spots],
                          [index for native in xd.SPOT_SPECIES.values() for index in native])
 
-    def test_wild_shiny_policy_is_opt_in_and_validated_without_species_changes(self):
-        native = xd.XDOptions.recommended()
+    def test_wild_shiny_policy_can_be_disabled_and_validated_without_species_changes(self):
+        native = replace(xd.XDOptions.recommended(), custom_poke_spot_shinies=False)
         patched, report = apply_poke_spot_shinies(b"original", b"earlier patches", "GXXP01", native)
         self.assertEqual(patched, b"earlier patches")
         self.assertFalse(report["enabled"])
@@ -96,6 +96,45 @@ class XDSpotTests(unittest.TestCase):
         self.assertFalse(custom.randomize_poke_spots)
         with self.assertRaises(UserError):
             xd.validate_options(replace(custom, poke_spot_shiny_chance_percent=100.1))
+
+    def test_five_percent_uses_a_fresh_in_game_roll_for_each_encounter(self):
+        from tests.test_shiny_rules import Machine, is_shiny
+        from orre_randomizer.engine.shiny_rules import chance_threshold
+        from orre_randomizer.xd_poke_spot_shinies import _encounter_pid
+
+        address, rng, create, owner = 0x80580000, 0x80200000, 0x80200100, 0x80200200
+        trainer = 0x12345678
+        threshold = chance_threshold(5)
+        payload = _encounter_pid(address, rng, create, owner, threshold)
+
+        class SpotMachine(Machine):
+            native_targets = (rng, create, owner)
+
+            def native(self, target):
+                self.calls.append(target)
+                if target == rng:
+                    result = next(self.rng)
+                elif target == owner:
+                    result = trainer
+                elif target == create:
+                    result = 0xABCD0123
+                else:
+                    raise AssertionError(target)
+                for register in (0, *range(3, 13)):
+                    self.reg[register] = 0xDEAD0000 + register
+                self.reg[3] = result
+
+        outcomes = []
+        for coin in (0, threshold - 1, threshold, 0xFFFFFFFF, 0):
+            machine = SpotMachine(payload, address, (coin >> 16, coin & 0xFFFF))
+            stack, return_address = machine.reg[1], machine.lr
+            machine.run()
+            result = is_shiny(machine.reg[3], trainer)
+            self.assertEqual(result, coin < threshold)
+            self.assertEqual(machine.calls.count(rng), 2)
+            self.assertEqual((machine.reg[1], machine.lr), (stack, return_address))
+            outcomes.append(result)
+        self.assertEqual(outcomes, [True, True, False, False, True])
 
     def test_v6_reports_keep_native_shuffle_and_current_reports_require_explicit_pool(self):
         options = asdict(replace(xd.XDOptions.recommended(), poke_spots_full_pokedex=False, custom_shadow_shinies=False))

@@ -48,6 +48,7 @@ class PresetTests(unittest.TestCase):
             self.assertFalse(first["ensure_stab_move"])
             self.assertEqual(first["moves_mode"], "chaos")
             self.assertFalse(first["randomize_types"])
+            self.assertFalse(first["allow_legendaries"])
             self.assertFalse(first["randomize_legendary_shadows"])
             self.assertEqual(first["shiny_chance_percent"], 5.0)
             for name in ("trainer_level_multiplier", "experience_multiplier", "purification_multiplier",
@@ -59,6 +60,8 @@ class PresetTests(unittest.TestCase):
             self.assertTrue(xd.randomize_tutorial_shadow)
             self.assertTrue(xd.poke_spots_full_pokedex)
             self.assertTrue(xd.custom_shadow_shinies)
+            self.assertTrue(xd.custom_poke_spot_shinies)
+            self.assertEqual(xd.poke_spot_shiny_chance_percent, 5.0)
             self.assertTrue(xd.randomize_hordel_gift)
 
     def test_bonus_quest_is_enabled_with_its_authored_team_only_in_desktop_presets(self):
@@ -168,6 +171,34 @@ class NativePresetEffectsTests(unittest.TestCase):
 
         cls.rel = original_common(ROOT / "game")[2]
         cls.dol = (ROOT / "game/sys/main.dol").read_bytes()
+
+    def test_randomized_encounters_exclude_legendaries_but_keep_native_shadow_legends(self):
+        from orre_randomizer.engine.gameplay_rules import apply_story_rules, apply_dol_rules, expanded_layout
+        from orre_randomizer.engine.inspect_tables import u16
+        from orre_randomizer.engine.randomize_trainers import randomize_rel
+        from orre_randomizer.engine.species_rules import LEGENDARY_NATIONAL, species_catalog
+        from orre_randomizer.service import transform_rel, transform_dol
+
+        tables = expanded_layout(self.rel)
+        catalog = species_catalog(self.rel, tables)
+        records = randomize_rel(self.rel, "legendary-defaults")[1]["trainer_pokemon_changes"]
+        for options in (recommended_preset(), species_preset()):
+            with self.subTest(moves=options.randomize_trainer_moves):
+                base_rel = transform_rel(self.rel, "legendary-defaults", options)[0]
+                base_dol = transform_dol(self.dol, self.rel, "legendary-defaults", options)[0]
+                rel, _, starters, gifts = apply_story_rules(
+                    self.rel, base_rel, self.dol, base_dol, "legendary-defaults", options)
+                _, report = apply_dol_rules(self.dol, base_dol, self.rel, rel,
+                    "legendary-defaults", options, starter_result=starters, gift_picks=gifts)
+                self.assertEqual(len(report["specials"]), 6)
+                for row in report["specials"]:
+                    self.assertNotIn(catalog[row["species"]]["national_dex"], LEGENDARY_NATIONAL, row["key"])
+                for row in records:
+                    chosen = u16(rel, row["offset"] + 0xA)
+                    if row["shadow_id"] and catalog[row["old_species_index"]]["national_dex"] in LEGENDARY_NATIONAL:
+                        self.assertEqual(chosen, row["old_species_index"])
+                    else:
+                        self.assertNotIn(catalog[chosen]["national_dex"], LEGENDARY_NATIONAL, row["index"])
 
     def test_preset_changes_reach_abilities_shadow_held_items_and_treasures(self):
         from orre_randomizer.engine.gameplay_rules import apply_rel_rules, damaging, expanded_layout, move_catalog

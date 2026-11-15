@@ -22,6 +22,53 @@ historical evidence rather than the current feature specification.
 
 Counts evolve; the Actions run for a release tag records that build's results.
 
+### Preset copy and wild shiny defaults (v1.2.22)
+
+The targeted local checks passed 84 tests across eight modules without skips.
+They cover the shared preset policy, six-language copy, applied settings,
+retained older profiles, Poké Spot selection and the native appearance branch.
+The actual Qt settings screens were checked in 72 states: both games, all three
+presets, six languages and 1040×800 / 680×540 windows. Text fit, translation,
+scrolling, shared terminology and hidden preset-only notes were checked with
+isolated, muted preferences and no ROM selected.
+
+The Impeccable design index was regenerated from the current DESIGN.md and
+checked against the Qt theme: 33 color tokens, six typography roles, eleven
+component samples and all surface source paths. The maintenance diagnostic
+reports no findings. Current product, design and interface-writing documents
+now distinguish seeded encounters from XD's per-encounter wild rolls; UTF-8,
+token references and local documentation links were checked.
+
+Original European data was used for production-plan checks in both games.
+Random draws exclude Legendary and Mythical Pokémon; protected original
+legendary Shadows remain. XD's two presets install the five native wild-PID
+hooks at 5%. Wild preview rows do not claim a seeded shiny status at this rate.
+The PowerPC wrapper test exercises fresh RNG results on both sides of the 5%
+threshold, checks the generated PID, and verifies stack/return preservation.
+The appearance-script test preserves the game's encounter-shiny check and
+selects a distinct shiny field model. These are automated checks, not a new
+Dolphin playthrough or visual field-to-capture recording.
+
+The subsequent muted Dolphin check used one unchanged European XD ISO and the
+seed `poke-spots-five-percent-20`. Twenty fresh ordinary Rock Poké Spot draws
+through the ISO-loaded native generation routine produced twenty distinct PIDs,
+with one shiny on draw 3. One native special encounter was recorded separately.
+No RNG or PID was forced; debugger calls stopped after the native encounter
+state was written, before the PDA notification. This was a native generation
+test, not twenty played battles, and this small sample is not a statistical
+measurement of the configured 5% rate.
+
+Observed normal and shiny Walrein encounters were then staged in separate
+copied memory cards, preserving their species, owner and generated PID. With
+the same ISO in ordinary Dolphin, both showed the correct field model, battle
+model and portrait. Both were caught through the game's capture flow. Their
+party records retained the observed PIDs and normal/shiny status, and native
+summary screens confirmed their appearance. Six unedited comparison captures
+cover field arrival, battle and captured summaries. Originals, source cards
+and the candidate ISO were not modified. This check covers the European Rock
+Poké Spot and Walrein; it does not claim a new visual pass of every species,
+spot or regional disc.
+
 ### Fixed previews, shop Balls and Eagun framing (v1.2.21)
 
 The final v1.2.21 local suite passed 910 tests across 106 isolated modules,

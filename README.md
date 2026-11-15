@@ -57,11 +57,13 @@ your input. The app does not launch Dolphin or manage your saves.
 | --- | --- | --- |
 | Trainers, starters, Shadow Pokémon and ordinary gifts | Randomized | Randomized |
 | Original legendary Shadow species | Preserved | Preserved |
+| Legendary and Mythical Pokémon in random draws | Excluded | Excluded |
 | Abilities | Randomized | Randomized |
 | Evolution stages | All stages | All stages |
 | Similar-strength matching | Disabled | Disabled |
 | Family diversity | Enabled | Enabled |
 | Seeded 5% shiny chance for supported encounters | Enabled | Enabled |
+| XD Poké Spots: fresh 5% shiny chance per new wild encounter | Enabled | Enabled |
 | Accessible evolutions and evolution stones in shops | Enabled | Enabled |
 | Starting moves, level-up learnsets and TMs | Randomized | Preserved |
 | Eligible treasure and shop items (original shop Poké Balls stay available) | Randomized | Preserved |
@@ -73,14 +75,21 @@ catch rates. Starters can be unevolved, evolved or from a single-stage family;
 neither preset requires a three-stage family. Colosseum's two starters keep
 distinct families, without a power or shared-type constraint. XD has one starter. Its custom rate covers
 the starter, ordinary gifts and Shadow Pokémon; the Shadow unlock can be
-disabled separately. XD's Poké Spots retain their native shiny odds by default.
-Set a separate wild rate under **Advanced → Poké Spots**.
+disabled separately. XD's Poké Spots roll a fresh **5% shiny chance for every
+new wild encounter**, even for repeated encounters with the same species.
+The field model shows its shiny appearance before battle. Set a separate
+wild rate under **Advanced → Poké Spots**.
 Family diversity is best effort when fixed Pokémon or strict filters
 leave no alternative.
 Original legendary Shadow Pokémon keep their species by default in both games.
 Enable **Randomize legendary Shadow Pokémon** in Advanced to replace them;
 XD001 remains protected for XD's story. Colosseum's bonus encounter has separate
 controls for its team and final Shadow Pokémon.
+
+All random replacements exclude Legendary and Mythical Pokémon, including
+starters, Shadows, gifts and XD's Poké Spots. Enable **Legendary and Mythical
+Pokémon** under **Advanced > Allowed Pokémon** to include them in random draws.
+This filter does not remove fixed story encounters or Colosseum's bonus Lugia.
 
 **Unchanged copy** preserves game data and can convert ISO ↔ RVZ. Imported
 profiles keep their saved settings, including defaults from older versions.
@@ -194,7 +203,8 @@ Both randomizing presets start at **5%** for supported encounters. Set your
 own rate from 0% to 100% in Advanced, including XD's normally shiny-locked
 Shadow Pokémon. The seed fixes their result, and a shiny stays shiny after
 you snag it, evolve it or purify it. XD's wild Poké Spot rate is a separate
-setting and keeps the original odds by default.
+setting, also enabled at 5% by default. It rolls again for every new encounter;
+the same Pokémon keeps its shiny status on the field, in battle and after capture.
 
 Shadow Lugia uses its dark XD model in both games, with a custom white-and-black
 shiny variant and matching portraits. Purification normally restores its

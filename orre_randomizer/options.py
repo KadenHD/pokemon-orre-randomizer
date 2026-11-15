@@ -33,7 +33,7 @@ class Options:
     starter_distinct_families: bool = rule("Starters de familles différentes", "Starters et cadeaux", "Empêche de tirer deux membres de la même famille d’évolution. S’applique aussi si vous gardez un des starters d’origine.", False)
     diverse_story_families: bool = rule("Éviter les familles en double dans l’histoire", "Starters et cadeaux", "Cherche une famille différente pour chaque starter, obscur et cadeau. Les choix manuels et les autres règles restent prioritaires si aucun tirage sans doublon n’est possible.", False)
     starter_complementary_types: bool = rule("Starters sans type commun", "Starters et cadeaux", "Les deux starters tirés ne partagent aucun type. Tient compte des types randomisés.", False)
-    gift_plusle: bool = rule("Remplacer Posipi", "Starters et cadeaux", "Change le Posipi offert en gardant son niveau. Écarte les Pokémon trop grands pour la scène.")
+    gift_plusle: bool = rule("Remplacer Posipi", "Starters et cadeaux", "Change le Posipi offert en gardant son niveau. Son modèle et ses dialogues suivent le Pokémon tiré ; les grands modèles sont réduits pour la scène.")
     gift_hooh: bool = rule("Remplacer Ho-Oh", "Starters et cadeaux", "Change la récompense Ho-Oh. Les conditions pour l’obtenir restent les mêmes.")
     event_celebi: bool = rule("Remplacer Celebi événementiel", "Starters et cadeaux", "Change le Pokémon de ce cadeau. Activez l’accès aux cadeaux événementiels pour le recevoir auprès d’Adelbert ; sinon, ses conditions d’origine restent nécessaires.")
     event_pikachu: bool = rule("Remplacer Pikachu événementiel", "Starters et cadeaux", "Change le Pokémon de ce cadeau. Activez l’accès aux cadeaux événementiels pour le recevoir auprès d’Adelbert ; sinon, ses conditions d’origine restent nécessaires.")
@@ -73,7 +73,7 @@ class Options:
     allow_gen1: bool = rule("Génération I", "Pokémon autorisés", "Autorise les Pokémon n° 1 à 151 du Pokédex national.")
     allow_gen2: bool = rule("Génération II", "Pokémon autorisés", "Autorise les Pokémon n° 152 à 251 du Pokédex national.")
     allow_gen3: bool = rule("Génération III", "Pokémon autorisés", "Autorise les Pokémon n° 252 à 386 du Pokédex national.")
-    allow_legendaries: bool = rule("Légendaires et fabuleux", "Pokémon autorisés", "Inclut les 21 légendaires et fabuleux des trois générations.")
+    allow_legendaries: bool = rule("Légendaires et fabuleux", "Pokémon autorisés", "Autorise les 21 légendaires et fabuleux des trois générations parmi les remplaçants. Ne change pas les Pokémon conservés ni les rencontres fixes du scénario ou des quêtes.")
     excluded_species: tuple[int, ...] = setting((), "Pokémon exclus", "Pokémon autorisés", "Retire les espèces cochées de tous les remplacements : dresseurs, obscurs, starters et cadeaux. N’exclut pas automatiquement leur famille. Les Pokémon conservés restent inchangés.", kind="species_set")
     excluded_types: tuple[int, ...] = setting((), "Types d’origine exclus", "Pokémon autorisés", "Retire du tirage les espèces ayant l’un de ces types dans le jeu d’origine, y compris les doubles types. Les Pokémon conservés et les types randomisés se règlent séparément.", kind="type_set")
     balance_species: bool = rule("Garder une puissance proche de l’original", "Pokémon autorisés", "Préfère des Pokémon dont le total de statistiques est proche de celui du Pokémon remplacé. Les exclusions restent appliquées.", False)
@@ -124,6 +124,7 @@ class Options:
                    randomize_tm_moves=True, tm_compatibility_mode="random",
                    randomize_field_items=True, randomize_shop_items=True, boss_team_variety=True,
                    keep_capture_items=False, shop_keep_capture_items=True, items_similar_value=False,
+                   allow_legendaries=False,
                    starter_stage="any", starter_three_stage_families=False,
                    starter_distinct_families=True)
 

@@ -39,8 +39,9 @@ def fixture():
 
 class XDLegendaryShadowsTests(unittest.TestCase):
     def test_both_presets_keep_native_legendary_species_by_default(self):
-        self.assertFalse(xd.XDOptions.recommended().randomize_legendary_shadows)
-        self.assertFalse(xd.XDOptions.species_only().randomize_legendary_shadows)
+        for options in (xd.XDOptions.recommended(), xd.XDOptions.species_only()):
+            self.assertFalse(options.randomize_legendary_shadows)
+            self.assertFalse(options.allow_legendaries)
 
     def test_original_legendaries_remain_even_when_excluded_from_replacement_pool(self):
         deck, start, slots, native, species, families = fixture()
@@ -150,6 +151,26 @@ class XDNativeLegendaryShadowsTests(unittest.TestCase):
         cls.species, cls.edges, cls.families = xd._species(cls.rel, cls.symbols)
         archive = cls.archives['deck_archive.fsys']
         cls.decks = {row['name']: decoded_member(archive, row) for row in parse_fsys(archive)['members']}
+
+    def test_default_draws_exclude_legendaries_across_starter_gifts_shadows_and_poke_spots(self):
+        for options in (xd.XDOptions.recommended(), xd.XDOptions.species_only()):
+            for seed in ('default-no-legends-a', 'default-no-legends-b'):
+                with self.subTest(moves=options.randomize_trainer_moves, seed=seed):
+                    _, summary = xd.build_patches(self.iso, self.boot, seed,
+                        options, lambda *_args: None, threading.Event())
+                    self.assertTrue(summary['poke_spot_shinies']['enabled'])
+                    self.assertEqual(summary['poke_spot_shinies']['chance_percent'], 5.0)
+                    self.assertEqual(len(summary['poke_spot_shinies']['hooks']), 5)
+                    self.assertTrue(all('shiny' not in row for row in summary['poke_spots']))
+                    self.assertTrue(all(row['shiny_model_resource'] != row['model_resource']
+                                        for row in summary.get('poke_spot_actors', ())))
+                    for row in (summary['starter'], *summary['gifts'], *summary['poke_spots']):
+                        self.assertNotIn(self.species[row['species']][0], LEGENDARY_NATIONAL, row)
+                    for row in summary['decks']['Story']['shadows']:
+                        if self.species[row['original']][0] in LEGENDARY_NATIONAL:
+                            self.assertEqual(row['species'], row['original'])
+                        else:
+                            self.assertNotIn(self.species[row['species']][0], LEGENDARY_NATIONAL, row)
 
     def test_native_story_and_eu_variant_agree_with_both_legendary_policies(self):
         eligible = set(self.species)

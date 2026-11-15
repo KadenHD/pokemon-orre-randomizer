@@ -27,8 +27,10 @@ The creation summary is **Applied settings** in both games.
 
 Before calculation, encounter lists show the native species in the original
 column and a question mark for an unknown replacement. A manually selected or
-unchanged species can already be named. Search works before and after calculation
-using names in all six languages and National Pokédex numbers.
+unchanged encounter can already show its portrait and sheet once the original
+data is loaded. Known shiny status supplies the matching portrait and red star.
+Search works before and after calculation using names in all six languages and
+National Pokédex numbers.
 
 Both previews use the same Qt worker lifecycle. Cosmetic cycling during loading
 does not draw Pokémon or alter the seed. The final result comes from the production
@@ -53,7 +55,7 @@ a new creation attempt clears the previous log and starts collapsed.
 | Starter controls | Separate first/second starter and pair rules | One starter |
 | Special encounters | Event gifts and purification rewards | Tutorial Teddiursa, Hordel and Duking trades, Poké Spots |
 | Evolutions and shops | Individual evolution/stone-shop controls | Native XD evolution rules and shop locations |
-| Shiny scope | Optional in-game or seeded draws | Seeded supported encounters; optional Shadow unlock; wild Poké Spots keep native odds |
+| Shiny scope | Seeded supported encounters | Seeded supported encounters; optional Shadow unlock; wild Poké Spots roll separately at 5% per new encounter by default |
 | Protected species | Depends on selected encounter controls | Shadow Lugia retains its species |
 
 Different mechanics need accurate help. Keep those exceptions explicit rather

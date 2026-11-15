@@ -27,7 +27,7 @@ unsupported system languages fall back to English.
 | Custom values | Clearly identified; Simple/Advanced switches preserve them |
 | Advanced rules | Searchable metadata, shared control order and category help; 192 px sidebar or compact selector |
 | Preview tabs | Colosseum: 2 starters, 48 Shadows, 4 gifts and optional-event preview; XD: 1 starter, 83 Shadows, 7 gifts, 9 Poké Spot slots |
-| Pending preview | Native originals and unknown replacements; retained/manual species may already be named |
+| Pending preview | Native originals and unknown replacements; resolved fixed/manual encounters show their portraits and sheets, with a red star only for a known shiny |
 | Search and scrolling | Names in six languages and National Pokédex IDs; visible-range counter and contrasted scrollbar |
 | Loading | Shared background worker, 115 ms cosmetic cycle, progress, cancellation and stale-result rejection |
 | Current preview | Final seeded results, up-to-date state and optional duplicate-family tab |
@@ -36,11 +36,19 @@ unsupported system languages fall back to English.
 | Report import | Restores seed/rules without replacing paths and compares the selected original |
 | Progress and results | Shared creation-only Details disclosure, cancellation, stage log, output folder, JSON report and offline journal |
 
-Both randomizing presets use the same common balance policy and a seeded 5%
-shiny rate for supported encounters. XD's Shadow unlock is a separate control;
-wild Poké Spots keep native odds. Native starter-pair, event-gift, trade and
-scenario restrictions retain game-specific help. Imported profiles keep saved
-values; selecting a preset applies the current defaults.
+Both randomizing presets draw from all starter stages without power, type or
+value matching and randomize abilities. Legendary and Mythical species are
+excluded from replacement draws; fixed legendary encounters remain. Original
+shop Balls are preserved. Pokémon only retains moves, TMs and ordinary items;
+Pokémon + moves randomizes those too. Accessible evolutions and family diversity
+are shared defaults.
+
+Starters, gifts and supported trainer/Shadow encounters use a seeded 5% shiny
+rate. XD's Shadow unlock is a separate control; wild Poké Spots instead roll a
+fresh 5% chance for each new encounter, visible before battle. A preview cannot
+predict that wild roll at an intermediate rate. Native starter-pair, event-gift,
+trade and scenario restrictions retain game-specific help. Imported profiles
+keep saved values; selecting a preset applies the current defaults.
 
 Keep navigation visible at 680 × 540 and check 1040 × 800 as well. Scroll only
 the active form or result area. Common copy comes from workspace_copy.py,
@@ -52,10 +60,12 @@ states, search, cancellation, preserved values, report comparison and sheets.
 Native ROM and save files remain outside the interface-maintenance workflow.
 The Events preview reuses the existing portrait and Pokémon-sheet controls.
 Its bonus event can be toggled without leaving the preview; pending random
-members show question marks. The known bonus species uses XD's original dark
-portrait. Ready teams come from the production patch plan, including shiny
-decisions. Cards use three columns on a wide panel and two on smaller windows,
-inside one clearly scrollable content area.
+members show question marks; resolved fixed members show their actual portraits
+and sheets. The known bonus species uses XD's original dark portrait or its
+matching shiny variant. Ready teams come from the production patch plan,
+including shiny decisions. Cards use three columns on a wide panel and two on
+smaller windows, inside one clearly scrollable content area. Keep a 12 px gap
+between each portrait and its text, then 8 px before the sheet button.
 Validation errors must not reveal the creation log. Details becomes available
 only after generation starts and only on Create, including its resulting failure
 or cancellation. A new attempt clears the old log and resets the disclosure.

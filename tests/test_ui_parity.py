@@ -17,7 +17,8 @@ from orre_randomizer.i18n import CATALOGS, LANGUAGES, translate
 from orre_randomizer.options import Options
 from orre_randomizer.preview import preview_xd
 from orre_randomizer.settings_presentation import configuration_review
-from orre_randomizer.workspace_copy import CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS, PRESET_EVOLUTIONS
+from orre_randomizer.workspace_copy import (CATEGORY_HELP, COLOSSEUM_PRESET_NATIVE, CUSTOM_PRESET,
+    PRESET_DESCRIPTIONS, PRESET_EVOLUTIONS, PRESET_LEGENDARIES, PRESET_SHINIES, XD_PRESET_NATIVE)
 from orre_randomizer.xd import REGIONS, VERSION, XDOptions
 from orre_randomizer.xd_preview import baseline_rows
 
@@ -57,7 +58,8 @@ class SharedCopyTests(unittest.TestCase):
                     self.assertIn(item.metadata[key], catalog, (item.name, key, language))
 
     def test_shared_copy_has_complete_translations(self):
-        for source in (*CATEGORY_HELP.values(), *PRESET_DESCRIPTIONS, CUSTOM_PRESET, PRESET_EVOLUTIONS):
+        for source in (*CATEGORY_HELP.values(), *PRESET_DESCRIPTIONS, CUSTOM_PRESET, PRESET_EVOLUTIONS,
+                       PRESET_LEGENDARIES, PRESET_SHINIES, COLOSSEUM_PRESET_NATIVE, XD_PRESET_NATIVE):
             for language, catalog in CATALOGS.items():
                 self.assertIn(source, catalog, (language, source))
 
@@ -171,7 +173,29 @@ class WorkspaceParityTests(unittest.TestCase):
                 self.assertEqual(w.preset_description.text(), xd.preset_note.text())
                 self.assertEqual(w.preset_common.text(), xd.preset_common.text())
                 self.assertEqual(w.preset_shiny.text(), xd.preset_shiny.text())
+                self.assertEqual(w.preset_legendaries.text(), xd.preset_legendaries.text())
+                self.assertEqual(w.preset_legendaries.isHidden(), index == 2)
+                self.assertEqual(xd.preset_legendaries.isHidden(), index == 2)
+                self.assertEqual(w.preset_native.isHidden(), index == 2)
+                self.assertEqual(xd.preset_native.isHidden(), index == 2)
                 self.assertEqual(w.review_details.text().splitlines()[0], xd.review.text().splitlines()[0])
+                self.assertFalse(w.rule_fields['allow_legendaries'].isChecked())
+                self.assertFalse(xd.controls['allow_legendaries'].isChecked())
+
+    def test_advanced_legendary_switch_can_be_enabled_and_resets_when_selecting_either_preset(self):
+        w = self.window
+        for pane, controls in ((w, w.rule_fields), (w.xd, w.xd.controls)):
+            for index in (0, 1):
+                pane.set_options(pane.presets[index][1]())
+                pane.set_advanced_mode(True)
+                checkbox = controls['allow_legendaries']
+                self.assertFalse(checkbox.isChecked())
+                self.assertTrue(checkbox.isEnabled())
+                checkbox.setChecked(True)
+                self.assertTrue(pane.current_options().allow_legendaries)
+                pane.presets[index][0].click()
+                self.assertFalse(checkbox.isChecked())
+                self.assertFalse(pane.current_options().allow_legendaries)
 
     def test_xd_search_works_before_calculation_and_in_all_name_languages(self):
         w, xd = self.window, self.window.xd

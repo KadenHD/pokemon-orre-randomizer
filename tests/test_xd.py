@@ -40,7 +40,8 @@ class XDTests(unittest.TestCase):
                 "revision": 0, "source_iso_sha256": region.iso_sha256, "seed": "old-wild",
                 "options": {k: v for k, v in legacy_options(options).items() if k not in XD_POKE_SPOT_SHINY_FIELDS}}
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
-        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True, shop_keep_capture_items=False))
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True,
+                                                  shop_keep_capture_items=False, custom_poke_spot_shinies=False))
         self.assertFalse(profile.options.custom_poke_spot_shinies)
 
     def test_v7_profiles_keep_full_spots_without_enabling_shadow_shinies(self):
@@ -55,7 +56,8 @@ class XDTests(unittest.TestCase):
         for key in XD_POKE_SPOT_SHINY_FIELDS:
             payload["options"].pop(key)
         profile = parse_xd_profile(json.dumps(payload).encode(), report=True)
-        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True, shop_keep_capture_items=False))
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True,
+                                                  shop_keep_capture_items=False, custom_poke_spot_shinies=False))
         self.assertTrue(profile.options.poke_spots_full_pokedex)
         self.assertFalse(profile.options.custom_shadow_shinies)
 
@@ -73,7 +75,8 @@ class XDTests(unittest.TestCase):
         for key in XD_POKE_SPOT_SHINY_FIELDS:
             data["options"].pop(key)
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
-        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True, shop_keep_capture_items=False))
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True,
+                                                  shop_keep_capture_items=False, custom_poke_spot_shinies=False))
         self.assertFalse(profile.xd_spot_migration)
         with TemporaryDirectory() as folder:
             import hashlib
@@ -93,7 +96,8 @@ class XDTests(unittest.TestCase):
             payload["configuration_sha256"] = hashlib.sha256(canonical).hexdigest()
             path.write_text(json.dumps(payload), encoding="utf-8")
             self.assertEqual(load_profile(path, is_xd=True).options,
-                             replace(options, randomize_legendary_shadows=True, shop_keep_capture_items=False))
+                             replace(options, randomize_legendary_shadows=True,
+                                     shop_keep_capture_items=False, custom_poke_spot_shinies=False))
 
     def test_xd_profile_preserves_typed_options_and_rejects_colosseum_import(self):
         options = replace(xd.XDOptions.recommended(), excluded_species=(25, 133), randomize_hordel_gift=True,

@@ -32,7 +32,8 @@ from .xd_gifts import GIFT_TRADE_REQUIREMENTS, SPOT_LABELS, TOGETIC, duking_trad
 from .xd_preview import baseline_rows
 from .preview import ROULETTE_SPECIES
 from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS, PRESET_EVOLUTIONS,
-                             PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE, STEP_HELP, XD_CATEGORY_HELP)
+                             PRESET_LEGENDARIES, PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE,
+                             STEP_HELP, XD_CATEGORY_HELP, XD_PRESET_NATIVE)
 
 
 RULES = presentation_fields(XDOptions)
@@ -238,11 +239,11 @@ class XDWorkspace(QWidget):
         simple_layout.addWidget(self.preset_note)
         self.preset_common = window.note(PRESET_EVOLUTIONS)
         simple_layout.addWidget(self.preset_common)
+        self.preset_legendaries = window.note(PRESET_LEGENDARIES)
+        simple_layout.addWidget(self.preset_legendaries)
         self.preset_shiny = window.note(PRESET_SHINIES)
         simple_layout.addWidget(self.preset_shiny)
-        self.preset_native = window.note(
-            "Lugia obscur garde son espèce. Doking demande le Pokémon rare de chaque Poké Place. "
-            "La fréquence d’apparition reste celle de l’emplacement. Le taux chromatique se règle séparément en mode Avancé.")
+        self.preset_native = window.note(XD_PRESET_NATIVE)
         simple_layout.addWidget(self.preset_native)
         simple_layout.addStretch(1)
         self.configuration_pages.addWidget(scroll_area(simple))
@@ -437,6 +438,7 @@ class XDWorkspace(QWidget):
                 randomizing = preset != XDOptions.unchanged()
         self.preset_note.setText(self.window.text(description))
         self.preset_common.setVisible(randomizing)
+        self.preset_legendaries.setVisible(randomizing)
         self.preset_shiny.setVisible(randomizing)
         self.preset_native.setVisible(randomizing)
 

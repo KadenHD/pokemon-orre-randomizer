@@ -41,7 +41,8 @@ paths and contains no scripts or external resource loads. Text is escaped.
 The CLI supports `--journal-language fr|en|de|es|it|ja`, defaulting to French.
 Existing journal paths are never overwritten.
 
-Known shiny decisions are shown; an intermediate unlinked rate is described as
-a draw performed by the game. Gift entries retain their obtainability conditions.
+Known seeded shiny decisions are shown. XD's wild Poké Spot rows describe
+intermediate rates as a new roll for each encounter; the journal cannot predict
+those future rolls. Gift entries retain their obtainability conditions.
 Tests cover final-data reads, evolution branches, all six languages, escaped
 content, offline output, path privacy and overwrite refusal.

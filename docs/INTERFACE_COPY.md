@@ -16,8 +16,12 @@ and the intentional differences between Colosseum and XD.
 
 Both randomizing presets enable accessible evolutions, Evolution stones in shops,
 family diversity, starters from all evolution stages and a seeded 5% shiny
-chance for supported encounters. Explain native exceptions beside these shared
-defaults. Do not imply that wild Poké Spots use the custom shiny rate.
+chance for supported starters, gifts and trainer/Shadow encounters. XD's wild
+Poké Spots use a separate 5% roll per new encounter by default, visible before
+battle; do not describe that roll as seeded or predictable in the preview.
+Legendary and Mythical species are excluded from random replacement draws in
+both presets, while fixed legendary encounters remain. Original shop Balls
+are preserved in both modes. Explain native exceptions beside these defaults.
 Types remain unchanged by default. Advanced can enable type randomization,
 stage restrictions, type matching or power matching explicitly.
 
@@ -56,9 +60,10 @@ original species is replaced.
 - **Preview up to date** confirms a completed, current result.
 
 Before calculation, show known original species in the original column and `?`
-for unknown replacements. A retained or manually selected species may already be
-named. Cosmetic cycling during loading never represents a final draw. Explain
-that a preview creates no ROM and applies to a new game.
+for unknown replacements. Once the original data is loaded, a retained or manually
+selected encounter can show its portrait and sheet. Use shiny colors and the
+red star only when its status is known. Cosmetic cycling never represents a
+final draw. Explain that a preview creates no ROM and applies to a new game.
 
 Use sentence case for Pokémon names, keeping the first letter capitalized. Mark
 known shiny encounters with the shared small red star instead of adding “shiny”

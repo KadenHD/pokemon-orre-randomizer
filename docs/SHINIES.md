@@ -1,15 +1,17 @@
 # Shiny Pokémon
 
 Both randomizing desktop presets enable a **seeded 5% chance** for supported
-encounters. This is a per-key probability, not a quota: a preview can contain
-more or fewer shinies. The same original, seed, settings and engine version keep
-the decisions. Increasing the rate for the same seed retains already-selected
+starters, gifts and trainer/Shadow encounters. This is a per-key probability,
+not a quota: a preview can contain more or fewer shinies. The same original,
+seed, settings and engine version keep the decisions. Increasing the rate for
+the same seed retains already-selected
 shinies and can add others. Customization does not require changing species.
 
 | Game | Custom-rate scope | Seed behavior |
 | --- | --- | --- |
 | Colosseum | Starters, ordinary/event gifts, trainer and Shadow generation calls | Stable decision per encounter/Shadow ID |
 | XD | Starter, ordinary gifts and optionally all 83 Shadow IDs | Stable decision per key/Shadow ID; enabled in both presets |
+| XD wild Poké Spots | Separate 5% rate for new ordinary wild encounters by default | Fresh roll per new encounter; the seed fixes the roster, not each appearance's shiny status |
 
 The original generation-III test has probability 1/8192 (about 0.0122%) where
 the encounter permits it. Game-specific shiny restrictions still matter.
@@ -26,15 +28,19 @@ optional bonus encounter. The mesh, skeleton and animations are unchanged.
 The variant swaps the authored body and belly material colors and darkens the
 belly texture, preserving the original red eyes and transparency.
 By default, after purification it uses Lugia's ordinary pink shiny appearance, with the
-same saved personality and trainer identity. Non-shiny Shadow Lugia retains
-the original dark appearance.
+same saved personality and trainer identity. Unpurified non-shiny Shadow Lugia
+uses the original dark appearance; after purification it normally uses ordinary
+Lugia's non-shiny appearance.
 
 XD's real-time appearances read the saved Shadow identity when available.
 Before that encounter is generated, customized Shadow shinies can use its
 already chosen seeded status. Prerecorded videos remain original.
 
 In XD, **Poké Spots → Customize wild shiny odds** sets a separate rate for
-new ordinary wild encounters. Both presets retain the original odds by default.
+new ordinary wild encounters. Both randomizing presets enable it at 5% by default.
+Every new encounter rolls again in-game, including encounters with the same
+species. The field model shows the result before battle and keeps it in battle
+and after capture. Disable the option to retain the original odds.
 The game rolls at encounter generation and reuses the stored PID on the field,
 in battle and after capture. The seed fixes the roster, while the game determines
 each new encounter's shiny result. The preview can show a guaranteed result at
@@ -59,12 +65,15 @@ Pokémon always uses its ordinary model and portrait, even with the option on.
 The display policy applies to randomized Shadow Lugia as well as XD001 and
 Colosseum's optional bonus encounter.
 A small red superscript star follows a shiny's name.
-The preview and creation use the same decisions and do not roll independently.
+Seeded encounter previews and creation use the same decisions and do not roll
+independently. Wild Poké Spot rows cannot predict an intermediate-rate shiny roll.
 
-Custom shiny chances always use the seed in both games, including intermediate
-rates. Colosseum no longer offers an unlinked mode. Older profiles with that
-mode enabled are verified first, then linked to the seed without changing their
-chance. The preview, battles and supported field scenes share those decisions.
+Custom shiny chances for supported starters, gifts and trainer/Shadow encounters
+use the seed in both games, including intermediate rates. Wild Poké Spots roll
+separately for each new encounter. Colosseum no longer offers an unlinked mode.
+Older profiles with that mode enabled are verified first, then linked to the
+seed without changing their chance. The preview, battles and supported field
+scenes share those decisions.
 Disabling customization still preserves the game's original behavior.
 
 The randomized Plusle gift and Miror B.'s randomized cave dancers also display

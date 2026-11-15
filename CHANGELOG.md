@@ -1,5 +1,25 @@
 # Changelog
 
+## Unreleased
+
+## 1.2.22 - 2026-11-15
+
+- Refresh the Impeccable design reference, surface brief and generated index.
+  Align current guides on seeded shinies, per-encounter Poké Spot rolls, fixed
+  previews and shared preset protections.
+- Clarify both presets in all six interface languages: retained shop Balls,
+  protected legendary encounters, unchanged moves and items in Pokémon-only
+  mode, event rewards and the bonus quest. Update Plusle's help for scaled
+  story models and remove repeated evolution-stage wording.
+- Enable XD's separate 5% wild shiny rate in both randomizing presets. Roll
+  again for every new Poké Spot encounter; its field model, battle and captured
+  Pokémon share the same result. Imported profiles retain their saved wild rate.
+
+- Exclude Legendary and Mythical Pokémon from random draws in both randomizing
+  presets and both games, including starters, Shadows, gifts and XD's Poké Spots.
+  They can be enabled under Advanced > Allowed Pokémon. Keep fixed story
+  encounters, original legendary Shadow species and the bonus Lugia unchanged.
+
 ## 1.2.21 - 2026-11-15
 
 - Frame Eagun during his own lines in Colosseum's bonus quest and turn him

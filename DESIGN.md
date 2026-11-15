@@ -31,6 +31,7 @@ colors:
   home-border: "#727782"
   home-field: "#191b1e"
   home-label: "#eceef2"
+  home-audio-text: "#e5e7eb"
   home-progress: "#535b66"
   home-muted: "#969ba5"
   home-muted-border: "#626772"
@@ -97,9 +98,15 @@ components:
     textColor: "{colors.xd-text}"
   button-home:
     backgroundColor: "{colors.home-control}"
-    textColor: "{colors.text-ivory}"
+    textColor: "{colors.home-audio-text}"
     typography: "{typography.body}"
     rounded: "{rounded.control}"
+  button-home-update:
+    backgroundColor: "{colors.home-control}"
+    textColor: "{colors.home-label}"
+    typography: "{typography.body}"
+    rounded: "{rounded.control}"
+    padding: "4px 12px"
 ---
 
 # Design System: Pokémon Orre Randomizer
@@ -213,6 +220,9 @@ outer contour, and a finer inset outline at 5 px. Controls use a 4 px radius.
 Step buttons have square corners and no gaps. Pokémon portraits are 42 × 42 px
 inside 48 × 48 px slots. Preserve logo proportions and the existing Poké Ball
 cursor spacing.
+Starter and event cards leave 12 px between the portrait and its text, then
+8 px before the Pokémon-sheet button. Keep the same spacing for known and
+unknown portraits.
 
 ## Components
 
@@ -245,8 +255,10 @@ balance policy and a seeded 5% shiny rate for supported encounters. Imported
 profiles retain their saved values. XD's native exceptions remain explicit.
 
 Dependent controls stay visible and retain their values when disabled. Shiny
-customization enables the rate; Colosseum also offers seeded/in-game draws, while
-XD has a separate Shadow unlock. Wild Poké Spots keep their native rate.
+customization enables the rate for seeded encounters in both games. Colosseum's
+retired unlink option is not shown. XD exposes separate Shadow-unlock and wild
+Poké Spot controls. Its wild rate is 5% in both randomizing presets, with a fresh
+roll per new encounter; it does not predict a seeded shiny for a wild slot.
 
 ### Encounter preview
 
@@ -264,7 +276,10 @@ content scrollbar keeps navigation visible. The shared loading and cancellation
 states apply here too; changes discard stale team details.
 
 Before calculation, known original species appear on the left and unknown
-replacements use question marks. Retained/manual species may already be named.
+replacements use question marks. Once the selected original has been read,
+retained/manual encounters can show their portrait and sheet without a full
+preview request. Show the red star and matching portrait only when the current
+rules establish the shiny status; a known species alone does not establish it.
 Search works before and after calculation using names in all six languages and
 National Pokédex numbers. The counter reports the visible range or no results.
 
@@ -280,6 +295,10 @@ A single click opens the shared Pokémon sheet: Summary, Moves and Evolutions.
 Evolution routes show portraits and actual final requirements. Known shiny
 status selects matching evolution portraits. The red star replaces repeated
 shiny/non-shiny labels beside individual names.
+Pokémon and move types use the game's localized image badges. Keep native
+accessible names and tooltips. Center each badge vertically against its move
+name and description; Shadow badges use white lettering in Colosseum and
+black lettering in XD, with the localized label in all six languages.
 
 Create shows **Applied settings**, grouped by category with values and units.
 Inactive remembered values are omitted. RVZ output exposes its DolphinTool field

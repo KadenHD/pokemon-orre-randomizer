@@ -54,8 +54,8 @@ from .ui_workspace import (CreationLog, DeliberateWheel, EncounterTable, RuleNav
 from .settings_presentation import configuration_review, search_settings
 from .resources import MUSIC_FILES, application_icon, application_logo, interface_assets, music_track, menu_icon, xd_logo
 from .i18n import LANGUAGES, Message, is_translatable, language_preference, resolve_language, translate
-from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS,
-                             PRESET_EVOLUTIONS, PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE, STEP_HELP)
+from .workspace_copy import (CATEGORY_HELP, COLOSSEUM_PRESET_NATIVE, CUSTOM_PRESET, PRESET_DESCRIPTIONS,
+                             PRESET_EVOLUTIONS, PRESET_LEGENDARIES, PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE, STEP_HELP)
 
 
 class Worker(QObject):
@@ -588,8 +588,12 @@ class MainWindow(QMainWindow):
         simple.addWidget(self.preset_description)
         self.preset_common = self.note(PRESET_EVOLUTIONS)
         simple.addWidget(self.preset_common)
+        self.preset_legendaries = self.note(PRESET_LEGENDARIES)
+        simple.addWidget(self.preset_legendaries)
         self.preset_shiny = self.note(PRESET_SHINIES)
         simple.addWidget(self.preset_shiny)
+        self.preset_native = self.note(COLOSSEUM_PRESET_NATIVE)
+        simple.addWidget(self.preset_native)
         simple.addStretch(1)
         self.configuration_pages.addWidget(scroll_area(self.simple_panel))
 
@@ -1107,7 +1111,9 @@ class MainWindow(QMainWindow):
         self.preset_description.setText(self.text(descriptions[selected]) if selected is not None else
                                         self.text(CUSTOM_PRESET))
         self.preset_common.setVisible(selected in (0, 1))
+        self.preset_legendaries.setVisible(selected in (0, 1))
         self.preset_shiny.setVisible(selected in (0, 1))
+        self.preset_native.setVisible(selected in (0, 1))
         self.refresh_review()
         self.refresh_settings_help()
         if self.preview_key is None:

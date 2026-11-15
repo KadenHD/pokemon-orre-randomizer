@@ -49,11 +49,17 @@ Moves are drawn without power or type matching. At least one attacking move
 is retained, while duplicate moves, self-destruct moves and one-hit KOs are
 excluded by default. TM compatibility is randomized without type matching.
 These protections can be changed in Advanced.
-Custom shiny rates always use the seed in both games. Older unlinked profiles
-are linked when imported, retaining their seed and chosen rate. There is no
-unlink switch; disabling shiny customization retains native game behavior.
+Custom shiny rates for supported starters, gifts and trainer/Shadow encounters
+use the seed in both games. Older unlinked profiles are linked when imported, retaining
+their seed and chosen rate. There is no unlink switch. XD's wild Poké Spots use
+a separate 5% roll per new encounter by default. Disabling a customization option
+retains native behavior for its encounter scope.
 Levels, EXP, purification and catch-rate multipliers stay at ×1.
 Original legendary Shadow Pokémon keep their species in both presets. Under
+**Advanced > Allowed Pokémon**, **Legendary and Mythical Pokémon** is unchecked
+by default in both games. Randomized starters, Shadows, gifts and XD's Poké Spots
+cannot draw these species unless you enable it. Fixed story encounters and
+Colosseum's bonus Lugia are unaffected by this replacement filter. Under
 **Advanced → Trainers**, enable **Randomize legendary Shadow Pokémon** to allow
 their replacement. XD001 remains protected for XD's story regardless of this
 switch. This setting does not control Colosseum's bonus battle.
@@ -246,7 +252,7 @@ evolution, so Hordel accepts it after purification either before or after
 evolving. Imported profiles retain their saved choices.
 
 Both randomizing presets draw the nine regular Poké Spot encounters from XD's
-full supported generation-I–III Pokédex. Generation, species/type exclusions,
+full supported generation-I-III Pokédex. Generation, species/type exclusions,
 legendary restrictions and similar-strength matching still apply. The three
 rare slots use different species, so Duking has three distinct, obtainable
 requests. Each location has three different species; all nine are different
@@ -277,8 +283,8 @@ self-destruct or one-hit knockout moves. Required Shadow markers and scripted
 data are protected. Types, abilities, stats, held items, TMs, treasure and shop
 stock can be adjusted separately. Key items and scripted rewards are protected.
 
-Opponent levels use a global multiplier or original-level bands of 1–35, 36–50
-and 51–100; these are not story chapters. EXP and purification controls affect
+Opponent levels use a global multiplier or original-level bands of 1-35, 36-50
+and 51-100; these are not story chapters. EXP and purification controls affect
 native calculations and do not skip purification's story requirements.
 See [validation](VALIDATION.md) for measured results.
 
@@ -286,15 +292,15 @@ See [validation](VALIDATION.md) for measured results.
 
 The presets use a seeded 5% probability per supported encounter key, not a quota
 on the preview. Nature, IVs and the full game RNG remain native. Colosseum
-supports starter, gift, trainer and Shadow decisions, plus an optional unlinked
-mode that leaves the draw to the game. XD customization covers its starter,
+supports starter, gift, trainer and Shadow decisions. XD customization covers its starter,
 ordinary gifts and, with **Apply the rate to Shadow Pokémon**, all 83 Shadow
 IDs. Both randomizing presets enable this unlock. The seed fixes each Shadow's
 status, which is retained after capture and purification. Disable the separate
-Shadow option to keep XD's native lock. Wild Poké Spots keep native odds
-by default. Under **Advanced → Poké Spots**, enable **Customize wild shiny
-odds** to set a separate rate from 0% to 100%. Each new encounter keeps the
-same result on the field, in battle and after capture.
+Shadow option to keep XD's native lock. Both presets also enable **Customize
+wild shiny odds** at 5% under **Advanced → Poké Spots**. Every new wild encounter
+gets a fresh in-game roll, even for the same species. Its model shows the result
+before battle, and that Pokémon keeps it in battle and after capture. Change
+the wild rate separately from 0% to 100%, or disable it for native odds.
 Previously generated Shadow Pokémon retain their saved PID; use a new game
 for the preview to match every encounter. Shiny Shadow Lugia has a custom white
 body and dark belly; non-shiny Shadow Lugia retains its original dark colors.

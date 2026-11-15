@@ -24,7 +24,10 @@ draws have no power or starter-pair type matching. Pokémon + moves also draws
 moves, TM compatibility and eligible items without type, power or value matching.
 Pokémon-only preserves moves, TMs and items while retaining evolution access.
 XD Shadow shinies use the chosen rate with an optional unlock, enabled in both
-presets. Wild Poké Spots retain native shiny odds. Shadow Lugia, full-Pokédex
+presets. Wild Poké Spots use a separate 5% roll for every new encounter by default,
+with the same appearance on the field, in battle and after capture. Legendary
+and Mythical species are excluded from replacement draws in both presets;
+fixed legendary encounters remain. Shadow Lugia, full-Pokédex
 Poké Spots and tutorial/Hordel controls have their own rules. Imports preserve
 saved values. Detailed behavior belongs in the [user guide](docs/USER_GUIDE.md).
 
@@ -33,9 +36,10 @@ six interface languages. Switching views does not reset settings. Preview and
 creation use the same patch plan off the interface thread. Creation verifies
 the result and writes a portable-settings report and offline journal.
 
-Custom shiny rates always use the seed; the retired Colosseum unlink flag is
-normalized after profile verification. Disabling customization retains native
-shiny behavior.
+Custom shiny rates for supported starters, gifts and trainer/Shadow encounters
+use the seed; the retired Colosseum unlink flag is normalized after profile verification.
+XD wild Poké Spots roll separately for each new encounter. Disabling a shiny
+customization option retains native behavior for its encounter scope.
 
 Shadow Lugia uses XD's dark model in both games, including randomized Shadow
 slots, with a white/black shiny variant and matching portraits. A shared advanced
