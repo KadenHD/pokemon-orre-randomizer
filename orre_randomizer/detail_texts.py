@@ -16,6 +16,7 @@ _ROWS = {
     "gifts": ("Pokémon offerts", "Gift Pokémon", "Geschenkte Pokémon", "Pokémon de regalo", "Pokémon in regalo", "もらえるポケモン"),
     "trainers": ("Dresseurs", "Trainers", "Trainer", "Entrenadores", "Allenatori", "トレーナー"),
     "trainer": ("Dresseur {id}", "Trainer {id}", "Trainer {id}", "Entrenador {id}", "Allenatore {id}", "トレーナー {id}"),
+    "battle_marker": ("Combat {id}", "Battle {id}", "Kampf {id}", "Combate {id}", "Lotta {id}", "バトル {id}"),
     "evolutions": ("Évolutions", "Evolutions", "Entwicklungen", "Evoluciones", "Evoluzioni", "進化"),
     "moves": ("Capacités", "Moves", "Attacken", "Movimientos", "Mosse", "わざ"),
     "initial_shadow_moves": ("Capacité obscure de départ", "Starting Shadow move", "Erste Crypto-Attacke", "Movimiento oscuro inicial", "Mossa Ombra iniziale", "最初のダークわざ"),

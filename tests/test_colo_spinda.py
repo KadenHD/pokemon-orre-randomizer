@@ -12,7 +12,7 @@ from orre_randomizer.engine.colo_spinda import ORDINARY_SPINDA_OT, colo_spinda_p
 from orre_randomizer.engine.dol_regions import PAL
 from orre_randomizer.engine.spinda import SPINDA
 from orre_randomizer.options import Options
-from test_shiny_rules import Machine
+from tests.test_shiny_rules import Machine
 
 
 RNG_POINTER_DISPLACEMENT = -0x7B8C

@@ -21,6 +21,24 @@ OVERSIZED_FIELD_SPECIES = frozenset((24, 95, 130, 143, 148, 208, 249, 250, 321, 
 _FIELD_MOTIONS = 12
 
 
+def _pkx_idle_motion(pkx: bytes, *, xd: bool) -> int:
+    """Resolve the Idle slot; DAT index zero can be a blink/hit overlay."""
+    if xd:
+        count, metadata = u32(pkx, 0x10), 0x84
+    else:
+        count = u32(pkx, 8)
+        metadata = 0x40 + ((u32(pkx, 0) + 31) & ~31) + ((u32(pkx, 4) + 31) & ~31)
+    if not 1 <= count <= 64:
+        raise FormatError("unexpected story Pokémon animation slot count")
+    check_range(pkx, metadata, count * 0xD0, "story Pokémon animation metadata")
+    if u32(pkx, metadata) != 2 or u32(pkx, metadata + 4) != 1:
+        raise FormatError("unexpected story Pokémon Idle slot")
+    index = u32(pkx, metadata + 0x90)
+    if index >= 64:
+        raise FormatError("invalid story Pokémon idle motion index")
+    return index
+
+
 def companion_scale(national: int, regular: float) -> float:
     if national == 321:  # Wailord can fill the frame even at 30%.
         return 0.12
@@ -46,9 +64,13 @@ def _model_resource(toc: bytes, group: int) -> str:
 
 def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, recipe=None,
                  attachment_offset: tuple[float, float, float] | None = None,
-                 spinda_texture: bytes | None = None) -> bytes:
+                 spinda_texture: bytes | None = None,
+                 motion_indices: tuple[int, ...] = (0,) * _FIELD_MOTIONS) -> bytes:
     # Movement and emote slots in battle models contain species-specific
-    # attacks. Reuse the species' idle motion for the field actor.
+    # attacks. Callers resolve the Idle slot through PKX metadata, or supply
+    # an audited native field actor's own motion slots.
+    if len(motion_indices) != _FIELD_MOTIONS or any(not 0 <= i < 64 for i in motion_indices):
+        raise ValueError("expected twelve valid field motion indices")
     dat = pkx[header_size:]
     check_range(dat, 0, 0x20, "story Pokémon DAT header")
     length, data_size, reloc_count, exports, imports = struct.unpack_from(">5I", dat)
@@ -94,26 +116,37 @@ def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, rec
         table = u32(data, field)
         if not table:
             continue
-        idle = u32(data, table)
-        if not idle:
+        motions = []
+        for index in range(64):
+            pointer = u32(data, table + index * 4)
+            if not pointer:
+                break
+            if pointer >= data_size or table + index * 4 not in relocations or field not in relocations:
+                raise FormatError("invalid story Pokémon motion pointer")
+            motions.append(pointer)
+        if not motions or any(index >= len(motions) for index in motion_indices):
             if field == model + 4:
-                raise FormatError("story Pokémon has no idle motion")
+                raise FormatError("story Pokémon has no idle motion at the requested index")
             struct.pack_into(">I", data, field, 0)
             relocations.discard(field)
             continue
-        if idle >= data_size or field not in relocations or table not in relocations:
-            raise FormatError("invalid story Pokémon idle motion pointer")
+        selected = [motions[index] for index in motion_indices]
         if attachment_offset is not None:
             # HSD walks the joint, material and shape trees in parallel.
             tail = struct.pack(">4I", 0, 0, 0, 1) if field == model + 4 else bytes(8)
-            for _ in range(2):
-                parent = len(data)
-                data.extend(struct.pack(">I", idle) + tail)
-                relocations.add(parent)
-                idle = parent
+            wrapped = {}
+            for motion in sorted(set(selected)):
+                root = motion
+                for _ in range(2):
+                    parent = len(data)
+                    data.extend(struct.pack(">I", root) + tail)
+                    relocations.add(parent)
+                    root = parent
+                wrapped[motion] = root
+            selected = [wrapped[motion] for motion in selected]
         start = len(data)
         struct.pack_into(">I", data, field, start)
-        data.extend(struct.pack(">I", idle) * _FIELD_MOTIONS + bytes(4))
+        data.extend(struct.pack(f">{_FIELD_MOTIONS}I", *selected) + bytes(4))
         relocations.update(range(start, start + _FIELD_MOTIONS * 4, 4))
     header = bytearray(dat[:0x20])
     pointers = struct.pack(f">{len(relocations)}I", *sorted(relocations))
@@ -126,7 +159,8 @@ def _field_model(pkx: bytes, *, header_size: int = 0x40, scale: float = 1.0, rec
 def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[[str], bytes],
                      *, scale: float = 1.0, shiny: bool = False,
                      attachment_offset: tuple[float, float, float] | None = None,
-                     unown_form_index: int = 0, spinda_pid: int | None = None) -> bytes:
+                     unown_form_index: int = 0, spinda_pid: int | None = None,
+                     native_field_motions: bool = False) -> bytes:
     xd = game_id in _XD_MODEL_TABLE
     if xd:
         table = _XD_MODEL_TABLE[game_id]
@@ -155,6 +189,17 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
     if len(members) != 1 or not members[0]["identifier_raw"].endswith("1e00"):
         raise FormatError("expected one story Pokémon battle model")
     pkx = decoded_member(payload, members[0])
+    native = None
+    if native_field_motions and not xd and name == "pkx_prasle.fsys":
+        # Only Plusle has this dedicated handover/rescue choreography. Most
+        # retail field Pokémon DATs are byte-identical to their battle DATs
+        # and do not contain a walking clip to recover.
+        room = archive("M2_guild_1F_1.fsys")
+        native_members = [row for row in parse_fsys(room)["members"]
+                          if row["identifier_raw"] == _ACTOR_ID and row["name"] == "prasle_b1"]
+        if len(native_members) != 1:
+            raise FormatError("expected the original Plusle field choreography")
+        native = decoded_member(room, native_members[0])
     spinda_texture = None
     if model_id == SPINDA and spinda_pid is not None:
         textures = {row["name"]: row for row in parsed["members"]}
@@ -167,7 +212,7 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
         # A subset of species (including Charizard and Ho-Oh) have a retail
         # shiny model. Other species use a recipe in the ordinary PKX.
         rare = "pkx_rarecoil.fsys" if name == "pkx_coil.fsys" else name.replace("pkx_", "pkx_rare_", 1)
-        if rare.removesuffix(".fsys").encode("ascii") + b"\0" in toc:
+        if native is None and rare.removesuffix(".fsys").encode("ascii") + b"\0" in toc:
             payload = archive(rare)
             members = [row for row in parse_fsys(payload)["members"] if row["identifier_raw"].endswith("1e00")]
             if len(members) != 1:
@@ -179,8 +224,14 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
     header_size = (len(pkx) - u32(pkx, 0)) & ~31 if xd else 0x40
     if xd and (header_size < 0x40 or u32(pkx, header_size) != u32(pkx, 0)):
         raise FormatError("unexpected XD Pokémon DAT offset")
+    if native is not None:
+        return _field_model(native, header_size=0, scale=scale, recipe=recipe,
+                            attachment_offset=attachment_offset,
+                            motion_indices=tuple(range(10)) + (0, 0))
+    idle = _pkx_idle_motion(pkx, xd=xd)
     return _field_model(pkx, header_size=header_size, scale=scale, recipe=recipe,
-                        attachment_offset=attachment_offset, spinda_texture=spinda_texture)
+                        attachment_offset=attachment_offset, spinda_texture=spinda_texture,
+                        motion_indices=(idle,) * _FIELD_MOTIONS)
 
 
 def patch_actor(source: bytes, model: bytes, *, identifier: str = _ACTOR_ID, name: str = "prasle_b1") -> bytes:

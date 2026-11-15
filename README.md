@@ -23,15 +23,17 @@ No ROM, save file, or emulator is included.
 
 ## Download and play
 
-**Version 1.2.19** updates trainer dialogue to follow randomized teams and
-keeps XD's Battle Simulator lessons consistent with their rental Pokémon.
-See the [release notes](docs/releases/v1.2.19.md).
-
 Download the **Windows setup EXE** from the
 [latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
 for Windows 10 or 11, 64-bit. Python and the Rust codec are included.
 For portable use, extract the **Windows ZIP** in full and open `OrreRandomizer.exe`
 beside its `_internal` folder.
+
+On Windows, **Update to…** appears on Home when a newer stable release is
+available. One click downloads and verifies the official package, updates the
+installed or portable app in place, and restarts it. No installer needs to be
+downloaded or opened by hand. The background GitHub check sends no ROMs, paths,
+seeds or saves, and the randomizer works normally offline.
 
 No ROMs or links to ROM downloads are provided. Use the randomizer only with game
 images you are legally entitled to use. You are responsible for how you obtain,
@@ -54,25 +56,53 @@ your input. The app does not launch Dolphin or manage your saves.
 | | Pokémon + moves | Pokémon only |
 | --- | --- | --- |
 | Trainers, starters, Shadow Pokémon and ordinary gifts | Randomized | Randomized |
-| Similar-strength replacements and family diversity | Enabled | Enabled |
-| Base-form starters from three-stage families | Enabled | Enabled |
+| Original legendary Shadow species | Preserved | Preserved |
+| Abilities | Randomized | Randomized |
+| Evolution stages | All stages | All stages |
+| Similar-strength matching | Disabled | Disabled |
+| Family diversity | Enabled | Enabled |
 | Seeded 5% shiny chance for supported encounters | Enabled | Enabled |
 | Accessible evolutions and evolution stones in shops | Enabled | Enabled |
 | Starting moves, level-up learnsets and TMs | Randomized | Preserved |
 | Eligible treasure and shop items | Randomized | Preserved |
+| Items already held by opponents, including Shadow Pokémon | Randomized | Preserved |
+| Colosseum's bonus quest | Enabled; fixed team and Shadow Lugia | Enabled; fixed team and Shadow Lugia |
 
 Both presets retain native opponent levels, battle EXP, purification speed and
-catch rates. Colosseum also balances its two starters as a pair, with distinct
-families and complementary types. XD has one starter. Its custom rate covers
+catch rates. Starters can be unevolved, evolved or from a single-stage family;
+neither preset requires a three-stage family. Colosseum's two starters keep
+distinct families, without a power or shared-type constraint. XD has one starter. Its custom rate covers
 the starter, ordinary gifts and Shadow Pokémon; the Shadow unlock can be
 disabled separately. XD's Poké Spots retain their native shiny odds by default.
 Set a separate wild rate under **Advanced → Poké Spots**.
 Family diversity is best effort when fixed Pokémon or strict filters
 leave no alternative.
+Original legendary Shadow Pokémon keep their species by default in both games.
+Enable **Randomize legendary Shadow Pokémon** in Advanced to replace them;
+XD001 remains protected for XD's story. Colosseum's bonus encounter has separate
+controls for its team and final Shadow Pokémon.
 
 **Unchanged copy** preserves game data and can convert ISO ↔ RVZ. Imported
 profiles keep their saved settings, including defaults from older versions.
 Selecting a preset applies the current defaults.
+Older Colosseum profiles with unlinked custom shinies now use their seed for
+that rate, so previews, battles and supported story models can agree.
+
+The full preset draws moves without matching power, physical/special stats or
+the Pokémon's type. TM compatibility is randomized as well. It keeps an
+attacking move and avoids duplicate moves; the self-destruct and one-hit-KO
+exclusions are enabled by default and can be changed in Advanced.
+
+The full preset also randomizes ordinary Ball treasures. Key items, Time Flutes,
+guaranteed Evolution stones and other progression rewards remain protected.
+Pokémon without a held item stay empty-handed.
+Treasure replacements draw across eligible item categories and prices; enable
+similar-value matching in Advanced to constrain the pool.
+
+Trade evolutions and other unavailable routes are adapted so you can finish
+your team in the game you're playing. Evolution stones are added to shops in
+Phenac and Pyrite in Colosseum, and Gateon Port in XD. Each Pokémon's sheet
+lists its final evolution requirements, with normal or shiny portraits.
 
 | Colosseum · Simple settings | XD · Simple settings |
 | --- | --- |
@@ -82,6 +112,8 @@ Selecting a preset applies the current defaults.
 
 Check your starters, gifts and Shadow Pokémon before creating the ROM. Both
 games show the full Shadow roster, with 48 entries in Colosseum and 83 in XD.
+Colosseum's **Events** tab lets you preview or disable the
+[Shadow Lugia quest](#a-new-postgame-battle-in-colosseum), including the boss's team.
 Click a Shadow Pokémon or gift to open its Pokémon sheet. In XD you can also
 check Poké Spot encounters and see what Duking wants in each trade.
 
@@ -90,6 +122,12 @@ check Poké Spot encounters and see what Duking wants in each trade.
 | ![Colosseum starter preview](docs/images/colosseum-settings.png) | ![XD starter preview](docs/images/xd-starter-preview.png) |
 | ![Colosseum Shadow Pokémon preview](docs/images/shadow-pokemon.png) | ![XD Shadow Pokémon preview](docs/images/xd-shadow-pokemon.png) |
 | ![Colosseum gift preview](docs/images/colosseum-gifts.png) | ![XD gift and trade preview](docs/images/xd-gifts.png) |
+
+Colosseum's event gifts no longer need a distribution disc. With **Make event
+gifts obtainable** enabled, Eagun offers the Pikachu gift after 10 purifications
+and the Celebi gift after 25 at the Relic Stone. Both can be randomized, and
+you can change their thresholds and levels. His original story conversations,
+contact exchange and Master Ball handoff keep priority over the added rewards.
 
 ## In game
 
@@ -106,8 +144,10 @@ Your randomized Pokémon can show up outside battle, too. In supported scenes,
 the models and dialogue follow your run, from the starters riding in the
 sidecar at Outskirt Stand to the Pokémon Duking gives you in Pyrite. Miror B.'s
 dancers also change with his team in Pyrite Cave and at Gateon Port's lighthouse.
+Trainer dialogue follows randomized teams, including references to their
+Pokémon's types and moves. XD's Battle Simulator lessons also follow their
+new rental teams.
 
-Colosseum's DNA analyzer and door keypad follow the randomized Shadow Pokémon.
 Unown's letter comes from the seed in both games. Spinda's spots follow its
 in-game personality value, and the Pokémon sheet shows the exact pattern when
 it can be determined before play. [Forms and shiny rules](docs/SHINIES.md)
@@ -133,6 +173,46 @@ At XD's Poké Spots, you can spot a shiny in the field before you battle it.
 [Story-scene support](docs/reverse-engineering/STORY_GIFT_SCENES.md) ·
 [Showcase seeds](docs/images/manifest.json)
 
+### Choose your shiny odds
+
+Both randomizing presets start at **5%** for supported encounters. Set your
+own rate from 0% to 100% in Advanced, including XD's normally shiny-locked
+Shadow Pokémon. The seed fixes their result, and a shiny stays shiny after
+you snag it, evolve it or purify it. XD's wild Poké Spot rate is a separate
+setting and keeps the original odds by default.
+
+Shadow Lugia uses its dark XD model in both games, with a custom white-and-black
+shiny variant and matching portraits. Purification normally restores its
+ordinary appearance, pink when shiny. Enable **Keep Lugia's Shadow appearance**
+to keep the dark model after purification instead. This appearance-only
+option is off by default; Lugia that were never Shadow Pokémon keep their
+ordinary models. [Shiny and form rules](docs/SHINIES.md)
+
+| Shiny settings | Purified Lugia with its Shadow appearance kept |
+| --- | --- |
+| ![English shiny settings with a 5% rate and the optional Shadow appearance setting](docs/images/colosseum-shiny-settings.png) | ![White-and-black Lugia completing purification in XD](docs/images/xd-purified-shadow-lugia.png) |
+
+### A new postgame battle in Colosseum
+
+Cipher has one last plan for the Relic Stone. After you snag and purify all
+48 original Shadow Pokémon, a motorcycle trip to another area brings a P★DA
+warning from Eagun. Return to Agate to face Nascour and **level-70 Shadow
+Lugia** in a new scene with your partner and Eagun.
+
+![Nascour threatens the Relic Stone with a shiny Shadow Lugia](docs/images/colosseum-shadow-lugia-event.gif)
+
+Both randomizing presets enable this quest with its intended six-Pokémon team
+at levels 65-70 and Shadow Lugia as the final target. Under **Advanced → Starters
+and gifts**, independently enable **Randomize Nascour's team** to replace his
+first five Pokémon or **Randomize the bonus battle's Lugia** to replace the
+final Shadow Pokémon. Both switches are off by default. The scene model,
+dialogue and encounter follow the final replacement.
+Miss the capture and you can challenge him again. Snag the final Shadow Pokémon
+and Nascour leaves the shrine for good. It can then be purified normally;
+the original Ho-Oh requirements still count the original 48. Use **Pokémon
+preview → Events** to inspect the team or disable the quest.
+[Quest guide](docs/USER_GUIDE.md#colosseums-optional-shadow-lugia-event)
+
 ## What you can customize
 
 - **Pokémon:** species, evolution stages, generations, legendary restrictions,
@@ -151,7 +231,7 @@ you select a ROM. **Music** and **Sounds** have separate saved preferences.
 | Game-specific behavior | Colosseum | XD |
 | --- | --- | --- |
 | Starters | Two, originally Umbreon and Espeon | One, originally Eevee |
-| Shadow roster | 48 synchronized Shadow groups | 83 Shadow encounters; Shadow Lugia is protected |
+| Shadow roster | 48 synchronized Shadow groups; original legendaries preserved by default | 83 Shadow encounters; original legendaries preserved by default, XD001 always protected |
 | Gifts and trades | Plusle, Ho-Oh, Pikachu and Celebi | Duking's trades, Hordel's trade and Mt. Battle prizes |
 | Special encounters | Event gifts can be earned from Eagun after purification milestones | Tutorial Teddiursa and Hordel's Shadow Togepi are randomized by default; each can be disabled separately |
 | Poké Spots | — | Draw from the full supported Pokédex, subject to filters and power matching; Duking's requests follow the new rare slots |
@@ -227,7 +307,7 @@ The CLI uses the same engines. A profile reproduces the GUI's exact settings:
 python -m orre_randomizer.cli original.iso new-game.iso --profile my-run.json
 python -m orre_randomizer.cli xd-original.iso xd-new.iso --game xd --profile my-xd-run.json
 python -m orre_randomizer.cli --help
-python -m unittest discover -s tests -v
+python -X utf8 scripts/run_tests.py
 ```
 
 See [Contributing](CONTRIBUTING.md), the [release guide](docs/RELEASE.md), and

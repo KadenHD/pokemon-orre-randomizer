@@ -18,9 +18,9 @@ import time
 from typing import Callable, Sequence
 
 from . import __version__
-from .engine.analyze_game import FormatError, parse_fsys, sha256, u32
+from .engine.analyze_game import FormatError, parse_fsys, parse_rel, sha256, u32
 from .engine.evolution_rules import evolution_families, patch_evolutions
-from .engine.inspect_tables import localized_names, u16
+from .engine.inspect_tables import localized_names, rel_symbols, u16
 from .engine.randomize_accessible import (MOON_STONE_PRICE_OFFSET,
                                          randomize_accessible_rel)
 from .engine.randomize_story import DOL_SHA256, SPECIALS, experience_at_level, randomize_specials
@@ -33,10 +33,14 @@ from .engine.species_rules import species_catalog
 from .engine.tm_rules import apply_tm_rules
 from .engine.boss_rules import apply_boss_rules
 from .engine.trainer_policies import apply_trainer_policies
+from .engine.trainer_rematches import merge_trainer_aliases, synchronize_trainer_rematches
 from .engine.shiny_rules import apply_shiny_rules
 from .engine.item_rules import apply_field_items, patch_item_archive
 from .engine.item_text import apply_item_name_spacing
 from .engine.event_gifts import ARCHIVE_NAMES as EVENT_GIFT_ARCHIVES, patch_event_archive
+from .engine.postgame_lugia import apply_postgame_lugia, patch_postgame_lugia_archives, plan_postgame_lugia_team
+from .engine.postgame_lugia_model import install_postgame_lugia_model
+from .engine.postgame_mail import install_mail_hook, patch_mail_archives, patch_mail_rel
 from .engine.colo_trainer_dialogue import TRAINER_REMARK_REWRITES, trainer_dialogue_edits
 from .engine.gafar_dialogue import ARCHIVE_NAME as GAFAR_DIALOGUE_ARCHIVE, patch_gafar_dialogue
 from .engine.message_bank import patch_species_archive
@@ -45,17 +49,19 @@ from .engine.hooh_reward import patch_hooh_reward_scene
 from .engine.colo_spinda import colo_spinda_gift_pid, colo_spinda_seeds, colo_spinda_trainer_pid
 from .engine.colo_spinda_field import apply_colo_spinda_starters
 from .engine.colo_unown import patch_unown_form
-from .engine.dna_lab import dna_appearances, dna_room_updates, dna_spinda_samples, patch_dna_analyzer
+from .engine.dna_lab import (dna_appearances, dna_room_updates, dna_spinda_samples,
+                             dna_shadow_lugia_samples, patch_dna_analyzer)
 from .engine.dna_keypad_runtime import apply_dna_keypad_runtime
 from .engine.unown_form import unown_form
-from .engine.eagun_scene import patch_eagun_scenes
+from .engine.eagun_scene import patch_eagun_scenes, synchronize_eagun_gift
 from .engine.starter_arrival import ARRIVAL_ARCHIVE, patch_starter_arrival
 from .engine.plusle_actor import ACTOR_ARCHIVES, OVERSIZED_FIELD_SPECIES, companion_scale, load_actor_model, patch_actor
 from .engine.miror_scene import MIROR_CAVE, patch_cave_dancers, synchronize_cave_team
 from .engine.plusle_dialogue import ARCHIVE_NAMES as PLUSLE_DIALOGUE_ARCHIVES, patch_dialogue
 from .engine.qol_rules import apply_qol_rules
-from .pokemon_details import build_detail_catalog
+from .pokemon_details import append_postgame_trainer_details, build_detail_catalog
 from .journal import render_journal
+from .snag_list import apply_snag_list_identities
 from .engine.regions import region_for_boot, validate_disc_hash
 from .engine.dol_regions import dol_layout, special_targets
 from .engine.rel_regions import region_for_rel, shop_archive_names
@@ -70,7 +76,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "story-field-placement-v20"
+ENGINE_VERSION = "shadow-lugia-appearance-v24"
 
 
 @dataclass(frozen=True, slots=True)
@@ -128,11 +134,13 @@ def validate_setting_values(options):
 
 def validate_options(options: Options) -> Options:
     options = validate_setting_values(options)
-    if (options.randomize_trainers or options.randomize_shadows or options.boss_team_variety or options.trainer_force_evolved or any(getattr(options, name) for name in SPECIAL_OPTIONS.values())) and not any((options.allow_gen1, options.allow_gen2, options.allow_gen3)):
+    bonus_draws = options.postgame_shadow_lugia and (options.postgame_randomize_team or options.postgame_randomize_lugia)
+    if (bonus_draws or options.randomize_trainers or options.randomize_shadows or options.boss_team_variety or options.trainer_force_evolved or any(getattr(options, name) for name in SPECIAL_OPTIONS.values())) and not any((options.allow_gen1, options.allow_gen2, options.allow_gen3)):
         raise UserError("Activez au moins une génération dans « Pokémon autorisés ».")
     if options.evolution_groups & {"trade_items", "coquiperl", "day_night"} and not options.stone_shops:
         raise UserError("Activez la vente de pierres dans « Boutiques », ou désactivez les évolutions par pierre.")
-    if options.randomize_shadows and options.boss_shadow_legendary_mode == "preserve" and not options.allow_legendaries:
+    if (options.randomize_shadows and options.randomize_legendary_shadows
+            and options.boss_shadow_legendary_mode == "preserve" and not options.allow_legendaries):
         raise UserError("Pour garder le statut légendaire des obscurs de boss, autorisez les légendaires dans « Pokémon autorisés ».")
     return replace(options, unique_shadows=False) if not options.randomize_shadows else options
 
@@ -410,6 +418,9 @@ def final_report_summary(original_rel: bytes, base_rel: bytes, rel: bytes,
     for row in gameplay.get("trainer_level_edits", []):
         pos = tables["trainer_pokemon"]["offset"] + row["index"] * tables["trainer_pokemon"]["stride"]
         row["after"] = rel[pos + 4]
+    for row in gameplay.get("held_item_edits", []):
+        pos = tables["trainer_pokemon"]["offset"] + row["index"] * tables["trainer_pokemon"]["stride"]
+        row["after"] = u16(rel, pos + 0x12)
     if gameplay:
         gameplay["values_scope"] = "final REL after boss and trainer policies; each edit list retains its feature's original selection"
     for row in result.get("bosses", {}).get("edits", []):
@@ -521,18 +532,39 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         checkpoint(cancel)
         rel, summary["bosses"] = apply_boss_rules(original, rel, seed, options)
         rel, summary["trainer_policies"] = apply_trainer_policies(original, rel, seed, options)
+        rel, summary["trainer_rematches"], rematch_aliases = synchronize_trainer_rematches(
+            original, rel, seed, options)
         dancers, dancer_slots = (), ()
         if options.randomize_trainers:
             rel, dancers, dancer_slots = synchronize_cave_team(original, rel)
+        trainer_aliases = merge_trainer_aliases(rematch_aliases, dancer_slots)
         rel, summary["field_items"] = apply_field_items(original, rel, original_dol, seed, options)
         dol, summary["special_gameplay"] = apply_dol_rules(
             original_dol, dol, original, rel, seed, options, starter_result=starter_result, gift_picks=gift_picks)
+        rel, eagun_gift = synchronize_eagun_gift(original, rel, original_dol, dol, region.game_id,
+                                                enabled=options.accessible_event_gifts)
+        eagun_aliases = eagun_gift["trainer_special_aliases"] if eagun_gift else ()
+        if eagun_gift is not None:
+            summary["eagun_gift_link"] = eagun_gift
         rel, dol, summary["tms"] = apply_tm_rules(original, rel, original_dol, dol, seed, options)
-        spinda_seeds = colo_spinda_seeds(original, rel, original_dol, dol, seed, dancer_slots) if options.has_changes else {}
+        spinda_seeds = (colo_spinda_seeds(original, rel, original_dol, dol, seed, trainer_aliases,
+                                        trainer_special_aliases=eagun_aliases) if options.has_changes else {})
+        if options.postgame_shadow_lugia:
+            from .engine.spinda import SPINDA, spinda_pid_seed
+            for row in plan_postgame_lugia_team(original, rel, seed, options):
+                if row["species"] == SPINDA:
+                    spinda_seeds[row["key"]] = spinda_pid_seed(seed, "colo:" + row["key"]) or 1
         dol, shiny_report = apply_shiny_rules(original_dol, dol, options, seed=seed,
-                                              trainer_aliases=dancer_slots, spinda_seeds=spinda_seeds)
+                                              trainer_aliases=trainer_aliases, spinda_seeds=spinda_seeds,
+                                              trainer_special_aliases=eagun_aliases)
         summary["shinies"] = shiny_report
         dol, summary["quality_of_life"] = apply_qol_rules(original_dol, dol, options)
+        if options.has_changes:
+            from .engine.postgame_boss import bonus_shadow_species
+            dol, summary["snag_list"] = apply_snag_list_identities(
+                original_dol, dol, region.game_id, custom_shadow_shinies=options.custom_shinies,
+                postgame_shadow_lugia=options.postgame_shadow_lugia,
+                bonus_species=bonus_shadow_species(original, seed, options))
         if options.readable_stone_names:
             rel, summary["item_names"] = apply_item_name_spacing(original, rel)
         else:
@@ -542,10 +574,12 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 original_dol, dol, original, rel, sync_native_gift=options.custom_shinies)
         lab_appearances = dna_appearances(original, rel, options, shiny_report)
         samples = {}
+        lugia_samples = dna_shadow_lugia_samples(original, rel, lab_appearances)
         if lab_appearances:
             samples = dna_spinda_samples(original, rel, lab_appearances, options, shiny_report)
             dol = patch_dna_analyzer(original_dol, dol, lab_appearances, spinda_samples=samples,
-                                     spinda_pid=shiny_report.get("spinda_pid"))
+                                     spinda_pid=shiny_report.get("spinda_pid"),
+                                     shadow_lugia_samples=lugia_samples)
         form = unown_form(seed)
         if options.has_changes:
             dol = patch_unown_form(original_dol, dol, form)
@@ -559,8 +593,10 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                                         spinda_seeds=spinda_seeds, spinda_default=spinda_default)
         if arrival and any(row.get("spinda_live_pid") for row in arrival[1]):
             dol = apply_colo_spinda_starters(original_dol, dol, shiny_report["spinda_pid"]["resolver"], archive)
-        if samples:
-            dol = apply_dna_keypad_runtime(original_dol, dol, archive, samples, shiny_report["spinda_pid"])
+        if samples or lugia_samples:
+            dol = apply_dna_keypad_runtime(original_dol, dol, archive, samples, shiny_report.get("spinda_pid"),
+                shadow_lugia_samples=lugia_samples, appearances=lab_appearances,
+                keep_after_purification=options.keep_shadow_lugia_after_purification)
         summary = final_report_summary(original, base_rel, rel, original_dol, dol, seed, options, summary)
         if lab_appearances:
             summary["dna_lab"] = {
@@ -574,11 +610,36 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 members.setdefault(families[row["species"]], []).append(row["key"])
             for row in summary["final_shadow_picks"]:
                 members.setdefault(row["family"], []).append(f"shadow:{row['shadow_id']}")
+            if options.postgame_shadow_lugia:
+                members.setdefault(families[bonus_shadow_species(original, seed, options)], []).append("shadow:96")
             summary["story_families"] = {"distinct_family_count": len(members),
                                          "duplicates": [group for group in members.values() if len(group) > 1]}
         summary["detail_catalog"] = build_detail_catalog(original, rel, original_dol, dol, summary=summary)
+        rel, summary["postgame_shadow_lugia"] = apply_postgame_lugia(original, rel, options, seed=seed)
+        append_postgame_trainer_details(summary["detail_catalog"], rel, summary["postgame_shadow_lugia"])
+        lugia_models = {}
+        common_replacements = {member["index"]: rel} if rel != original else {}
+        lugia_shadow_ids = tuple(sorted(int(identifier) for identifier, encounter
+            in summary["detail_catalog"]["shadows"].items() if encounter["species"] == 249))
+        if lugia_shadow_ids or options.keep_shadow_lugia_after_purification:
+            dol, model_report = install_postgame_lugia_model(
+                original_dol, dol, archive, lugia_models,
+                keep_after_purification=options.keep_shadow_lugia_after_purification,
+                shadow_ids=lugia_shadow_ids)
+            summary["shadow_lugia_model"] = model_report
+            if options.postgame_shadow_lugia:
+                summary["postgame_shadow_lugia"]["model"] = model_report
+        if options.postgame_shadow_lugia:
+            mail_members = [m for m in parse_fsys(common)["members"] if m["name"] == "mail"]
+            if len(mail_members) != 1:
+                raise FormatError("missing native Colosseum mailbox REL")
+            mail_member = mail_members[0]
+            mail_rel, mail_report = patch_mail_rel(decoded_member(common, mail_member), region.game_id)
+            common_replacements[mail_member["index"]] = mail_rel
+            dol, mail_report["delivery"] = install_mail_hook(original_dol, dol)
+            summary["postgame_shadow_lugia"]["mail"] = mail_report
         progress(25, "Compression des données du jeu…")
-        new_common = repack_fsys(common, {member["index"]: rel})[0] if rel != original else common
+        new_common = repack_fsys(common, common_replacements)[0] if common_replacements else common
         checkpoint(cancel)
         old = by_name["common.fsys"]
         next_offset = min((e["disc_offset"] for e in entries if e["disc_offset"] > old["disc_offset"]), default=ISO_SIZE)
@@ -610,7 +671,9 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         struct.pack_into(">II", fst, old["index"] * 12 + 4, common_offset, len(new_common))
         cursor = align(common_offset + len(new_common) if relocated else sys_end, 0x8000)
         scene_updates = (dna_room_updates(original, region.game_id, archive, lab_appearances,
-                                          unown_form_index=form, spinda_samples=samples) if lab_appearances else {})
+                                          unown_form_index=form, spinda_samples=samples,
+                                          shadow_lugia_samples=lugia_samples) if lab_appearances else {})
+        scene_updates.update(lugia_models)
         if options.stone_shops or options.randomize_shop_items:
             summary["shop_archives"] = []
             shop_archives = shop_archive_names(original)
@@ -636,10 +699,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         if arrival is not None:
             scene_updates[ARRIVAL_ARCHIVE], summary["starter_arrival"] = arrival
         trainer_shinies = decisions.get("trainer_slots", {})
-        if options.randomize_trainers or options.custom_shinies:
+        if options.randomize_trainers or options.custom_shinies or options.accessible_event_gifts:
             partner = patch_eagun_scenes(original, rel, original_dol, region.game_id, archive,
                                           scene_updates, trainer_shinies, guaranteed_shiny, unown_form_index=form,
-                                          spinda_seeds=spinda_seeds, spinda_default=spinda_default)
+                                          spinda_seeds=spinda_seeds, spinda_default=spinda_default,
+                                          gift_partner=eagun_gift, special_shinies=decisions.get("specials", {}))
             if partner is not None:
                 summary["eagun_field_partner"] = partner
                 for report in summary["event_gifts"]["archives"]:
@@ -657,21 +721,21 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             )
             summary["miror_cave_dancers"] = list(dancers)
             summary["miror_cave_shiny_models"] = list(shiny_dancers)
-        if options.gift_plusle:
+        if options.gift_plusle or options.custom_shinies:
             gift = next(row for row in special_targets(original_dol) if row["key"] == "plusle")
             species_id = u16(dol, gift["base"] + 2)
-            if species_id != gift["old"]:
+            shiny = decisions.get("specials", {}).get("plusle", guaranteed_shiny)
+            if species_id != gift["old"] or shiny:
                 species = species_catalog(rel, layout(original)[0])[species_id]
                 national_dex = species["national_dex"]
                 model_id = u32(rel, species["offset"] + 0x2C)
                 # The captive Pokémon has to fit behind the cage bars.
                 scale = 0.5 * companion_scale(national_dex, 1.0) if national_dex in OVERSIZED_FIELD_SPECIES else 1.0
-                shiny = decisions.get("specials", {}).get("plusle", guaranteed_shiny)
                 spinda_mode = decisions.get("specials", {}).get("plusle", spinda_default)
                 spinda_pid = (colo_spinda_gift_pid(spinda_seeds, "plusle", spinda_mode)
                               if spinda_mode is not None else None)
                 model = load_actor_model(original_dol, region.game_id, model_id, archive, scale=scale, shiny=shiny,
-                                         unown_form_index=form, spinda_pid=spinda_pid)
+                                         unown_form_index=form, spinda_pid=spinda_pid, native_field_motions=True)
                 for name in PLUSLE_DIALOGUE_ARCHIVES:
                     checkpoint(cancel)
                     room = scene_updates[name] if name in scene_updates else archive(name)
@@ -720,6 +784,21 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 updated_dialogue[name] = sorted(messages)
             if updated_dialogue:
                 summary["shadow_dialogue"] = updated_dialogue
+        if options.postgame_shadow_lugia:
+            event_species = summary["postgame_shadow_lugia"]["species"]
+            summary["postgame_shadow_lugia"]["scene"] = patch_postgame_lugia_archives(
+                original, archive, scene_updates, options,
+                shiny=summary["postgame_shadow_lugia"]["team"][-1]["shiny"],
+                species=event_species, original_dol=original_dol, seed=seed)
+            species_names = None
+            if event_species != 249:
+                names = localized_names(original, rel_symbols(original, parse_rel(original)))[0]
+                species_table = layout(original)[0]["species"]
+                name_id = u32(original, species_table["offset"] + event_species * species_table["stride"] + 0x18)
+                species_names = {language: names[language][name_id]
+                                 for language in region_for_rel(original).native_languages}
+            summary["postgame_shadow_lugia"]["mail"]["languages"] = patch_mail_archives(
+                region.game_id, archive, scene_updates, species_names=species_names)
         for name, payload in scene_updates.items():
             checkpoint(cancel)
             if cursor + len(payload) > first_file:

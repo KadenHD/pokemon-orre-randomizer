@@ -420,7 +420,7 @@ class EncounterTable(QTreeWidget):
                    if self.visualItemRect(item).intersects(self.viewport().rect())]
         if not visible:
             return text("{count} résultats", count=len(items))
-        return text("{first}–{last} sur {count}", first=visible[0], last=visible[-1], count=len(items))
+        return text("{first}-{last} sur {count}", first=visible[0], last=visible[-1], count=len(items))
 
 
 class DeliberateWheel(QObject):

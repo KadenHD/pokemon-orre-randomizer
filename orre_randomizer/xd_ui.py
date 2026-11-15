@@ -41,6 +41,7 @@ DEPENDENCIES = {
     "poke_spots_full_pokedex": ("randomize_poke_spots",),
     "poke_spot_shiny_chance_percent": ("custom_poke_spot_shinies",),
     "unique_shadow_families": ("randomize_shadows",),
+    "randomize_legendary_shadows": ("randomize_shadows",),
     "boss_shadow_legendary_mode": ("randomize_shadows",),
     "boss_shadow_power_mode": ("randomize_shadows",),
     "boss_shadow_min_bst": ("randomize_shadows",),
@@ -809,7 +810,7 @@ class XDWorkspace(QWidget):
                 shown = f"{native} → {shown}"
             level = row.get("level")
             if row.get("levels"):
-                level = "–".join(map(str, row["levels"]))
+                level = "-".join(map(str, row["levels"]))
             return self.window.text("{name} · Niv. {level}", name=shown, level=level) if level is not None else shown
 
         starter = data.get("starter")

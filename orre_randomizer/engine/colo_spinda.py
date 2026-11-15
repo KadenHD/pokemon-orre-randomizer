@@ -10,6 +10,14 @@ ORDINARY_SPINDA_OT = 0x5350494E
 _GIFT_OWNERS = {"plusle": 0x1911D, "ho-oh": 0x2740, "celebi-event": 0x7991, "pikachu-event": 0x7991}
 
 
+def colo_trainer_gift_owners(aliases):
+    """Only the explicitly linked Eagun partner may use its gift's native OT."""
+    aliases = tuple(aliases)
+    if aliases not in ((), ((2822, "pikachu-event"),)):
+        raise ValueError("unsupported Colosseum trainer/gift identity link")
+    return {slot: _GIFT_OWNERS[key] for slot, key in aliases}
+
+
 def colo_spinda_pid(rng_seed, *, owner, gender, nature, shiny):
     """Mirror the verified Colosseum RNG for an encounter whose inputs are known."""
     if gender not in (-1, 0, 1, 2) or not -1 <= nature < 25:
@@ -28,7 +36,7 @@ def colo_spinda_pid(rng_seed, *, owner, gender, nature, shiny):
                 return pid
 
 
-def colo_spinda_trainer_pid(original_rel, current_rel, seeds, slot, shiny):
+def colo_spinda_trainer_pid(original_rel, current_rel, seeds, slot, shiny, *, trainer_special_aliases=()):
     """Return the actual PID of a seeded ordinary trainer's Spinda."""
     seed = seeds.get(f"trainer:{slot}")
     if seed is None:
@@ -36,7 +44,8 @@ def colo_spinda_trainer_pid(original_rel, current_rel, seeds, slot, shiny):
     party = layout(original_rel)[0]["trainer_pokemon"]
     offset = party["offset"] + slot * party["stride"]
     gender, nature = (value if value < 128 else value - 256 for value in current_rel[offset + 1:offset + 3])
-    return colo_spinda_pid(seed, owner=ORDINARY_SPINDA_OT, gender=gender, nature=nature, shiny=shiny)
+    owner = colo_trainer_gift_owners(trainer_special_aliases).get(slot, ORDINARY_SPINDA_OT)
+    return colo_spinda_pid(seed, owner=owner, gender=gender, nature=nature, shiny=shiny)
 
 
 def colo_spinda_gift_pid(seeds, key, shiny):
@@ -47,7 +56,9 @@ def colo_spinda_gift_pid(seeds, key, shiny):
     return colo_spinda_pid(seed, owner=_GIFT_OWNERS[key], gender=-1, nature=-1, shiny=shiny)
 
 
-def colo_spinda_seeds(original_rel, current_rel, original_dol, current_dol, seed, trainer_aliases=()):
+def colo_spinda_seeds(original_rel, current_rel, original_dol, current_dol, seed, trainer_aliases=(),
+                      *, trainer_special_aliases=()):
+    colo_trainer_gift_owners(trainer_special_aliases)
     party = layout(original_rel)[0]["trainer_pokemon"]
     seeds = {}
     for slot in range(party["count"]):
@@ -65,6 +76,9 @@ def colo_spinda_seeds(original_rel, current_rel, original_dol, current_dol, seed
         if u16(current_dol, target["base"] + 2) == SPINDA:
             key = f"special:{target['key']}"
             seeds[key] = spinda_pid_seed(seed, f"colo:{key}") or 1
+    for slot, key in trainer_special_aliases:
+        if f"trainer:{slot}" in seeds and f"special:{key}" in seeds:
+            seeds[f"trainer:{slot}"] = seeds[f"special:{key}"]
     return seeds
 
 

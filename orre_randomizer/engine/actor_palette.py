@@ -11,6 +11,16 @@ _SWAP_CMPR_ALPHA = bytes(
 )
 
 
+def _cmpr_endpoints(a, b, indices, c, d):
+    """Keep the original CMPR opacity mode when remapped endpoints reorder."""
+    if a > b and c == d:
+        indices = bytes(4)  # the transformed opaque endpoints collapsed
+    elif (a > b) != (c > d):
+        c, d = d, c
+        indices = bytes(value ^ 0x55 for value in indices) if a > b else indices.translate(_SWAP_CMPR_ALPHA)
+    return c, d, indices
+
+
 def pkx_recipe(pkx, *, xd):
     # Routing is stored in four words; the multipliers follow in RGBA (XD)
     # or reversed order (Colosseum). 127 is the neutral multiplier.
@@ -108,11 +118,7 @@ def tint_field_model(data, relocations, model, recipe):
                     continue
                 a, b, indices = struct.unpack_from(">HH4s", source, at)
                 c, d = convert(a, 4), convert(b, 4)
-                if a > b and c == d:
-                    indices = bytes(4)  # the transformed opaque endpoints collapsed
-                elif (a > b) != (c > d):
-                    c, d = d, c
-                    indices = bytes(v ^ 0x55 for v in indices) if a > b else indices.translate(_SWAP_CMPR_ALPHA)
+                c, d, indices = _cmpr_endpoints(a, b, indices, c, d)
                 struct.pack_into(">HH4s", data, at, c, d, indices)
                 written.add(at)
     for material in solid:
@@ -120,8 +126,8 @@ def tint_field_model(data, relocations, model, recipe):
             data[at:at + 3] = bytes(color(source[at:at + 4]))
 
 
-def _walk_materials(data, relocations, model):
-    """Collect textures and idle texture frames through the HSD pointer graph."""
+def _walk_materials(data, relocations, model, *, include_textured_colors=False):
+    """Collect textures and animation frames through the HSD pointer graph."""
     images, palettes, solid = set(), set(), set()
     seen = set()
 
@@ -155,14 +161,22 @@ def _walk_materials(data, relocations, model):
             material = pointer(mesh + 8)
             if material is None:
                 continue
-            if pointer(material + 8) is None:
+            if include_textured_colors or pointer(material + 8) is None:
                 collect(solid, material + 12)
             for texture in visit("textures", material + 8):
                 collect(images, texture + 0x4C)
                 collect(palettes, texture + 0x50)
-    idle_material_table = pointer(model + 8)
-    if idle_material_table is not None and u32(data, idle_material_table):
-        for joint in visit("mat_joints", idle_material_table):
+    material_table = pointer(model + 8)
+    if material_table is not None:
+        # PKX Idle does not necessarily reference DAT animation zero. Keep
+        # alternate idle frames and native field locomotion shiny as well.
+        animation_slots = []
+        for index in range(64):
+            slot = material_table + index * 4
+            if not u32(data, slot):
+                break
+            animation_slots.append(slot)
+        for joint in visit("mat_joints", *animation_slots):
             for material in visit("mat_anims", joint + 8):
                 for texture in visit("tex_anims", material + 8):
                     counts = struct.unpack_from(">HH", data, texture + 0x14)

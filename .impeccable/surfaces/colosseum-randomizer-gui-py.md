@@ -2,7 +2,7 @@
 version: 1
 slug: "colosseum-randomizer-gui-py"
 primary_target: "orre_randomizer/gui.py"
-related_targets: ["orre_randomizer/xd_ui.py", "orre_randomizer/ui_theme.py", "orre_randomizer/ui_workspace.py", "orre_randomizer/ui_pokemon_details.py", "orre_randomizer/workspace_copy.py", "orre_randomizer/workspace_i18n.py"]
+related_targets: ["orre_randomizer/xd_ui.py", "orre_randomizer/ui_theme.py", "orre_randomizer/ui_workspace.py", "orre_randomizer/ui_bonus_event.py", "orre_randomizer/ui_pokemon_details.py", "orre_randomizer/workspace_copy.py", "orre_randomizer/workspace_i18n.py", "orre_randomizer/ui_home.py", "orre_randomizer/ui_updates.py", "orre_randomizer/update_service.py"]
 ---
 
 # Surface: Shared game workspaces
@@ -21,11 +21,12 @@ unsupported system languages fall back to English.
 | --- | --- |
 | Three persistent steps | Shared wizard frame; active step includes the Poké Ball cursor |
 | Game-specific identity | Original game logo, theme and bundled interface media; neutral home gradient |
+| Home update | One neutral secondary button below both tiles for newer verified stable Windows releases; downloads, verifies, applies and restarts, with inline progress/cancel/error states |
 | Settings views | Configuration and Pokémon preview share the seed row |
 | Three presets | Pokémon + moves, Pokémon only, Unchanged copy; explanations appear directly below |
 | Custom values | Clearly identified; Simple/Advanced switches preserve them |
 | Advanced rules | Searchable metadata, shared control order and category help; 192 px sidebar or compact selector |
-| Preview tabs | Colosseum: 2 starters, 48 Shadows, 4 gifts; XD: 1 starter, 83 Shadows, 7 gifts, 9 Poké Spot slots |
+| Preview tabs | Colosseum: 2 starters, 48 Shadows, 4 gifts and optional-event preview; XD: 1 starter, 83 Shadows, 7 gifts, 9 Poké Spot slots |
 | Pending preview | Native originals and unknown replacements; retained/manual species may already be named |
 | Search and scrolling | Names in six languages and National Pokédex IDs; visible-range counter and contrasted scrollbar |
 | Loading | Shared background worker, 115 ms cosmetic cycle, progress, cancellation and stale-result rejection |
@@ -49,6 +50,27 @@ See docs/INTERFACE_PARITY.md for the shared behavior and intentional exceptions.
 Verification covers all six languages, both sizes, pending/loading/ready/error
 states, search, cancellation, preserved values, report comparison and sheets.
 Native ROM and save files remain outside the interface-maintenance workflow.
+The Events preview reuses the existing portrait and Pokémon-sheet controls.
+Its bonus event can be toggled without leaving the preview; pending random
+members show question marks. The known bonus species uses XD's original dark
+portrait. Ready teams come from the production patch plan, including shiny
+decisions. Cards use three columns on a wide panel and two on smaller windows,
+inside one clearly scrollable content area.
 Validation errors must not reveal the creation log. Details becomes available
 only after generation starts and only on Create, including its resulting failure
 or cancellation. A new attempt clears the old log and resets the disclosure.
+
+Home keeps game selection primary. Its optional release update sits below
+the two tiles and above the credit, with the same neutral palette as header
+controls. The localized version label also serves as its accessible name.
+The once-per-session asynchronous check has no modal or visible loading row;
+current, offline, failed and invalid responses leave the button hidden.
+One click downloads, verifies, applies and restarts the app. Downloading is
+cancellable; preparation and restart explain what happens next. Errors show
+inline and allow retry. Source checkouts do not replace themselves. Returning
+home retains an already available update without starting another check.
+
+The application header stays visible while one home-body area scrolls vertically
+when needed. Tiles stack below 800 px and sit side by side otherwise; the tiles,
+download and credit share this scroll area. Do not add a nested update scroller
+or a horizontal scrollbar. Existing shared content bounds remain 1,200 px.

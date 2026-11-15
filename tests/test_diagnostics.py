@@ -14,6 +14,18 @@ except ImportError:
 
 @unittest.skipIf(QApplication is None, "requires optional Qt desktop dependencies")
 class DiagnosticTests(unittest.TestCase):
+    def test_existing_or_invalid_report_path_is_refused_without_opening_the_gui(self):
+        from orre_randomizer.diagnostics import main
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            report = root / 'existing.json'
+            report.write_text('preserve earlier evidence')
+            with patch('orre_randomizer.diagnostics.run_checks') as checked:
+                self.assertEqual(main([str(report)]), 2)
+                self.assertEqual(main([str(root / 'missing/report.json')]), 2)
+                checked.assert_not_called()
+            self.assertEqual(report.read_text(), 'preserve earlier evidence')
+
     def test_public_window_in_all_languages_and_sizes_without_personal_settings(self):
         from orre_randomizer.diagnostics import run_checks
         self.app = QApplication.instance() or QApplication([])

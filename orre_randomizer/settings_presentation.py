@@ -23,7 +23,7 @@ XD_TO_COMMON = {
 def presentation_fields(options_type):
     """Keep common controls in the same order without changing stored schemas."""
     common_order = {name: index for index, name in enumerate(_FIELDS)}
-    items = fields(options_type)
+    items = tuple(item for item in fields(options_type) if not item.metadata.get('retired'))
     order = {item.name: index for index, item in enumerate(items)}
     return tuple(sorted(items, key=lambda item: (
         CATEGORY_ORDER.index(item.metadata['group']),
@@ -66,17 +66,18 @@ def effective_setting_names(options):
     """Select controls which the engine actually consults in this configuration."""
     actions = ('randomize_trainers','randomize_shadows','trainer_force_evolved',
         'starter_umbreon','starter_espeon','gift_plusle','gift_hooh','event_pikachu','event_celebi','diverse_story_families',
-        'accessible_event_gifts','evolve_trade','evolve_trade_items','evolve_coquiperl',
+        'accessible_event_gifts','postgame_shadow_lugia','evolve_trade','evolve_trade_items','evolve_coquiperl',
         'evolve_day_night','evolve_beauty','stones_phenac','stones_pyrite','readable_stone_names',
         'randomize_trainer_moves','randomize_starter_moves','randomize_gift_moves','randomize_learnsets',
         'randomize_abilities','randomize_stats','randomize_types','randomize_held_items',
         'randomize_tm_moves','randomize_field_items','randomize_shop_items','boss_stronger',
-        'boss_team_variety','custom_shinies')
+        'boss_team_variety','custom_shinies','keep_shadow_lugia_after_purification')
     selected = {name for name in actions if getattr(options,name)}
     def add(names, condition=True):
         if condition:
             selected.update(names)
-    add(('unique_shadows','boss_shadow_legendary_mode','boss_shadow_power_mode','boss_shadow_min_bst'), options.randomize_shadows)
+    add(('unique_shadows','randomize_legendary_shadows','boss_shadow_legendary_mode','boss_shadow_power_mode','boss_shadow_min_bst'), options.randomize_shadows)
+    add(('postgame_randomize_team','postgame_randomize_lugia'), options.postgame_shadow_lugia)
     add(('trainer_theme_mode',), options.randomize_trainers)
     add(('trainer_evolution_level',), options.trainer_force_evolved)
     starters = options.starter_umbreon or options.starter_espeon
@@ -88,7 +89,8 @@ def effective_setting_names(options):
             random_starter |= not getattr(options,'starter_'+key+'_species')
     add(('starter_stage','starter_three_stage_families'), random_starter)
     add(('event_pikachu_purifications','event_celebi_purifications','event_pikachu_level','event_celebi_level'), options.accessible_event_gifts)
-    species_changes = any(getattr(options,name) for name in ('randomize_trainers','randomize_shadows',
+    bonus_species_changes = options.postgame_shadow_lugia and (options.postgame_randomize_team or options.postgame_randomize_lugia)
+    species_changes = bonus_species_changes or any(getattr(options,name) for name in ('randomize_trainers','randomize_shadows',
         'starter_umbreon','starter_espeon','gift_plusle','gift_hooh','event_pikachu','event_celebi','boss_team_variety','trainer_force_evolved'))
     add(('allow_gen1','allow_gen2','allow_gen3','allow_legendaries','excluded_species','excluded_types'), species_changes)
     add(('balance_species',), random_starter or any(getattr(options,name) for name in
@@ -104,7 +106,6 @@ def effective_setting_names(options):
     add(('tm_compatibility_mode',), options.randomize_tm_moves or options.tm_compatibility_mode!='original')
     add(('tm_ensure_offensive',), options.tm_compatibility_mode!='original')
     add(('shiny_chance_percent',), options.custom_shinies)
-    add(('seeded_shinies',), options.custom_shinies and 0<options.shiny_chance_percent<100)
     add(('progressive_levels','early_level_multiplier','mid_level_multiplier','late_level_multiplier'), options.progressive_levels)
     add(('trainer_level_multiplier',), not options.progressive_levels and options.trainer_level_multiplier!=1)
     for name, neutral in (('experience_multiplier',1),('purification_multiplier',1),('capture_rate_multiplier',1),('minimum_catch_rate',0)):
@@ -152,6 +153,13 @@ def _value(name, options, language, metadata):
             return translate('Choisissez un Pokémon de la liste pour {label}.',language).format(label=translate(meta['label'],language))
         return SPECIES_NAMES[language].get(value, translate('Tirage avec la seed',language))
     if type(value) is bool:
+        preserved = {
+            'randomize_legendary_shadows': 'Désactivé - espèces d’origine conservées',
+            'postgame_randomize_team': 'Désactivé - équipe prévue pour la quête',
+            'postgame_randomize_lugia': 'Désactivé - Lugia obscur conservé',
+        }
+        if not value and name in preserved:
+            return translate(preserved[name], language)
         return detail_text('enabled' if value else 'disabled',language)
     if meta['kind']=='choice':
         return next((translate(label,language) for identifier,label in meta['choices'] if identifier==value),str(value))

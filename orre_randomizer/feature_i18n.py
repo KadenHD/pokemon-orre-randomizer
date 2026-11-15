@@ -25,20 +25,20 @@ OPTION_ROWS = {
    "シードで抽選するか、ポケモンを指定します。指定時は進化段階と個体の強さの条件を使いません。除外とペアの条件は有効です。エーフィを変更しない場合は無効です。")),
  "progressive_levels": (
   ("Progressive difficulty", "Gestaffelter Schwierigkeitsgrad", "Dificultad progresiva", "Difficoltà progressiva", "段階別の難易度"),
-  ("Replace the global multiplier with three tiers based on original opponent levels: 1–35, 36–50 and 51–100. Boss bonuses apply afterwards. Starters and gifts are unchanged.",
-   "Ersetzt den Gesamtfaktor durch drei Bereiche nach dem ursprünglichen Gegnerlevel: 1–35, 36–50 und 51–100. Bossboni folgen danach. Starter und Geschenke bleiben unverändert.",
-   "Sustituye el multiplicador global por tres tramos del nivel original: 1–35, 36–50 y 51–100. Los bonus de jefes se añaden después. No cambia iniciales ni regalos.",
-   "Sostituisce il moltiplicatore globale con tre fasce del livello originale: 1–35, 36–50 e 51–100. I bonus dei boss si aggiungono dopo. Non cambia iniziali o regali.",
+  ("Replace the global multiplier with three tiers based on original opponent levels: 1-35, 36-50 and 51-100. Boss bonuses apply afterwards. Starters and gifts are unchanged.",
+   "Ersetzt den Gesamtfaktor durch drei Bereiche nach dem ursprünglichen Gegnerlevel: 1-35, 36-50 und 51-100. Bossboni folgen danach. Starter und Geschenke bleiben unverändert.",
+   "Sustituye el multiplicador global por tres tramos del nivel original: 1-35, 36-50 y 51-100. Los bonus de jefes se añaden después. No cambia iniciales ni regalos.",
+   "Sostituisce il moltiplicatore globale con tre fasce del livello originale: 1-35, 36-50 e 51-100. I bonus dei boss si aggiungono dopo. Non cambia iniziali o regali.",
    "相手の元のレベルに応じて、全体倍率の代わりに３つの倍率を使います（1〜35、36〜50、51〜100）。ボスの補正は後から加算します。最初の２匹とプレゼントには影響しません。")),
  "early_level_multiplier": (
-  ("Early — original levels 1–35 ×", "Anfang — Ursprungslevel 1–35 ×", "Inicio — niveles originales 1–35 ×", "Inizio — livelli originali 1–35 ×", "序盤：元のレベル1〜35の倍率"),
-  ("Opponent multiplier for original levels 1–35, with progressive difficulty enabled.", "Gegnerfaktor für ursprüngliche Level 1–35 bei gestaffeltem Schwierigkeitsgrad.", "Multiplicador para niveles originales 1–35 con dificultad progresiva.", "Moltiplicatore per livelli originali 1–35 con difficoltà progressiva.", "段階別の難易度が有効なとき、元のレベルが1〜35の相手に適用します。")),
+  ("Early - original levels 1-35 ×", "Anfang - Ursprungslevel 1-35 ×", "Inicio - niveles originales 1-35 ×", "Inizio - livelli originali 1-35 ×", "序盤：元のレベル1〜35の倍率"),
+  ("Opponent multiplier for original levels 1-35, with progressive difficulty enabled.", "Gegnerfaktor für ursprüngliche Level 1-35 bei gestaffeltem Schwierigkeitsgrad.", "Multiplicador para niveles originales 1-35 con dificultad progresiva.", "Moltiplicatore per livelli originali 1-35 con difficoltà progressiva.", "段階別の難易度が有効なとき、元のレベルが1〜35の相手に適用します。")),
  "mid_level_multiplier": (
-  ("Middle — original levels 36–50 ×", "Mitte — Ursprungslevel 36–50 ×", "Mitad — niveles originales 36–50 ×", "Metà — livelli originali 36–50 ×", "中盤：元のレベル36〜50の倍率"),
-  ("Opponent multiplier for original levels 36–50, with progressive difficulty enabled.", "Gegnerfaktor für ursprüngliche Level 36–50 bei gestaffeltem Schwierigkeitsgrad.", "Multiplicador para niveles originales 36–50 con dificultad progresiva.", "Moltiplicatore per livelli originali 36–50 con difficoltà progressiva.", "段階別の難易度が有効なとき、元のレベルが36〜50の相手に適用します。")),
+  ("Middle - original levels 36-50 ×", "Mitte - Ursprungslevel 36-50 ×", "Mitad - niveles originales 36-50 ×", "Metà - livelli originali 36-50 ×", "中盤：元のレベル36〜50の倍率"),
+  ("Opponent multiplier for original levels 36-50, with progressive difficulty enabled.", "Gegnerfaktor für ursprüngliche Level 36-50 bei gestaffeltem Schwierigkeitsgrad.", "Multiplicador para niveles originales 36-50 con dificultad progresiva.", "Moltiplicatore per livelli originali 36-50 con difficoltà progressiva.", "段階別の難易度が有効なとき、元のレベルが36〜50の相手に適用します。")),
  "late_level_multiplier": (
-  ("Late — original levels 51–100 ×", "Ende — Ursprungslevel 51–100 ×", "Final — niveles originales 51–100 ×", "Fine — livelli originali 51–100 ×", "終盤：元のレベル51〜100の倍率"),
-  ("Opponent multiplier for original levels 51–100, with progressive difficulty enabled.", "Gegnerfaktor für ursprüngliche Level 51–100 bei gestaffeltem Schwierigkeitsgrad.", "Multiplicador para niveles originales 51–100 con dificultad progresiva.", "Moltiplicatore per livelli originali 51–100 con difficoltà progressiva.", "段階別の難易度が有効なとき、元のレベルが51〜100の相手に適用します。")),
+  ("Late - original levels 51-100 ×", "Ende - Ursprungslevel 51-100 ×", "Final - niveles originales 51-100 ×", "Fine - livelli originali 51-100 ×", "終盤：元のレベル51〜100の倍率"),
+  ("Opponent multiplier for original levels 51-100, with progressive difficulty enabled.", "Gegnerfaktor für ursprüngliche Level 51-100 bei gestaffeltem Schwierigkeitsgrad.", "Multiplicador para niveles originales 51-100 con dificultad progresiva.", "Moltiplicatore per livelli originali 51-100 con difficoltà progressiva.", "段階別の難易度が有効なとき、元のレベルが51〜100の相手に適用します。")),
  "experience_multiplier": (
   ("Battle EXP gained ×", "Erhaltene Kampf-EP ×", "Experiencia ganada en combate ×", "Esperienza ottenuta in lotta ×", "バトルで得る経験値の倍率"),
   ("Multiply EXP gained in battle. ×1 keeps the original game. Starting EXP for starters and gifts is unchanged.", "Multipliziert Kampf-EP. ×1 erhält das Original. Die Start-EP von Startern und Geschenken bleiben unverändert.", "Multiplica la experiencia de combate. ×1 conserva el original. No cambia la experiencia inicial de iniciales ni regalos.", "Moltiplica l’esperienza di lotta. ×1 conserva il gioco originale. Non cambia l’esperienza iniziale di iniziali e regali.", "バトルで得る経験値を増減します。×1は元のままです。最初の２匹とプレゼントの初期経験値は変わりません。")),
@@ -120,9 +120,88 @@ ROWS = [
  ("Pokémon XD", "Pokémon XD", "Pokémon XD", "Pokémon XD", "Pokémon XD", "ポケモンXD"),
  ("À venir", "Coming later", "In Vorbereitung", "Próximamente", "In arrivo", "対応予定"),
  ("Accueil", "Home", "Startseite", "Inicio", "Home", "ホーム"),
+ ("Désactivé - espèces d’origine conservées", "Off - original species preserved", "Aus - ursprüngliche Arten bleiben erhalten", "Desactivado - especies originales conservadas", "Disattivato - specie originali mantenute", "オフ - 元の種類を維持"),
+ ("Désactivé - équipe prévue pour la quête", "Off - quest's intended team", "Aus - vorgesehenes Quest-Team", "Desactivado - equipo previsto para la misión", "Disattivato - squadra prevista per la missione", "オフ - イベント用の手持ちを維持"),
+ ("Désactivé - Lugia obscur conservé", "Off - Shadow Lugia preserved", "Aus - Crypto-Lugia bleibt erhalten", "Desactivado - Lugia oscuro conservado", "Disattivato - Lugia Ombra mantenuto", "オフ - ダークルギアを維持"),
+ ("Autorise le remplacement des légendaires obscurs d’origine. Désactivé : ils gardent leur espèce. XD001 garde sa protection liée au scénario.",
+  "Allow original legendary Shadow Pokémon to change species. Off: they keep their original species. XD001 always keeps its species for the story.",
+  "Erlaubt den Artwechsel ursprünglicher legendärer Crypto-Pokémon. Aus: Ihre Art bleibt erhalten. XD001 behält seine Art wegen seiner Rolle in der Handlung immer bei.",
+  "Permite cambiar la especie de los Pokémon oscuros legendarios originales. Desactivado: conservan su especie. XD001 conserva siempre su especie por su papel en la historia.",
+  "Consente di cambiare la specie dei Pokémon leggendari Ombra originali. Disattivato: mantengono la loro specie. XD001 mantiene sempre la sua specie per il suo ruolo nella storia.",
+  "元から登場する伝説のダークポケモンの種類を変更します。オフでは元の種類を維持します。XD001はストーリーに必要なため、常に元の種類を維持します。"),
+ ("Jakylla menace la Relique Sacrée avec six Pokémon de niveau 65 à 70. Il reste sur place tant que son Pokémon obscur n’est pas capturé.",
+  "Nascour threatens the Relic Stone with six Pokémon at levels 65-70. He stays until his Shadow Pokémon is snagged.",
+  "Jakira bedroht das Sanktuarium mit sechs Pokémon auf Level 65-70. Er bleibt, bis sein Crypto-Pokémon gefangen wurde.",
+  "Fústeo amenaza la Piedra Sagrada con seis Pokémon de nivel 65-70. Se queda hasta que arrebates a su Pokémon oscuro.",
+  "Nascour minaccia la Pietra Sacra con sei Pokémon di livello 65-70. Rimane finché il suo Pokémon Ombra non viene catturato.",
+  "ジャキラがレベル65-70の6匹を連れて聖なるほこらを襲います。ダークポケモンをスナッチするまで、その場に残ります。"),
+ ("Lugia obscur chromatique est blanc et noir. L’option de conservation de son apparence est activée : il garde ce modèle après purification.",
+  "Shiny Shadow Lugia is white and black. Keep Lugia's Shadow appearance is on, so it keeps this model after purification.",
+  "Schillerndes Crypto-Lugia ist weiß und schwarz. Die Beibehaltung seines Crypto-Aussehens ist aktiviert; es behält dieses Modell nach der Erlösung.",
+  "Lugia oscuro variocolor es blanco y negro. La opción de conservar su aspecto oscuro está activada: mantiene este modelo tras la purificación.",
+  "Lugia Ombra cromatico è bianco e nero. L'opzione per mantenere il suo aspetto Ombra è attiva: conserva questo modello dopo la purificazione.",
+  "色違いのダークルギアは白と黒の姿です。ダークの姿を残す設定がオンのため、リライブ後もこのモデルを使います。"),
 ]
 
 TEXTS = {lang: {row[0]: row[index + 1] for row in ROWS} for index, lang in enumerate(LANGS)}
+OPTION_ROWS["postgame_shadow_lugia"] = (
+    ("Bonus battle: Shadow Lugia", "Zusatzkampf: Crypto-Lugia", "Combate extra: Lugia oscuro", "Lotta extra: Lugia Ombra", "追加バトル：ダークルギア"),
+    ("After snagging and purifying all 48 original Shadow Pokémon, face Nascour at the Relic Stone. By default: five Pokémon at levels 65-69 and level-70 Shadow Lugia. The team and final Shadow Pokémon have separate randomization settings. The battle stays available until the Shadow Pokémon is snagged.",
+     "Fange und erlöse alle 48 ursprünglichen Crypto-Pokémon und tritt am Sanktuarium gegen Jakira an. Standardmäßig: fünf Pokémon auf Level 65-69 und Crypto-Lugia auf Level 70. Team und letztes Crypto-Pokémon haben getrennte Randomisierungsoptionen. Der Kampf bleibt bis zum Fang des Crypto-Pokémon verfügbar.",
+     "Tras arrebatar y purificar los 48 Pokémon oscuros originales, enfréntate a Fústeo en la Piedra Sagrada. Por defecto: cinco Pokémon de nivel 65-69 y Lugia oscuro de nivel 70. El equipo y el Pokémon oscuro final tienen ajustes de aleatorización separados. El combate sigue disponible hasta que arrebates al Pokémon oscuro.",
+     "Dopo aver catturato e purificato i 48 Pokémon Ombra originali, affronta Nascour alla Pietra Sacra. Per impostazione predefinita: cinque Pokémon di livello 65-69 e Lugia Ombra di livello 70. La squadra e il Pokémon Ombra finale hanno impostazioni di randomizzazione separate. Puoi ripetere la lotta fino alla cattura del Pokémon Ombra.",
+     "元から登場する48匹すべてをスナッチしてリライブすると、聖なるほこらでジャキラと戦えます。初期設定ではレベル65-69の5匹とレベル70のダークルギアが登場します。手持ちと最後のダークポケモンは別々にランダム化できます。ダークポケモンをスナッチするまで再戦できます。"))
+OPTION_ROWS.update({
+    "randomize_legendary_shadows": (
+        ("Randomize legendary Shadow Pokémon", "Legendäre Crypto-Pokémon randomisieren", "Aleatorizar los Pokémon oscuros legendarios", "Randomizza i Pokémon leggendari Ombra", "伝説のダークポケモンをランダム化"),
+        ("Allow original legendary Shadow Pokémon to change species. Off: they keep their original species while other Shadows can change. The bonus battle has its own setting.",
+         "Erlaubt den Artwechsel ursprünglicher legendärer Crypto-Pokémon. Aus: Ihre Art bleibt erhalten, andere Crypto-Pokémon können sich ändern. Der Zusatzkampf hat eine eigene Einstellung.",
+         "Permite cambiar la especie de los Pokémon oscuros legendarios originales. Desactivado: conservan su especie aunque cambien los demás oscuros. El combate extra tiene su propio ajuste.",
+         "Consente di cambiare la specie dei Pokémon leggendari Ombra originali. Disattivato: mantengono la loro specie anche se gli altri Ombra cambiano. La lotta extra ha un'impostazione separata.",
+         "元から登場する伝説のダークポケモンの種類を変更します。オフでは、ほかのダークポケモンを変更しても元の種類を維持します。追加バトルは別の設定です。")),
+    "postgame_randomize_team": (
+        ("Randomize Nascour's team", "Jakiras Team randomisieren", "Aleatorizar el equipo de Fústeo", "Randomizza la squadra di Nascour", "ジャキラの手持ちをランダム化"),
+        ("Draw the bonus battle's five non-Shadow Pokémon using the seed and allowed Pokémon. Off: Nascour keeps the team designed for this quest. The final Shadow Pokémon has a separate setting.",
+         "Lost die fünf normalen Pokémon des Zusatzkampfs mit dem Seed aus den erlaubten Pokémon aus. Aus: Jakira behält das für diese Quest vorgesehene Team. Das letzte Crypto-Pokémon wird getrennt eingestellt.",
+         "Sortea los cinco Pokémon no oscuros del combate extra con la semilla y los Pokémon permitidos. Desactivado: Fústeo conserva el equipo previsto para esta misión. El Pokémon oscuro final tiene un ajuste separado.",
+         "Estrae i cinque Pokémon non Ombra della lotta extra usando il seed e i Pokémon consentiti. Disattivato: Nascour mantiene la squadra prevista per questa missione. Il Pokémon Ombra finale ha un'impostazione separata.",
+         "シードと使用可能なポケモンの設定を使い、追加バトルのダークポケモン以外の5匹を抽選します。オフでは、このイベント用の手持ちを維持します。最後のダークポケモンは別に設定します。")),
+    "postgame_randomize_lugia": (
+        ("Randomize the bonus battle's Lugia", "Lugia im Zusatzkampf randomisieren", "Aleatorizar el Lugia del combate extra", "Randomizza Lugia nella lotta extra", "追加バトルのルギアをランダム化"),
+        ("Replace Lugia with an allowed Pokémon drawn using the seed. Its scene model, dialogue and Snag encounter follow the result. The quest requirements stay the same.",
+         "Ersetzt Lugia durch ein mit dem Seed ausgelostes erlaubtes Pokémon. Szenenmodell, Dialoge und Krall-Begegnung passen zum Ergebnis. Die Voraussetzungen der Quest bleiben gleich.",
+         "Sustituye a Lugia por un Pokémon permitido sorteado con la semilla. Su modelo en la escena, los diálogos y el encuentro para arrebatarlo siguen el resultado. Los requisitos de la misión no cambian.",
+         "Sostituisce Lugia con un Pokémon consentito estratto tramite il seed. Il modello nella scena, i dialoghi e l'incontro per la cattura seguono il risultato. I requisiti della missione non cambiano.",
+         "シードで抽選した使用可能なポケモンにルギアを置き換えます。シーンのモデル、会話、スナッチする相手も抽選結果に合わせて変わります。イベントの解放条件は変わりません。")),
+    "keep_shadow_lugia_after_purification": (
+        ("Keep Lugia's Shadow appearance", "Lugias Crypto-Aussehen behalten", "Conservar el aspecto oscuro de Lugia", "Mantieni l'aspetto Ombra di Lugia", "ルギアのダークの姿を残す"),
+        ("After purification, former Shadow Lugia keep their Shadow model and portrait, shiny or not. This only changes their appearance. Lugia that were never Shadow Pokémon keep their normal appearance.",
+         "Nach der Erlösung behalten ehemalige Crypto-Lugia ihr Crypto-Modell und Porträt, auch wenn sie schillernd sind. Nur das Aussehen ändert sich. Lugia, die nie Crypto-Pokémon waren, behalten ihr normales Aussehen.",
+         "Tras la purificación, los Lugia que eran oscuros conservan su modelo y retrato oscuros, sean variocolor o no. Solo cambia su aspecto. Los Lugia que nunca fueron oscuros conservan su aspecto normal.",
+         "Dopo la purificazione, i Lugia che erano Ombra mantengono il modello e il ritratto Ombra, cromatici o meno. Cambia solo l'aspetto. I Lugia che non sono mai stati Ombra mantengono l'aspetto normale.",
+         "リライブ後も、ダークポケモンだったルギアはダークのモデルとアイコンを使います。色違いにも対応し、見た目だけが変わります。一度もダークポケモンになっていないルギアの姿は変わりません。")),
+    "custom_shinies": (
+        ("Customize shinies", "Schillernde Pokémon anpassen", "Personalizar variocolor", "Personalizza i cromatici", "色違いをカスタマイズ"),
+        ("Applies the chosen chance to newly generated trainer Pokémon, Shadows, starters and supported gifts. The seed fixes their status, shown in the preview. Off: original behavior. Previously generated Pokémon keep their status.",
+         "Wendet die gewählte Chance auf neue Trainer-, Crypto-, Starter- und unterstützte Geschenk-Pokémon an. Der Seed legt ihren Status fest; die Vorschau zeigt ihn. Aus: Originalverhalten. Bereits erzeugte Pokémon behalten ihren Status.",
+         "Aplica la probabilidad elegida a los nuevos Pokémon de entrenadores, oscuros, iniciales y regalos compatibles. La semilla fija su estado, visible en la vista previa. Desactivado: comportamiento original. Los Pokémon ya generados conservan su estado.",
+         "Applica la probabilità scelta ai nuovi Pokémon degli allenatori, Ombra, iniziali e regali supportati. Il seed ne fissa lo stato, visibile nell’anteprima. Disattivato: comportamento originale. I Pokémon già generati mantengono il loro stato.",
+         "新しく生成されるトレーナーのポケモン、ダークポケモン、最初のポケモン、対応するプレゼントに指定の確率を適用します。色違い状態はシードで固定され、プレビューで確認できます。オフでは元の動作です。生成済みのポケモンの状態は変わりません。")),
+    "seeded_shinies": (
+        ("Tie shinies to the seed", "Schillernde Pokémon an den Seed binden", "Vincular los variocolor a la semilla", "Legare i cromatici al seme", "色違いをシードに連動"),
+        ("Custom shiny chances always use the seed. This field is retained to read older profiles.",
+         "Die eigene Schillernd-Chance verwendet immer den Seed. Dieses Feld bleibt zum Lesen älterer Profile erhalten.",
+         "La probabilidad personalizada de variocolor siempre usa la semilla. Este campo se conserva para leer perfiles antiguos.",
+         "La probabilità personalizzata dei cromatici usa sempre il seed. Questo campo viene mantenuto per leggere i vecchi profili.",
+         "色違いのカスタム確率は常にシードを使用します。この項目は古いプロファイルの読み込み用に保持されます。")),
+    "shiny_chance_percent": (
+        ("Shiny chance (%)", "Schillernde Pokémon (%)", "Probabilidad variocolor (%)", "Probabilità cromatici (%)", "色違いの確率（%）"),
+        ("Chance applied to each Pokémon using the seed. 0%: none; 100%: all. Shadows keep their status after capture and purification. Previously generated Pokémon are not rerolled.",
+         "Chance pro Pokémon mit dem Seed. 0 %: keine; 100 %: alle. Crypto-Pokémon behalten ihren Status nach dem Fangen und der Erlösung. Bereits erzeugte Pokémon werden nicht neu ausgewürfelt.",
+         "Probabilidad aplicada a cada Pokémon mediante la semilla. 0 %: ninguno; 100 %: todos. Los oscuros conservan su estado tras la captura y la purificación. Los Pokémon ya generados no se vuelven a sortear.",
+         "Probabilità applicata a ogni Pokémon tramite il seed. 0%: nessuno; 100%: tutti. Gli Ombra mantengono lo stato dopo la cattura e la purificazione. I Pokémon già generati non vengono sorteggiati di nuovo.",
+         "シードを使って各ポケモンに適用する確率です。0%は出現なし、100%はすべて色違いです。ダークポケモンは捕獲・リライブ後も状態を維持します。生成済みのポケモンは再抽選しません。")),
+})
 OPTION_TEXTS = {lang: {name: (labels[index], descriptions[index])
                for name, (labels, descriptions) in OPTION_ROWS.items()}
                for index, lang in enumerate(LANGS)}

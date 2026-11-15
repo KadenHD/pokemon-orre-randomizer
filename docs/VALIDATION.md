@@ -15,12 +15,44 @@ historical evidence rather than the current feature specification.
   and skip those prerequisites on public runners.
 - Rust/Python codec output is compared. Archive audits check CRCs, hashes, paths,
   notices and the allowlisted interface pack.
-- Windows diagnostics cover 456 UI states, six languages and two sizes, including
+- Windows diagnostics cover six languages and two sizes, including
   both games and home. Isolated smoke tests remove developer tools from PATH and
   use fresh application data. The installer is installed, checked and uninstalled.
 - Published asset sizes and SHA-256 digests are verified after release.
 
 Counts evolve; the Actions run for a release tag records that build's results.
+
+### Default policies and bonus encounter (v1.2.20)
+
+Local source validation covered 883 tests in 104 isolated modules, with two
+Windows platform skips. Three historical test fixtures were updated for the
+new settings and their exact tests rerun; no product code changed during that
+validation. Exported-source and executable checks are repeated for the release
+build. Public runners skip the tests which require original local game files.
+
+Native Colosseum data checks cover both presets, the three protected beasts,
+all of their trainer aliases, independent bonus-team and final-Shadow switches,
+and the original 48-member completion roster. XD checks use real European decks
+and their western language variants to verify the three protected birds and
+family reservations. XD001 retains its existing story protection.
+
+The bonus scene's dialogue was checked with all 386 species names in each
+playable language, including the separate US English bank. Its mailbox text
+reflows replacement names; scene captions stay within three measured lines.
+
+A muted European Dolphin run used an isolated copied QA card after the 48
+original captures and purifications. Replacing the bonus Lugia with a shiny
+Wailord changed its shrine model and the dialogue, including the partner's
+instruction and the saved player names. The scene launched the native battle
+and advanced its introduction state normally. The copied inputs retained their
+hashes. This was a scene and battle-launch check, not a new complete capture
+and purification playthrough for that replacement.
+
+Earlier muted runs in both games checked normal and shiny Shadow Lugia before
+and after actual purification, with appearance retention on and off, as well
+as ordinary Lugia negative controls. Colosseum's Snag List navigation and DNA
+displays were checked separately. These observations do not claim full native
+playthroughs of all three regions.
 
 ### Interface parity (v1.2.1)
 

@@ -69,6 +69,19 @@ class JournalTests(unittest.TestCase):
         output = render_journal(report, 'en')
         self.assertIn('Shiny status decided in-game', output)
 
+    def test_purification_gifts_follow_configured_thresholds_in_all_journal_languages(self):
+        report = report_fixture()
+        report['summary'].pop('detail_catalog')
+        report['summary']['special_gameplay']['specials'] = [
+            dict(key='pikachu-event', species=25, level=30, **{f'name_{language}': 'FIRSTGIFT' for language in LANGUAGES}),
+            dict(key='celebi-event', species=251, level=30, **{f'name_{language}': 'SECONDGIFT' for language in LANGUAGES})]
+        for pikachu, celebi in ((10, 25), (30, 5), (10, 10), (0, 10)):
+            report['options'].update(event_pikachu_purifications=pikachu, event_celebi_purifications=celebi)
+            for language in LANGUAGES:
+                output = render_journal(report, language)
+                first, second = (('FIRSTGIFT', 'SECONDGIFT') if pikachu <= celebi else ('SECONDGIFT', 'FIRSTGIFT'))
+                self.assertLess(output.index(first), output.index(second))
+
     def test_exclusive_write_and_bad_destinations(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / 'journal.html'

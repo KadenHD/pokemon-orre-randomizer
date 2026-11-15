@@ -9,7 +9,7 @@ documentation, issues, and pull requests in English.
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[build]"
-python -m unittest discover -s tests -v
+python -X utf8 scripts/run_tests.py
 python -m orre_randomizer
 ```
 
@@ -25,6 +25,11 @@ the application as a whole. New shared modules use the Orre namespace.
 
 The older scripts delegate to the same engine. The CLI and GUI both call
 `service.randomize` directly with the disc image, seed, and settings.
+
+The test runner isolates each module in a fresh process to keep Qt state and
+worker threads from leaking between modules. It reports failures and timeouts,
+with a 90-second module limit and a nine-minute suite limit. GUI tests run
+offscreen with sound and music disabled.
 
 Format and safety tests run without a ROM. Integration tests that need a dump or
 a regional image declare the prerequisite and skip when it is unavailable.

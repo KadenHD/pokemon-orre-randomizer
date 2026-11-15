@@ -9,17 +9,20 @@ from orre_randomizer.service import transform_dol, transform_rel, validate_optio
 
 class OptionValidationTests(unittest.TestCase):
     def test_typed_options_and_empty_preset(self):
-        self.assertEqual(len(fields(Options)), 83)
+        self.assertEqual(len(fields(Options)), 88)
         self.assertTrue(all(type(getattr(Options(), f.name)) is bool for f in fields(Options) if f.metadata["kind"] == "bool"))
         self.assertFalse(Options.none().has_changes)
         self.assertTrue(Options.recommended().has_changes)
-        for options in (Options(), Options.recommended()):
-            self.assertEqual(options.starter_stage, "base")
-            self.assertTrue(options.starter_three_stage_families)
+        for options, stage, three_stage in ((Options(), "base", True), (Options.recommended(), "any", False)):
+            self.assertEqual(options.starter_stage, stage)
+            self.assertEqual(options.starter_three_stage_families, three_stage)
             self.assertTrue(options.accessible_event_gifts)
         self.assertEqual(Options.none().starter_stage, "any")
         self.assertFalse(Options.none().starter_three_stage_families)
         self.assertFalse(Options.none().accessible_event_gifts)
+        self.assertFalse(Options().keep_shadow_lugia_after_purification)
+        self.assertFalse(Options.recommended().keep_shadow_lugia_after_purification)
+        self.assertFalse(Options.none().keep_shadow_lugia_after_purification)
 
     def test_event_access_alone_is_a_change_and_numeric_fields_are_strict(self):
         base = Options.none()

@@ -20,7 +20,7 @@ from .analyze_game import FormatError, parse_dol
 from .gift_move_hooks import (ORIGINAL_DOL_SHA256, SECTION_RAM, SET_ARENA_LO,
                               TEXT_TO_RAM, ARENA_LO_STORE, _arena_guard, _branch_target, branch)
 from .dol_regions import DolLayout, PAL, dol_layout
-from .colo_spinda import ORDINARY_SPINDA_OT
+from .colo_spinda import ORDINARY_SPINDA_OT, colo_trainer_gift_owners
 from .spinda import SPINDA
 
 VERSION = "native-shiny-generation-v1"
@@ -100,7 +100,7 @@ class _Code:
         return data + bytes.fromhex("60000000") * ((-len(data) % 32) // 4)
 
 
-def _emit_spinda_lookup(c, tables):
+def _emit_spinda_lookup(c, tables, trainer_slot_count=TRAINER_SLOT_COUNT):
     trainer_seeds, shadow_seeds = tables
     c.emit(0x39000000, 0x281E0000)  # default seed 0; native Shadow ID in r30
     c.conditional(0x41820000, "spinda_trainer")
@@ -109,7 +109,7 @@ def _emit_spinda_lookup(c, tables):
     c.emit(0x3D800000 | (shadow_seeds >> 16), 0x618C0000 | (shadow_seeds & 0xFFFF))
     c.jump("spinda_lookup")
     c.label("spinda_trainer")
-    c.emit(0x81610088, 0x556B043E, 0x280B0000 | TRAINER_SLOT_COUNT)
+    c.emit(0x81610088, 0x556B043E, 0x280B0000 | trainer_slot_count)
     c.conditional(0x40800000, "spinda_ready")
     c.emit(0x3D800000 | (trainer_seeds >> 16), 0x618C0000 | (trainer_seeds & 0xFFFF))
     c.label("spinda_lookup")
@@ -117,16 +117,24 @@ def _emit_spinda_lookup(c, tables):
     c.label("spinda_ready")
 
 
-def _emit_spinda_trainer_owner(c):
+def _emit_spinda_trainer_owner(c, trainer_gift_owners=None):
     c.emit(0x281E0000)  # Never change a catchable Shadow's owner.
     c.conditional(0x40820000, "spinda_owner_ready")
     c.emit(0x28080000)
     c.conditional(0x41820000, "spinda_owner_ready")
+    if trainer_gift_owners:
+        c.emit(0x81610088, 0x556B043E)  # Original native trainer slot, saved by index hook.
+        for slot, owner in trainer_gift_owners.items():
+            c.emit(0x280B0000 | slot)
+            c.conditional(0x40820000, f"spinda_owner_next_{slot}")
+            c.emit(0x3CE00000 | (owner >> 16), 0x60E70000 | (owner & 0xFFFF))
+            c.jump("spinda_owner_ready")
+            c.label(f"spinda_owner_next_{slot}")
     c.emit(0x3CE00000 | (ORDINARY_SPINDA_OT >> 16), 0x60E70000 | (ORDINARY_SPINDA_OT & 0xFFFF))
     c.label("spinda_owner_ready")
 
 
-def _spinda_party_owner(address, party_return, native_ot):
+def _spinda_party_owner(address, party_return, native_ot, trainer_gift_owners=None):
     c = _Code(address)
     c.emit(0x81610164, 0x3D800000 | (party_return >> 16), 0x618C0000 | (party_return & 0xFFFF),
            0x7C0B6040)  # Only the native story trainer party builder calls from this LR.
@@ -135,6 +143,14 @@ def _spinda_party_owner(address, party_return, native_ot):
     c.conditional(0x40820000, "native_ot")
     c.emit(0xA16300D8, 0x280B0000)
     c.conditional(0x40820000, "native_ot")
+    if trainer_gift_owners:
+        c.emit(0xA16300D6)  # Native CK3 FightTrainerPokemonDataId, set before copying to party.
+        for slot, owner in trainer_gift_owners.items():
+            c.emit(0x280B0000 | slot)
+            c.conditional(0x40820000, f"spinda_party_next_{slot}")
+            c.emit(0x3D000000 | (owner >> 16), 0x61080000 | (owner & 0xFFFF))
+            c.jump("native_ot")
+            c.label(f"spinda_party_next_{slot}")
     c.emit(0x3D000000 | (ORDINARY_SPINDA_OT >> 16), 0x61080000 | (ORDINARY_SPINDA_OT & 0xFFFF))
     c.label("native_ot")
     c.emit(branch(address + len(c.words) * 4, native_ot))
@@ -197,7 +213,8 @@ def _spinda_rng_offset(original, current, region):
 
 def _pid_wrapper(address: int, threshold: int | None, *, trainers=False,
                  region: DolLayout = PAL, spinda_pid=None, spinda_seed=None,
-                 spinda_tables=None) -> bytes:
+                 spinda_tables=None, trainer_slot_count=TRAINER_SLOT_COUNT,
+                 trainer_gift_owners=None) -> bytes:
     if threshold is not None and (type(threshold) is not int or not 0 <= threshold <= COIN_RANGE):
         raise ValueError("invalid shiny coin threshold")
     c = _Code(address)
@@ -227,12 +244,12 @@ def _pid_wrapper(address: int, threshold: int | None, *, trainers=False,
         c.emit(0x38C00001)
         c.label("coin_ready")
     if spinda_tables is not None:
-        _emit_spinda_lookup(c, spinda_tables)
+        _emit_spinda_lookup(c, spinda_tables, trainer_slot_count)
     if spinda_seed is not None:
         c.emit(0x3D000000 | (spinda_seed >> 16), 0x61080000 | (spinda_seed & 0xFFFF))
     c.emit(0x80610008, 0x8081000C, 0x80A10010, 0x80E10018)
     if spinda_tables is not None:
-        _emit_spinda_trainer_owner(c)
+        _emit_spinda_trainer_owner(c, trainer_gift_owners)
     c.call(spinda_pid if spinda_seed is not None or spinda_tables is not None else region.pid_generator)
     c.emit(0x80010044, 0x7C0803A6, 0x38210040, 0x4E800020)
     return c.finish()
@@ -266,7 +283,8 @@ def _index_trampoline(address: int, *, region: DolLayout = PAL) -> bytes:
 
 
 def _seeded_trainer_wrapper(address: int, trainer_flags: int, shadow_flags: int,
-                            *, region: DolLayout = PAL, spinda_pid=None, spinda_tables=None) -> bytes:
+                            *, region: DolLayout = PAL, spinda_pid=None, spinda_tables=None,
+                            trainer_slot_count=TRAINER_SLOT_COUNT, trainer_gift_owners=None) -> bytes:
     c = _Code(address)
     c.emit(0x9421FFC0, 0x7C0802A6, 0x90010044,
            0x90610008, 0x9081000C, 0x90A10010, 0x90E10018)
@@ -283,7 +301,7 @@ def _seeded_trainer_wrapper(address: int, trainer_flags: int, shadow_flags: int,
     c.emit(0x3D800000 | (shadow_flags >> 16), 0x618C0000 | (shadow_flags & 0xFFFF))
     c.jump("lookup")
     c.label("trainer_slot")
-    c.emit(0x81610088, 0x556B043E, 0x280B0000 | TRAINER_SLOT_COUNT)
+    c.emit(0x81610088, 0x556B043E, 0x280B0000 | trainer_slot_count)
     c.conditional(0x40800000, "invalid_index")
     c.emit(0x3D800000 | (trainer_flags >> 16), 0x618C0000 | (trainer_flags & 0xFFFF))
     c.label("lookup")
@@ -293,10 +311,10 @@ def _seeded_trainer_wrapper(address: int, trainer_flags: int, shadow_flags: int,
     c.emit(0x38C00000)  # safe non-shiny fallback; never read beyond either table
     c.label("policy_ready")
     if spinda_tables is not None:
-        _emit_spinda_lookup(c, spinda_tables)
+        _emit_spinda_lookup(c, spinda_tables, trainer_slot_count)
     c.emit(0x80610008, 0x8081000C, 0x80A10010, 0x80E10018)
     if spinda_tables is not None:
-        _emit_spinda_trainer_owner(c)
+        _emit_spinda_trainer_owner(c, trainer_gift_owners)
     c.call(spinda_pid if spinda_tables is not None else region.pid_generator)
     c.emit(0x80010044, 0x7C0803A6, 0x38210040, 0x4E800020)
     return c.finish()
@@ -308,9 +326,14 @@ def _word(data, offset):
 
 def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | None = None,
                       trainer_aliases: tuple[tuple[int, int], ...] = (),
-                      spinda_seeds=None) -> tuple[bytes, dict]:
+                      spinda_seeds=None, trainer_special_aliases=()) -> tuple[bytes, dict]:
     spinda_seeds = spinda_seeds or {}
+    gift_owners = colo_trainer_gift_owners(trainer_special_aliases)
+    if gift_owners and not getattr(options, "accessible_event_gifts", False):
+        raise ValueError("trainer/gift identity link requires accessible event gifts")
+    gift_owners = {slot: owner for slot, owner in gift_owners.items() if f"trainer:{slot}" in spinda_seeds}
     custom = options.custom_shinies
+    trainer_slot_count = TRAINER_SLOT_COUNT + (6 if getattr(options, "postgame_shadow_lugia", False) else 0)
     if not custom and not spinda_seeds:
         return current, {"version": VERSION, "enabled": False}
     threshold = chance_threshold(options.shiny_chance_percent) if custom else None
@@ -321,6 +344,14 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
     if seeded:
         seeded_coin(seed, "validation")
     region = dol_layout(original)
+    if gift_owners:
+        setter = {"GC6P01": 0x80121470, "GC6E01": 0x8011D494, "GC6J01": 0x8011AC68}[region.game_id]
+        expected = bytes.fromhex("280300004d820020b08300d64e800020")
+        if any(data[setter-TEXT_TO_RAM:setter-TEXT_TO_RAM+16] != expected for data in (original, current)):
+            raise FormatError("native Eagun Spinda trainer-slot setter changed")
+        for offset, word in ((0x1E4, 0x7C7D0774), (0x1FC, 0x7C7C0774), (-0x128, 0x38A000C9)):
+            if any(_word(data, region.trainer_function+offset-TEXT_TO_RAM) != word for data in (original, current)):
+                raise FormatError("native Eagun Spinda signed traits or row-copy arguments changed")
     SECTION_RAM, SET_ARENA_LO = region.section_ram, region.set_arena_lo
     ARENA_LO_STORE, PID_GENERATOR = region.arena_lo_store, region.pid_generator
     NATIVE_RNG, OT_EXIT = region.native_rng, region.ot_exit
@@ -387,8 +418,8 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
         code.extend(_spinda_pid_call(spinda_pid, _spinda_rng_offset(original, current, region), region))
     if spinda_trainers:
         trainer_seeds = SECTION_RAM + len(code)
-        code.extend(struct.pack(f">{TRAINER_SLOT_COUNT}I", *(
-            spinda_seeds.get(f"trainer:{i}", 0) for i in range(TRAINER_SLOT_COUNT))))
+        code.extend(struct.pack(f">{trainer_slot_count}I", *(
+            spinda_seeds.get(f"trainer:{i}", 0) for i in range(trainer_slot_count))))
         shadow_seeds = SECTION_RAM + len(code)
         code.extend(struct.pack(f">{SHADOW_COUNT}I", *(
             spinda_seeds.get(f"shadow:{i}", 0) for i in range(SHADOW_COUNT))))
@@ -397,9 +428,11 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
     if seeded:
         specials = {key: seeded_coin(seed, "special:" + key) < threshold
                     for key in PID_CALLS if key != "trainers"}
-        trainer_data = bytearray(seeded_coin(seed, f"trainer:{index}") < threshold for index in range(TRAINER_SLOT_COUNT))
+        trainer_data = bytearray(seeded_coin(seed, f"trainer:{index}") < threshold for index in range(trainer_slot_count))
         for battle, retry in trainer_aliases:
             trainer_data[retry] = trainer_data[battle]
+        for slot, key in trainer_special_aliases:
+            trainer_data[slot] = int(specials[key])
         shadow_data = bytes(seeded_coin(seed, f"shadow:{sid}") < threshold for sid in range(SHADOW_COUNT))
         trainer_flags = SECTION_RAM + len(code)
         code.extend(trainer_data)
@@ -414,7 +447,8 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
         code.extend(_index_trampoline(index_address, region=region))
         trainer_address = SECTION_RAM + len(code)
         code.extend(_seeded_trainer_wrapper(trainer_address, trainer_flags, shadow_flags, region=region,
-                                            spinda_pid=spinda_pid, spinda_tables=spinda_tables))
+                                            spinda_pid=spinda_pid, spinda_tables=spinda_tables,
+                                            trainer_slot_count=trainer_slot_count, trainer_gift_owners=gift_owners))
         decisions = {"specials": specials,
                      "shadows": {str(i): bool(value) for i, value in enumerate(shadow_data)},
                      "trainer_slots": {str(i): bool(value) for i, value in enumerate(trainer_data)}}
@@ -439,7 +473,8 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
         if custom or spinda_trainers:
             trainer_address = SECTION_RAM + len(code)
             code.extend(_pid_wrapper(trainer_address, threshold, trainers=True, region=region,
-                                     spinda_pid=spinda_pid, spinda_tables=spinda_tables))
+                                     spinda_pid=spinda_pid, spinda_tables=spinda_tables,
+                                     trainer_slot_count=trainer_slot_count, trainer_gift_owners=gift_owners))
     ot_address = None
     if custom:
         ot_address = SECTION_RAM + len(code)
@@ -448,7 +483,7 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
     if spinda_ordinary:
         owner_call, party_return, native_ot = _spinda_party_call(original, current, region)
         party_hook = SECTION_RAM + len(code)
-        code.extend(_spinda_party_owner(party_hook, party_return, native_ot))
+        code.extend(_spinda_party_owner(party_hook, party_return, native_ot, gift_owners))
     reserved_end = SECTION_RAM + len(code)
     if reserved_end % 32 or reserved_end >= 0x81700000:
         raise FormatError("shiny code exceeds supported arena reservation")
@@ -500,6 +535,8 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
         "scope": "new trainer, Shadow, starter and identified gift generation; existing Shadow PID reuse remains native",
         "runtime_validation": "requires cold boot, new starters and an actual Shadow capture under Dolphin"}
     report["seeded"] = seeded
+    if trainer_special_aliases:
+        report["trainer_special_aliases"] = list(trainer_special_aliases)
     if seeded:
         report.update(seed=seed, seeded_decisions=decisions, status_tables=tables_report,
                       index_hook=TRAINER_INDEX_HOOK, index_trampoline=index_address,
@@ -515,4 +552,6 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
         }
         if party_hook is not None:
             report["spinda_pid"]["ordinary_trainer_ot"] = ORDINARY_SPINDA_OT
+            if gift_owners:
+                report["spinda_pid"]["trainer_gift_owners"] = gift_owners
     return bytes(output), report

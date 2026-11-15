@@ -958,7 +958,7 @@ TEXTS.update({'Configuration': 'Konfiguration',
  'Non chromatiques': 'Nicht schillernd',
  'Aperçu non calculé': 'Vorschau nicht berechnet',
  'Aucun résultat': 'Keine Ergebnisse',
- '{first}–{last} sur {count}': '{first}–{last} von {count}',
+ '{first}-{last} sur {count}': '{first}-{last} von {count}',
  'Seed ou réglages modifiés. Actualisez l’aperçu.': 'Seed oder Einstellungen geändert. Aktualisieren Sie die '
                                                     'Vorschau.',
  'Aperçu pour une nouvelle partie. Aucune ROM n’a été créée.': 'Vorschau für ein neues Spiel. Es wurde keine '

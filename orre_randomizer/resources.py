@@ -26,6 +26,13 @@ def bundle_root() -> Path:
     return Path(__file__).resolve().parent / "assets" / "game"
 
 
+@lru_cache(maxsize=2)
+def shadow_lugia_portrait(*, shiny=False) -> bytes:
+    """UI-matted Dark Lugia face; the ROM uses separate native textures."""
+    path = bundle_root() / ("models/dark-lugia-shiny-ui.png" if shiny else "models/dark-lugia-ui.png")
+    return path.read_bytes() if path.is_file() and not path.is_symlink() else b""
+
+
 def type_badge(game: str, language: str, type_id: int) -> Path | None:
     """Find the game's localized type badge in the offline interface pack."""
     if (game not in ("colosseum", "xd") or language not in LANGUAGES

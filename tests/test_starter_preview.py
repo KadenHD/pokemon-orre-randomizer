@@ -133,6 +133,31 @@ class StarterPreviewTests(unittest.TestCase):
         self.assertEqual(result["starters"][0]["name_en"], "Treecko")
         self.assertEqual(result["starters"][0]["portrait_png"], b"")
 
+    def test_bonus_final_portrait_follows_species_instead_of_shadow_slot(self):
+        for species in (25, 249):
+            with self.subTest(species=species), ExitStack() as stack:
+                self.summary["postgame_shadow_lugia"] = {"enabled": True, "team": [
+                    {"key": "shadow:96", "shadow_id": 96, "species": species,
+                     "national_dex": species, "level": 70}]}
+                self.pipeline(stack)
+                stack.enter_context(patch("orre_randomizer.preview.extract_portraits",
+                                          return_value={species: b"actual species portrait"}))
+                dark = stack.enter_context(patch("orre_randomizer.resources.shadow_lugia_portrait",
+                                                return_value=b"dark Lugia portrait"))
+                result = preview_starters(self.source, "bonus", Options())
+                self.assertEqual(result["postgame_shadow_lugia"]["team"][-1]["portrait_png"],
+                                 b"dark Lugia portrait" if species == 249 else b"actual species portrait")
+                self.assertEqual(dark.call_count, int(species == 249))
+
+    def test_original_legendary_shadow_placeholders_follow_the_protection_switch(self):
+        from orre_randomizer.preview import baseline_rows
+        for randomize in (False, True):
+            rows = baseline_rows(replace(Options.recommended(), randomize_legendary_shadows=randomize))["shadows"]
+            for row in rows:
+                expected = row["original"]["national_dex"] if (
+                    not randomize and row["original"]["national_dex"] in (243, 244, 245)) else None
+                self.assertEqual(row["national_dex"], expected)
+
     def test_shadow_and_gift_preview_keeps_final_choices_and_batches_portraits(self):
         original = dict(national_dex=197, name_fr="Noctali", name_en="Umbreon",
                         name_de="Nachtara", name_es="Umbreon", name_it="Umbreon")
@@ -142,6 +167,8 @@ class StarterPreviewTests(unittest.TestCase):
         gift = dict(self.summary["special_gameplay"]["specials"][1],
                     key="pikachu-event", original=original)
         self.summary["special_gameplay"]["specials"].append(gift)
+        self.summary["shinies"] = {"seeded_decisions": {"specials": {
+            "umbreon": True, "espeon": True, "pikachu-event": True}, "shadows": {"21": True}}}
         with ExitStack() as stack:
             self.pipeline(stack)
             extract = stack.enter_context(patch("orre_randomizer.preview.extract_portraits", return_value={277: b"A", 196: b"B"}))
@@ -162,7 +189,8 @@ class StarterPreviewTests(unittest.TestCase):
         self.summary["special_gameplay"]["specials"].append(dict(starter, key="plusle"))
         self.summary["final_shadow_picks"] = [dict(starter, species_index=308, shadow_id=1)]
         seeds = {"special:umbreon": 42, "special:plusle": 43, "shadow:1": 44}
-        self.summary["shinies"] = {"spinda_pid": {"seeds": seeds}}
+        self.summary["shinies"] = {"spinda_pid": {"seeds": seeds}, "seeded_decisions": {
+            "specials": {"umbreon": True, "espeon": False, "plusle": True}, "shadows": {"1": False}}}
         for chance in (5, 100):
             with self.subTest(chance=chance), ExitStack() as stack:
                 self.pipeline(stack)
@@ -175,14 +203,9 @@ class StarterPreviewTests(unittest.TestCase):
                     self.assertEqual(row["spinda_pattern_status"], "spinda_pattern_save")
                     self.assertNotIn("spinda_pattern_png", row)
                 gift = result["gifts"][0]
-                if chance == 100:
-                    self.assertEqual(gift["spinda_pattern_status"], "spinda_pattern_exact")
-                    self.assertEqual(gift["spinda_pattern_png"], b"exact gift")
-                    extract.assert_called_once_with(self.source, {(pid, True)}, is_xd=False)
-                else:
-                    self.assertEqual(gift["spinda_pattern_status"], "spinda_pattern_in_game")
-                    self.assertNotIn("spinda_pattern_png", gift)
-                    extract.assert_not_called()
+                self.assertEqual(gift["spinda_pattern_status"], "spinda_pattern_exact")
+                self.assertEqual(gift["spinda_pattern_png"], b"exact gift")
+                extract.assert_called_once_with(self.source, {(pid, True)}, is_xd=False)
 
     def test_xd_spinda_pattern_keeps_native_reward_positions_and_defers_other_rows(self):
         summary = dict(starter={"species": 308}, gifts=[{"species": 308, "key": "hordel-trade"}],
@@ -292,18 +315,22 @@ class StarterPreviewTests(unittest.TestCase):
             stack.enter_context(patch("orre_randomizer.preview.extract_portraits", wraps=artwork.extract_portraits))
             stack.enter_context(patch.object(artwork, "_disc_files", return_value={"poke_face.fsys": archive}))
             for chance, color in ((0, ordinary), (100, shiny)):
+                self.summary["shinies"] = {"seeded_decisions": {"specials": {
+                    "umbreon": chance == 100, "espeon": chance == 100}, "shadows": {}}}
                 options = replace(Options.recommended(), custom_shinies=True, seeded_shinies=False,
                                   shiny_chance_percent=chance)
                 row = preview_starters(self.source, "seed", options)["starters"][0]
                 self.assertEqual(artwork._png_pixels(row["portrait_png"], (42, 42)), bytes(color) * 42**2)
 
-    def test_preview_distinguishes_guaranteed_shinies_from_runtime_rolls(self):
+    def test_legacy_unlinked_preview_uses_seeded_status_at_intermediate_rates(self):
         for enabled, chance, policy in ((False, 100, "original"), (True, 0, "never"),
-                                        (True, 1, "in-game"), (True, 100, "always")):
+                                        (True, 1, "seeded"), (True, 100, "always")):
             with self.subTest(enabled=enabled, chance=chance), ExitStack() as stack:
                 self.pipeline(stack)
                 extract = stack.enter_context(patch("orre_randomizer.preview.extract_portraits", return_value={}))
                 options = replace(Options.recommended(), custom_shinies=enabled, seeded_shinies=False, shiny_chance_percent=chance)
+                self.summary["shinies"] = {"seeded_decisions": {"specials": {
+                    "umbreon": policy == "always", "espeon": policy == "always"}, "shadows": {}}}
                 result = preview_starters(self.source, "fixed", options)
                 self.assertEqual(result["shiny_policy"], policy)
                 self.assertTrue(all(row["shiny"] == (policy == "always") for row in result["starters"]))

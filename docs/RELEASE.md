@@ -18,7 +18,6 @@ Use Python 3.12 or later with Rust and MSVC.
 python -m pip install -r requirements-build.txt
 python scripts/fetch_qt_notices.py
 python scripts/build_desktop.py --edition public
-python scripts/verify_release.py --edition public
 python scripts/smoke_desktop.py --edition public --report build/public-smoke.json
 ```
 
@@ -29,6 +28,9 @@ the same version.
 The audit checks hashes, ZIP CRCs, and archive paths. It rejects ROMs, save files,
 and emulator binaries. It also rejects media outside the declared interface pack. The Windows ZIP
 includes the application sources, notices, and corresponding Qt sources.
+The smoke command runs this audit, including tests from the extracted source
+archive, before starting the executable. To audit archives without running the
+Windows app, use `python scripts/verify_release.py --edition public`.
 
 ## Executable diagnostics
 
@@ -85,7 +87,7 @@ from the published ZIP before attaching the new asset.
 ## Local engine and audio validation
 
 ```powershell
-python -m unittest discover -s tests -v
+python -X utf8 scripts/run_tests.py
 python scripts/validate_seed_matrix.py original.iso build/seed-matrix.json
 python scripts/validate_audio_pack.py build/audio-levels.json
 ```

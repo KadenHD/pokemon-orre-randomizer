@@ -42,7 +42,10 @@ from .ui_audio import MenuAudio
 from .ui_music import MenuMusic
 from .ui_exclusions import ExcludedSelection, search_key
 from .ui_pokemon_details import PokemonSheet
+from .ui_bonus_event import BonusEventPreview
 from .ui_home import GameSelection
+from .ui_updates import UpdateChecker
+from .gift_presentation import order_purification_gifts
 from .ui_pokemon_names import RICH_NAME_ROLE, shiny_name_html
 from .ui_workspace import (CreationLog, DeliberateWheel, EncounterTable, RuleNavigation, configuration_workspace, file_field,
                            preset_buttons, preview_toolbar, scroll_area, search_field, settings_workspace,
@@ -285,6 +288,8 @@ class MainWindow(QMainWindow):
         self.game_views = QStackedWidget()
         outer.addWidget(self.game_views, 1)
         self.home = self.build_home()
+        self.update_checker = UpdateChecker(__version__, self)
+        self.update_checker.available.connect(self.home.show_update)
         self.game_views.addWidget(self.home)
         self.colosseum = QWidget()
         self.game_views.addWidget(self.colosseum)
@@ -511,6 +516,7 @@ class MainWindow(QMainWindow):
         self.profile_menu.hide()
         self.apply_game_style()
         self.home.setFocus(Qt.FocusReason.OtherFocusReason)
+        self.update_checker.check_once()
 
     def show_colosseum(self):
         if self.busy:
@@ -611,6 +617,8 @@ class MainWindow(QMainWindow):
                            Message("Cadeaux · {count}", count=4)), self.start_preview, self.cancel_preview)
         self.family_tab = self.preview_tabs.addTab("")
         self.preview_tabs.setTabVisible(self.family_tab, False)
+        self.bonus_event_tab = self.preview_tabs.addTab("")
+        self.bind(lambda value: self.preview_tabs.setTabText(self.bonus_event_tab, value), "Événements")
         self.preview_hint = self.note("Calculez l’aperçu pour afficher le tirage de cette seed.")
         self.preview_hint.setTextFormat(Qt.TextFormat.PlainText)
         layout.addWidget(self.preview_hint)
@@ -652,6 +660,8 @@ class MainWindow(QMainWindow):
         family_layout.addWidget(self.family_duplicates)
         family_layout.addStretch(1)
         self.preview_pages.addWidget(scroll_area(family_page))
+        self.bonus_event_preview = BonusEventPreview(self)
+        self.preview_pages.addWidget(scroll_area(self.bonus_event_preview))
         footer = QHBoxLayout()
         self.encounter_detail_hint = self.label("Cliquez sur une ligne pour ouvrir sa fiche.")
         self.encounter_detail_hint.setObjectName("previewCount")
@@ -678,7 +688,8 @@ class MainWindow(QMainWindow):
         self.keep_rule_visible()
 
     def change_preview_group(self, index):
-        self.preview_pages.setCurrentIndex(2 if index == self.family_tab else int(index != 0))
+        page = 3 if index == self.bonus_event_tab else 2 if index == self.family_tab else int(index != 0)
+        self.preview_pages.setCurrentIndex(page)
         self.preview_search.setVisible(index in (1, 2))
         self.refresh_settings_help()
         self.render_encounters()
@@ -802,11 +813,14 @@ class MainWindow(QMainWindow):
                 if item.metadata["group"] == group:
                     kind = item.metadata["kind"]
                     if kind == "bool":
-                        control = MenuCheckBox()
+                        control = MenuCheckBox(page)
                         self.bind(control.setText, item.metadata["label"])
                         control.setChecked(item.default)
                         self.rule_checks[item.name] = control
-                        page_layout.addWidget(control)
+                        if item.metadata.get("retired"):
+                            control.hide()
+                        else:
+                            page_layout.addWidget(control)
                         control.toggled.connect(self.rules_changed)
                     else:
                         form = QFormLayout()
@@ -978,6 +992,7 @@ class MainWindow(QMainWindow):
         for setter, message in self._text_bindings:
             setter(self.text(message))
         self.xd.retranslate()
+        self.home.retranslate()
         self.rule_visibility_timer.start(0)
         for control in self.rule_fields.values():
             if isinstance(control, (ExcludedSelection, SpeciesChoice)):
@@ -1040,8 +1055,9 @@ class MainWindow(QMainWindow):
         self.rule_fields["trainer_theme_mode"].setEnabled(self.rule_checks["randomize_trainers"].isChecked())
         self.rule_fields["trainer_evolution_level"].setEnabled(self.rule_checks["trainer_force_evolved"].isChecked())
         self.rule_fields["shiny_chance_percent"].setEnabled(self.rule_checks["custom_shinies"].isChecked())
-        self.rule_checks["seeded_shinies"].setEnabled(self.rule_checks["custom_shinies"].isChecked())
+        self.rule_checks["seeded_shinies"].setEnabled(False)
         self.rule_checks["unique_shadows"].setEnabled(shadows)
+        self.rule_checks["randomize_legendary_shadows"].setEnabled(shadows)
         if not shadows:
             self.rule_checks["unique_shadows"].setChecked(False)
         for name in ("boss_shadow_legendary_mode", "boss_shadow_power_mode", "boss_shadow_min_bst"):
@@ -1051,6 +1067,8 @@ class MainWindow(QMainWindow):
             self.rule_fields[name].setEnabled(starters)
         for name in ("event_pikachu_purifications", "event_celebi_purifications", "event_pikachu_level", "event_celebi_level"):
             self.rule_fields[name].setEnabled(self.rule_checks["accessible_event_gifts"].isChecked())
+        for name in ("postgame_randomize_team", "postgame_randomize_lugia"):
+            self.rule_checks[name].setEnabled(self.rule_checks["postgame_shadow_lugia"].isChecked())
         for key in ("umbreon", "espeon"):
             self.rule_fields["starter_" + key + "_species"].setEnabled(self.rule_checks["starter_" + key].isChecked())
         progressive = self.rule_checks["progressive_levels"].isChecked()
@@ -1108,7 +1126,7 @@ class MainWindow(QMainWindow):
         self.preview_status.setText(("✓ " if ready else "") + status)
         self.preview_status.setAccessibleName(status)
         self.preview_progress.setAccessibleName(status)
-        self.preview_progress.setVisible(running and not ready and self.preview_tabs.currentIndex() == 0)
+        self.preview_progress.setVisible(running and not ready and self.preview_tabs.currentIndex() in (0, self.bonus_event_tab))
         self.preview_cancel_button.setText(self.text("Annulation de l’aperçu…" if self.preview_cancel_event.is_set()
                                                     else "Annuler l’aperçu"))
         self.preview_cancel_button.setVisible(running and not ready)
@@ -1129,6 +1147,7 @@ class MainWindow(QMainWindow):
         self.preview_hint.setText(self.text(self._preview_message))
         self.render_shiny_status()
         self.render_family_duplicates(result)
+        self.bonus_event_preview.render(self.current_options(), result)
         self.render_encounters()
         self.update_preview_controls()
 
@@ -1145,6 +1164,9 @@ class MainWindow(QMainWindow):
         names.update({f"shadow:{row['shadow_id']}": self.text("{name} (obscur nº {number})",
                       name=self.preview_species_name(row), number=f"{row['shadow_id']:02d}")
                       for row in result["shadows"]})
+        names.update({f"shadow:{row['shadow_id']}": self.text("{name} (obscur nº {number})",
+                      name=self.preview_species_name(row), number=f"{row['shadow_id']:02d}")
+                      for row in result.get("postgame_shadow_lugia", {}).get("team", []) if row.get("shadow_id")})
         self.preview_tabs.setTabText(self.family_tab, self.text("Doublons · {count}", count=len(groups)))
         self.family_duplicates.setText("\n\n".join(" · ".join(names[key] for key in group) for group in groups))
 
@@ -1199,6 +1221,9 @@ class MainWindow(QMainWindow):
                 if row["national_dex"] is None:
                     self.render_starter(row["key"], *sample(index))
             return
+        if self.preview_tabs.currentIndex() == self.bonus_event_tab:
+            self.bonus_event_preview.animate(sample)
+            return
         tree = self.encounters_tree
         viewport = tree.viewport().rect()
         for index in range(tree.topLevelItemCount()):
@@ -1241,7 +1266,7 @@ class MainWindow(QMainWindow):
         return name
 
     def render_encounters(self):
-        if self.preview_tabs.currentIndex() == self.family_tab:
+        if self.preview_tabs.currentIndex() in (self.family_tab, self.bonus_event_tab):
             self.encounter_detail_hint.hide()
             self.preview_count.clear()
             return
@@ -1251,6 +1276,8 @@ class MainWindow(QMainWindow):
         result = self.preview_result or baseline_rows(self.current_options())
         field = "gifts" if self.preview_tabs.currentIndex() == 2 else "shadows"
         rows = result.get(field, [])
+        if field == "gifts":
+            rows = order_purification_gifts(rows)
         detail_available = self.preview_tabs.currentIndex() != 0 and any(row.get("details") for row in rows)
         rolling = (self.preview_tabs.currentIndex() != 0 and self.preview_thread is not None
                    and self.preview_result is None and self.preview_key is not None
@@ -1788,6 +1815,8 @@ class MainWindow(QMainWindow):
         dialog.show()
 
     def closeEvent(self, event):
+        self.update_checker.close()
+        self.home.installer.close()
         self.report_rom_timer.stop()
         self.xd.report_rom_timer.stop()
         if self.report_check is not None:
@@ -1830,5 +1859,10 @@ def main() -> int:
     if sys.platform == "win32":
         app.setFont(QFont("Segoe UI", 10))
     window = MainWindow(start_on_home=True)
+    if sys.argv[1:2] == ["--update-result"] and len(sys.argv) == 3:
+        from .update_apply import read_update_result
+        result = read_update_result(sys.argv[2])
+        if result is not None:
+            window.home.show_update_result(result)
     window.show()
     return app.exec()

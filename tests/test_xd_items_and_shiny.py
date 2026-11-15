@@ -62,6 +62,23 @@ class XDItemRulesTests(unittest.TestCase):
             [2, 13, 312, 93, 511] if index in CASH_SHOPS else stocks[index] for index in range(21)
         ])
 
+    def test_unrestricted_treasures_use_the_seed_across_safe_item_categories(self):
+        self.rel[self.treasure + 1] = 1
+        struct.pack_into(">I", self.rel, self.treasure + 0xC, 13)
+        self.options.items_similar_value = False
+        outputs = set()
+        with patch("orre_randomizer.xd_item_rules._table_offsets", return_value=(self.treasure, self.items)):
+            for seed in range(20):
+                result, _ = apply_field_items(self.rel, self.rel, str(seed), self.options)
+                repeated, _ = apply_field_items(self.rel, self.rel, str(seed), self.options)
+                self.assertEqual(result, repeated)
+                chosen = u32(result, self.treasure + 0xC)
+                self.assertNotIn(chosen, (1, 13, 93, 361))
+                outputs.add(chosen)
+        self.assertGreater(len(outputs), 1)
+        self.assertTrue(outputs & {2, 3})  # A healing chest can now contain a Ball.
+        self.assertTrue(outputs & {301, 312})  # Or a TM, without any progression item.
+
 
 class XDShinyRulesTests(unittest.TestCase):
     def test_reward_policy_preserves_owner_and_writes_to_catch_floor(self):

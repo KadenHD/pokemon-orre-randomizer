@@ -1,7 +1,6 @@
 """Seeded ordinary treasure and cash shop items for the three retail XD layouts."""
 from __future__ import annotations
 
-from collections import defaultdict
 import hashlib
 import struct
 
@@ -81,9 +80,6 @@ def apply_field_items(original: bytes, current: bytes, seed: str, options) -> tu
         raise FormatError("XD treasure table has already been changed")
 
     catalogue = _ordinary_items(original, items)
-    categories = defaultdict(list)
-    for item, (category, price) in catalogue.items():
-        categories[category].append((item, price))
     output = bytearray(current)
     for index in range(TREASURE_COUNT):
         row = treasure + index * TREASURE_SIZE
@@ -94,8 +90,9 @@ def apply_field_items(original: bytes, current: bytes, seed: str, options) -> tu
             report["protected_records"].append(index)
             continue
         category, price = entry
-        candidates = [item for item, value in categories[category] if item != old
-                      and (not options.items_similar_value or price <= 2 * value <= 4 * price)]
+        candidates = [item for item, (kind, value) in catalogue.items() if item != old
+                      and (not options.items_similar_value
+                           or kind == category and price <= 2 * value <= 4 * price)]
         if not candidates:
             report["unmatched_records"].append(index)
             continue

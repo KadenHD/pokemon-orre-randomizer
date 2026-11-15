@@ -28,6 +28,12 @@ colors:
   home-control: "#202327"
   home-selected: "#30343a"
   home-focus: "#cbd0d8"
+  home-border: "#727782"
+  home-field: "#191b1e"
+  home-label: "#eceef2"
+  home-progress: "#535b66"
+  home-muted: "#969ba5"
+  home-muted-border: "#626772"
 typography:
   display:
     fontFamily: "Segoe UI"
@@ -37,6 +43,10 @@ typography:
     fontFamily: "Segoe UI"
     fontSize: "23px"
     fontWeight: 650
+  compactTitle:
+    fontFamily: "Segoe UI"
+    fontSize: "20px"
+    fontWeight: 700
   subheading:
     fontFamily: "Segoe UI"
     fontSize: "16px"
@@ -151,6 +161,7 @@ sans-serif font. Japanese uses Yu Gothic UI, Meiryo, Noto Sans CJK JP or Noto Sa
 JP; the app title retains Segoe UI. No proprietary font is bundled.
 
 The observed hierarchy is display, section heading, subheading, body and note.
+Below 820 px, the existing workspace title uses the compact 20 px display size.
 The frontmatter records their sizes and weights. Names use an initial capital;
 known shiny Pokémon have a small raised red star beside the name. Accessible
 descriptions retain the status in words.
@@ -179,6 +190,12 @@ Encounter lists fill the remaining height. Their vertical scrollbar is 15 px
 wide with a handle of at least 44 px. Only active content scrolls; navigation
 actions stay visible. Japanese and long translated help wrap instead of
 requiring a larger window.
+
+Home uses one vertical body scroll when the available height is insufficient;
+the application header stays outside it. Both game tiles, the optional release
+download and the credit share this content area. Below 800 px the tiles stack
+vertically; they remain side by side at wider sizes. The body stays bounded to
+1,200 px and has no horizontal scrollbar.
 
 ## Elevation & Depth
 
@@ -238,6 +255,14 @@ Colosseum shows two starters, 48 Shadows and four gifts. XD shows one starter,
 **Update preview**, **Cancel preview**, **Try again** and **Preview up to date**
 for the same states. The original and replacement columns use shared labels.
 
+Colosseum's Events tab holds the optional postgame battle, separately from the
+original 48 Shadows. Its enable control stays in the preview, followed by the
+requirements and six team members. The pending team shows unknown replacements
+and the known bonus Lugia. Ready cards reuse the starter portrait and sheet
+controls, with three columns on a wide panel and two on smaller windows. One
+content scrollbar keeps navigation visible. The shared loading and cancellation
+states apply here too; changes discard stale team details.
+
 Before calculation, known original species appear on the left and unknown
 replacements use question marks. Retained/manual species may already be named.
 Search works before and after calculation using names in all six languages and
@@ -269,6 +294,19 @@ on other steps. Each new attempt clears the previous log and starts collapsed.
 Home keeps neutral music/sound/language controls and game-specific selection
 tiles. Both music and menu sounds start enabled when available and remember
 independent preferences. Audio availability never blocks randomization.
+
+A newer stable release adds one secondary update button below both game
+tiles and above the credit. It reuses the neutral home-control face, gray border
+and silver hover/focus border. The localized label includes the available
+version and supplies the accessible name. Game selection remains the main action.
+
+The release check runs asynchronously once per application session. No button
+appears while checking, when current, offline or on failure; there is no modal
+prompt. Activating the button streams a size- and SHA-256-verified official
+package, applies it in place and restarts the app. A progress row allows download
+cancellation; preparation explains the upcoming restart. Errors stay inline with
+retry available. Source checkouts do not offer executable self-updates. Other
+running jobs must finish first, and game/profile controls stay disabled while updating.
 
 ## Do's and Don'ts
 

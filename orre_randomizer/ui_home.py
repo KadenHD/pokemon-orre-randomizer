@@ -1,11 +1,15 @@
 """Game selection using the same menu frames and native buttons as the wizard."""
-from PySide6.QtCore import QPointF, QRectF, QSize, Qt, QUrl
+from PySide6.QtCore import QPointF, QRectF, QSize, Qt, QTimer, QUrl
 from PySide6.QtGui import QColor, QDesktopServices, QFont, QPainter, QPainterPath, QPen, QPixmap, QPolygonF
-from PySide6.QtWidgets import QBoxLayout, QPushButton, QSizePolicy, QStyle, QStyleOptionButton, QVBoxLayout, QWidget
+from PySide6.QtWidgets import (QBoxLayout, QHBoxLayout, QLabel, QProgressBar, QPushButton,
+                              QSizePolicy, QStyle, QStyleOptionButton, QVBoxLayout, QWidget)
 
 from .i18n import Message
 from .resources import home_logos
-from .ui_workspace import bounded
+from .ui_workspace import bounded, scroll_area
+from .update_service import allowed_download
+from .update_apply import automatic_updates_supported
+from .ui_updates import UpdateInstaller
 
 
 class GameChoice(QPushButton):
@@ -20,16 +24,19 @@ class GameChoice(QPushButton):
         self.setAutoDefault(True)
         self.setCursor(Qt.CursorShape.PointingHandCursor)
         self.setSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
-        self.setMinimumSize(240, 300)
+        self.setMinimumSize(240, 360)
         self.setMaximumHeight(680)
 
     def sizeHint(self):
         return QSize(560, 168) if self.compact else QSize(440, 480)
 
+    def minimumSizeHint(self):
+        return QSize(240, 160 if self.compact else 360)
+
     def set_compact(self, compact):
         if self.compact != compact:
             self.compact = compact
-            self.setMinimumHeight(160 if compact else 300)
+            self.setMinimumHeight(160 if compact else 360)
             self.updateGeometry()
             self.update()
 
@@ -148,6 +155,8 @@ class GameChoice(QPushButton):
 class GameSelection(QWidget):
     def __init__(self, window):
         super().__init__()
+        self.window = window
+        self.update_release = None
         content = QWidget()
         layout = QVBoxLayout(content)
         layout.setContentsMargins(8, 12, 8, 12)
@@ -182,6 +191,39 @@ class GameSelection(QWidget):
             button.clicked.connect(callback)
             self.choices.addWidget(button, 1)
         layout.addLayout(self.choices, 1)
+        self.update_button = QPushButton()
+        self.update_button.setObjectName("updateDownload")
+        self.update_button.setCursor(Qt.CursorShape.PointingHandCursor)
+        self.update_button.clicked.connect(self.download_update)
+        self.update_button.hide()
+        layout.addWidget(self.update_button, 0, Qt.AlignmentFlag.AlignHCenter)
+        self.update_status = QLabel()
+        self.update_status.setWordWrap(True)
+        self.update_status.setAlignment(Qt.AlignmentFlag.AlignCenter)
+        self.update_status.setTextFormat(Qt.TextFormat.PlainText)
+        self.update_status.hide()
+        layout.addWidget(self.update_status)
+        self.update_controls = QWidget()
+        progress_row = QHBoxLayout(self.update_controls)
+        progress_row.setContentsMargins(0, 0, 0, 0)
+        self.update_progress = QProgressBar()
+        self.update_progress.setObjectName("updateProgress")
+        self.update_progress.setRange(0, 100)
+        self.update_cancel = QPushButton()
+        self.update_cancel.setObjectName("updateCancel")
+        window.bind(self.update_cancel.setText, "Annuler")
+        progress_row.addWidget(self.update_progress, 1)
+        progress_row.addWidget(self.update_cancel)
+        self.update_controls.hide()
+        layout.addWidget(self.update_controls)
+        self.installer = UpdateInstaller(self)
+        self.installer.progress.connect(self.update_progress.setValue)
+        self.installer.state_changed.connect(self.update_state_changed)
+        self.installer.failed.connect(self.update_failed)
+        self.installer.ready.connect(window.close)
+        self.update_cancel.clicked.connect(self.installer.cancel)
+        self.update_error = None
+        self.updated_version = None
         credit = window.button(Message("Fait par {author}", author="KadenHD (Pierre CLEMENT)"))
         credit.setObjectName("authorLink")
         credit.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -189,7 +231,87 @@ class GameSelection(QWidget):
         layout.addWidget(credit, 0, Qt.AlignmentFlag.AlignHCenter)
         outer = QVBoxLayout(self)
         outer.setContentsMargins(0, 0, 0, 0)
-        outer.addWidget(bounded(content))
+        self.scroll = scroll_area(bounded(content))
+        self.scroll.setFocusPolicy(Qt.FocusPolicy.NoFocus)
+        outer.addWidget(self.scroll)
+        self.update_visibility_timer = QTimer(self)
+        self.update_visibility_timer.setSingleShot(True)
+        self.update_visibility_timer.timeout.connect(self.keep_update_visible)
+
+    def show_update(self, update):
+        if not automatic_updates_supported() or not allowed_download(update):
+            return
+        self.update_release = update
+        self.retranslate()
+        self.update_button.show()
+
+    def retranslate(self):
+        if self.update_release is not None:
+            label = self.window.text("Mettre à jour vers {version}", version=self.update_release.version)
+            self.update_button.setText(label)
+            self.update_button.setAccessibleName(label)
+            self.update_button.setToolTip(self.window.text(
+                "Télécharger, installer et redémarrer l’outil. Vos ROM et sauvegardes sont conservées."))
+        messages = {
+            "network": "Téléchargement interrompu. Vérifiez votre connexion, puis réessayez.",
+            "checksum": "Le fichier téléchargé est incomplet ou invalide. Réessayez la mise à jour.",
+            "package": "Le paquet de mise à jour est invalide. La version actuelle est conservée.",
+            "disk": "Impossible de préparer la mise à jour. Vérifiez l’espace disque et l’accès au dossier de l’outil.",
+            "running": "Fermez les autres fenêtres du randomizer, puis réessayez.",
+            "busy": "Attendez la fin du calcul ou de la création de ROM avant de mettre à jour.",
+            "update_failed": "La mise à jour a échoué. La version actuelle est conservée. Réessayez.",
+        }
+        if self.update_error:
+            message = messages.get(self.update_error, messages["update_failed"])
+        elif self.updated_version:
+            message = Message("Version {version} installée.", version=self.updated_version)
+        else:
+            message = {"download": "Téléchargement de la mise à jour…",
+                       "prepare": "Préparation de la mise à jour. L’outil va redémarrer…",
+                       "ready": "Redémarrage pour terminer la mise à jour…"}.get(self.installer.state, "")
+        self.update_status.setText(self.window.text(message))
+        self.update_status.setVisible(bool(message))
+        self.update_progress.setAccessibleName(self.window.text("Téléchargement de la mise à jour…"))
+        if message and hasattr(self, "update_visibility_timer"):
+            self.update_visibility_timer.start(0)
+
+    def keep_update_visible(self):
+        control = self.update_controls if self.update_controls.isVisible() else self.update_status
+        if control.isVisible():
+            self.scroll.ensureWidgetVisible(control, 0, 12)
+
+    def download_update(self):
+        if self.update_release is not None and allowed_download(self.update_release):
+            if (self.window.busy or self.window.preview_thread is not None
+                    or self.window.report_check is not None or self.window.xd.report_check is not None):
+                self.update_failed("busy")
+                return
+            self.update_error = None
+            self.installer.start(self.update_release)
+
+    def update_state_changed(self, state):
+        active = state in ("download", "prepare", "ready")
+        self.update_error = None
+        self.updated_version = None
+        self.update_button.setEnabled(not active)
+        self.update_controls.setVisible(state in ("download", "prepare"))
+        self.update_cancel.setEnabled(state == "download")
+        self.update_progress.setRange(0, 100 if state == "download" else 0)
+        for widget in (self.colosseum, self.xd, self.window.colosseum, self.window.xd, self.window.profile_menu):
+            widget.setEnabled(not active)
+        self.retranslate()
+
+    def update_failed(self, reason):
+        self.update_state_changed("error")
+        self.update_error = reason
+        self.retranslate()
+
+    def show_update_result(self, result):
+        if result.get("state") == "complete":
+            self.updated_version = result["version"]
+            self.retranslate()
+        else:
+            self.update_failed(result.get("code", "update_failed"))
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

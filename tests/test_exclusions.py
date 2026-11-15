@@ -11,7 +11,7 @@ from unittest.mock import patch
 from orre_randomizer.i18n import LANGUAGES
 from orre_randomizer.locales.selection_names import SPECIES_NAMES, TYPE_NAMES
 from orre_randomizer.options import Options
-from orre_randomizer.profiles import NEW_POLICY_FIELDS, SHINY_FIELDS, EVENT_GIFT_FIELDS, V15_FIELDS, LEGACY_GAME, parse_profile, profile_data
+from orre_randomizer.profiles import NEW_POLICY_FIELDS, SHINY_FIELDS, EVENT_GIFT_FIELDS, V15_FIELDS, SHADOW_POLICY_FIELDS, LEGACY_GAME, parse_profile, profile_data
 from orre_randomizer.service import UserError, validate_options
 
 
@@ -36,12 +36,14 @@ class ExclusionValidationTests(unittest.TestCase):
         legacy = profile_data("v08", Options.recommended())
         legacy.update(app_version="0.8.0", engine_version="starter-evolution-stages-v9")
         legacy["game"] = dict(LEGACY_GAME)
-        for name in NEW_POLICY_FIELDS | SHINY_FIELDS | EVENT_GIFT_FIELDS | V15_FIELDS | {"diverse_story_families"}:
+        for name in NEW_POLICY_FIELDS | SHINY_FIELDS | EVENT_GIFT_FIELDS | V15_FIELDS | SHADOW_POLICY_FIELDS | {"diverse_story_families", "postgame_shadow_lugia", "keep_shadow_lugia_after_purification"}:
             legacy["options"].pop(name)
         from tests.test_profiles import ProfileTests
         ProfileTests().sign(legacy)
         self.assertEqual(parse_profile(encode(legacy)).options, replace(Options.recommended(), seeded_shinies=False,
-                                                                      accessible_event_gifts=False))
+                                                                      accessible_event_gifts=False,
+                                                                      randomize_legendary_shadows=True,
+                                                                      postgame_randomize_team=True))
         legacy["options"]["excluded_species"] = []
         ProfileTests().sign(legacy)
         with self.assertRaises(UserError):

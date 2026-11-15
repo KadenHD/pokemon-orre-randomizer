@@ -38,7 +38,8 @@ def _settings(options) -> tuple[str, str, int]:
 
 def shadow_boss_rules_active(options) -> bool:
     """Defaults intentionally keep the legacy v0.4 species draws unchanged."""
-    return _settings(options) != ("any", "global", 0) or has_exclusions(options)
+    return (_settings(options) != ("any", "global", 0) or has_exclusions(options)
+            or not _flag(options, "randomize_legendary_shadows", True))
 
 
 def _flag(options, name: str, default: bool) -> bool:
@@ -178,6 +179,10 @@ def apply_shadow_boss_tables(original: bytes, current: bytes, seed: str, options
     for sid, old in sorted(originals.items()):
         is_boss = sid in boss_ids
         old_legend = catalog[old]["national_dex"] in LEGENDARY_NATIONAL
+        if old_legend and not _flag(options, "randomize_legendary_shadows", True):
+            hard[sid] = preferred[sid] = [old]
+            balanced[sid] = False
+            continue
         pool = []
         for index, row in sorted(catalog.items()):
             national = row["national_dex"]

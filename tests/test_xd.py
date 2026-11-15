@@ -1,4 +1,4 @@
-from dataclasses import replace
+from dataclasses import asdict, replace
 import json
 from pathlib import Path
 import struct
@@ -19,6 +19,11 @@ from orre_randomizer.service import UserError, check_disc_identity
 from orre_randomizer.xd_shops import STONE_PRICE, patch_stone_price
 
 
+def legacy_options(options):
+    return {name: value for name, value in asdict(options).items()
+            if name not in {"keep_shadow_lugia_after_purification", "randomize_legendary_shadows"}}
+
+
 def boot_for(game_id):
     data = bytearray(0x440)
     data[:6] = game_id.encode("ascii")
@@ -33,9 +38,9 @@ class XDTests(unittest.TestCase):
         options = xd.XDOptions.recommended()
         data = {"engine_version": PREVIOUS_XD_FIELD_ENGINE, "game_id": region.game_id,
                 "revision": 0, "source_iso_sha256": region.iso_sha256, "seed": "old-wild",
-                "options": {k: v for k, v in asdict(options).items() if k not in XD_POKE_SPOT_SHINY_FIELDS}}
+                "options": {k: v for k, v in legacy_options(options).items() if k not in XD_POKE_SPOT_SHINY_FIELDS}}
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
-        self.assertEqual(profile.options, options)
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True))
         self.assertFalse(profile.options.custom_poke_spot_shinies)
 
     def test_v7_profiles_keep_full_spots_without_enabling_shadow_shinies(self):
@@ -45,12 +50,12 @@ class XDTests(unittest.TestCase):
         options = replace(xd.XDOptions.recommended(), custom_shadow_shinies=False)
         payload = {"engine_version": PREVIOUS_XD_FULL_SPOT_ENGINE, "game_id": region.game_id,
                    "revision": 0, "source_iso_sha256": region.iso_sha256,
-                   "seed": "v7-full-pool", "options": asdict(options)}
+                   "seed": "v7-full-pool", "options": legacy_options(options)}
         payload["options"].pop("custom_shadow_shinies")
         for key in XD_POKE_SPOT_SHINY_FIELDS:
             payload["options"].pop(key)
         profile = parse_xd_profile(json.dumps(payload).encode(), report=True)
-        self.assertEqual(profile.options, options)
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True))
         self.assertTrue(profile.options.poke_spots_full_pokedex)
         self.assertFalse(profile.options.custom_shadow_shinies)
 
@@ -62,13 +67,13 @@ class XDTests(unittest.TestCase):
                           experience_multiplier=1.5, purification_multiplier=3)
         data = {"engine_version": PREVIOUS_XD_QOL_ENGINE, "game_id": region.game_id,
                 "revision": 0, "source_iso_sha256": region.iso_sha256,
-                "seed": "old-runtime", "options": asdict(options)}
+                "seed": "old-runtime", "options": legacy_options(options)}
         data["options"].pop("poke_spots_full_pokedex")
         data["options"].pop("custom_shadow_shinies")
         for key in XD_POKE_SPOT_SHINY_FIELDS:
             data["options"].pop(key)
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
-        self.assertEqual(profile.options, options)
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True))
         self.assertFalse(profile.xd_spot_migration)
         with TemporaryDirectory() as folder:
             import hashlib
@@ -77,6 +82,8 @@ class XDTests(unittest.TestCase):
             payload = json.loads(path.read_text("utf-8"))
             payload.pop("configuration_sha256")
             payload["engine_version"] = PREVIOUS_XD_QOL_ENGINE
+            payload["options"].pop("keep_shadow_lugia_after_purification")
+            payload["options"].pop("randomize_legendary_shadows")
             payload["options"].pop("poke_spots_full_pokedex")
             payload["options"].pop("custom_shadow_shinies")
             for key in XD_POKE_SPOT_SHINY_FIELDS:
@@ -84,7 +91,8 @@ class XDTests(unittest.TestCase):
             canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
             payload["configuration_sha256"] = hashlib.sha256(canonical).hexdigest()
             path.write_text(json.dumps(payload), encoding="utf-8")
-            self.assertEqual(load_profile(path, is_xd=True).options, options)
+            self.assertEqual(load_profile(path, is_xd=True).options,
+                             replace(options, randomize_legendary_shadows=True))
 
     def test_xd_profile_preserves_typed_options_and_rejects_colosseum_import(self):
         options = replace(xd.XDOptions.recommended(), excluded_species=(25, 133), randomize_hordel_gift=True,
@@ -96,6 +104,40 @@ class XDTests(unittest.TestCase):
             self.assertEqual((profile.seed, profile.options), ("seed-évolutions", options))
             with self.assertRaises(UserError):
                 load_profile(path)
+
+    def test_previous_lugia_profile_disables_new_rule_and_checks_its_signature(self):
+        import hashlib
+        from orre_randomizer.profiles import PREVIOUS_XD_LUGIA_ENGINE
+        options = xd.XDOptions.recommended()
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "old-lugia-profile.json"
+            payload = save_profile(path, "previous-xd-lugia", options)
+        payload["engine_version"] = PREVIOUS_XD_LUGIA_ENGINE
+        payload["options"].pop("keep_shadow_lugia_after_purification")
+        payload["options"].pop("randomize_legendary_shadows")
+        def sign():
+            payload.pop("configuration_sha256", None)
+            canonical = json.dumps(payload, ensure_ascii=False, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            payload["configuration_sha256"] = hashlib.sha256(canonical).hexdigest()
+        sign()
+        profile = parse_xd_profile(json.dumps(payload).encode())
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True))
+        self.assertFalse(profile.options.keep_shadow_lugia_after_purification)
+        payload["seed"] = "unsigned-change"
+        with self.assertRaises(UserError):
+            parse_xd_profile(json.dumps(payload).encode())
+        payload["options"]["keep_shadow_lugia_after_purification"] = True
+        sign()
+        with self.assertRaises(UserError):
+            parse_xd_profile(json.dumps(payload).encode())
+
+    def test_current_lugia_appearance_profile_roundtrips_both_states(self):
+        for enabled in (False, True):
+            options = replace(xd.XDOptions(), keep_shadow_lugia_after_purification=enabled)
+            with TemporaryDirectory() as directory:
+                path = Path(directory) / "appearance.json"
+                save_profile(path, "xd-lugia-appearance", options)
+                self.assertEqual(load_profile(path, is_xd=True).options, options)
 
     def test_copy_accepts_exact_xd_identity_and_has_no_patches(self):
         for game_id, region in xd.REGIONS.items():
@@ -172,7 +214,7 @@ class XDTests(unittest.TestCase):
         from dataclasses import asdict
 
         region = xd.REGIONS["GXXP01"]
-        options = asdict(xd.XDOptions())
+        options = legacy_options(xd.XDOptions())
         options.pop("poke_spots_full_pokedex")
         options.pop("custom_shadow_shinies")
         options.pop("randomize_hordel_gift")
@@ -191,7 +233,7 @@ class XDTests(unittest.TestCase):
         from dataclasses import asdict
 
         region = xd.REGIONS["GXXP01"]
-        options = asdict(replace(xd.XDOptions(), randomize_tutorial_shadow=True))
+        options = legacy_options(replace(xd.XDOptions(), randomize_tutorial_shadow=True))
         options.pop("poke_spots_full_pokedex")
         options.pop("custom_shadow_shinies")
         options.pop("randomize_hordel_gift")

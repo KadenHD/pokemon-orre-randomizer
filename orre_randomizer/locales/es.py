@@ -1044,7 +1044,7 @@ TEXTS.update({'Configuration': 'Configuración',
  'Non chromatiques': 'No variocolor',
  'Aperçu non calculé': 'Vista previa sin calcular',
  'Aucun résultat': 'Sin resultados',
- '{first}–{last} sur {count}': '{first}–{last} de {count}',
+ '{first}-{last} sur {count}': '{first}-{last} de {count}',
  'Seed ou réglages modifiés. Actualisez l’aperçu.': 'La semilla o los ajustes han cambiado. Actualiza la '
                                                     'vista previa.',
  'Aperçu pour une nouvelle partie. Aucune ROM n’a été créée.': 'Vista previa para una partida nueva. No se '

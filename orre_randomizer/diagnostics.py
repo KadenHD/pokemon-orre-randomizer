@@ -22,6 +22,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
     from .locales.selection_names import SPECIES_NAMES
     from .ui_exclusions import ExclusionDialog
     from .resources import application_icon, application_logo, interface_assets, menu_icon
+    from .update_apply import automatic_updates_supported, update_kind
 
     app = QApplication.instance() or QApplication(["OrreRandomizer diagnostics"])
     if sys.platform == "win32":
@@ -46,6 +47,11 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
             "rom_opened": False, "personal_preferences_opened": False,
             "home_states": [], "states": [], "exclusion_states": [], "shiny_states": [], "preview_states": [],
             "consolidation_states": [], "xd_states": [], "xd_parity_states": []}
+    data["windows_update_helper_available"] = Path(__file__).with_name("windows_update.ps1").is_file()
+    data["automatic_updates_supported"] = automatic_updates_supported()
+    data["update_package_kind"] = update_kind()
+    if data["frozen"] and sys.platform == "win32":
+        assert data["windows_update_helper_available"] and data["automatic_updates_supported"]
     with tempfile.TemporaryDirectory(prefix="diagnostic-prefs-", dir=report.parent) as folder:
         settings = QSettings(str(Path(folder)/"preferences.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
@@ -205,8 +211,8 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                         assert rate.isVisible() and rate.isEnabled() == enabled
                         assert rate.value() == chance
                         seed_switch = window.rule_checks["seeded_shinies"]
-                        assert seed_switch.isVisible() and seed_switch.isEnabled() == enabled
-                        assert seed_switch.isChecked() == seeded
+                        assert not seed_switch.isVisible() and not seed_switch.isEnabled()
+                        assert not enabled or window.current_options().seeded_shinies
                         if window.rule_nav.isVisible():
                             selected = window.rule_nav.visualItemRect(window.rule_nav.currentItem())
                             assert selected.top() >= 0 and selected.bottom() <= window.rule_nav.viewport().height()
@@ -215,8 +221,9 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                             assert window.category_selector.currentIndex() == window.rule_nav.currentRow()
                         assert window.next_button.isVisible() and window.next_button.isEnabled()
                         state = {"language": language, "width": width, "height": height,
-                                 "enabled": enabled, "seeded": seeded, "percent": chance,
-                                 "rate_accessible": True, "seed_switch_accessible": True}
+                                 "enabled": enabled, "seeded": window.current_options().seeded_shinies,
+                                 "legacy_requested_seeded": seeded, "percent": chance,
+                                 "rate_accessible": True, "seed_switch_removed": True}
                         if screenshots:
                             name = f"{report.stem}-{language}-{width}-shiny-{'on' if enabled else 'off'}-{'seeded' if seeded else 'runtime'}-{chance}.png"
                             path = report.parent / name
@@ -371,7 +378,13 @@ def main(arguments=None) -> int:
     parser.add_argument("--screenshots", action="store_true")
     args = parser.parse_args(arguments)
     # Exclusive creation protects previous evidence. Use a new writable directory.
-    with args.report.open("x", encoding="utf-8") as stream:
+    try:
+        stream = args.report.open("x", encoding="utf-8")
+    except OSError:
+        # Windowed executables have no terminal. Refuse the path without an
+        # unhandled traceback dialog that would block unattended checks.
+        return 2
+    with stream:
         try:
             result = run_checks(args.report, screenshots=args.screenshots)
         except Exception as error:

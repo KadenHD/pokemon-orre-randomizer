@@ -21,7 +21,7 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
     files = [ROOT / name for name in ("README.md", "CHANGELOG.md", "RESEARCH.md", "LICENSE", "THIRD_PARTY_NOTICES.md",
              "CONTRIBUTING.md", "PRODUCT.md", "DESIGN.md", "pyproject.toml", "requirements-build.txt", ".gitignore", ".gitattributes",
              "lancer-randomizer.ps1")]
-    for directory, extensions in (("orre_randomizer", {".py"}), ("tests", {".py"}),
+    for directory, extensions in (("orre_randomizer", {".py", ".ps1"}), ("tests", {".py"}),
                                   ("scripts", {".py", ".ps1", ".spec", ".iss"}), ("docs", {".md"}),
                                   ("licenses", {".txt", ".json", ".md"}), (".github", {".yml", ".md"})):
         files += [p for p in (ROOT / directory).rglob("*") if p.is_file() and p.suffix in extensions]
@@ -42,7 +42,8 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
         for name, expected in manifest["files"].items():
             path = pack / name
             if (not path.resolve().is_relative_to(pack.resolve()) or path.is_symlink() or
-                    path.suffix not in {".png", ".wav", ".json", ".md"} or
+                    (path.suffix not in {".png", ".wav", ".json", ".md"}
+                     and name != "models/dark-lugia-colosseum-v1.pkx") or
                     path.stat().st_size != expected["bytes"] or
                     hashlib.sha256(path.read_bytes()).hexdigest() != expected["sha256"]):
                 raise RuntimeError("Invalid interface asset: " + name)
@@ -148,6 +149,11 @@ def main():
     if not args.source_only:
         # Include the full application source beside replaceable Qt DLLs.
         shutil.copyfile(source_zip, app / source_zip.name)
+        # This allowlist lets future portable updates remove obsolete bundled
+        # files without sweeping up a user's ROMs, saves or personal files.
+        owned = sorted(p.relative_to(app).as_posix() for p in app.rglob("*")
+                       if p.is_file() and p != app / "update-files.json")
+        (app / "update-files.json").write_text(json.dumps([*owned, "update-files.json"]), encoding="utf-8")
         binary_zip = release / f"{REPOSITORY_NAME}-{__version__}-windows-x64.zip"
         if binary_zip.exists():
             raise SystemExit(f"Release already exists: {binary_zip}")

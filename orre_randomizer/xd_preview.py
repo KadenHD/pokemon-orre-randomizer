@@ -1,6 +1,7 @@
 """Known retail XD encounters for the pre-calculation UI, without a ROM read."""
 from .xd import PROTECTED_SHADOWS, SPOT_SPECIES
 from .xd_gifts import GIFT_BASELINES, GIFT_TRADE_REQUIREMENTS, HORDEL_SHADOW, TOGETIC
+from .engine.species_rules import LEGENDARY_NATIONAL
 
 # (internal species ID, National Pokédex ID), in native Shadow-ID order.
 # Checked against the Story/DDPK tables of the three supported revision-0 discs.
@@ -35,10 +36,12 @@ def baseline_rows(options):
     if options.randomize_starter and options.starter_species > 0:
         starter['national_dex'] = options.starter_species
     shadows = []
-    for sid, (original, _) in enumerate(BASE_SHADOWS, 1):
+    for sid, (original, national) in enumerate(BASE_SHADOWS, 1):
         pending = (options.randomize_tutorial_shadow if sid == 1 else
                    options.randomize_hordel_gift if sid == HORDEL_SHADOW else
                    options.randomize_shadows and sid not in PROTECTED_SHADOWS)
+        if not options.randomize_legendary_shadows and national in LEGENDARY_NATIONAL:
+            pending = False
         shadows.append(row(original, pending, shadow_id=sid))
     gifts = []
     for key, original, level in GIFT_BASELINES:

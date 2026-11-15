@@ -15,7 +15,8 @@ from orre_randomizer.options import Options
 
 def options(**changes):
     return SimpleNamespace(**{**asdict(Options()), "boss_shadow_legendary_mode": "any",
-        "boss_shadow_power_mode": "global", "boss_shadow_min_bst": 0, **changes})
+        "boss_shadow_power_mode": "global", "boss_shadow_min_bst": 0,
+        "randomize_legendary_shadows": True, **changes})
 
 
 def fixture():

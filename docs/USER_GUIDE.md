@@ -2,18 +2,60 @@
 
 ## Start a run
 
+The home screen checks GitHub once per session for a newer stable release.
+In Windows builds, **Update to…** appears below the two games when one is
+available. Click it to download, verify, apply the update and restart the app.
+The installed edition uses the official setup EXE in silent mode; the portable
+edition updates from the official ZIP in its current folder. Existing shortcuts
+keep the same target. The check sends no game files, paths, seeds or saves;
+offline and unavailable checks stay silent. Source checkouts are updated through Git.
+
+The download shows progress and can be cancelled. ROM creation and previews
+must finish first. The updater requires the package's expected size and GitHub
+SHA-256 digest, then verifies the complete download before starting its helper.
+Invalid or incomplete downloads are discarded. The portable helper waits for
+this exact app process to exit, backs up bundled files, and restores them if
+replacement fails. Unmanaged files, ROMs, saves and preferences are preserved.
+Temporary download and staging files are removed after the attempt; a small
+local diagnostic log remains. Updating starts only after clicking the button.
+
 Both games use **ROM → Settings → Create**. Supply an unmodified
 [supported original](COMPATIBILITY.md). Choose a new output path: existing
 files are never replaced. Start a new game in Dolphin to match the preview;
 the app never imports or edits saves.
 
-**Pokémon + moves** and **Pokémon only** share the same balance policy: similar
-strength, family diversity, base starters from three-stage families and a
-custom 5% shiny chance where supported. Only move, TM and item randomization
-differ. Levels, EXP, purification and catch-rate multipliers stay at ×1.
+**Pokémon + moves** and **Pokémon only** randomize species and abilities, with
+family diversity and a custom 5% shiny chance where supported. Every evolution
+stage is eligible: starters do not need to be base forms or belong to three-stage
+families. Power matching is disabled. Only move, TM and item randomization differ.
+The full preset changes held items and ordinary Ball treasures as well; empty
+held-item slots remain empty and progression items stay protected.
+Treasure contents are fixed when the ROM is created; loading a different image
+through an old Dolphin save state can restore data from the previous run. Use
+the normal in-game save/load flow when comparing randomized images. See the
+[treasure validation notes](reverse-engineering/TREASURE_ITEMS_RUNTIME.md) for
+the data audit and representative native pickups.
+Moves are drawn without power or type matching. At least one attacking move
+is retained, while duplicate moves, self-destruct moves and one-hit KOs are
+excluded by default. TM compatibility is randomized without type matching.
+These protections can be changed in Advanced.
+Custom shiny rates always use the seed in both games. Older unlinked profiles
+are linked when imported, retaining their seed and chosen rate. There is no
+unlink switch; disabling shiny customization retains native game behavior.
+Levels, EXP, purification and catch-rate multipliers stay at ×1.
+Original legendary Shadow Pokémon keep their species in both presets. Under
+**Advanced → Trainers**, enable **Randomize legendary Shadow Pokémon** to allow
+their replacement. XD001 remains protected for XD's story regardless of this
+switch. This setting does not control Colosseum's bonus battle.
 **Unchanged copy** changes no game data. Switching Simple/Advanced preserves
 your choices; selecting a preset replaces them. Category resets use that game's
 Pokémon + moves defaults. Imported profiles retain their saved values.
+
+In Colosseum, capturing a trainer's Shadow Pokémon no longer rerolls the unchanged
+members of that team. Their species, moves, held items and seeded shiny status
+stay consistent across the game's capture-state variants. Later story teams
+still follow their native progression; the captured slot is removed or replaced
+as in the original game. See [rematch rules](reverse-engineering/TRAINER_REMATCHES.md).
 
 ## Music and sounds
 
@@ -59,11 +101,13 @@ duplicates appear in the preview's extra tab and in the report.
 
 ## Starters and evolutions
 
-Change the stage, disable the three-stage-family filter or select a species
-manually in Advanced. Only routes present in the generation-III game count.
+By default, every evolution stage is eligible and the three-stage-family filter
+is disabled. Restrict the stage or select a species manually in Advanced.
+Only routes present in the generation-III game count.
 Colosseum retains starting levels 26 and 25; XD retains level 10. Starting EXP
-follows the replacement's growth curve. Colosseum's pair rules compare final
-strength, require distinct families and complementary types. XD has one starter.
+follows the replacement's growth curve. Colosseum's two starters use distinct
+families by default. Optional pair rules can require similar final strength or
+non-overlapping types. XD has one starter.
 
 Manual selections bypass individual stage/power filters; exclusions and pair
 constraints still apply. Impossible combinations produce an explanation.
@@ -74,12 +118,25 @@ in Colosseum, and Gateon Port in XD. XD retains native Eevee shard routes.
 The Pokémon sheet shows the actual final requirements and evolution portraits,
 including shiny variants. See [starter rules](STARTER_STAGES.md).
 
+## Optional type randomization
+
+Enable **Advanced → Types → Change types** in either game. It is disabled in
+both presets. Every species has one or two valid generation-III types; the
+original single/double type count is kept, with distinct types for a dual type.
+The family-consistency option shares the new types across evolution relatives.
+Shedinja keeps its native types and Wonder Guard safeguard.
+
 ## Colosseum rewards
 
 Plusle, Ho-Oh, Pikachu and Celebi have separate species controls. The Pyrite
 rescue and handover show and name the randomized Plusle gift. Large species
 are eligible and use smaller models in those scenes. The gift's field model
 also shows its shiny colors when its status is known during ROM creation.
+Replacement species use their own animated battle idle when no compatible
+field motion is available, so they can glide while the scene moves them.
+Keeping Plusle preserves its native scene motions, including with a custom
+shiny palette. See [field animations](reverse-engineering/FIELD_ANIMATIONS.md)
+for the supported scope.
 The Battle Mode Mt. Battle presentation uses the species, form, and shiny
 colors of the Pokémon awarded there.
 
@@ -88,17 +145,86 @@ at the Relic Stone. By default, Pikachu's gift is available after 10
 purifications at level 30, and Celebi's after 25 at level 45. Each threshold
 and level can be adjusted independently.
 
+The first reward is Eagun's companion. Its species follows the gift, as do its
+shiny colors when determined by the seed or a guaranteed rate. Unown's form and
+Spinda's spots also match. After receiving it, the companion leaves his home;
+Eagun keeps his original story conversations and item handoffs. Independent
+runtime shiny draws at an intermediate rate cannot be predicted for the model.
+
 Eagun becomes available after the purification introduction and its follow-up
 after the Skrub encounter, avoiding duplication during story scenes. Each reward
 is available once per save. Changing a gift's species does not remove its other
 requirements. Dialogue follows the ROM language.
 
+## Colosseum's optional Shadow Lugia event
+
+Added shrine events wait until Eagun has exchanged P★DA contact details with
+you. His home actor and original interactions remain available throughout the
+story. A pending Master Ball handoff takes priority over added shrine events;
+receiving the Master Ball is not a prerequisite for the earlier purification
+rewards. Their configured purification thresholds still apply.
+
+Both randomizing presets enable this quest. Open **Settings → Pokémon preview →
+Events** to disable it or
+preview its six team members with the current seed. You can open each Pokémon's
+sheet before creating the ROM. Changing the seed or settings clears the old draw.
+
+After all 48 original Shadow Pokémon have been caught and purified, travel by
+motorcycle to another area to receive Eagun's P★DA warning. Return to the
+Relic Stone to meet Nascour and his six Pokémon at levels 65-70. His intended
+team is Gardevoir, Xatu, Dusclops, Walrein, Blaziken and level-70 Shadow Lugia.
+Both presets keep this team, its moves and its held items, independently of
+the ordinary trainer settings.
+
+Under **Advanced → Starters and gifts**, **Randomize Nascour's team** draws five
+replacements using the seed and allowed species, with different evolution
+families where possible. **Randomize the bonus battle's Lugia** independently
+replaces the final Shadow Pokémon. Both switches are off by default. The scene
+model, mail, dialogue, preview and Snag encounter follow that final choice;
+the quest requirements stay the same.
+
+Defeating him without snagging the final Shadow Pokémon leaves the battle
+available. After the capture he leaves permanently and Eagun congratulates you.
+
+When the event unlocks, Eagun sends a P★DA email after your first completed
+motorcycle trip to another area. Walking out of the shrine, opening or cancelling
+the map, and choosing your current area do not activate the mission.
+The unread message warns you about Cipher's return and directs you to the
+Relic Stone. It arrives once and uses the game's current language. Finishing
+the last purification does not interrupt the ceremony or make the boss appear
+beside you. The introduction plays on your return and is remembered after a
+defeat; speak to Nascour to retry. An unrelated defeat never skips it.
+
+An ordinary whiteout keeps Colosseum's original return rule: the last PC where
+you saved, with your team healed. Healing at a Pokémon Center alone does not
+replace that saved return point.
+
+Lugia uses XD's dark model while it is a Shadow Pokémon, with a custom white-body,
+dark-belly variant when shiny. It uses normal Colosseum purification. Its saved
+shiny status follows your settings and remains unchanged after purification;
+shiny Lugia then takes its usual pink appearance by default. To keep the dark
+model and portrait, enable **Advanced → Shinies → Keep Lugia's Shadow appearance**.
+This setting is off by default and does not keep Lugia's heart closed or change
+its moves, abilities or stats.
+Its bonus Snag List entry does not change the original 48 requirements for Ho-Oh.
+Original capture and purification totals also remain capped at the original
+roster; the bonus keeps its separate saved progress.
+The run journal includes the new trainer, battle and Shadow Pokémon alongside
+the original encounters.
+
+The optional event requires a newly created ROM. Original ROMs and saves are
+never replaced. See the [technical notes](reverse-engineering/POSTGAME_SHADOW_LUGIA.md)
+for validation details and native mechanics.
+
 ## XD encounters and trades
 
-Shadow Lugia remains protected. Both randomizing presets replace tutorial
+XD001 (the story's Shadow Lugia) remains protected even when legendary Shadow
+randomization is enabled. Both randomizing presets replace tutorial
 Teddiursa by default. Its advanced control can retain the original species.
 The tutorial replacement retains level 11 and the original catch rate; its
-dialogue names the replacement. Both presets also replace Hordel's Shadow
+dialogue names the replacement. Creation checks that the starter has a usable
+damaging attack against this opponent, including when Teddiursa is kept native.
+An incompatible matchup stops creation with an explanation. Both presets also replace Hordel's Shadow
 Togepi; its separate advanced control can retain the original species.
 The replacement is a base form from a two-stage family with an accessible
 evolution, so Hordel accepts it after purification either before or after
@@ -124,6 +250,8 @@ the original three-species shuffle. Profiles from earlier engines retain that
 older shuffle when imported. At least three allowed species are needed for the
 full draw. The two special encounters and Mt. Battle prize requirements retain
 their native rules.
+See [XD story safeguards](reverse-engineering/XD_STORY_SAFEGUARDS.md) for the
+scope and limits of the scripted-encounter checks.
 
 ## Advanced rules
 
@@ -153,8 +281,13 @@ by default. Under **Advanced → Poké Spots**, enable **Customize wild shiny
 odds** to set a separate rate from 0% to 100%. Each new encounter keeps the
 same result on the field, in battle and after capture.
 Previously generated Shadow Pokémon retain their saved PID; use a new game
-for the preview to match every encounter. Shadow Lugia keeps its special dark
-appearance until purification.
+for the preview to match every encounter. Shiny Shadow Lugia has a custom white
+body and dark belly; non-shiny Shadow Lugia retains its original dark colors.
+After purification, shiny Lugia uses its usual pink appearance without rerolling
+its personality or shiny status. The preview uses matching portraits. The shared
+advanced setting **Keep Lugia's Shadow appearance** retains the dark model and
+portrait after purification instead. It is off by default. A Lugia that was
+never a Shadow Pokémon always keeps its ordinary appearance, shiny or not.
 Disabling customization preserves native rules. The original generation-III
 probability is 1/8192, approximately 0.0122%, where that game's encounter rules
 permit shinies. See [shiny behavior](SHINIES.md).

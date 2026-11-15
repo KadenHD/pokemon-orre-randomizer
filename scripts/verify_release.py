@@ -2,7 +2,9 @@
 import hashlib
 import argparse
 import json
+import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
+import signal
 import subprocess
 import sys
 import tempfile
@@ -31,15 +33,25 @@ def verify_source_tests(directory: Path) -> str:
     runner = Path(__file__).resolve().with_name("run_tests.py")
     command = [sys.executable, "-X", "utf8", str(runner)]
     print("Running tests from the extracted source archive.", flush=True)
-    try:
-        result = subprocess.run(command, cwd=directory, capture_output=True, timeout=SOURCE_TEST_TIMEOUT)
-    except subprocess.TimeoutExpired as error:
-        progress = (error.stderr or b"").decode("utf-8", errors="replace").splitlines()
-        tail = "\n".join(progress[-25:])
-        raise RuntimeError(f"Source archive tests exceeded {SOURCE_TEST_TIMEOUT} seconds.\n{tail}") from None
-    stderr = result.stderr.decode("utf-8", errors="replace").replace("\r\n", "\n")
-    if result.returncode:
-        raise RuntimeError(result.stdout.decode("utf-8", errors="replace") + stderr)
+    with subprocess.Popen(command, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                          start_new_session=os.name != "nt") as process:
+        try:
+            stdout, stderr_bytes = process.communicate(timeout=SOURCE_TEST_TIMEOUT)
+        except subprocess.TimeoutExpired:
+            if os.name == "nt":
+                # The runner owns a kill-on-close Windows job. Terminating it
+                # closes the last non-inherited handle and kills its workers.
+                process.kill()
+            else:
+                # Workers inherit the private session, never the caller's group.
+                os.killpg(process.pid, signal.SIGKILL)
+            _, stderr_bytes = process.communicate(timeout=5)
+            progress = stderr_bytes.decode("utf-8", errors="replace").splitlines()
+            tail = "\n".join(progress[-25:])
+            raise RuntimeError(f"Source archive tests exceeded {SOURCE_TEST_TIMEOUT} seconds.\n{tail}") from None
+    stderr = stderr_bytes.decode("utf-8", errors="replace").replace("\r\n", "\n")
+    if process.returncode:
+        raise RuntimeError(stdout.decode("utf-8", errors="replace") + stderr)
     return stderr.rsplit("\n" + "-" * 70 + "\n", 1)[-1].strip()
 
 
@@ -80,12 +92,22 @@ def main():
                     raise RuntimeError(f"Local data folder in release: {name}")
                 if item.filename.startswith(prefix) and item.filename not in game_assets | {prefix + "provenance.json"}:
                     raise RuntimeError("Unlisted interface asset: " + item.filename)
-                if (name.suffix.lower() in {".wav", ".png", ".jpg", ".jpeg", ".gif", ".mp3", ".ogg", ".flac", ".ico"}
+                if (name.suffix.lower() in {".wav", ".png", ".jpg", ".jpeg", ".gif", ".mp3", ".ogg", ".flac", ".ico", ".pkx"}
                         and not application_media_allowed(item.filename, binary)
                         and item.filename not in game_assets | doc_assets):
                     raise RuntimeError("Unlisted release media: " + item.filename)
             if archive.testzip() is not None:
                 raise RuntimeError("ZIP integrity check failed")
+            helper_name = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/windows_update.ps1"
+            if helper_name not in archive.namelist():
+                raise RuntimeError("Windows update helper is missing")
+            if binary:
+                root = f"{APP_EXECUTABLE}/"
+                owned = json.loads(archive.read(root + "update-files.json"))
+                entries = [name[len(root):] for name in archive.namelist()]
+                if (not isinstance(owned, list) or not all(isinstance(name, str) for name in owned)
+                        or len(owned) != len(set(owned)) or set(owned) != set(entries)):
+                    raise RuntimeError("Portable update file manifest differs from the archive")
             app_prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/assets/app/"
             for asset_manifest_name, assets in (("provenance.json", ("icon.ico",) if binary else ("icon.ico", "icon.png")),
                                      ("logo.json", ("logo.png",))):
@@ -98,7 +120,9 @@ def main():
                         raise RuntimeError("Invalid application asset: " + relative)
             for relative, record in pack["files"].items():
                 if (PureWindowsPath(relative).drive or "\\" in relative or Path(relative).is_absolute()
-                        or ".." in Path(relative).parts or Path(relative).suffix not in {".png", ".wav", ".json", ".md"}):
+                        or ".." in Path(relative).parts or
+                        (Path(relative).suffix not in {".png", ".wav", ".json", ".md"}
+                         and relative != "models/dark-lugia-colosseum-v1.pkx")):
                     raise RuntimeError("Unsafe interface asset name")
                 payload = archive.read(prefix + relative)
                 if len(payload) != record["bytes"] or hashlib.sha256(payload).hexdigest() != record["sha256"]:

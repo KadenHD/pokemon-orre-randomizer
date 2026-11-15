@@ -22,7 +22,7 @@ GAME = ROOT / "game"
 class V05OptionTests(unittest.TestCase):
     def test_contradictory_boss_legendary_rules_rejected_before_reading_rom(self):
         options = replace(Options.recommended(), allow_legendaries=False,
-                          boss_shadow_legendary_mode="preserve")
+                          boss_shadow_legendary_mode="preserve", randomize_legendary_shadows=True)
         with self.assertRaisesRegex(UserError, "légendaires"):
             validate_options(options)
         validate_options(replace(options, randomize_shadows=False))
@@ -37,6 +37,8 @@ class V05CompositionTests(unittest.TestCase):
         cls.tables = expanded_layout(cls.original)
         cls.seed = "qa-colosseum-v5"
         cls.options = replace(Options.recommended(), starter_stage="base",
+            starter_balance_pair=True, starter_complementary_types=True,
+            ensure_stab_move=True, moves_mode="balanced",
             boss_shadow_legendary_mode="preserve", boss_shadow_power_mode="similar",
             boss_shadow_min_bst=450, randomize_types=True, randomize_stats=True,
             preserve_stat_totals=False)

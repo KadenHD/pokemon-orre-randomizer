@@ -13,12 +13,14 @@ def without_moves_and_items(options: Preset) -> Preset:
     return replace(options, randomize_trainer_moves=False, randomize_starter_moves=False,
                    randomize_gift_moves=False, randomize_learnsets=False,
                    randomize_tm_moves=False, tm_compatibility_mode="original",
-                   randomize_field_items=False, randomize_shop_items=False)
+                   randomize_field_items=False, randomize_shop_items=False,
+                   randomize_held_items=False)
 
 
 def recommended_preset() -> Options:
     return replace(Options.recommended(), custom_shinies=True,
-                   shiny_chance_percent=5.0, diverse_story_families=True)
+                   shiny_chance_percent=5.0, diverse_story_families=True,
+                   postgame_shadow_lugia=True)
 
 
 def species_preset() -> Options:

@@ -1,7 +1,7 @@
 {
-  "app_version": "1.2.15",
+  "app_version": "1.2.20",
   "language": "en",
-  "description": "English captures of the app and English PAL gameplay recorded in muted Dolphin with isolated test profiles.",
+  "description": "English application and gameplay captures, with a text-free XD purification image. Each entry records its capture version; unchanged earlier images are retained.",
   "files": {
     "home.png": {
       "bytes": 149717,
@@ -10,7 +10,8 @@
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Home and both game cards."
+      "description": "Home and both game cards.",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-settings.png": {
       "bytes": 84299,
@@ -21,7 +22,8 @@
       "height": 800,
       "description": "The starter preview with Treecko and Totodile.",
       "game": "colosseum",
-      "seed": "orre-showcase-5"
+      "seed": "orre-showcase-5",
+      "captured_in_version": "1.2.15"
     },
     "xd-settings.png": {
       "bytes": 65582,
@@ -32,7 +34,8 @@
       "height": 800,
       "description": "Simple mode explains the preset, wild encounter frequency and separate shiny odds.",
       "game": "xd",
-      "seed": "orre-xd-showcase-3"
+      "seed": "orre-xd-showcase-3",
+      "captured_in_version": "1.2.15"
     },
     "shadow-pokemon.png": {
       "bytes": 109814,
@@ -43,7 +46,8 @@
       "height": 800,
       "description": "The randomized Shadow roster preview.",
       "game": "colosseum",
-      "seed": "orre-showcase-5"
+      "seed": "orre-showcase-5",
+      "captured_in_version": "1.2.15"
     },
     "pokemon-sheet.png": {
       "bytes": 47878,
@@ -54,7 +58,8 @@
       "height": 615,
       "description": "Treecko’s evolution chain, with all three portraits and the original Grass type badge.",
       "game": "colosseum",
-      "seed": "orre-showcase-5"
+      "seed": "orre-showcase-5",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-shadow-moves.png": {
       "bytes": 78745,
@@ -65,7 +70,8 @@
       "height": 615,
       "description": "Houndour’s Shadow Rush, purification moves and original type badges.",
       "game": "colosseum",
-      "seed": "orre-showcase-5"
+      "seed": "orre-showcase-5",
+      "captured_in_version": "1.2.15"
     },
     "xd-shadow-moves.png": {
       "bytes": 71701,
@@ -76,7 +82,8 @@
       "height": 615,
       "description": "Shiny Venonat’s move sheet, with the red star, type badges and move descriptions.",
       "game": "xd",
-      "seed": "orre-xd-showcase-3"
+      "seed": "orre-xd-showcase-3",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-advanced.png": {
       "bytes": 90238,
@@ -87,7 +94,8 @@
       "height": 800,
       "description": "Advanced move settings for trainers, starters, gifts and learnsets.",
       "game": "colosseum",
-      "seed": "orre-showcase-5"
+      "seed": "orre-showcase-5",
+      "captured_in_version": "1.2.15"
     },
     "xd-advanced.png": {
       "bytes": 60208,
@@ -98,7 +106,8 @@
       "height": 800,
       "description": "Advanced move settings, matching the Colosseum tab.",
       "game": "xd",
-      "seed": "orre-xd-showcase-3"
+      "seed": "orre-xd-showcase-3",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-starters-ingame.png": {
       "bytes": 364800,
@@ -110,7 +119,8 @@
       "description": "Fresh English PAL game, showing the native party with Treecko and Totodile.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "xd-starter-ingame.png": {
       "bytes": 109006,
@@ -122,7 +132,8 @@
       "description": "Fresh English PAL game after the battle simulator, showing the native Torchic summary.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-motorcycle-starters.png": {
       "bytes": 517754,
@@ -134,7 +145,8 @@
       "description": "Treecko and Totodile on the motorcycle as it passes Outskirt Stand.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-motorcycle-arrival.gif": {
       "bytes": 1453276,
@@ -148,7 +160,8 @@
       "seed": "orre-showcase-5",
       "frames": 23,
       "source": "Dolphin 2609a, European retail base, English in-game language",
-      "duration_ms": 3940
+      "duration_ms": 3940,
+      "captured_in_version": "1.2.15"
     },
     "colosseum-plusle-gift.png": {
       "bytes": 772598,
@@ -160,7 +173,8 @@
       "description": "Duking names Poliwhirl, the Pokémon that replaces Plusle beside him. The scene starts from an isolated test card.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-pyrite-dancers.png": {
       "bytes": 797290,
@@ -172,7 +186,8 @@
       "description": "Miror B. and his randomized dancers in Pyrite Cave, reached from an isolated test card.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-pyrite-dancers.gif": {
       "bytes": 1285410,
@@ -185,7 +200,8 @@
       "game": "colosseum",
       "seed": "orre-showcase-5",
       "frames": 21,
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "xd-lighthouse-dancers.png": {
       "bytes": 812722,
@@ -197,7 +213,8 @@
       "description": "Four randomized dancers on the lighthouse roof, reached from a prepared test card.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "xd-pokespot-shiny-field.png": {
       "bytes": 682846,
@@ -209,7 +226,8 @@
       "description": "The shiny Marill field model at the Cave Poké Spot, using a prepared pending encounter from the ROM’s roster.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "xd-pokespot-shiny-battle.png": {
       "bytes": 655466,
@@ -221,7 +239,8 @@
       "description": "The same shiny Marill during the native wild battle, before the player’s team enters.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "source": "Dolphin 2609a, European retail base, English in-game language"
+      "source": "Dolphin 2609a, European retail base, English in-game language",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-simple.png": {
       "bytes": 90279,
@@ -232,7 +251,8 @@
       "height": 800,
       "description": "Simple settings and preset options in Colosseum.",
       "game": "colosseum",
-      "seed": "orre-showcase-5"
+      "seed": "orre-showcase-5",
+      "captured_in_version": "1.2.15"
     },
     "xd-starter-preview.png": {
       "bytes": 46054,
@@ -243,7 +263,8 @@
       "height": 800,
       "description": "Starter preview with Torchic.",
       "game": "xd",
-      "seed": "orre-xd-showcase-3"
+      "seed": "orre-xd-showcase-3",
+      "captured_in_version": "1.2.15"
     },
     "xd-shadow-pokemon.png": {
       "bytes": 73933,
@@ -254,18 +275,21 @@
       "height": 800,
       "description": "Original and randomized Shadow roster with shiny status.",
       "game": "xd",
-      "seed": "orre-xd-showcase-3"
+      "seed": "orre-xd-showcase-3",
+      "captured_in_version": "1.2.15"
     },
     "colosseum-gifts.png": {
-      "bytes": 99328,
-      "sha256": "3f6f4e1d8ddc26b2bb6988dd1a5eba6403edfe42ce40d779fedf6581b14e77a9",
       "kind": "application",
       "language": "en",
+      "game": "colosseum",
+      "seed": "orre-showcase-5",
+      "description": "Gift preview, with Eagun rewards ordered by 10 and 25 purifications.",
+      "source": "Current app, private settings, muted offscreen capture; preview reads the original European ROM without changing it.",
+      "bytes": 99684,
+      "sha256": "c0477a290459b3bd07f17c702a742114d79875c82620cccd0a271f5557977487",
       "width": 1100,
       "height": 800,
-      "description": "Colosseum gift preview with Poliwhirl and the purification rewards.",
-      "game": "colosseum",
-      "seed": "orre-showcase-5"
+      "captured_in_version": "1.2.20"
     },
     "xd-gifts.png": {
       "bytes": 85214,
@@ -276,7 +300,8 @@
       "height": 800,
       "description": "XD gift preview, with the trade requirements and their encounter rates.",
       "game": "xd",
-      "seed": "orre-xd-showcase-3"
+      "seed": "orre-xd-showcase-3",
+      "captured_in_version": "1.2.15"
     },
     "xd-pokemon-sheet.png": {
       "bytes": 31136,
@@ -287,7 +312,82 @@
       "height": 615,
       "description": "Torchic’s evolution chain and the original Fire badge.",
       "game": "xd",
-      "seed": "orre-xd-showcase-3"
+      "seed": "orre-xd-showcase-3",
+      "captured_in_version": "1.2.15"
+    },
+    "colosseum-shiny-settings.png": {
+      "kind": "application",
+      "language": "en",
+      "game": "colosseum",
+      "seed": "orre-showcase-5",
+      "description": "Shiny chance at 5%; optional retention of Lugia appearance enabled for this illustration. This option is disabled by default.",
+      "source": "Current app, private settings and muted offscreen capture.",
+      "bytes": 83866,
+      "sha256": "c4f76daf0398709367b8928d56a7c8fbbdbd3e220f522c3093b01c1032e5f354",
+      "width": 1100,
+      "height": 800,
+      "captured_in_version": "1.2.20"
+    },
+    "colosseum-shadow-lugia-event.gif": {
+      "kind": "native-gameplay",
+      "language": "en",
+      "game": "colosseum",
+      "description": "Nascour and the custom shiny Shadow Lugia at the Relic Stone. Native animation sampled at its original speed; black side borders removed.",
+      "source": "Dolphin English PAL gameplay on an isolated test save; excerpt from the validated complete quest film.",
+      "source_video_sha256": "b7ff19e09f8d6d29da3ed41ec127b1252972e9e7770080b82b62dc2a0e5052cd",
+      "source_start_seconds": 302.0,
+      "source_duration_seconds": 4.4,
+      "audio": false,
+      "bytes": 3657272,
+      "sha256": "6ecfe3d4425e8aea97b5df5e9cff1dc7ab8ac3c2c1128c9c04c92cc9025f2cd6",
+      "width": 600,
+      "height": 438,
+      "captured_in_version": "1.2.20",
+      "frames": 44
+    },
+    "xd-purified-shadow-lugia.png": {
+      "kind": "native-gameplay",
+      "language": "none",
+      "game": "xd",
+      "description": "Actual Purify Chamber ceremony with the custom shiny Shadow Lugia appearance retained. This frame has no on-screen text.",
+      "source": "Dolphin PAL gameplay on an isolated test save; actual purification with Keep Lugia Shadow appearance enabled.",
+      "source_game_language": "fr",
+      "visible_text": "none",
+      "bytes": 375192,
+      "sha256": "5399f12e94549967d63ac8b2b5e7799bb212003f18c02bd5f40b4aff3f8cc6a1",
+      "width": 724,
+      "height": 528,
+      "captured_in_version": "1.2.20"
+    },
+    "colosseum-dna-keypad.png": {
+      "bytes": 199160,
+      "sha256": "8ddc8c0576e53e9788da262600a415a9d651e635c052b812ff81432f6df4c29e",
+      "kind": "native-gameplay",
+      "language": "none",
+      "game": "colosseum",
+      "width": 724,
+      "height": 528,
+      "captured_in_version": "1.2.20",
+      "description": "Native full-body DNA keypad tiles for non-shiny and custom shiny Shadow Lugia.",
+      "source": "Dolphin PAL native keypad on an isolated QA save; French game language, no visible text.",
+      "source_game_language": "fr",
+      "visible_text": "none",
+      "fixture_note": "This prepared QA roster repeats Lugia to compare every puzzle tile and both shiny states. It is not a default-preset example."
+    },
+    "colosseum-dna-keypad-purified.png": {
+      "bytes": 217954,
+      "sha256": "8b9a387d660a3a1dedda73b6a99ca7fe74e293b74748d3a56d00f5ba84ffd023",
+      "kind": "native-gameplay",
+      "language": "none",
+      "game": "colosseum",
+      "width": 724,
+      "height": 528,
+      "captured_in_version": "1.2.20",
+      "description": "The same DNA keypad after purification, using the default restoration of ordinary Lugia and its pink shiny appearance.",
+      "source": "Dolphin PAL native keypad on an isolated QA save; French game language, no visible text.",
+      "source_game_language": "fr",
+      "visible_text": "none",
+      "fixture_note": "This prepared QA roster repeats Lugia to compare every puzzle tile and both shiny states. It is not a default-preset example."
     }
   }
 }

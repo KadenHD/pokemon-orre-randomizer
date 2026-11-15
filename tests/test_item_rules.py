@@ -64,20 +64,20 @@ class ItemMatchingTests(unittest.TestCase):
             mapping = item_rules.item_mapping("constraint", (1, 2, 3, 4, 5, 6), catalog, settings)
             self.assertEqual(len(set(mapping.values())), 6)
             for old, new in mapping.items():
-                self.assertEqual(catalog[new]["category"], catalog[old]["category"])
                 if similar:
+                    self.assertEqual(catalog[new]["category"], catalog[old]["category"])
                     self.assertLessEqual(catalog[old]["price"] / 2, catalog[new]["price"])
                     self.assertLessEqual(catalog[new]["price"], catalog[old]["price"] * 2)
 
-    def test_price_guard_can_be_disabled_without_relaxing_category(self):
+    def test_disabling_value_matching_opens_categories_and_prices(self):
         catalog = {1: {"safe": True, "price": 100, "category": "held"},
                    2: {"safe": True, "price": 201, "category": "held"},
                    3: {"safe": True, "price": 100, "category": "balls"}}
         constrained = item_rules.item_mapping("price", (1,), catalog, Options())
-        unrestricted = item_rules.item_mapping("price", (1,), catalog,
-            replace(Options(), items_similar_value=False))
+        unrestricted = {item_rules.item_mapping(str(seed), (1,), catalog,
+            replace(Options(), items_similar_value=False))[1] for seed in range(20)}
         self.assertEqual(constrained, {1: 1})
-        self.assertEqual(unrestricted, {1: 2})
+        self.assertEqual(unrestricted, {2, 3})
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -196,8 +196,8 @@ class PalItemRuleTests(unittest.TestCase):
             self.assertFalse(set(mapping.values()) & set(report["protected_items"]))
             for old, new in mapping.items():
                 self.assertTrue(self.catalog[new]["safe"])
-                self.assertEqual(self.catalog[old]["category"], self.catalog[new]["category"])
                 if similar:
+                    self.assertEqual(self.catalog[old]["category"], self.catalog[new]["category"])
                     self.assertLessEqual(self.catalog[old]["price"] / 2, self.catalog[new]["price"])
                     self.assertLessEqual(self.catalog[new]["price"], self.catalog[old]["price"] * 2)
             for old, new in zip(before, after, strict=True):

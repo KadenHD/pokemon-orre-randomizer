@@ -6,17 +6,18 @@ from .analyze_game import FormatError, parse_fsys, u32
 from .rebuild_iso import align, compress_lzss, decoded_member
 
 
-def append_actor_models(source, replacements, donor_archive, donor_id, models):
-    """Add model resources cloned from an original member header."""
+def append_actor_models(source, replacements, donor_archive, donor_id, models, *, resource_type=0x0400):
+    """Add audited model or texture resources cloned from a native member header."""
     original = parse_fsys(source)
     donor = parse_fsys(donor_archive)
     members = original["members"]
     stride = {"0x00000102": 0x50, "0x00000104": 0x50, "0x00000201": 0x70}.get(original["version_raw"])
     template = [m for m in donor["members"] if int(m["identifier_raw"], 16) == donor_id]
     existing_ids = {int(m["identifier_raw"], 16) for m in members}
-    if (not stride or donor["version_raw"] != original["version_raw"] or len(template) != 1
-            or template[0]["compression"] != "LZSS" or donor_id & 0xFF00 != 0x0400
-            or existing_ids & models.keys() or any(ident & 0xFF00 != 0x0400 for ident in models)
+    if (resource_type not in (0x0400, 0x1200, 0x1E00)
+            or not stride or donor["version_raw"] != original["version_raw"] or len(template) != 1
+            or template[0]["compression"] != "LZSS" or donor_id & 0xFF00 != resource_type
+            or existing_ids & models.keys() or any(ident & 0xFF00 != resource_type for ident in models)
             or set(replacements) - {m["index"] for m in members}):
         raise FormatError("unexpected original FSYS actor directory")
 

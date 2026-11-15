@@ -20,18 +20,48 @@ except ImportError:
 
 
 class SettingsPresentationTests(unittest.TestCase):
-    def test_all_83_translated_labels_are_searchable(self):
-        self.assertEqual(len(fields(Options)),83)
+    def test_all_translated_option_labels_are_searchable(self):
         for language in LANGUAGES:
             for field in fields(Options):
+                if field.metadata.get('retired'):
+                    continue
                 query=translate(field.metadata['label'],language)
                 names={row['name'] for row in search_settings(query,language)}
                 self.assertIn(field.name,names,(language,field.name,query))
 
+    def test_bonus_battle_alone_is_an_effective_change_in_all_languages(self):
+        options = replace(Options.none(), postgame_shadow_lugia=True)
+        self.assertTrue(options.has_changes)
+        self.assertEqual(effective_setting_names(options), ["postgame_shadow_lugia", "postgame_randomize_team", "postgame_randomize_lugia"])
+        for language in LANGUAGES:
+            self.assertIn(translate("Combat bonus : Lugia obscur", language),
+                          configuration_review(options, language))
+
+    def test_summaries_show_disabled_legendary_and_bonus_randomization_protections(self):
+        from orre_randomizer.presets import recommended_preset
+        from orre_randomizer.xd import XDOptions
+        for language in LANGUAGES:
+            for options in (Options.recommended(), XDOptions.recommended()):
+                details = configuration_review(options, language)
+                self.assertIn(translate("Désactivé - espèces d’origine conservées", language), details)
+            details = configuration_review(recommended_preset(), language)
+            self.assertIn(translate("Désactivé - équipe prévue pour la quête", language), details)
+            self.assertIn(translate("Désactivé - Lugia obscur conservé", language), details)
+        inactive = replace(Options.none(), postgame_randomize_team=True, postgame_randomize_lugia=True,
+                           randomize_legendary_shadows=True)
+        self.assertEqual(effective_setting_names(inactive), [])
+        for field in ("postgame_randomize_team", "postgame_randomize_lugia"):
+            active = replace(Options.none(), postgame_shadow_lugia=True, **{field: True})
+            self.assertTrue({"allow_gen1", "allow_gen2", "allow_gen3", "allow_legendaries",
+                             "excluded_species", "excluded_types"}
+                            <= set(effective_setting_names(active)))
+            self.assertNotIn("balance_species", effective_setting_names(active))
+
     def test_help_groups_accents_and_shiny_aliases(self):
         for query in ('shiny','shinies','chromatique','chromatiques','schillernd','variocolor','cromatico','色違い'):
-            self.assertTrue({'custom_shinies','seeded_shinies','shiny_chance_percent'} <=
+            self.assertTrue({'custom_shinies','shiny_chance_percent'} <=
                 {row['name'] for row in search_settings(query,'fr')},query)
+            self.assertNotIn('seeded_shinies', {row['name'] for row in search_settings(query,'fr')})
         self.assertIn('evolve_trade',{r['name'] for r in search_settings('evolutions echange','fr')})
         self.assertIn('boss_stronger',{r['name'] for r in search_settings('IV','fr')})
         self.assertIn('purification_multiplier',{r['name'] for r in search_settings('リライブ','ja')})

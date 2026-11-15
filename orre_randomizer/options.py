@@ -14,13 +14,15 @@ def setting(default, label: str, group: str, description: str, **details):
 class Options:
     randomize_trainers: bool = rule("Changer les Pokémon non obscurs", "Dresseurs", "Remplace les Pokémon non obscurs des dresseurs. Les niveaux et les capacités se règlent séparément.")
     randomize_shadows: bool = rule("Changer les Pokémon obscurs", "Dresseurs", "Remplace les 48 obscurs. Un même obscur garde la même espèce dans toutes ses rencontres.")
+    randomize_legendary_shadows: bool = rule("Randomiser les légendaires obscurs", "Dresseurs", "Autorise le remplacement des légendaires obscurs d’origine. Désactivé : ils gardent leur espèce, même si les autres obscurs changent. Le Pokémon obscur du combat bonus a son propre réglage.", False)
     unique_shadows: bool = rule("Familles différentes pour les obscurs", "Dresseurs", "Chaque obscur appartient à une famille d’évolution différente. Toutes les formes évolutives restent possibles.")
     trainer_theme_mode: str = setting("none", "Types des équipes non obscures", "Dresseurs", "Sans thème : tirage habituel. Au hasard : un type commun par équipe. Type d’origine si possible : garde le type partagé initial, sinon choisit un thème admissible. Les Pokémon obscurs restent inchangés. Nécessite le remplacement des Pokémon non obscurs.", kind="choice", choices=(("none", "Sans thème"), ("random", "Un type au hasard"), ("preserve", "Type d’origine si possible")))
     trainer_force_evolved: bool = rule("Adversaires non obscurs au stade final", "Dresseurs", "À partir du niveau choisi, impose une forme qui n’évolue plus. Sans randomiser les espèces, fait évoluer le Pokémon dans sa propre famille. Utilise le niveau après les bonus des boss ; les obscurs restent inchangés.", False)
     trainer_evolution_level: int = setting(40, "Stade final à partir du niveau", "Dresseurs", "Seuil de l’option Stade final : de 1 à 100. Ne change pas les niveaux eux-mêmes, les starters ni les Pokémon offerts.", kind="int", minimum=1, maximum=100, step=1)
-    custom_shinies: bool = rule("Personnaliser les chromatiques", "Chromatiques", "Active le taux choisi pour les nouveaux Pokémon des dresseurs, obscurs, starters et cadeaux identifiés. Débloque les starters et cadeaux. Désactivé : comportement d’origine. Ne relance pas les tirages déjà enregistrés.", False)
-    seeded_shinies: bool = rule("Lier les chromatiques à la seed", "Chromatiques", "La seed fixe le statut de chaque starter, cadeau, obscur et emplacement de dresseur. L’aperçu montre le résultat pour une nouvelle partie. Désactivé : tirage en jeu. Les Pokémon déjà générés gardent leur statut.")
-    shiny_chance_percent: float = setting(1.0, "Taux de chromatiques (%)", "Chromatiques", "Probabilité appliquée à chaque Pokémon : avec la seed si l’option est activée, sinon par tirage en jeu. 0 % : aucun ; 100 % : tous. Les obscurs gardent leur statut après capture et purification. Les Pokémon déjà générés ne sont pas retirés au sort.", kind="float", minimum=0.0, maximum=100.0, step=0.1, decimals=4)
+    custom_shinies: bool = rule("Personnaliser les chromatiques", "Chromatiques", "Active le taux choisi pour les nouveaux Pokémon des dresseurs, obscurs, starters et cadeaux identifiés. La seed fixe leur statut, visible dans l’aperçu. Désactivé : comportement d’origine. Les Pokémon déjà générés gardent leur statut.", False)
+    seeded_shinies: bool = field(default=True, metadata={"label": "Lier les chromatiques à la seed", "group": "Chromatiques", "description": "Le taux personnalisé utilise toujours la seed. Ce champ est conservé pour lire les anciens profils.", "kind": "bool", "retired": True})
+    keep_shadow_lugia_after_purification: bool = rule("Garder l’apparence obscure de Lugia", "Chromatiques", "Après purification, les Lugia qui étaient obscurs gardent leur modèle et leur vignette obscurs, chromatiques ou non. Seule l’apparence change. Les Lugia qui n’ont jamais été obscurs gardent leur apparence normale.", False)
+    shiny_chance_percent: float = setting(1.0, "Taux de chromatiques (%)", "Chromatiques", "Probabilité appliquée avec la seed à chaque Pokémon. 0 % : aucun ; 100 % : tous. Les obscurs gardent leur statut après capture et purification. Les Pokémon déjà générés ne sont pas retirés au sort.", kind="float", minimum=0.0, maximum=100.0, step=0.1, decimals=4)
     starter_umbreon: bool = rule("Remplacer le premier starter", "Starters et cadeaux", "Change le premier starter. Son niveau reste le même ; son expérience est adaptée au Pokémon tiré.")
     starter_espeon: bool = rule("Remplacer le second starter", "Starters et cadeaux", "Change le second starter. Son niveau reste le même ; son expérience est adaptée au Pokémon tiré.")
     starter_umbreon_species: int = setting(0, "Premier starter", "Starters et cadeaux", "Tirage avec la seed, ou Pokémon choisi. Un choix manuel remplace les filtres de stade et de puissance individuelle ; les exclusions et les règles du duo restent appliquées. Sans remplacement de Noctali, ce choix est ignoré.", kind="int", minimum=0, maximum=386, step=1, selector="species")
@@ -36,6 +38,9 @@ class Options:
     event_celebi: bool = rule("Remplacer Celebi événementiel", "Starters et cadeaux", "Change le Pokémon de ce cadeau. Activez l’accès aux cadeaux événementiels pour le recevoir auprès d’Adelbert ; sinon, ses conditions d’origine restent nécessaires.")
     event_pikachu: bool = rule("Remplacer Pikachu événementiel", "Starters et cadeaux", "Change le Pokémon de ce cadeau. Activez l’accès aux cadeaux événementiels pour le recevoir auprès d’Adelbert ; sinon, ses conditions d’origine restent nécessaires.")
     accessible_event_gifts: bool = rule("Rendre les cadeaux événementiels accessibles", "Starters et cadeaux", "Adelbert remet les cadeaux de Pikachu et Celebi près de la Relique Sacrée après le nombre de purifications choisi. Adelbert devient disponible après les scènes d’introduction à la purification. Chaque cadeau ne peut être reçu qu’une fois par sauvegarde. Les espèces et les statuts suivent les autres réglages.")
+    postgame_shadow_lugia: bool = rule("Combat bonus : Lugia obscur", "Starters et cadeaux", "Après la capture et la purification des 48 Pokémon obscurs d’origine, affrontez Jakylla à la Relique Sacrée. Par défaut : cinq Pokémon de niveau 65 à 69 et Lugia obscur au niveau 70. L’équipe et le Pokémon obscur final ont chacun leur réglage de randomisation. Le combat reste disponible jusqu’à la capture du Pokémon obscur.", False)
+    postgame_randomize_team: bool = rule("Randomiser l’équipe de Jakylla", "Starters et cadeaux", "Change les cinq Pokémon non obscurs du combat bonus, selon la seed et les Pokémon autorisés. Désactivé : Jakylla garde son équipe prévue pour cette quête. Le Pokémon obscur final se règle séparément.", False)
+    postgame_randomize_lugia: bool = rule("Randomiser le Lugia du combat bonus", "Starters et cadeaux", "Remplace Lugia par un autre Pokémon autorisé, tiré avec la seed. Le modèle dans la scène, les dialogues et le Pokémon à snatcher suivent ce choix. Ne change pas les conditions de la quête.", False)
     event_pikachu_purifications: int = setting(10, "Purifications pour le cadeau de Pikachu", "Starters et cadeaux", "Nombre de Pokémon obscurs à purifier pour recevoir ce cadeau auprès d’Adelbert. 0 : disponible sans purification dès que le dialogue est accessible.", kind="int", minimum=0, maximum=48, step=1)
     event_celebi_purifications: int = setting(25, "Purifications pour le cadeau de Celebi", "Starters et cadeaux", "Nombre de Pokémon obscurs à purifier pour recevoir ce cadeau auprès d’Adelbert. 0 : disponible sans purification dès que le dialogue est accessible.", kind="int", minimum=0, maximum=48, step=1)
     event_pikachu_level: int = setting(30, "Niveau du cadeau de Pikachu", "Starters et cadeaux", "Niveau fixé à la réception du cadeau auprès d’Adelbert, même si Pikachu est remplacé. N’a aucun effet lorsque l’accès aux cadeaux événementiels est désactivé.", kind="int", minimum=1, maximum=100, step=1)
@@ -76,9 +81,9 @@ class Options:
     useful_held_items_only: bool = rule("Objets utiles en combat uniquement", "Objets tenus", "Tire des baies de soin et des objets de combat, sans objet clé ni objet d’évolution.")
     trainer_level_multiplier: float = setting(1.0, "Niveau des adversaires ×", "Niveaux et capture", "Multiplie les niveaux, entre 1 et 100. Les starters et les Pokémon offerts gardent leur niveau.", kind="float", minimum=0.5, maximum=2.0, step=0.05)
     progressive_levels: bool = rule("Difficulté progressive", "Niveaux et capture", "Remplace le multiplicateur global par trois réglages selon le niveau d’origine de l’adversaire : 1 à 35, 36 à 50, puis 51 à 100. Les bonus des boss sont ajoutés ensuite. Ne change pas les starters ni les cadeaux.", False)
-    early_level_multiplier: float = setting(1.0, "Début — niveaux d’origine 1–35 ×", "Niveaux et capture", "Multiplicateur des adversaires de niveau d’origine 1 à 35 lorsque la difficulté progressive est activée.", kind="float", minimum=0.5, maximum=2.0, step=0.05)
-    mid_level_multiplier: float = setting(1.0, "Milieu — niveaux d’origine 36–50 ×", "Niveaux et capture", "Multiplicateur des adversaires de niveau d’origine 36 à 50 lorsque la difficulté progressive est activée.", kind="float", minimum=0.5, maximum=2.0, step=0.05)
-    late_level_multiplier: float = setting(1.0, "Fin — niveaux d’origine 51–100 ×", "Niveaux et capture", "Multiplicateur des adversaires de niveau d’origine 51 à 100 lorsque la difficulté progressive est activée.", kind="float", minimum=0.5, maximum=2.0, step=0.05)
+    early_level_multiplier: float = setting(1.0, "Début - niveaux d’origine 1-35 ×", "Niveaux et capture", "Multiplicateur des adversaires de niveau d’origine 1 à 35 lorsque la difficulté progressive est activée.", kind="float", minimum=0.5, maximum=2.0, step=0.05)
+    mid_level_multiplier: float = setting(1.0, "Milieu - niveaux d’origine 36-50 ×", "Niveaux et capture", "Multiplicateur des adversaires de niveau d’origine 36 à 50 lorsque la difficulté progressive est activée.", kind="float", minimum=0.5, maximum=2.0, step=0.05)
+    late_level_multiplier: float = setting(1.0, "Fin - niveaux d’origine 51-100 ×", "Niveaux et capture", "Multiplicateur des adversaires de niveau d’origine 51 à 100 lorsque la difficulté progressive est activée.", kind="float", minimum=0.5, maximum=2.0, step=0.05)
     experience_multiplier: float = setting(1.0, "Expérience gagnée ×", "Niveaux et capture", "Multiplie l’expérience gagnée en combat. ×1 conserve le jeu d’origine. Ne change pas l’expérience de départ des starters et cadeaux.", kind="float", minimum=0.25, maximum=5.0, step=0.25, decimals=2)
     purification_multiplier: int = setting(1, "Vitesse de purification ×", "Niveaux et capture", "Multiplie les diminutions de la jauge obscure. ×1 conserve le jeu d’origine ; la purification finale à la Relique reste nécessaire.", kind="int", minimum=1, maximum=10, step=1)
     capture_rate_multiplier: float = setting(1.0, "Taux de capture des obscurs ×", "Niveaux et capture", "Multiplie les taux de capture des obscurs, jusqu’à un maximum de 255.", kind="float", minimum=0.25, maximum=5.0, step=0.25)
@@ -98,6 +103,12 @@ class Options:
     boss_shadow_power_mode: str = setting("global", "Puissance des obscurs", "Boss", "Suivre : reprend l’équilibrage général. Proche : écart maximal de 20 % du total d’origine, ou 50 points si cette marge est plus grande. Sans équilibrage : ne cherche pas une puissance proche. Les filtres et le minimum restent appliqués.", kind="choice", choices=(("global", "Suivre les réglages généraux"), ("similar", "Proche de l’original"), ("free", "Sans équilibrage")))
     boss_shadow_min_bst: int = setting(0, "Total de statistiques minimum des obscurs", "Boss", "0 : aucun minimum. Compare le total des statistiques d’origine, avant leur redistribution. Ne change ni les niveaux ni les taux de capture.", kind="int", minimum=0, maximum=780, step=10)
 
+    def __post_init__(self):
+        # Keep legacy payloads importable, but eliminate the unpredicted custom
+        # appearance mode. Strict identity checks leave invalid types for validation.
+        if self.custom_shinies is True and self.seeded_shinies is False:
+            object.__setattr__(self, "seeded_shinies", True)
+
     @classmethod
     def none(cls):
         return cls(starter_stage="any", **{item.name: False for item in fields(cls) if item.metadata["kind"] == "bool"})
@@ -105,17 +116,21 @@ class Options:
     @classmethod
     def recommended(cls):
         return cls(randomize_trainer_moves=True, randomize_starter_moves=True,
-                   randomize_gift_moves=True, randomize_learnsets=True, balance_species=True,
-                   randomize_tm_moves=True, tm_compatibility_mode="type",
+                   randomize_gift_moves=True, randomize_learnsets=True, balance_species=False,
+                   randomize_abilities=True, randomize_held_items=True,
+                   moves_mode="chaos", ensure_stab_move=False,
+                   randomize_tm_moves=True, tm_compatibility_mode="random",
                    randomize_field_items=True, randomize_shop_items=True, boss_team_variety=True,
-                   starter_balance_pair=True, starter_distinct_families=True, starter_complementary_types=True)
+                   keep_capture_items=False, items_similar_value=False,
+                   starter_stage="any", starter_three_stage_families=False,
+                   starter_distinct_families=True)
 
     @property
     def has_changes(self) -> bool:
         active = ("randomize_trainers", "randomize_shadows", *SPECIAL_OPTIONS.values(),
                   "randomize_trainer_moves", "randomize_starter_moves", "randomize_gift_moves",
                   "randomize_learnsets", "randomize_abilities", "randomize_stats", "randomize_types", "randomize_held_items",
-                  "randomize_tm_moves", "randomize_field_items", "randomize_shop_items", "boss_stronger", "boss_team_variety", "trainer_force_evolved", "custom_shinies", "accessible_event_gifts")
+                  "randomize_tm_moves", "randomize_field_items", "randomize_shop_items", "boss_stronger", "boss_team_variety", "trainer_force_evolved", "custom_shinies", "accessible_event_gifts", "postgame_shadow_lugia", "keep_shadow_lugia_after_purification")
         return (any(getattr(self, name) for name in active) or self.readable_stone_names or bool(self.evolution_groups) or bool(self.stone_shops)
                 or (any(value != 1.0 for value in (self.early_level_multiplier, self.mid_level_multiplier, self.late_level_multiplier)) if self.progressive_levels else self.trainer_level_multiplier != 1.0)
                 or self.experience_multiplier != 1.0 or self.purification_multiplier != 1

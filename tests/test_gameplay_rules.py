@@ -126,11 +126,12 @@ class PalGameplayIntegrationTests(unittest.TestCase):
         cls.rows = randomize_rel(cls.original, cls.seed)[1]["trainer_pokemon_changes"]
         cls.shadow_rows = randomize_rel(cls.original, cls.seed)[1]["shadow_changes"]
         cls.legacy = replace(Options(), starter_stage="any", starter_three_stage_families=False,
-                             accessible_event_gifts=False)
+                             accessible_event_gifts=False, randomize_legendary_shadows=True)
         cls.base = transform_rel(cls.original, cls.seed, cls.legacy)[0]
         cls.base_dol = transform_dol(cls.dol, cls.original, cls.seed, cls.legacy)[0]
         cls.options = replace(Options.recommended(), randomize_types=True, randomize_abilities=True,
             randomize_stats=True, randomize_held_items=True, allow_gen1=False, allow_gen2=False,
+            moves_mode="balanced", ensure_stab_move=True, randomize_legendary_shadows=True,
             allow_legendaries=False, trainer_level_multiplier=2.0,
             capture_rate_multiplier=5.0, minimum_catch_rate=200)
         cls.result, cls.report = apply_rel_rules(cls.original, cls.base, cls.seed, cls.options)

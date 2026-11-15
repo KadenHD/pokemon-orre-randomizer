@@ -27,8 +27,10 @@ from .xd_battle_rules import (apply_deck_rules, apply_dol_battle_rules, apply_sh
 from .xd_gifts import (DUKING_TRADES, GIFT_BASELINES, GIFT_TRADE_REQUIREMENTS, HORDEL_SHADOW,
                        TOGEPI, patch_gifts, patch_hordel_gift)
 from .xd_item_rules import apply_field_items, apply_shop_items
+from .snag_list import apply_snag_list_identities
 from .xd_shiny_rules import apply_shiny_rules
 from .xd_shadow_shinies import apply_shadow_shiny_rules, shadow_statuses
+from .xd_shadow_lugia_model import install_shadow_lugia_model
 from .xd_simulator import protect_simulator_species
 from .xd_spinda import apply_spinda_pids
 from .xd_spinda_field import apply_spinda_poke_spots
@@ -41,10 +43,11 @@ from .xd_species_gameplay import XDMoveRandomizer, detail_catalog, patch_species
 from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITEM_DIALOGUE, TEDDIURSA,
                        TRAINER_REMARK_REWRITES, patch_eagun_actor,
                        TUTORIAL_SHADOW, hordel_candidates,
-                       patch_starter_dialogue, patch_tutorial, trainer_dialogue_edits, tutorial_candidates)
+                       patch_starter_dialogue, patch_tutorial, trainer_dialogue_edits, tutorial_candidates,
+                       validate_tutorial_matchup)
 from .xd_unown_form import patch_xd_unown_form
 
-VERSION = "xd-story-sha256-v11"
+VERSION = "xd-shadow-lugia-appearance-v13"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -78,6 +81,8 @@ class XDOptions:
     randomize_trainers: bool = _shared("randomize_trainers")
     randomize_shadows: bool = _shared("randomize_shadows", description=
         "Change les obscurs ordinaires. Le premier obscur a son propre réglage.")
+    randomize_legendary_shadows: bool = _shared("randomize_legendary_shadows", description=
+        "Autorise le remplacement des légendaires obscurs d’origine. Désactivé : ils gardent leur espèce. XD001 garde sa protection liée au scénario.")
     randomize_tutorial_shadow: bool = rule("Remplacer Teddiursa dans le tutoriel", "Dresseurs",
         "Adapte les dialogues au premier obscur. Il garde le niveau 11 et son taux de capture d’origine.", False)
     randomize_poke_spots: bool = rule("Randomiser les Poké Places", "Poké Places",
@@ -113,6 +118,7 @@ class XDOptions:
         "La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places ont leur propre réglage.")
     custom_shadow_shinies: bool = rule("Appliquer le taux aux Pokémon obscurs", "Chromatiques",
         "Lève le verrouillage de XD. La seed fixe le statut de chaque obscur, conservé après capture et purification. Les Pokémon déjà générés restent inchangés.", False)
+    keep_shadow_lugia_after_purification: bool = _shared("keep_shadow_lugia_after_purification")
     shiny_chance_percent: float = _shared("shiny_chance_percent", default=5.0,
                                          description="La seed fixe le statut chromatique du starter, des cadeaux et, si activé, des obscurs. Les Poké Places ont leur propre réglage.")
     trainer_theme_mode: str = _shared("trainer_theme_mode")
@@ -168,11 +174,14 @@ class XDOptions:
     @classmethod
     def recommended(cls) -> XDOptions:
         return cls(randomize_trainer_moves=True, randomize_starter_moves=True, randomize_gift_moves=True,
-                   randomize_learnsets=True, randomize_tm_moves=True, tm_compatibility_mode="type",
+                   randomize_learnsets=True, randomize_tm_moves=True, tm_compatibility_mode="random",
                    randomize_field_items=True, randomize_shop_items=True, custom_shinies=True,
                    boss_team_variety=True, randomize_tutorial_shadow=True,
                    poke_spots_full_pokedex=True, custom_shadow_shinies=True,
-                   randomize_hordel_gift=True)
+                   randomize_hordel_gift=True, randomize_abilities=True, randomize_held_items=True,
+                   moves_mode="chaos", ensure_stab_move=False,
+                   keep_capture_items=False, items_similar_value=False, balance_species=False,
+                   starter_stage="any", starter_three_stage_families=False)
 
     @classmethod
     def species_only(cls) -> XDOptions:
@@ -194,7 +203,8 @@ def validate_options(options: XDOptions) -> XDOptions:
         raise UserError("Activez au moins une génération dans « Pokémon autorisés ».")
     if options.accessible_evolutions and not options.stone_shops:
         raise UserError("Activez la vente de pierres dans « Boutiques », ou désactivez les évolutions par pierre.")
-    if options.randomize_shadows and options.boss_shadow_legendary_mode == "preserve" and not options.allow_legendaries:
+    if (options.randomize_shadows and options.randomize_legendary_shadows
+            and options.boss_shadow_legendary_mode == "preserve" and not options.allow_legendaries):
         raise UserError("Pour garder le statut légendaire des obscurs de boss, autorisez les légendaires dans « Pokémon autorisés ».")
     if not options.randomize_shadows and options.unique_shadow_families:
         return replace(options, unique_shadow_families=False)
@@ -272,13 +282,15 @@ def _pick(seed, key, species, original, *, candidates=None, balance=True):
 
 
 def _starter(dol: bytes, offset: int, seed: str, species, edges, families, eligible,
-             options, move_randomizer) -> tuple[bytes, dict]:
+             options, move_randomizer, *, fixed_shadow_families=()) -> tuple[bytes, dict]:
     offsets = (0, 8, 0x10, 0x14, 0x18, 0x1C, 0x64)
     signature = (0x38600085, 0x3900000A, 0x38C00021, 0x38A00027, 0x3880002C, 0x3800001C, 0x380004E2)
     if tuple(u32(dol, offset + field) for field in offsets) != signature:
         raise FormatError("unexpected XD starter instructions")
     chosen, moves = 133, list(NATIVE_STARTER_MOVES)
     if options.randomize_starter:
+        protected_families = {families[native] for native in PROTECTED_SHADOWS.values()}
+        protected_families.update(fixed_shadow_families)
         targets = {edge[3] for routes in edges.values() for edge in routes}
         roots = set(species) - targets
         first = {edge[3] for index in roots for edge in edges.get(index, ())}
@@ -291,8 +303,7 @@ def _starter(dol: bytes, offset: int, seed: str, species, edges, families, eligi
             if (not options.starter_three_stage_families or families[index] in three_stage)
             and (options.randomize_starter_moves
                  or any(0 < level <= 10 and move in STARTER_ATTACKS for level, move in species[index][3]))
-            and (not options.diverse_story_families
-                 or families[index] not in {families[native] for native in PROTECTED_SHADOWS.values()})
+            and (not options.diverse_story_families or families[index] not in protected_families)
         ]
         if options.starter_species:
             chosen = next((index for index in eligible if species[index][0] == options.starter_species), None)
@@ -330,6 +341,20 @@ def _shadow_slots(dark: bytes) -> dict[int, int]:
     if not all(result.values()) or len(set(result.values())) != len(result):
         raise FormatError("invalid XD Shadow deck links")
     return result
+
+
+def _fixed_shadow_species(deck, shadow_slots, species, options, *, fixed_shadows=PROTECTED_SHADOWS):
+    """Reserve native legendary species before any starter, gift or deck draw."""
+    fixed = dict(fixed_shadows)
+    if not options.randomize_legendary_shadows:
+        start = 0x20 + u32(deck, 0x14)
+        for sid, index in shadow_slots.items():
+            native = u16(deck, start + index * 0x20)
+            if native not in species:
+                raise FormatError("invalid original XD Shadow species")
+            if species[native][0] in LEGENDARY_NATIONAL:
+                fixed.setdefault(sid, native)
+    return fixed
 
 
 def _boss_shadow_picks(deck, originals, seed, species, families, eligible, reserved, options, fixed_shadows):
@@ -401,6 +426,7 @@ def _deck(deck: bytes, name: str, shadow_slots, seed: str, species, families,
            for index in regular | set(shadow_slots.values())):
         raise FormatError("invalid XD trainer species or slot")
     result = bytearray(deck)
+    fixed_shadows = _fixed_shadow_species(deck, shadow_slots, species, options, fixed_shadows=fixed_shadows)
     if options.randomize_trainers:
         for index in sorted(regular):
             position = start + index * 0x20
@@ -430,8 +456,7 @@ def _deck(deck: bytes, name: str, shadow_slots, seed: str, species, families,
                 struct.pack_into(">H", result, position, chosen)
             elif options.randomize_shadows:
                 candidates = [species_id for species_id in eligible
-                              if species_id not in fixed_shadows.values()
-                              and (not options.unique_shadow_families or families[species_id] not in used)]
+                              if not options.unique_shadow_families or families[species_id] not in used]
                 preferred = [index for index in candidates if index != original and families[index] not in reserved_families]
                 if options.diverse_story_families and preferred:
                     candidates = preferred
@@ -554,6 +579,10 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     species, edges, families = _species(rel, symbols)
     native_species = XDMoveRandomizer(rel, symbols, species, options).species
     eligible = {index for index, row in native_species.items() if allowed_replacement(row, options)}
+    deck_archive, deck_members = archives["deck_archive.fsys"]
+    _, native_dark = _member(deck_archive, deck_members, "DeckData_DarkPokemon.bin")
+    _, native_story = _member(deck_archive, deck_members, "DeckData_Story.bin")
+    fixed_shadows = _fixed_shadow_species(native_story, _shadow_slots(native_dark), species, options)
     summary = {"starter": {"original": 133, "species": 133, "level": 10, "moves": list(NATIVE_STARTER_MOVES)},
                "decks": {}}
     summary["national_ids"] = {str(index): row[0] for index, row in species.items()}
@@ -581,7 +610,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     move_randomizer = XDMoveRandomizer(new_rel, symbols, species, options)
     if options.randomize_starter or options.randomize_starter_moves:
         dol, summary["starter"] = _starter(dol, STARTERS[region.game_id], seed, species, edges, families,
-                                          eligible, options, move_randomizer)
+                                          eligible, options, move_randomizer,
+                                          fixed_shadow_families={families[index] for index in fixed_shadows.values()})
     if options.stone_shops:
         new_rel = patch_stone_price(new_rel, symbols)
         new_rel, name_report = patch_stone_names(rel, new_rel, region.game_id)
@@ -590,7 +620,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     if new_rel != rel:
         replacements["common.fsys"] = {rel_index: new_rel}
     deck_archive, members = archives["deck_archive.fsys"]
-    reserved = {families[index] for index in (*PROTECTED_SHADOWS.values(), summary["starter"]["species"])}
+    reserved = {families[index] for index in (*fixed_shadows.values(), summary["starter"]["species"])}
     if options.diverse_story_families and not options.randomize_shadows and (
         options.randomize_gifts or options.randomize_tutorial_shadow or options.randomize_hordel_gift
     ):
@@ -599,7 +629,6 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         _, native_story = _deck(story, "Story", _shadow_slots(dark), seed, species, families,
                                 reserved, XDOptions.unchanged())
         reserved.update(row["family"] for row in native_story["shadows"])
-    fixed_shadows = dict(PROTECTED_SHADOWS)
     hordel_evolution = None
     if options.randomize_hordel_gift:
         native_reward = GIFT_BASELINES[0][1]
@@ -665,6 +694,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         fixed_shadows[TUTORIAL_SHADOW] = chosen
         reserved.add(families[chosen])
         gift_updates.update(patch_tutorial(region.game_id, chosen, species[chosen][0], name_banks, read_archive))
+    validate_tutorial_matchup(summary["starter"], fixed_shadows[TUTORIAL_SHADOW], move_randomizer)
     # The western archive contains both language variants. Keep them in sync
     # even when the current game build prefers one suffix.
     suffixes = ("", "_EU") if region.game_id != "GXXJ01" else ("",)
@@ -845,6 +875,13 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             for row in deck["shadows"]:
                 row["shiny"] = shadow_status[str(row["shadow_id"])]
     dol, summary["battle_progression"] = apply_dol_battle_rules(original_dol, dol, region.game_id, options)
+    if has_changes:
+        dol, summary["snag_list"] = apply_snag_list_identities(
+            original_dol, dol, region.game_id,
+            custom_shadow_shinies=options.custom_shinies and options.custom_shadow_shinies)
+        dol, summary["shadow_lugia_model"] = install_shadow_lugia_model(
+            original_dol, dol, region.game_id, read_archive, gift_updates,
+            seed=seed, options=options)
     if include_details:
         summary["detail_catalog"] = detail_catalog(new_rel, dol, symbols, region.game_id, edges, move_randomizer)
     story_families = defaultdict(list)

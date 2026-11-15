@@ -29,6 +29,7 @@ _GATEON_ARCHIVE = "M6_out.fsys"
 _ZANGOOSE = 380
 _ZANGOOSE_RESOURCE = "0x18490400"
 GATEON_SPINDA_SHINY_RESOURCE = 0x23090400  # follows the nine Poké Spot aliases
+GATEON_LUGIA_SHINY_RESOURCE = 0x7DF90400
 _ZANGOOSE_CRY = bytes.fromhex("02010000 0000017c 1101fff6 09250010")
 
 WAKIN_TRAINER = 144
@@ -41,7 +42,8 @@ _GLOOM_CRY = bytes.fromhex("02010000 000084ed 02010000 0000002c 02010000 0000000
 
 
 def _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, normal_scale, *,
-                 shiny=False, height_limit=None, unown_form_index=0, spinda_pid=None):
+                 shiny=False, height_limit=None, unown_form_index=0, spinda_pid=None,
+                 shadow_lugia=False):
     national = species[chosen][0]
     scale = companion_scale(national, normal_scale)
     entry = species_table + 0x124 * chosen
@@ -52,6 +54,12 @@ def _field_model(rel, species_table, species, dol, game_id, read_archive, chosen
         scale = min(scale, height_limit / height)
     model_id = u16(rel, entry + 0x2E)
     report = {"species": chosen, "national_dex": national, "scale": scale}
+    if shadow_lugia:
+        if chosen != 249:
+            raise FormatError("a Shadow Lugia field model requires Lugia")
+        from .xd_shadow_lugia_model import load_shadow_lugia_field_model
+        report["shadow_lugia"] = True
+        return load_shadow_lugia_field_model(dol, game_id, read_archive, scale=scale, shiny=shiny), report
     if spinda_pid is not None:
         report["spinda_pid"] = spinda_pid
     return (load_actor_model(dol, game_id, model_id, read_archive, scale=scale, shiny=shiny,
@@ -149,21 +157,25 @@ def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_
     chosen = shadow["species"]
     if chosen == _ZANGOOSE and not shiny:
         return None
-    dynamic_palette = chosen == SPINDA and use_saved_spinda_palette
+    shadow_lugia = chosen == 249
+    dynamic_palette = shadow_lugia or chosen == SPINDA and use_saved_spinda_palette
     # The low camera sits close to Barry's partner. Preserve the scene's
     # framing by limiting large replacements to a 7.2-decimeter field model.
     model, report = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
                                  shiny=shiny and not dynamic_palette, height_limit=7.2,
-                                 unown_form_index=unown_form_index)
+                                 unown_form_index=unown_form_index, shadow_lugia=shadow_lugia)
     # Both the room actor and the scripted model request resolve this shared
     # resource. Its stock references belong to this one Gateon scene.
     source = updates[_SHARED_ACTORS] if _SHARED_ACTORS in updates else read_archive(_SHARED_ACTORS)
     updated = patch_actor(source, model, identifier=_ZANGOOSE_RESOURCE, name="zangoose")
     if dynamic_palette:
         shiny_model, _ = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
-                                      shiny=True, height_limit=7.2, unown_form_index=unown_form_index)
+                                      shiny=True, height_limit=7.2, unown_form_index=unown_form_index,
+                                      shadow_lugia=shadow_lugia)
+        resource = GATEON_LUGIA_SHINY_RESOURCE if shadow_lugia else GATEON_SPINDA_SHINY_RESOURCE
+        name = "orre_gateon_lugia_shiny" if shadow_lugia else "orre_gateon_spinda_shiny"
         updated = append_actor_models(updated, {}, source, int(_ZANGOOSE_RESOURCE, 16), {
-            GATEON_SPINDA_SHINY_RESOURCE: ("orre_gateon_spinda_shiny", shiny_model),
+            resource: (name, shiny_model),
         })
     updates[_SHARED_ACTORS] = updated
     if chosen != _ZANGOOSE:
@@ -171,6 +183,8 @@ def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_
         updates[_GATEON_ARCHIVE] = _patch_script(
             source, _GATEON_ARCHIVE.removesuffix(".fsys"), lambda raw: _gateon_cry(raw, chosen),
         )
+    if shadow_lugia:
+        report["saved_shadow_identity"] = GATEON_SHADOW
     return dict(report, shiny=shiny)
 
 

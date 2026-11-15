@@ -1,0 +1,69 @@
+{
+  "version": 1,
+  "source": {
+    "game_id": "GXXP01",
+    "revision": 0,
+    "iso_sha256": "1cc438ed60e542991b8f1abea4617e67880f2568aceb513602051ca6f310e8c1",
+    "archive": "pkx_darklugia.fsys",
+    "member": "darklugia",
+    "model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e"
+  },
+  "container_template": {
+    "game_id": "GC6P01",
+    "revision": 0,
+    "iso_sha256": "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9",
+    "archive": "pkx_lugia.fsys",
+    "member": "lugia",
+    "model_sha256": "0b0ce2bf9b78eb143a53ec4e72d540915a2ae5c957b87c801fbd51572073be2d"
+  },
+  "conversion": "Reorder the PKX container; convert float seconds to 60-Hz integer ticks, map XD clip/wait track kinds to Colosseum and use the native scheduling flags. Retain the original HSD mesh, textures, skeleton bindings and DAT animation tracks.",
+  "rights": "Original game resource; not covered by the code's MIT license. See THIRD_PARTY_NOTICES.md.",
+  "converted_bytes": 396032,
+  "converted_sha256": "8c2aefb914ea1aee9407418495edf318f21a52fe443d1b84b9de5dae69401364",
+  "portrait": {
+    "archive": "poke_face.fsys",
+    "member": "face249dark",
+    "decoded_sha256": "a8f176984ace1633f5d2ebe04b9c57372c86eba981393df2e1c41a0c252da6ca",
+    "frame": "upper-left 42x42"
+  },
+  "shiny_variant": {
+    "version": "shadow-lugia-white-body-v2",
+    "description": "Swap the native body/belly material lighting colors and shade only the belly's grayscale CMPR map: white body, dark belly, original red eyes. Mesh, other textures, skeleton, animations and alpha are unchanged.",
+    "generated_bytes": 396032,
+    "generated_sha256": "2525cf6af605706e1d89d70b84d7c3721f4dfbe1e7fae782849a1d44d55167d9",
+    "portrait": "dark-lugia-shiny.png",
+    "portrait_sha256": "4d3e0371eb0e52fd731425529b19c38eb7197be9be7d390984c10454cd7107fa",
+    "portrait_version": "shadow-lugia-white-head-neck-dark-eye-mask-v3",
+    "portrait_conversion": "Native blue-gray head, navy neck and lower jaw become white; the native pale triangle around the red iris becomes charcoal, following their 42px source masks. Teeth, mouth, red iris, violet backdrop gaps, black contours and alpha retained."
+  },
+  "native_faces": {
+    "xd": {
+      "source_resource": 559419904,
+      "normal_resource": 2113344000,
+      "shiny_resource": 2113212928,
+      "format": "native CI8/RGB5A3; original circular alpha, black interior, complete 36px artwork centered with 3px padding",
+      "artwork_size": 36,
+      "padding": 3,
+      "native_alpha_preserved": true,
+      "normal_generated_sha256": "49e2b37f3e56e699762d69f603c53c0040869e866e35790593bd78681182b012",
+      "generated_sha256": "3df97f969ca4a414426345df6b027f682a35e6ace9d291fdb76b73f7be821538"
+    },
+    "colosseum": {
+      "template": "poke_face.fsys/face249",
+      "resource": 2113278464,
+      "template_sha256": "d24936b5102de8cecd1164414ecd248a6d4c87e568df9e077a700add7497e6b8",
+      "format": "native tiled RGBA8; opaque-black normal Dark and white frames",
+      "generated_sha256": "7e2a16532a787b9a28e853ed7691a67bd4269e9ad0e8be10c704ffa5ca092b99"
+    }
+  },
+  "ui_portraits": {
+    "normal": "dark-lugia-ui.png",
+    "normal_sha256": "07cf9e79095d0a614a4aa1a372df8469c43c637eb969e0f0a0fd5a6cfe2b0d31",
+    "shiny": "dark-lugia-shiny-ui.png",
+    "shiny_sha256": "bb4cf75b0870abf395c1b51e29b1a08b9e11258f5be2b47944aec3f5474d88a7",
+    "mask": "Transparent/violet backdrop, eight-connected to the original 42px tile boundary; opaque-black matte shared by interface and native faces",
+    "masked_pixels": 803,
+    "source_portraits_unchanged": true,
+    "shared_with_native_faces": true
+  }
+}

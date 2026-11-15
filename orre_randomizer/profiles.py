@@ -23,6 +23,14 @@ PREVIOUS_XD_FULL_SPOT_ENGINE = "xd-story-sha256-v7"
 PREVIOUS_XD_SHADOW_SHINY_ENGINE = "xd-story-sha256-v8"
 PREVIOUS_XD_FIELD_ENGINE = "xd-story-sha256-v9"
 PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE = "xd-story-sha256-v10"
+PREVIOUS_XD_IDENTITY_ENGINE = "xd-story-sha256-v11"
+PREVIOUS_XD_LUGIA_ENGINE = "xd-story-sha256-v12"
+PREVIOUS_LUGIA_ENGINE = "eagun-gift-and-mail-load-v23"
+LUGIA_APPEARANCE_APP_VERSION = "1.2.20"
+# Both schemas were exported with the same engine version. Only the complete
+# historical bundle may be absent; a partial bundle is a malformed profile.
+SHADOW_POLICY_FIELDS = frozenset(("randomize_legendary_shadows", "postgame_randomize_team",
+                                  "postgame_randomize_lugia"))
 XD_POKE_SPOT_SHINY_FIELDS = frozenset(("custom_poke_spot_shinies", "poke_spot_shiny_chance_percent"))
 XD_SPOT_MIGRATION = "Réglages XD chargés. Les Poké Places utilisent le nouveau tirage."
 SCHEMA_VERSION = 1
@@ -66,7 +74,10 @@ V18_APP_VERSION = "1.2.13"
 V18_ENGINE_VERSION = "story-field-actors-v18"
 V19_ENGINE_VERSION = "story-field-placement-v19"
 V19_APP_VERSIONS = ("1.2.14", "1.2.15", "1.2.16", "1.2.17")
-CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, V18_APP_VERSION, *V19_APP_VERSIONS, __version__)
+V20_ENGINE_VERSION = "story-field-placement-v20"
+V20_APP_VERSIONS = ("1.2.18", "1.2.19")
+CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, V18_APP_VERSION, *V19_APP_VERSIONS, *V20_APP_VERSIONS,
+                        LUGIA_APPEARANCE_APP_VERSION, __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -149,7 +160,13 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
               and payload["engine_version"] == LEGACY_ENGINE_VERSION)
     previous = (payload["app_version"] == PREVIOUS_APP_VERSION
                 and payload["engine_version"] == PREVIOUS_ENGINE_VERSION)
-    current = ((payload["app_version"] == __version__ and payload["engine_version"] == ENGINE_VERSION)
+    current_engine = (payload["app_version"] in (LUGIA_APPEARANCE_APP_VERSION, __version__)
+                      and payload["engine_version"] == ENGINE_VERSION)
+    previous_lugia = (payload["app_version"] in CURRENT_APP_VERSIONS
+                      and payload["engine_version"] == PREVIOUS_LUGIA_ENGINE)
+    postgame_fields = current_engine or previous_lugia
+    current = (postgame_fields
+               or (payload["app_version"] in V20_APP_VERSIONS and payload["engine_version"] == V20_ENGINE_VERSION)
                or (payload["app_version"] in V19_APP_VERSIONS and payload["engine_version"] == V19_ENGINE_VERSION)
                or (payload["app_version"] == V18_APP_VERSION and payload["engine_version"] == V18_ENGINE_VERSION)
                or (payload["app_version"] in V17_APP_VERSIONS and payload["engine_version"] == V17_ENGINE_VERSION)
@@ -182,6 +199,15 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         raise UserError("Ce profil ne correspond pas aux versions prises en charge de Colosseum.")
     values = payload["options"]
     expected_fields = {item.name for item in fields(Options)}
+    legacy_shadow_policy = not current_engine
+    if current_engine and type(values) is dict and set(values) == expected_fields - SHADOW_POLICY_FIELDS:
+        legacy_shadow_policy = True
+    if legacy_shadow_policy:
+        expected_fields.difference_update(SHADOW_POLICY_FIELDS)
+    if not current_engine:
+        expected_fields.remove("keep_shadow_lugia_after_purification")
+    if not postgame_fields:
+        expected_fields.remove("postgame_shadow_lugia")
     if not current:
         expected_fields.remove("diverse_story_families")
     if not current_fields:
@@ -214,6 +240,14 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         if type(digest) is not str or digest != expected:
             raise UserError("L’empreinte du profil ne correspond pas à son contenu. Réexportez le profil d’origine.")
     values = dict(values)
+    if legacy_shadow_policy:
+        values.update(randomize_legendary_shadows=True,
+                      postgame_randomize_team=values["randomize_trainers"],
+                      postgame_randomize_lugia=False)
+    if not current_engine:
+        values["keep_shadow_lugia_after_purification"] = False
+    if not postgame_fields:
+        values["postgame_shadow_lugia"] = False
     if not current_fields:
         defaults = Options()
         values.update({name: getattr(defaults, name) for name in V15_FIELDS})
@@ -253,7 +287,7 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
     try:
         payload = _decode_json(data)
         if type(payload) is not dict or payload.get("engine_version") not in (
-            xd.VERSION, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE, PREVIOUS_XD_FIELD_ENGINE, PREVIOUS_XD_SHADOW_SHINY_ENGINE,
+            xd.VERSION, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE, PREVIOUS_XD_FIELD_ENGINE, PREVIOUS_XD_SHADOW_SHINY_ENGINE,
             PREVIOUS_XD_FULL_SPOT_ENGINE, PREVIOUS_XD_SHUFFLE_ENGINE,
             PREVIOUS_XD_QOL_ENGINE, PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE,
         ):
@@ -274,12 +308,20 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         options = payload["options"]
         seed = payload["seed"]
         expected = {item.name for item in fields(xd.XDOptions)}
-        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE):
+        legacy_shadow_policy = payload["engine_version"] != xd.VERSION
+        if (payload["engine_version"] == xd.VERSION and type(options) is dict
+                and set(options) == expected - {"randomize_legendary_shadows"}):
+            legacy_shadow_policy = True
+        if legacy_shadow_policy:
+            expected.remove("randomize_legendary_shadows")
+        if payload["engine_version"] != xd.VERSION:
+            expected.remove("keep_shadow_lugia_after_purification")
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE):
             expected -= XD_POKE_SPOT_SHINY_FIELDS
-        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE,
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE,
                                              PREVIOUS_XD_FIELD_ENGINE, PREVIOUS_XD_SHADOW_SHINY_ENGINE):
             expected.remove("custom_shadow_shinies")
-        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE, PREVIOUS_XD_FIELD_ENGINE,
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE, PREVIOUS_XD_FIELD_ENGINE,
                                              PREVIOUS_XD_SHADOW_SHINY_ENGINE, PREVIOUS_XD_FULL_SPOT_ENGINE):
             expected.remove("poke_spots_full_pokedex")
         if payload["engine_version"] in (PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE):
@@ -288,6 +330,9 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
             expected.remove("randomize_tutorial_shadow")
         if type(options) is not dict or set(options) != expected:
             raise ValueError
+        options = dict(options)
+        if legacy_shadow_policy:
+            options["randomize_legendary_shadows"] = True
     except (ValueError, TypeError, KeyError, UnicodeError, RecursionError) as error:
         raise UserError(invalid) from error
     return Profile(validate_seed(seed), xd.validate_options(xd.XDOptions(**options)),

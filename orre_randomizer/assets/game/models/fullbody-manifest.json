@@ -1,0 +1,54 @@
+{
+  "version": 1,
+  "dimensions": [
+    64,
+    64
+  ],
+  "source_model": {
+    "game_id": "GXXP01",
+    "archive": "pkx_darklugia.fsys",
+    "member": "darklugia",
+    "original_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+    "colosseum_port_sha256": "8c2aefb914ea1aee9407418495edf318f21a52fe443d1b84b9de5dae69401364",
+    "shiny_port_sha256": "2525cf6af605706e1d89d70b84d7c3721f4dfbe1e7fae782849a1d44d55167d9"
+  },
+  "capture": "Native Colosseum menuModelRender RGBA8 framebuffer before the DNA hologram tint, rendered in an isolated Dolphin instance. Whole-body mesh, textures, native lighting and red eyes retained. Purified display-only fixtures omit Shadow aura particles.",
+  "conversion": "Crop the complete transparent silhouette, fit within 56px without changing aspect ratio, area-filter premultiplied RGBA into a 64px transparent canvas. No recoloring or generated artwork.",
+  "rights": "Original game-derived resources, separate from the MIT code license. See THIRD_PARTY_NOTICES.md.",
+  "files": {
+    "dark-lugia-body.png": {
+      "shiny": false,
+      "bytes": 3619,
+      "sha256": "b70d0a84a3f73177fe23e6bfedd633d5c7d5f69075a796e2e71f7dfcc6973cd6",
+      "source_RGBA_sha256": "1a5aec95009409f8a90db781b3309a138f4f2e7b072a6baef3ff95e9f39b1b12",
+      "source_capture_sha256": "b8c4ff57e587a2c3a0e51bec9d2d7a92a900a4a9e3e07d6afcf7d8535212fa50",
+      "source_alpha_bbox": [
+        37,
+        53,
+        202,
+        188
+      ],
+      "fitted_dimensions": [
+        56,
+        46
+      ]
+    },
+    "dark-lugia-shiny-body.png": {
+      "shiny": true,
+      "bytes": 3827,
+      "sha256": "bbaef9cb9763237ea681a2098ef498a7cf16414f304998e733238700da8ec8df",
+      "source_RGBA_sha256": "048baacb391633568488e55c9fdd0905ae6739fd3d7eedc4ef295af0bf72fa6b",
+      "source_capture_sha256": "dc7230e903019469470fd0a47239be9c31d509f06f56e44f95a1d06f2cad7f48",
+      "source_alpha_bbox": [
+        35,
+        52,
+        202,
+        188
+      ],
+      "fitted_dimensions": [
+        56,
+        46
+      ]
+    }
+  }
+}

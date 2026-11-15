@@ -217,6 +217,22 @@ QLabel#sheetShadowType {
 XD_STYLE = xd_stylesheet()
 
 HOME_STYLE = STYLE + """
+QPushButton#updateDownload, QPushButton#updateCancel {
+    background: #202327; color: #eceef2; border: 1px solid #727782;
+}
+QPushButton#updateDownload:hover, QPushButton#updateDownload:focus,
+QPushButton#updateCancel:hover, QPushButton#updateCancel:focus {
+    background: #30343a; border: 2px solid #cbd0d8; padding: 3px 11px;
+}
+QPushButton#updateDownload:pressed { background: #17191c; }
+QPushButton#updateDownload:disabled { color: #969ba5; border-color: #626772; }
+QProgressBar#updateProgress {
+    background: #191b1e; color: #eceef2; border-color: #727782; min-height: 22px;
+}
+QProgressBar#updateProgress::chunk { background: #535b66; }
+QScrollBar:vertical { background: #191b1e; }
+QScrollBar::handle:vertical { background: #727782; }
+QScrollBar::handle:vertical:hover { background: #cbd0d8; }
 QPushButton#authorLink {
     background: transparent; color: #cdd7e6; border: 1px solid transparent;
     font-size: 13px; text-decoration: underline; min-height: 20px; padding: 2px 8px;

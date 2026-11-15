@@ -50,7 +50,14 @@ The final gift constructor supplies the species for the rescue and handover.
 resource `0x06F90400`. The patch resolves the replacement's battle model using
 the regional DOL resource table and `GSfsys.toc`, then adapts its HSD data for
 the field actor. The scene keeps its original actor, camera and movement cues.
-The twelve field animation slots use the replacement's idle pose. The actor
+For replacement species without authored field locomotion, the twelve field
+animation slots use the actual Idle clip selected by the PKX metadata. DAT
+animation zero is not always Idle: it can be a short blink or damage overlay.
+This keeps the replacement animated while the scene moves it, but does not
+create a walking gait that the retail model lacks. When the gift remains
+Plusle, its dedicated ten-motion field model is retained, including with a
+custom shiny palette. [Field animation audit](FIELD_ANIMATIONS.md)
+The actor
 uses the form drawn from the seed for Unown. It displays the gift's shiny color when the result is
 known during ROM creation (a seeded draw or a guaranteed rate). If the game
 draws the result at runtime, the actor displays the normal color.
@@ -177,6 +184,13 @@ without naming a species and there is no Pokémon model in the handover. These
 paths were previously exercised in Dolphin. Celebi's appearance when summoned
 with the Time Flute and the Bonus Disc's `ex_shrine.fsys` actor `cerebi_dat`
 belong to different events. [Regional gift validation](../REGIONAL_GIFTS_DOLPHIN_2026-11-03.md)
+
+With accessible rewards enabled, the first gift is now Eagun's companion:
+his earlier battle and the home, shrine and finale actors follow that gift's
+species and determined shiny appearance. Spinda shares the gift's full seeded
+PID; Unown shares the selected form. After receipt, only the ambient home
+Pokémon disappears, with the native phone and Master Ball sequences protected.
+Eagun remains available. [Identity and visibility guards](EAGUN_COMPANION_GIFT.md)
 
 ## XD
 

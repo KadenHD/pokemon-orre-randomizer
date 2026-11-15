@@ -1,4 +1,4 @@
-"""Replace the DNA door's baked portraits without changing its nine answers."""
+"""Replace the DNA door's full-body images without changing its nine answers."""
 
 from collections import Counter
 from collections.abc import Mapping
@@ -26,7 +26,10 @@ _TILE_SIZE = 128
 _BLOCK_SIZE = 8
 _BLOCK_BYTES = 32
 _TILE_ROW_BYTES = _TILE_SIZE // _BLOCK_SIZE * _BLOCK_BYTES
-_SPINDA_ART_RECT = (24, 16, 80)
+_BODY_SIZE = 64
+_BODY_ART_RECT = (8, 4, 112)
+_SPINDA_BODY_ART_RECT = _BODY_ART_RECT
+_SPINDA_ART_RECT = (8, 88, 32)
 _DIGITS = (
     (4, 12, 4, 4, 4, 4, 14),
     (14, 17, 1, 2, 4, 8, 31),
@@ -88,10 +91,48 @@ def _encode_cmpr(rgb: bytes) -> bytes:
     return bytes(result)
 
 
-def _tile_art(template: bytes, portrait: bytes, width: int, shiny: bool, number: int,
-              *, rect=(22, 22, 84)) -> bytes:
-    # The narrow Quilava art leaves the original bevel clear.
-    # Keep that bevel and place the 42 px native portrait on the tile.
+def _body_pixels(archive: bytes, members: Mapping[str, dict], species: int,
+                 shiny: bool, unown_form_index: int = 0) -> bytes:
+    """Read the complete native body, fitted to a transparent 64px square."""
+    name = f"body201{unown_suffix(unown_form_index)}" if species == 201 else f"body{species:03d}"
+    name += "_c" if shiny else ""
+    try:
+        raw = decoded_member(archive, members[name])
+        width, height = struct.unpack_from(">HH", raw)
+        if not (0 < width <= 128 and 0 < height <= 128):
+            raise ArtworkError("Unsupported full-body image dimensions.")
+        pixels = _texture(raw, (width, height))
+    except (ArtworkError, KeyError, struct.error) as error:
+        raise FormatError("DNA keypad full-body image not available") from error
+    if (width, height) == (_BODY_SIZE, _BODY_SIZE):
+        return pixels
+    # Four retail body images have non-square dimensions (58..68px). Fit the
+    # whole image without cropping or changing the Pokemon's proportions.
+    scale = min(1, _BODY_SIZE / max(width, height))
+    fitted_width, fitted_height = max(1, round(width * scale)), max(1, round(height * scale))
+    left, top = (_BODY_SIZE - fitted_width) // 2, (_BODY_SIZE - fitted_height) // 2
+    result = bytearray(_BODY_SIZE * _BODY_SIZE * 4)
+    for y in range(fitted_height):
+        source_y = y * (height - 1) // max(1, fitted_height - 1)
+        for x in range(fitted_width):
+            source_x = x * (width - 1) // max(1, fitted_width - 1)
+            old = (source_y * width + source_x) * 4
+            new = ((y + top) * _BODY_SIZE + x + left) * 4
+            result[new:new + 4] = pixels[old:old + 4]
+    return bytes(result)
+
+
+def _tile_art(template: bytes, body: bytes, width: int, height: int, number: int,
+              *, rect=_BODY_ART_RECT) -> bytes:
+    # The original Quilava tile supplies the blank background and bevel. The
+    # full-body asset is composited with its alpha instead of a battle portrait.
+    if (len(template) != _TILE_SIZE * _TILE_SIZE * 4
+            or not 0 < width <= 128 or not 0 < height <= 128
+            or len(body) != width * height * 4 or not 0 <= number <= 9):
+        raise FormatError("invalid DNA keypad full-body composition")
+    left, top, size = rect
+    if not (0 <= left < left + size <= _TILE_SIZE and 0 <= top < top + size <= _TILE_SIZE):
+        raise FormatError("invalid DNA keypad artwork bounds")
     background = (64 * _TILE_SIZE + 8) * 4
     blank = template[background:background + 3]
     tile = bytearray(blank * (_TILE_SIZE * _TILE_SIZE))
@@ -100,13 +141,15 @@ def _tile_art(template: bytes, portrait: bytes, width: int, shiny: bool, number:
             if min(x, y, _TILE_SIZE - 1 - x, _TILE_SIZE - 1 - y) < 4:
                 index = y * _TILE_SIZE + x
                 tile[3 * index:3 * index + 3] = template[4 * index:4 * index + 3]
-    left, top, size = rect
     for y in range(size):
-        row = y * 42 // size + (42 if shiny else 0)
+        row = y * height // size
         for x in range(size):
-            old = (row * width + x * 42 // size) * 4
+            old = (row * width + x * width // size) * 4
             new = ((y + top) * _TILE_SIZE + x + left) * 3
-            tile[new:new + 3] = portrait[old:old + 3]
+            alpha = body[old + 3]
+            tile[new:new + 3] = bytes(
+                (body[old + channel] * alpha + tile[new + channel] * (255 - alpha) + 127) // 255
+                for channel in range(3))
     if number:
         for y in range(27):
             for x in range(21):
@@ -117,9 +160,9 @@ def _tile_art(template: bytes, portrait: bytes, width: int, shiny: bool, number:
     return _encode_cmpr(tile)
 
 
-def patch_dna_keypad(source: bytes, faces_archive: bytes,
+def patch_dna_keypad(source: bytes, bodies_archive: bytes,
                      mapping: Mapping[int, tuple[int, bool]], *, unown_form_index: int = 0,
-                     spinda_samples=()) -> bytes:
+                     spinda_samples=(), shadow_lugia_samples=()) -> bytes:
     """Update the tiles' images while retaining their native comparison keys."""
     if set(mapping) != set(DNA_KEYPAD_SPECIES):
         raise FormatError("unexpected DNA keypad species mapping")
@@ -141,26 +184,19 @@ def patch_dna_keypad(source: bytes, faces_archive: bytes,
     if sha256(original_dat) != _DAT_SHA256:
         raise FormatError("unexpected original DNA keypad model")
     updated = bytearray(original_dat)
-    if spinda_samples:
+    if spinda_samples or shadow_lugia_samples:
         if (len(original_dat) != _KEYPAD_DAT_SIZE or any(original_dat[0x18:0x20])
                 or struct.unpack_from(">III", original_dat, _ATLAS_DESCRIPTOR) != _ATLAS_SIGNATURE):
             raise FormatError("unexpected DNA keypad atlas")
         struct.pack_into(">I", updated, 0x18, _SPINDA_KEYPAD_MARKER)
     template = _decode_pixels(_TILE_SIZE, _TILE_SIZE, 4, b"".join(
         original_dat[start:end] for start, end in _tile_rows(896, 512)))
-    faces = {member["name"]: member for member in parse_fsys(faces_archive)["members"]}
+    bodies = {member["name"]: member for member in parse_fsys(bodies_archive)["members"]}
     for position, species, shiny, duplicate in changes:
-        name = f"face201{unown_suffix(unown_form_index)}" if species == 201 else f"face{species:03d}"
-        try:
-            raw = decoded_member(faces_archive, faces[name])
-            width, height = struct.unpack_from(">HH", raw)
-            if width not in (42, 84) or height != 84:
-                raise FormatError("unexpected DNA keypad portrait dimensions")
-            portrait = _texture(raw, (width, height))
-        except (ArtworkError, KeyError, struct.error) as error:
-            raise FormatError("DNA keypad portrait not available") from error
-        rect = _SPINDA_ART_RECT if species == SPINDA and DNA_KEYPAD_SPECIES[position] in spinda_samples else (22, 22, 84)
-        image = _tile_art(template, portrait, width, shiny, position + 1 if duplicate else 0, rect=rect)
+        body = _body_pixels(bodies_archive, bodies, species, shiny, unown_form_index)
+        rect = _SPINDA_BODY_ART_RECT if species == SPINDA and DNA_KEYPAD_SPECIES[position] in spinda_samples else _BODY_ART_RECT
+        image = _tile_art(template, body, _BODY_SIZE, _BODY_SIZE,
+                          position + 1 if duplicate else 0, rect=rect)
         for row, (start, end) in enumerate(_tile_rows(*_TILE_ORIGINS[position])):
             offset = row * _TILE_ROW_BYTES
             updated[start:end] = image[offset:offset + _TILE_ROW_BYTES]

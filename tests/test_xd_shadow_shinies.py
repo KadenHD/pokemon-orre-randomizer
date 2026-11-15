@@ -50,8 +50,8 @@ class WrapperMachine:
         for index in (0, *range(3, 13)):
             self.reg[index] = 0xBAD00000 + index
 
-    def run(self):
-        for _ in range(150):
+    def run(self, max_steps=150):
+        for _ in range(max_steps):
             if self.pc == RETURN:
                 return
             if self.pc in self.callbacks:
@@ -85,9 +85,9 @@ class WrapperMachine:
             elif op in (32, 34, 40):
                 width = {32: 4, 34: 1, 40: 2}[op]
                 self.reg[rd] = self.load(((self.reg[ra] if ra else 0) + signed) & MASK, width)
-            elif op in (36, 37):
+            elif op in (36, 37, 44):
                 address = ((self.reg[ra] if ra else 0) + signed) & MASK
-                self.store(address, self.reg[rd], 4)
+                self.store(address, self.reg[rd], 2 if op == 44 else 4)
                 if op == 37:
                     self.reg[ra] = address
             elif op == 46:

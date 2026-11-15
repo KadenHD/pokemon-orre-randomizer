@@ -10,14 +10,16 @@ and the intentional differences between Colosseum and XD.
 
 | French | English | Effect |
 | --- | --- | --- |
-| Pokémon + capacités | Pokémon + moves | Replaces Pokémon with similar strength; also randomizes moves, learnsets, TMs, chest items and shop items |
-| Pokémon seuls | Pokémon only | Uses the same Pokémon selection and balance; keeps moves, learnsets, TMs and ordinary items |
+| Pokémon + capacités | Pokémon + moves | Randomizes Pokémon and abilities without power matching; also randomizes moves, learnsets, TMs, compatibility, held items, treasure and shops |
+| Pokémon seuls | Pokémon only | Uses the same Pokémon and ability selection; keeps moves, learnsets, TMs and ordinary items |
 | Copie à l’identique | Unchanged copy | Keeps all game data; can convert ISO/RVZ |
 
 Both randomizing presets enable accessible evolutions, Evolution stones in shops,
-family diversity, base starters from three-stage families and a seeded 5% shiny
+family diversity, starters from all evolution stages and a seeded 5% shiny
 chance for supported encounters. Explain native exceptions beside these shared
 defaults. Do not imply that wild Poké Spots use the custom shiny rate.
+Types remain unchanged by default. Advanced can enable type randomization,
+stage restrictions, type matching or power matching explicitly.
 
 **Custom settings** means that the current options differ from every preset.
 Explain how to inspect them in Advanced and that selecting a preset replaces

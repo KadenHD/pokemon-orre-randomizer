@@ -1,4 +1,4 @@
-"""Render each live Spinda motif inside the keypad's existing CMPR atlas."""
+"""Render saved specimen appearances inside the keypad's existing CMPR atlas."""
 
 from collections import Counter
 import struct
@@ -179,7 +179,7 @@ def _keypad_hook(address, parser, chained, flush, invalidate, region, samples, p
     )
 
 
-def apply_dna_keypad_runtime(original, current, read_archive, samples, pid):
+def _apply_spinda_keypad_runtime(original, current, read_archive, samples, pid):
     """Patch the native DAT parser only when a randomized sample can be Spinda."""
     if not samples:
         return current
@@ -225,3 +225,175 @@ def apply_dna_keypad_runtime(original, current, read_archive, samples, pid):
     struct.pack_into(">I", output, 0x98, previous_size + len(payload))
     struct.pack_into(">I", output, parser_offset, branch(parser, end))
     return bytes(output)
+
+
+def _lugia_tiles(read_archive, appearances, samples):
+    """Encode the four native appearance states without changing puzzle keys."""
+    from ..artwork import _decode_pixels
+    from .dna_keypad import _body_pixels, _tile_art, _tile_rows
+    from .shadow_lugia_body import shadow_lugia_body_pixels
+    keypad = read_archive("DNA_key.fsys")
+    member = next(row for row in parse_fsys(keypad)["members"]
+                  if row["identifier_raw"] == "0x107e0200")
+    dat = decoded_member(keypad, member)
+    template = _decode_pixels(128, 128, 4, b"".join(dat[a:b] for a, b in _tile_rows(896, 512)))
+    bodies = read_archive("poke_body.fsys")
+    members = {row["name"]: row for row in parse_fsys(bodies)["members"]}
+    variants = (shadow_lugia_body_pixels(False), shadow_lugia_body_pixels(True),
+                _body_pixels(bodies, members, 249, False), _body_pixels(bodies, members, 249, True))
+    counts = Counter(species for species, _ in appearances.values())
+    result = {}
+    for old in samples:
+        number = DNA_KEYPAD_SPECIES.index(old) + 1 if counts[249] > 1 else 0
+        result[old] = tuple(_tile_art(template, pixels, 64, 64, number) for pixels in variants)
+    return result
+
+
+def _lugia_tile_copy(address):
+    """Copy sixteen native CMPR block rows (r3 destination, r4 source)."""
+    code = _Code(address)
+    code.emit(0x39400010)
+    code.label("row")
+    code.emit(0x39200080)
+    code.label("word")
+    code.emit(0x80040000, 0x90030000, 0x38840004, 0x38630004, 0x3529FFFF)
+    code.conditional(0x40820000, "word")
+    code.emit(0x38630E00, 0x354AFFFF)
+    code.conditional(0x40820000, "row")
+    code.emit(0x4E800020)
+    return code.finish()
+
+
+def _lugia_keypad_hook(address, parser, chained, flush, invalidate, region, samples,
+                       appearances, tiles, *, keep_after_purification=False):
+    from .postgame_lugia_model import _SAVED_IDENTITIES
+    saved, generated, purified = _SAVED_IDENTITIES[region.game_id]
+    readers = {"stored_shadow_pid": saved, "shadow_generated": generated}
+    writer = address + 0x2000
+    writer_code = _lugia_tile_copy(writer)
+    data_start = (writer + len(writer_code) + 31) & ~31
+    tile_size = 128 * 128 // 2
+    if any(len(image) != tile_size for row in tiles.values() for image in row):
+        raise FormatError("invalid native Lugia keypad tile")
+    source = {old: tuple(data_start + (index * 4 + variant) * tile_size for variant in range(4))
+              for index, old in enumerate(samples)}
+    code = _Code(address)
+    code.emit(0x28030000)
+    code.conditional(0x41820000, "native")
+    code.emit(0x28040000)
+    code.conditional(0x41820000, "native")
+    _load_constant(code, 8, _KEYPAD_DAT_SIZE)
+    code.emit(0x7C054040)
+    code.conditional(0x40820000, "native")
+    code.emit(0x80C40018)
+    _load_constant(code, 8, _SPINDA_KEYPAD_MARKER)
+    code.emit(0x7C064040)
+    code.conditional(0x40820000, "native")
+    for offset, expected in zip(range(_ATLAS_DESCRIPTOR, _ATLAS_DESCRIPTOR + 12, 4), _ATLAS_SIGNATURE, strict=True):
+        code.emit(0x80C40000 | offset)
+        _load_constant(code, 8, expected)
+        code.emit(0x7C064040)
+        code.conditional(0x40820000, "native")
+    code.emit(0x9421FFC0, 0x7C0802A6, 0x90010044,
+              0x90610008, 0x9081000C, 0x90A10010)
+    for old, sid in samples.items():
+        code.emit(0x38000000 | int(appearances[old][1]), 0x90010018)
+        _emit_sample_pid(code, region, old, (sid, None, None, None), readers, f"palette_{old}")
+        code.emit(0x7C603A78, 0x540C843E, 0x7C006278, 0x5400043E, 0x38A00000, 0x28000008)
+        code.conditional(0x40800000, f"color_{old}")
+        code.emit(0x38A00001)
+        code.label(f"color_{old}")
+        code.emit(0x90A10018)
+        code.label(f"palette_{old}")
+        if not keep_after_purification:
+            code.emit(0x38600000 | sid)
+            code.call(purified)
+            code.emit(0x5460063E, 0x28000001)
+            code.conditional(0x40820000, f"draw_{old}")
+            code.emit(0x80A10018, 0x38A50002, 0x90A10018)
+        code.label(f"draw_{old}")
+        # r0 holds only a tiny variant index; no saved pointer is modified.
+        code.emit(0x80010018)
+        for variant in range(3):
+            code.emit(0x28000000 | variant)
+            code.conditional(0x41820000, f"tile_{old}_{variant}")
+        _load_constant(code, 4, source[old][3])
+        code.jump(f"copy_{old}")
+        for variant in range(3):
+            code.label(f"tile_{old}_{variant}")
+            _load_constant(code, 4, source[old][variant])
+            code.jump(f"copy_{old}")
+        code.label(f"copy_{old}")
+        _load_constant(code, 12, _atlas_block_offset(*_TILE_ORIGINS[DNA_KEYPAD_SPECIES.index(old)]))
+        code.emit(0x8061000C, 0x7C636214)
+        code.call(writer)
+    code.emit(0x8061000C, 0x38630000 | _ATLAS_OFFSET)
+    _load_constant(code, 4, _ATLAS_BYTES)
+    code.call(flush)
+    code.call(invalidate)
+    code.emit(0x80610008, 0x8081000C, 0x80A10010,
+              0x80010044, 0x7C0803A6, 0x38210040)
+    code.label("native")
+    if chained is None:
+        code.emit(_PARSE_WORD)
+    code.emit(branch(address + len(code.words) * 4, chained if chained is not None else parser + 4))
+    body = code.finish()
+    if len(body) > writer - address:
+        raise FormatError("Lugia keypad callback overlaps its writer")
+    return (body.ljust(writer - address, b"\0") + writer_code).ljust(data_start - address, b"\0") + b"".join(
+        image for old in samples for image in tiles[old])
+
+
+def _apply_lugia_keypad_runtime(original, current, read_archive, samples, appearances,
+                                *, keep_after_purification=False):
+    region = dol_layout(original)
+    parser, flush, invalidate = _LAYOUTS[region.game_id]
+    parser_offset = parser - TEXT_TO_RAM
+    if (tuple(u32(original, parser_offset + i * 4) for i in range(len(_PARSE_SIGNATURE))) != _PARSE_SIGNATURE
+            or tuple(u32(current, parser_offset + i * 4) for i in range(1, len(_PARSE_SIGNATURE))) != _PARSE_SIGNATURE[1:]):
+        raise FormatError("unexpected native Lugia keypad parser")
+    section = (len(original) + 31) & ~31
+    previous_size = u32(current, 0x98)
+    end = region.section_ram + previous_size
+    arena = region.set_arena_lo - TEXT_TO_RAM
+    if (previous_size < 32 or previous_size % 32 or section + previous_size != len(current)
+            or (u32(current, 0x08), u32(current, 0x50)) != (section, region.section_ram)
+            or current[section:section + 32] != _arena_guard(end, region.arena_lo_store)
+            or u32(current, arena) != branch(region.set_arena_lo, region.section_ram)):
+        raise FormatError("invalid Lugia keypad DOL reservation")
+    previous = u32(current, parser_offset)
+    chained = None
+    if previous != _PARSE_WORD:
+        if previous & 0xFC000003 != 0x48000000:
+            raise FormatError("unexpected existing Lugia keypad parser hook")
+        displacement = previous & 0x03FFFFFC
+        chained = parser + displacement - ((1 << 26) if displacement & (1 << 25) else 0)
+        if not region.section_ram + 32 <= chained < end:
+            raise FormatError("existing Lugia keypad parser hook outside its reservation")
+    payload = _lugia_keypad_hook(end, parser, chained, flush, invalidate, region, samples,
+        appearances, _lugia_tiles(read_archive, appearances, samples),
+        keep_after_purification=keep_after_purification)
+    if end + len(payload) >= 0x81700000:
+        raise FormatError("Lugia keypad hook exceeds the native arena")
+    output = bytearray(current)
+    output.extend(payload)
+    output[section:section + 32] = _arena_guard(end + len(payload), region.arena_lo_store)
+    struct.pack_into(">I", output, 0x98, previous_size + len(payload))
+    struct.pack_into(">I", output, parser_offset, branch(parser, end))
+    return bytes(output)
+
+
+def apply_dna_keypad_runtime(original, current, read_archive, samples, pid, *,
+                              shadow_lugia_samples=None, appearances=None,
+                              keep_after_purification=False):
+    """Paint only known specimen tiles, preserving all native keypad answers."""
+    output = _apply_spinda_keypad_runtime(original, current, read_archive, samples, pid)
+    if shadow_lugia_samples:
+        if (type(keep_after_purification) is not bool or not appearances
+                or any(old not in DNA_KEYPAD_SPECIES or old not in appearances
+                       or appearances[old][0] != 249 or type(sid) is not int or not 1 <= sid <= 96
+                       for old, sid in shadow_lugia_samples.items())):
+            raise FormatError("invalid Lugia keypad specimen metadata")
+        output = _apply_lugia_keypad_runtime(original, output, read_archive,
+            shadow_lugia_samples, appearances, keep_after_purification=keep_after_purification)
+    return output

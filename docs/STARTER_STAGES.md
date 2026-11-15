@@ -1,6 +1,8 @@
 # Starter stages and balance
 
-Both randomizing presets use base forms from three-stage families in both games.
+Both randomizing presets allow every evolution stage and family in both games,
+including single-stage Pokémon. The three-stage-family filter and power matching
+are disabled by default.
 Colosseum keeps levels 26 and 25; XD keeps level 10. Starting experience follows
 the replacement species' growth curve.
 
@@ -18,9 +20,10 @@ generation-III data. Branch count is not stage count: Eevee has two stages,
 Wurmple has three. Babies count: Pichu → Pikachu → Raichu. Later-generation
 evolutions are not invented.
 
-Similar-strength matching compares base candidates with the original starter's
-family base. Colosseum's pair controls compare the two selected species' final
-stats and enforce distinct families and complementary types. XD has one starter.
+Optional similar-strength matching compares base candidates with the original
+starter's family base. Colosseum keeps distinct starter families by default;
+the optional power and type controls compare the selected species' final stats
+and types. XD has one starter.
 
 Manual choices bypass that slot's stage and individual power filters; exclusions
 and relevant pair rules still apply. A retained starter can constrain its partner.

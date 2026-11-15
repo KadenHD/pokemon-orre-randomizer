@@ -364,28 +364,42 @@ _REMARK_REQUIRED_MOVES = {
 _SANDSTORM_COMBO_REMARK = 0x5DF7  # Castform's Forecast and the team's Sand Veil abilities
 _IMMUNE_TYPES = {0: 7, 1: 7, 3: 8, 4: 2, 7: 0, 13: 4, 14: 17}
 _ABSORB_ABILITIES = {4: 26, 10: 18, 11: 11, 13: 10}
-_CONDITIONAL_ATTACKS = OHKO | SELF_DESTRUCT | {68, 117, 138, 173, 243, 255}
+_CONDITIONAL_ATTACKS = OHKO | SELF_DESTRUCT | {68, 117, 138, 173, 243, 255, 264}
+
+
+def _tutorial_attacks(starter, move_randomizer):
+    return [move_randomizer.catalog[move] for move in starter["moves"]
+            if move in move_randomizer.catalog and move not in _CONDITIONAL_ATTACKS
+            and damaging(move_randomizer.catalog[move])]
+
+
+def _tutorial_can_hit(attacks, opponent):
+    if WONDER_GUARD in opponent["abilities"]:
+        return False
+    return any(_IMMUNE_TYPES.get(move["type"]) not in opponent["types"]
+               and _ABSORB_ABILITIES.get(move["type"]) not in opponent["abilities"]
+               and (move["index"] not in (253, 304) or 43 not in opponent["abilities"])
+               for move in attacks)
+
+
+def validate_tutorial_matchup(starter, opponent, move_randomizer):
+    """Check the fixed tutorial too when only the starter or its traits change."""
+    if not _tutorial_can_hit(_tutorial_attacks(starter, move_randomizer), move_randomizer.species[opponent]):
+        raise FormatError("Aucun Pokémon adapté au tutoriel. Élargissez les filtres ou choisissez un starter capable d’attaquer.")
 
 
 def tutorial_candidates(starter, eligible, move_randomizer):
     """Exclude opponents that the starter's regular attacks cannot hit."""
     catalog = move_randomizer.species
-    attacks = [move_randomizer.catalog[move] for move in starter["moves"]
-               if move in move_randomizer.catalog and move not in _CONDITIONAL_ATTACKS
-               and damaging(move_randomizer.catalog[move])]
+    attacks = _tutorial_attacks(starter, move_randomizer)
     result = []
     for index in sorted(eligible):
         row = catalog[index]
         if (index == TEDDIURSA or row["national_dex"] in LEGENDARY_NATIONAL
                 or row["total"] > 410 or WONDER_GUARD in row["abilities"]):
             continue
-        for move in attacks:
-            kind = move["type"]
-            if (_IMMUNE_TYPES.get(kind) not in row["types"]
-                    and _ABSORB_ABILITIES.get(kind) not in row["abilities"]
-                    and (move["index"] not in (253, 304) or 43 not in row["abilities"])):
-                result.append(index)
-                break
+        if _tutorial_can_hit(attacks, row):
+            result.append(index)
     return result
 
 
@@ -575,17 +589,19 @@ TRAINER_REMARK_REWRITES = {
 }
 
 
+def _tutorial_script(original, game_id, chosen):
+    offset = 0x816C if game_id == "GXXJ01" else 0x818C
+    check_range(original, offset - 4, 28, "XD tutorial dialogue variable")
+    if struct.unpack_from(">7I", original, offset - 4) != (
+        0x02010000, TEDDIURSA, 0x02010000, 0x4E, 0x11030028, 0x0928001C, 0x06030000,
+    ):
+        raise FormatError("unexpected XD tutorial dialogue variable")
+    updated = bytearray(original)
+    patch_species_operand(original, updated, offset, TEDDIURSA, chosen)
+    return bytes(updated)
+
+
 def patch_tutorial(game_id, chosen, national, name_banks, read_archive):
-    def edit_script(original):
-        offset = 0x816C if game_id == "GXXJ01" else 0x818C
-        check_range(original, offset - 4, 28, "XD tutorial dialogue variable")
-        if struct.unpack_from(">7I", original, offset - 4) != (
-            0x02010000, TEDDIURSA, 0x02010000, 0x4E, 0x11030028, 0x0928001C, 0x06030000,
-        ):
-            raise FormatError("unexpected XD tutorial dialogue variable")
-        updated = bytearray(original)
-        patch_species_operand(original, updated, offset, TEDDIURSA, chosen)
-        return bytes(updated)
 
     def edits(language, message):
         old = _native_name(name_banks, language, TEDDIURSA)
@@ -595,7 +611,8 @@ def patch_tutorial(game_id, chosen, national, name_banks, read_archive):
     lab = "M5_labo_1F.fsys"
     rematch = "D1_labo_B2.fsys"
     return {
-        lab: _patch_banks(_patch_script(read_archive(lab), "M5_labo_1F", edit_script),
+        lab: _patch_banks(_patch_script(read_archive(lab), "M5_labo_1F",
+                                      partial(_tutorial_script, game_id=game_id, chosen=chosen)),
                           game_id, lambda lang: edits(lang, 0x9CDD)),
         rematch: _patch_banks(read_archive(rematch), game_id, lambda lang: edits(lang, 0x759E)),
     }

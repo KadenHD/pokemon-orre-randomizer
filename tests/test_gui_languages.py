@@ -29,6 +29,9 @@ class GuiLanguageTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def setUp(self):
+        update_check = patch("orre_randomizer.gui.UpdateChecker.check_once")
+        update_check.start()
+        self.addCleanup(update_check.stop)
         self.folder = tempfile.TemporaryDirectory()
         self.settings_path = str(Path(self.folder.name) / "preferences.ini")
         settings = QSettings(self.settings_path, QSettings.Format.IniFormat)
@@ -77,6 +80,8 @@ class GuiLanguageTests(unittest.TestCase):
         self.assertEqual(self.window.language, "fr")
 
     def test_japanese_switch_keeps_profile_paths_format_and_category(self):
+        self.window.rule_fields["moves_mode"].setCurrentIndex(
+            self.window.rule_fields["moves_mode"].findData("balanced"))
         self.window.seed.setText("星/{seed}/🌟")
         self.window.source.setText("C:/日本語/{source}/original.rvz")
         self.window.destination.setText("C:/保存/{out}/新しい.iso")

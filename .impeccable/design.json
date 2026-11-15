@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-05T19:06:15.714776Z",
+  "generatedAt": "2026-11-13T22:06:40.232328Z",
   "title": "Design System: Pokémon Orre Randomizer",
   "extensions": {
     "colorMeta": {
@@ -433,6 +433,10 @@
       {
         "name": "minimum-window-width",
         "value": "680px"
+      },
+      {
+        "name": "home-card-stack-width",
+        "value": "800px"
       }
     ]
   },
@@ -514,6 +518,14 @@
       "description": "Neutral home-header colors; independent checked preference.",
       "html": "<button class=\"ds-home-audio\" aria-pressed=\"true\">Music</button>",
       "css": ".ds-home-audio{background:#202327;color:#e5e7eb;border:1px solid #727782;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif}.ds-home-audio[aria-pressed=true]{background:#30343a;color:#f2f3f5;border:2px solid #cbd0d8;padding:3px 11px}.ds-home-audio:hover{background:#30343a;border-color:#cbd0d8}.ds-home-audio:focus-visible{outline:2px solid #cbd0d8;outline-offset:2px}.ds-home-audio:active{background:#17191c}.ds-home-audio:disabled{background:#202327;color:#969ba5;border-color:#626772}"
+    },
+    {
+      "name": "Home release download",
+      "kind": "button",
+      "refersTo": "button-home",
+      "description": "Optional secondary release action below both game tiles. Reuses the neutral home palette without a checked state; localized version labels remain native Qt text.",
+      "html": "<button class=\"ds-home-update\">Download version ...</button>",
+      "css": ".ds-home-update{background:#202327;color:#eceef2;border:1px solid #727782;border-radius:4px;min-height:28px;padding:4px 12px;font:14px \"Segoe UI\",sans-serif}.ds-home-update:hover,.ds-home-update:focus-visible{background:#30343a;border:2px solid #cbd0d8;padding:3px 11px;outline:none}.ds-home-update:active{background:#17191c}"
     }
   ],
   "narrative": {

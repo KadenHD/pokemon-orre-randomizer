@@ -263,6 +263,9 @@ def apply_story_rules(original_rel, base_rel, original_dol, base_dol, seed, opti
     starters = [row for row in targets if "xp" in row]
     gifts = [row for row in targets if "xp" not in row]
     fixed = {families[row["old"]] for row in gifts if not getattr(options, SPECIAL_OPTIONS[row["key"]])}
+    if getattr(options, "postgame_shadow_lugia", False):
+        from .postgame_boss import bonus_shadow_species
+        fixed.add(families[bonus_shadow_species(original_rel, seed, options)])
     shadow_table = tables["shadow"]
 
     def shadow_families(rel):

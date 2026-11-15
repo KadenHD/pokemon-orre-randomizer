@@ -473,7 +473,7 @@ TEXTS.update({'Configuration': 'Configuration',
  'Non chromatiques': 'Non-shiny',
  'Aperçu non calculé': 'Preview not calculated',
  'Aucun résultat': 'No results',
- '{first}–{last} sur {count}': '{first}–{last} of {count}',
+ '{first}-{last} sur {count}': '{first}-{last} of {count}',
  'Seed ou réglages modifiés. Actualisez l’aperçu.': 'Seed or settings changed. Refresh the preview.',
  'Aperçu pour une nouvelle partie. Aucune ROM n’a été créée.': 'Preview for a new game. No ROM has been '
                                                                'created.',

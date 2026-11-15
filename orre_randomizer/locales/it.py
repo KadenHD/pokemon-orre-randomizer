@@ -1009,7 +1009,7 @@ TEXTS.update({'Configuration': 'Configurazione',
  'Non chromatiques': 'Non cromatici',
  'Aperçu non calculé': 'Anteprima non calcolata',
  'Aucun résultat': 'Nessun risultato',
- '{first}–{last} sur {count}': '{first}–{last} di {count}',
+ '{first}-{last} sur {count}': '{first}-{last} di {count}',
  'Seed ou réglages modifiés. Actualisez l’aperçu.': 'Seme o impostazioni modificati. Aggiorna l’anteprima.',
  'Aperçu pour une nouvelle partie. Aucune ROM n’a été créée.': 'Anteprima per una nuova partita. Nessuna ROM '
                                                                'è stata creata.',

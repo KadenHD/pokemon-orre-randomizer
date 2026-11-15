@@ -1,5 +1,90 @@
 # Changelog
 
+## 1.2.20 - 2026-11-15
+
+- Enable Colosseum's bonus quest in both randomizing presets, keeping its
+  intended team and Shadow Lugia by default. Add independent advanced switches
+  for the first five team members and the final Shadow Pokémon, with matching
+  scene models, dialogue, mail and previews.
+- Preserve original legendary Shadow species by default in both games. Add an
+  advanced switch to randomize them; XD001 remains protected for XD's story.
+  Show these protections and the bonus battle's fixed choices in the applied
+  settings summary, including when their randomization switches are off.
+- Use XD's dark model and matching normal or custom shiny portraits for every
+  Shadow Lugia in both games, including randomized encounters, Snag Lists and
+  supported field scenes. Match Colosseum's DNA hologram and keypad to the same
+  saved identity and purification state.
+- Keep the DNA analyzer's original blue hologram effect. Use native whole-body
+  artwork on its door keypad, including shiny and Unown variants. Render the
+  two extra Shadow Lugia icons from their actual 3D models, with complete
+  transparent silhouettes; retain the native puzzle answers.
+- Add an advanced option in both games to retain Shadow Lugia's appearance
+  after purification. It is disabled by default, changes appearance only and
+  never affects a Lugia that was not a Shadow Pokémon. Older profiles keep it off.
+- Isolate test modules in bounded processes to avoid accumulated Qt thread
+  cleanup hangs, and close the complete private test process group on archive
+  verification timeout. Extract the Windows installer compiler without elevation.
+
+- Stage the optional Colosseum Lugia confrontation with camera shots, both
+  heroes, a matching field model and localized dialogue. Use saved hero/partner
+  names. After capture, Nascour walks to the exit before the final exchange.
+  Keep retries available and protect original story and Master Ball handoffs.
+  Remember the introduction independently of other battle results, and send
+  Eagun's warning only after a motorcycle trip to another area. Keep the last purification
+  uninterrupted. Use the native Cipher Admin battle theme.
+
+- Always link custom shiny rates to the seed in Colosseum, matching XD. Retire
+  the unlink switch and normalize older unlinked profiles after verification,
+  retaining their rate. Eagun's gift, battle partner and field appearance now
+  share the same determined status at intermediate custom rates as well.
+
+- List purification gifts by their configured thresholds in previews and the
+  offline journal, preserving other gifts and stable ordering for equal counts.
+
+- Offer a localized one-click Windows update on home for newer stable GitHub
+  releases. Download and check the package's size and SHA-256, update installed
+  and portable editions in place, then restart. Show cancellable download
+  progress and recoverable errors; preserve ROMs, saves and preferences.
+  Check once in the background without blocking offline use or window closing.
+
+- Preserve Eagun's original home actor and story dialogue, including the P★DA
+  contact exchange and Master Ball handoff. Delay added shrine events until
+  the contact exchange, and while a native Master Ball handoff is pending.
+- Match Eagun's companion to his first purification gift, including determined
+  shiny colors, Unown's form and Spinda's spots. Remove the companion from his
+  home after the gift without hiding Eagun or replacing his story interactions.
+- Randomize abilities in both presets, allow every starter evolution stage,
+  and remove default species-power matching and starter-pair type constraints.
+- Draw moves without type or power matching in Pokémon + moves. Keep the
+  offensive-move and duplicate protections available separately in Advanced.
+- Randomize already-held opponent items and ordinary Ball treasures in the
+  full preset. Disabling similar-value matching now opens both item categories
+  and prices, consistently in Colosseum and XD.
+- Use saved Shadow identities for the Snag List's models, including shiny
+  colors and Spinda's spots, without changing saved Pokémon.
+- Keep Colosseum's unchanged teammates consistent after a Shadow Pokémon is
+  captured, including moves, held items and seeded shiny/Spinda identities.
+  Preserve genuine progression teams and the captured slot's native handling.
+- Check that XD's starter can hit the first Shadow opponent even when tutorial
+  Teddiursa is kept unchanged. Reject unsupported matchups before creating the
+  output, and do not count Focus Punch as a reliable standalone attack.
+- Resolve the actual PKX Idle animation for field models and preserve native
+  Plusle scene motions when using its original field model.
+- Include the bonus trainer and battle in previews and the journal without
+  changing the original completion requirements or totals. Reuse Nascour's
+  original localized name. The event's own advanced switches control its team
+  independently of general trainer and Shadow randomization.
+- Give shiny Shadow Lugia a custom white-body, dark-belly appearance in both
+  games, with matching preview portraits and the original pink shiny appearance
+  after purification.
+- Use black backgrounds inside normal and shiny Shadow Lugia portrait frames,
+  including the edge of the original violet disc. Keep XD's round mask and fit
+  the complete head inside it; retain Colosseum's square tile.
+- Match XD001's real-time presentation to its shiny identity. Restore
+  Colosseum's bonus battle portrait and keep its dark appearance in targeting
+  and capture views. Match the portraits' black eye mask and white neck to
+  the 3D model, with black backgrounds in the application.
+
 ## 1.2.19
 
 - Match more trainer dialogue to the final teams and battle tactics in both

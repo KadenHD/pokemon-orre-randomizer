@@ -8,7 +8,7 @@ shinies and can add others. Customization does not require changing species.
 
 | Game | Custom-rate scope | Seed behavior |
 | --- | --- | --- |
-| Colosseum | Starters, ordinary/event gifts, trainer and Shadow generation calls | Stable decision per encounter/Shadow ID, or optional native RNG draw |
+| Colosseum | Starters, ordinary/event gifts, trainer and Shadow generation calls | Stable decision per encounter/Shadow ID |
 | XD | Starter, ordinary gifts and optionally all 83 Shadow IDs | Stable decision per key/Shadow ID; enabled in both presets |
 
 The original generation-III test has probability 1/8192 (about 0.0122%) where
@@ -18,8 +18,20 @@ generated encounters cannot be shiny; at 100%, they are guaranteed shiny.
 
 In XD, **Apply the rate to Shadow Pokémon** removes the native Shadow lock
 when customization is enabled. Both randomizing presets select it. Disabling
-this option keeps the lock without changing the starter or gift policy. Shadow Lugia retains its special dark
-model until purification; the underlying shiny status is preserved.
+this option keeps the lock without changing the starter or gift policy.
+
+Shadow Lugia has a custom white-body, dark-belly shiny appearance with its
+original red eyes. It applies to XD's protected encounter and Colosseum's
+optional bonus encounter. The mesh, skeleton and animations are unchanged.
+The variant swaps the authored body and belly material colors and darkens the
+belly texture, preserving the original red eyes and transparency.
+By default, after purification it uses Lugia's ordinary pink shiny appearance, with the
+same saved personality and trainer identity. Non-shiny Shadow Lugia retains
+the original dark appearance.
+
+XD's real-time appearances read the saved Shadow identity when available.
+Before that encounter is generated, customized Shadow shinies can use its
+already chosen seeded status. Prerecorded videos remain original.
 
 In XD, **Poké Spots → Customize wild shiny odds** sets a separate rate for
 new ordinary wild encounters. Both presets retain the original odds by default.
@@ -30,19 +42,35 @@ each new encounter's shiny result. The preview can show a guaranteed result at
 
 ## Preview and saves
 
-Known results use genuine normal/shiny portraits decoded from the ROM, including
-the evolution portraits. A small red superscript star follows a shiny's name.
+Known results use normal/shiny portraits decoded from the ROM, including the
+evolution portraits. Shadow Lugia uses its original dark portrait or a matching
+recolored white shiny portrait; its provenance is in the bundled model manifest.
+The portrait keeps the 3D variant's black eye mask, red iris and white neck
+and jaw. Normal and shiny Shadow Lugia portraits have a black background inside
+their frames. Colosseum and the application use opaque square tiles. XD retains
+its original circular alpha mask and fits the complete head inside it with a
+small margin. The baked purple disc is removed from both derived variants.
+The native outer Shadow frame stays intact. Purified Lugia normally uses its
+ordinary portrait. In both games, **Advanced → Shinies → Keep Lugia's Shadow
+appearance** retains the dark model and portrait after purification, including
+the custom shiny variant. This optional setting is disabled by default and
+does not change purification or the saved PID. A Lugia that was never a Shadow
+Pokémon always uses its ordinary model and portrait, even with the option on.
+The display policy applies to randomized Shadow Lugia as well as XD001 and
+Colosseum's optional bonus encounter.
+A small red superscript star follows a shiny's name.
 The preview and creation use the same decisions and do not roll independently.
 
-Colosseum's **Link shinies to seed** option is enabled in both presets. Disable
-it to let the game draw at the chosen rate. At intermediate rates the preview
-cannot predict this draw; 0% and 100% remain known. This optional unlinked mode
-is specific to Colosseum.
+Custom shiny chances always use the seed in both games, including intermediate
+rates. Colosseum no longer offers an unlinked mode. Older profiles with that
+mode enabled are verified first, then linked to the seed without changing their
+chance. The preview, battles and supported field scenes share those decisions.
+Disabling customization still preserves the game's original behavior.
 
 The randomized Plusle gift and Miror B.'s randomized cave dancers also display
 their known shiny colors in the story scenes, including at rates below 100%.
-An unlinked draw at an intermediate rate happens in-game, so these field actors
-use their normal colors in that mode.
+Eagun's partner also follows his first purification gift's seeded appearance,
+including at intermediate rates imported from an older unlinked profile.
 
 Colosseum's DNA analyzer and door keypad use the replacements and known shiny
 colors of the eight Shadow encounters referenced by the puzzle. Mightyena's
@@ -69,9 +97,11 @@ saved PID, both the spots and the palette follow that PID and the player's
 trainer IDs, even when the configured shiny rate changes.
 
 Colosseum's DNA analyzer can read a stored Shadow PID or reproduce a
-seeded draw with the current player. The keypad uses that same result to draw
-the spot layout on the matching tile. Before an unseeded encounter has been
-generated, the keypad uses the original Spinda portrait.
+seeded draw with the current player. Its 3D Spinda hologram uses that spot
+pattern. The keypad keeps the game's full-body Spinda image and adds a separate
+32px spot-pattern inset when the PID is known. The fixed spots on the
+pre-rendered body image do not change. An unseeded encounter has no PID inset
+until its personality has been generated.
 
 The desktop Pokémon sheet shows a swatch of the exact spot texture when the
 PID is known. If the PID is known but its shiny palette depends on the save,
@@ -85,10 +115,10 @@ assume a new game. The app does not change save files.
 
 ## Compatibility and implementation
 
-Imported profiles preserve their stored rate and seeded/unlinked choice. Earlier
-profiles are validated before migration; customization and seed-linking stay
-disabled where required to preserve previous behavior. Desktop defaults differ
-from legacy low-level Colosseum/CLI defaults; use a profile for exact reproduction.
+Imported profiles preserve their stored rate. After verification, legacy
+Colosseum profiles with unlinked custom shinies are converted to seeded draws.
+Disabled customization stays disabled. Desktop defaults differ from legacy
+low-level Colosseum/CLI defaults; use a profile for exact reproduction.
 
 The Colosseum seeded draw uses the `seeded-shiny-status-v1` SHA-256 domain and an
 encounter key. Wrappers select native always/never-shiny modes while preserving

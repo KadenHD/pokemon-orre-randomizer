@@ -15,11 +15,13 @@ from orre_randomizer.engine.rebuild_iso import decoded_member
 from orre_randomizer.options import Options
 
 
-def execute(code, entry, flags, *, gift_result=0, stop_at=None):
+def execute(code, entry, flags, *, gift_result=0, stop_at=None, builtins=None, talk_resources=(88,),
+            globals_=None, initial_stack=()):
     """Model only the qualified opcodes emitted by the reward patch."""
-    pc, stack = entry, []
+    pc, stack = entry, list(initial_stack)
+    globals_ = {} if globals_ is None else globals_
     flags = dict(flags)
-    gifts, messages, visibility = [], [], []
+    gifts, messages, visibility, calls = [], [], [], []
     locals_ = {0: 0x12345678, 1: 77, 2: 88}
     locked, depth = False, 0
     for _ in range(10000):
@@ -30,17 +32,20 @@ def execute(code, entry, flags, *, gift_result=0, stop_at=None):
         if op == 5:
             break
         if op == 8:
-            assert code[pc] == 2
-            stack.append(struct.unpack_from(">i", code, pc + 1)[0])
+            assert code[pc] in (2, 3)
+            stack.append(struct.unpack_from(">i" if code[pc] == 2 else ">f", code, pc + 1)[0])
             pc += 5
         elif op == 16:
-            assert code[pc:pc + 3] == b"\x42\x00\x01"
+            descriptor = code[pc]
+            assert descriptor in (0x42, 0x02) and code[pc + 1:pc + 3] == b"\x00\x01"
             pc += 3
-            stack.append(locals_[stack.pop()])
+            stack.append((locals_ if descriptor == 0x42 else globals_).get(stack.pop(), 0))
         elif op == 3:
-            assert code[pc:pc + 3] == b"\x82\x00\x01"
+            form = code[pc:pc + 3]
+            assert form in (bytes.fromhex("820001"), bytes.fromhex("810000"))
             pc += 3
-            stack.pop()
+            if form == bytes.fromhex("820001"):
+                stack.pop()
         elif op == 37:
             returns, count = struct.unpack_from(">HH", code, pc)
             pc += 4
@@ -48,7 +53,8 @@ def execute(code, entry, flags, *, gift_result=0, stop_at=None):
             function = stack.pop()
             assert stack.pop() == locals_[0]
             value = 0
-            if function == 81:
+            calls.append((function, args))
+            if function in (81, 82):
                 value = flags.get(args[0], 0)
             elif function == 80:
                 flags[args[0]] = args[1]
@@ -56,26 +62,30 @@ def execute(code, entry, flags, *, gift_result=0, stop_at=None):
                 gifts.append(args[0])
                 value = gift_result
             elif function == 54:
-                assert args[:2] == [77, 88]
+                assert (args[0] == 77 and args[1] in talk_resources) or (args[0] == 0 and args[1] in (100, 101))
                 messages.append(args[2])
             elif function == 55:
-                assert args == [77, 88]
+                assert (args[0] == 77 and args[1] in talk_resources) or (args[0] == 0 and args[1] in (100, 101))
             elif function == 50:
                 visibility.append(args)
             elif function == 32:
                 locked = True
             elif function == 33:
                 locked = False
+            elif builtins is not None and function in builtins:
+                value = builtins[function](args, flags)
             else:
                 raise AssertionError(f"unqualified standard function {function}")
             assert returns == 1
             stack.append(value)
-        elif op in (23, 28, 33):
+        elif op in (23, 28, 29, 33, 34):
             assert code[pc:pc + 2] == b"\x82\x82"
             pc += 2
             second, first = stack.pop(), stack.pop()
             stack.append(first + second if op == 23 else
-                         int(first >= second) if op == 28 else int(bool(first) and bool(second)))
+                         int(first >= second) if op == 28 else
+                         int(first == second) if op == 29 else
+                         int(bool(first) and bool(second)) if op == 33 else int(bool(first) or bool(second)))
         elif op == 17:
             assert code[pc] == 0x82
             pc += 1
@@ -88,18 +98,24 @@ def execute(code, entry, flags, *, gift_result=0, stop_at=None):
         elif op == 6:
             pc = u32(code, pc)
         elif op == 31:
-            assert code[pc:pc + 2] == b"\x82\x42"
+            descriptor = code[pc + 1]
+            assert code[pc] == 0x82 and descriptor in (0x42, 0x02)
             pc += 2
             value, index = stack.pop(), stack.pop()
-            locals_[index] = value
+            (locals_ if descriptor == 0x42 else globals_)[index] = value
             stack.append(value)
+        elif op == 36:
+            assert code[pc:pc + 4] == bytes.fromhex("00000001")
+            pc += 4
+            assert stack.pop() >= 0
         else:
             raise AssertionError(f"unqualified opcode {op:#x} at {pc - 1:#x}")
         depth = max(depth, len(stack))
     else:
         raise AssertionError("reward script did not terminate")
     assert not stack and not locked
-    return {"flags": flags, "gifts": gifts, "messages": messages, "visibility": visibility, "depth": depth}
+    return {"flags": flags, "gifts": gifts, "messages": messages, "visibility": visibility, "depth": depth,
+            "globals": globals_, "calls": calls}
 
 
 def story_flags():
@@ -149,10 +165,10 @@ class RewardScriptTests(unittest.TestCase):
 
     def test_all_story_gates_are_required_and_thresholds_are_independent(self):
         code = events._interaction(0, 0, 1)
-        for mask in range(64):
+        for mask in range(1 << len(events.STORY_FLAGS)):
             flags = {flag: int(bool(mask & (1 << index))) for index, flag in enumerate(events.STORY_FLAGS)}
             result = execute(code, 0, flags)
-            self.assertEqual(result["gifts"], [5] if mask == 63 else [])
+            self.assertEqual(result["gifts"], [5] if mask == (1 << len(events.STORY_FLAGS)) - 1 else [])
         reversed_code = events._interaction(0, 48, 1)
         self.assertEqual(execute(reversed_code, 0, flags_for_count(1))["gifts"], [6])
         self.assertEqual(execute(reversed_code, 0, {**flags_for_count(48), 2737: 1})["gifts"], [5])
@@ -166,6 +182,20 @@ class RewardScriptTests(unittest.TestCase):
         self.assertEqual([first["gifts"], second["gifts"], third["gifts"]], [[5], [6], []])
         self.assertIn(events.MESSAGE_IDS[2], failed["messages"])
         self.assertIn(events.MESSAGE_IDS[4], third["messages"])
+
+    def test_phone_exchange_and_pending_native_master_ball_take_priority(self):
+        code = events._interaction(0, 0, 0)
+        flags = story_flags()
+        for phone, notice, received, permitted in ((0, 0, 0, False), (1, 0, 0, True),
+                                                  (1, 1, 0, False), (1, 1, 1, True)):
+            case = flags | {events.PHONE_EXCHANGE_FLAG: phone,
+                            events.MASTER_BALL_NOTICE_FLAG: notice,
+                            events.MASTER_BALL_RECEIPT_FLAG: received}
+            result = execute(code, 0, case)
+            self.assertEqual(result['gifts'], [5] if permitted else [])
+            if not permitted:
+                self.assertEqual(result['messages'], [])
+                self.assertEqual(result['flags'], case)
 
     def test_disabled_feature_is_identity_and_enabled_unknown_archives_are_refused(self):
         source = b"unrelated untouched bytes"
@@ -298,23 +328,27 @@ class PalArchiveTests(unittest.TestCase):
                 self.assertEqual(cms[u32(cms, 16):u32(cms, 16) + 8], bytes(8))
                 for index, language in enumerate(events.MESSAGE_BANKS):
                     self.assertEqual(len(report["native_texts"][index]["texts"]), 5)
-            with self.assertRaises(FormatError):
-                events.patch_event_archive(output, name, options)
+            if name == events.ARCHIVE_NAMES[0]:
+                with self.assertRaises(FormatError):
+                    events.patch_event_archive(output, name, options)
+            else:
+                self.assertEqual(output, source)
 
-    def test_original_story_gates_select_one_location_and_keep_home_dialogue_before_unlock(self):
+    def test_original_home_actor_and_dialogue_stay_native_for_every_story_state(self):
         shrine = (GAME / events.ARCHIVE_NAMES[0]).read_bytes()
         home = (GAME / events.ARCHIVE_NAMES[1]).read_bytes()
         original_shrine = decoded_member(shrine, parse_fsys(shrine)["members"][1])
         original_home = decoded_member(home, parse_fsys(home)["members"][1])
         shrine_cms, shrine_report = events._patch_shrine_cms(original_shrine, 10, 25)
         home_cms, home_report = events._patch_home_cms(original_home)
-        for mask in range(64):
+        self.assertEqual(home_cms, original_home)
+        for mask in range(1 << len(events.STORY_FLAGS)):
             flags = {flag: int(bool(mask & (1 << index))) for index, flag in enumerate(events.STORY_FLAGS)}
-            complete = mask == 63
+            complete = mask == (1 << len(events.STORY_FLAGS)) - 1
             shrine_state = execute(shrine_cms, shrine_report["visibility_offset"], flags, stop_at=0x279)
             self.assertEqual(shrine_state["visibility"], [[77, 1, int(complete)]])
             home_state = execute(home_cms, home_report["setup_detour"], flags)
-            self.assertEqual(home_state["visibility"], [[77, 0, 0]] if complete else [])
+            self.assertEqual(home_state["visibility"], [])
             talk_state = execute(home_cms, home_report["talk_guard"], flags, stop_at=0x3561)
             self.assertEqual(talk_state["messages"], [])
         actor = decoded_member(shrine, parse_fsys(shrine)["members"][0])
@@ -350,18 +384,22 @@ class RegionalArchiveTests(unittest.TestCase):
                                      [0x240, 0x243])
                 with self.assertRaises(FormatError):
                     events.patch_event_archive(source, name, Options.recommended(), region="GC6P01")
-                with self.assertRaises(FormatError):
-                    events.patch_event_archive(output, name, Options.recommended())
+                if name == events.ARCHIVE_NAMES[0]:
+                    with self.assertRaises(FormatError):
+                        events.patch_event_archive(output, name, Options.recommended())
+                else:
+                    self.assertEqual(output, source)
 
-    def test_original_regional_scripts_enforce_all_64_story_combinations(self):
+    def test_original_regional_home_stays_unchanged_for_all_story_combinations(self):
         for region, game_id in (("usa", "GC6E01"), ("japan", "GC6J01")):
             source = (REGIONAL / region / events.ARCHIVE_NAMES[1]).read_bytes()
             original = decoded_member(source, parse_fsys(source)["members"][1])
             cms, report = events._patch_home_cms(original, events._REGIONAL_LAYOUTS[game_id]["home_cms"])
-            for mask in range(64):
+            self.assertEqual(cms, original)
+            for mask in range(1 << len(events.STORY_FLAGS)):
                 flags = {flag: int(bool(mask & (1 << index))) for index, flag in enumerate(events.STORY_FLAGS)}
                 state = execute(cms, report["setup_detour"], flags)
-                self.assertEqual(state["visibility"], [[77, 0, 0]] if mask == 63 else [])
+                self.assertEqual(state["visibility"], [])
             # Original regional constants, including Japanese camera values,
             # are kept byte-for-byte outside the two declared patch ranges.
             self.assertEqual(original[0x258:0x260], cms[0x258:0x260])

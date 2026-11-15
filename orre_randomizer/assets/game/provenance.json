@@ -269,8 +269,8 @@
       "sha256": "0a5b87a50dd4156bbb1c0ca845b29c21775d5740abf874c0c9669c2dbf05d53c"
     },
     "README.md": {
-      "bytes": 1495,
-      "sha256": "7283a9543d64f92f73decd0d34d71eb1a23f3aa7e38c929dedb651309b8f76eb"
+      "bytes": 3412,
+      "sha256": "b8eedf3c4dd6024946ef5e3cb3b8bc94308266c45f10f9f84b0053a25ecbaae1"
     },
     "interface/xd-logo-en.png": {
       "bytes": 3570,
@@ -1183,6 +1183,42 @@
     "text/move-descriptions.json": {
       "bytes": 167999,
       "sha256": "9ae0050401ea064d77379b1ca88c32d66058b076568396ae9fca64c51627f5c4"
+    },
+    "models/dark-lugia-colosseum-v1.pkx": {
+      "bytes": 396032,
+      "sha256": "8c2aefb914ea1aee9407418495edf318f21a52fe443d1b84b9de5dae69401364"
+    },
+    "models/manifest.json": {
+      "bytes": 3663,
+      "sha256": "8e7c530efb2fda0c067f65f043f1f78c942cefc37aa1c5eed12facac2832067c"
+    },
+    "models/dark-lugia.png": {
+      "bytes": 1676,
+      "sha256": "0b3d65b6ed98d44e50d7f80d7a274d6a7222e0c51c73387af380a0952f2bd70f"
+    },
+    "models/dark-lugia-shiny.png": {
+      "bytes": 1637,
+      "sha256": "4d3e0371eb0e52fd731425529b19c38eb7197be9be7d390984c10454cd7107fa"
+    },
+    "models/dark-lugia-ui.png": {
+      "bytes": 1203,
+      "sha256": "07cf9e79095d0a614a4aa1a372df8469c43c637eb969e0f0a0fd5a6cfe2b0d31"
+    },
+    "models/dark-lugia-shiny-ui.png": {
+      "bytes": 1150,
+      "sha256": "bb4cf75b0870abf395c1b51e29b1a08b9e11258f5be2b47944aec3f5474d88a7"
+    },
+    "models/dark-lugia-body.png": {
+      "bytes": 3619,
+      "sha256": "b70d0a84a3f73177fe23e6bfedd633d5c7d5f69075a796e2e71f7dfcc6973cd6"
+    },
+    "models/dark-lugia-shiny-body.png": {
+      "bytes": 3827,
+      "sha256": "bbaef9cb9763237ea681a2098ef498a7cf16414f304998e733238700da8ec8df"
+    },
+    "models/fullbody-manifest.json": {
+      "bytes": 2066,
+      "sha256": "b4dd552cfb6f81e6f5a8885969244759ab1647c2535586c1de98676d3bf06b57"
     }
   },
   "additional_sources": [
@@ -1197,5 +1233,7 @@
   "home_logos_metadata": "interface/home-logos.json",
   "type_badges_metadata": "types/manifest.json",
   "ability_descriptions_metadata": "text/ability-descriptions.json",
-  "move_descriptions_metadata": "text/move-descriptions.json"
+  "move_descriptions_metadata": "text/move-descriptions.json",
+  "bonus_model_metadata": "models/manifest.json",
+  "shadow_lugia_body_metadata": "models/fullbody-manifest.json"
 }

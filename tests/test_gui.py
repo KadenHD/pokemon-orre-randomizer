@@ -20,6 +20,10 @@ class GuiTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def setUp(self):
+        from unittest.mock import patch
+        update_check = patch("orre_randomizer.gui.UpdateChecker.check_once")
+        update_check.start()
+        self.addCleanup(update_check.stop)
         self.preferences_dir = tempfile.TemporaryDirectory()
         settings = QSettings(str(Path(self.preferences_dir.name) / "settings.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
@@ -48,6 +52,126 @@ class GuiTests(unittest.TestCase):
         self.assertFalse(self.window.busy)
         self.assertTrue(self.window.create_button.isEnabled())
         self.assertIn("Choisissez", self.window.status.text())
+
+    def test_bonus_event_preview_uses_production_rows_and_clears_them_when_disabled(self):
+        from unittest.mock import patch
+        from orre_randomizer.preview import baseline_rows
+        window = self.window
+        window.bonus_event_preview.enabled.setChecked(True)
+        self.assertTrue(window.current_options().postgame_shadow_lugia)
+        window.preview_tabs.setCurrentIndex(window.bonus_event_tab)
+        self.assertEqual(window.preview_pages.currentIndex(), 3)
+        self.assertTrue(window.preview_search.isHidden())
+        self.assertFalse(window.bonus_event_preview.team.isHidden())
+        result = baseline_rows(window.current_options())
+        row = {"key": "shadow:96", "species": 249, "national_dex": 249, "level": 70, "shiny": True,
+               "shadow_id": 96, "details": {"source": "production"}}
+        result["postgame_shadow_lugia"]["team"] = [dict(row, level=65+i) for i in range(6)]
+        result["starters"][0]["national_dex"] = 249
+        result["family_duplicates"] = [["umbreon", "shadow:96"]]
+        window.preview_result = result
+        window.render_preview()
+        self.assertEqual(window.family_duplicates.text().count("Lugia"), 2)
+        with patch.object(window, "show_pokemon_detail") as show:
+            window.bonus_event_preview.slots[5][2].click()
+        self.assertIs(show.call_args.args[0], result["postgame_shadow_lugia"]["team"][5])
+        window.preview_key = window.preview_configuration()
+        window.bonus_event_preview.enabled.setChecked(False)
+        self.assertFalse(window.current_options().postgame_shadow_lugia)
+        self.assertIsNone(window.preview_result)
+        self.assertTrue(window.bonus_event_preview.team.isHidden())
+        self.assertFalse(window.bonus_event_preview.rows)
+
+    def test_bonus_event_preview_shows_loading_and_can_cancel_without_stale_cards(self):
+        from orre_randomizer.service import Cancelled
+        window = self.window
+        window.bonus_event_preview.enabled.setChecked(True)
+        window.preview_tabs.setCurrentIndex(window.bonus_event_tab)
+        window.preview_key = window.preview_running_key = window.preview_configuration()
+        window.preview_cancel_event.clear()
+
+        def task(cancel, **_kwargs):
+            if not cancel.wait(3):
+                raise AssertionError("preview cancellation was not received")
+            raise Cancelled("Aperçu annulé.")
+
+        window.launch_preview({"cancel": window.preview_cancel_event}, owner=window, task=task,
+            succeeded=window.preview_succeeded, failed=window.preview_failed, roulette=window.load_roulette_faces)
+        window.render_preview()
+        self.assertFalse(window.preview_progress.isHidden())
+        self.assertFalse(window.preview_cancel_button.isHidden())
+        self.assertFalse(window.bonus_event_preview.enabled.isEnabled())
+        window.advance_roulette()
+        window.cancel_preview()
+        self.pump_until(lambda: window.preview_thread is None)
+        self.assertTrue(window.preview_progress.isHidden())
+        self.assertTrue(window.bonus_event_preview.enabled.isEnabled())
+        self.assertFalse(window.bonus_event_preview.rows)
+
+    def test_bonus_event_controls_follow_the_quest_and_preserve_independent_choices(self):
+        from dataclasses import replace
+        from orre_randomizer.options import Options
+        from orre_randomizer.xd import XDOptions
+        window = self.window
+        window.set_options(replace(Options.none(), postgame_randomize_team=True,
+                                   postgame_randomize_lugia=True, randomize_legendary_shadows=True))
+        for name in ("postgame_randomize_team", "postgame_randomize_lugia", "randomize_legendary_shadows"):
+            self.assertFalse(window.rule_checks[name].isEnabled(), name)
+            self.assertTrue(window.rule_checks[name].isChecked(), name)
+        window.rule_checks["postgame_shadow_lugia"].setChecked(True)
+        window.rule_checks["randomize_shadows"].setChecked(True)
+        for name in ("postgame_randomize_team", "postgame_randomize_lugia", "randomize_legendary_shadows"):
+            self.assertTrue(window.rule_checks[name].isEnabled(), name)
+        window.xd.set_options(replace(XDOptions.unchanged(), randomize_legendary_shadows=True))
+        self.assertFalse(window.xd.controls["randomize_legendary_shadows"].isEnabled())
+        window.xd.controls["randomize_shadows"].setChecked(True)
+        self.assertTrue(window.xd.controls["randomize_legendary_shadows"].isEnabled())
+
+    def test_bonus_event_placeholders_and_animation_only_reveal_fixed_slots(self):
+        from dataclasses import replace
+        from unittest.mock import patch
+        from orre_randomizer.options import Options
+        window = self.window
+        preview = window.bonus_event_preview
+        for team, final in ((False, False), (True, False), (False, True), (True, True)):
+            options = replace(Options.recommended(), postgame_shadow_lugia=True, postgame_randomize_team=team,
+                              postgame_randomize_lugia=final)
+            with patch.object(window, "preview_portrait", wraps=window.preview_portrait) as render:
+                preview.render(options, None)
+            expected = tuple(range(5)) if team else ()
+            if final:
+                expected += (5,)
+            for index, call in enumerate(render.call_args_list):
+                self.assertEqual(call.args[0].get("national_dex") is None, index in expected)
+                self.assertEqual(preview.slots[index][1].text() == "?", index in expected)
+            samples = []
+            preview.animate(lambda index: (samples.append(index) or "drawing", window.unknown_portrait))
+            self.assertEqual(tuple(samples), expected)
+
+    def test_bonus_final_replacement_keeps_its_actual_portrait_and_shiny_note(self):
+        from dataclasses import replace
+        from unittest.mock import patch
+        from orre_randomizer.i18n import LANGUAGES
+        from orre_randomizer.options import Options
+        window = self.window
+        preview = window.bonus_event_preview
+        options = replace(Options.recommended(), postgame_shadow_lugia=True, postgame_randomize_lugia=True)
+        row = {"species": 25, "national_dex": 25, "shadow_id": 96, "shiny": True}
+        result = {"postgame_shadow_lugia": {"enabled": True, "team": [dict(row) for _ in range(6)]}}
+        with patch("orre_randomizer.ui_bonus_event.shadow_lugia_portrait") as lugia, patch.object(
+                window, "preview_portrait", wraps=window.preview_portrait) as render:
+            preview.render(options, result)
+        lugia.assert_not_called()
+        self.assertIs(render.call_args_list[-1].args[0], result["postgame_shadow_lugia"]["team"][-1])
+        self.assertTrue(preview.shiny_note.isHidden())
+        for keep in (False, True):
+            for language in LANGUAGES:
+                window.language_combo.setCurrentIndex(window.language_combo.findData(language))
+                preview.render(replace(options, postgame_randomize_lugia=False,
+                                       keep_shadow_lugia_after_purification=keep), None)
+                self.assertFalse(preview.shiny_note.isHidden())
+                if language != "fr":
+                    self.assertNotIn("Lugia obscur chromatique", preview.shiny_note.text())
 
     def test_return_home_leaves_game_cards_neutral_until_tab(self):
         from PySide6.QtCore import Qt
@@ -357,7 +481,8 @@ class GuiTests(unittest.TestCase):
 
     def test_safe_defaults_and_rvz_configuration(self):
         from orre_randomizer.options import Options
-        self.assertEqual(len(self.window.rule_fields), 83)
+        from dataclasses import fields
+        self.assertEqual(set(self.window.rule_fields), {item.name for item in fields(Options)})
         self.assertEqual(self.window.current_options(), recommended_preset())
         self.window.source.setText("/example/source.iso")
         self.window.suggest_destination()
@@ -527,6 +652,9 @@ class GuiTests(unittest.TestCase):
         self.assertTrue(self.window.create_button.isEnabled())
 
     def test_dependencies_disable_without_erasing_starter_and_boss_rules(self):
+        self.window.rule_checks["starter_three_stage_families"].setChecked(True)
+        self.window.rule_fields["starter_stage"].setCurrentIndex(
+            self.window.rule_fields["starter_stage"].findData("base"))
         self.window.rule_fields["boss_shadow_min_bst"].setValue(450)
         self.window.rule_checks["randomize_shadows"].setChecked(False)
         self.assertFalse(self.window.rule_fields["boss_shadow_min_bst"].isEnabled())

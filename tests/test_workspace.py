@@ -53,10 +53,11 @@ class WorkspaceTests(unittest.TestCase):
         w = self.window
         w.resize(680, 540)
         w.set_advanced_mode(True)
-        w.rule_nav.setCurrentRow(w.rule_nav.count() - 1)
-        w.rule_checks["custom_shinies"].setChecked(True)
+        # The shorter shiny form can now fit without scrolling. Exercise a
+        # genuinely overflowing native form so this still checks wheel routing.
+        w.rule_nav.setCurrentRow(w.rule_groups.index("Niveaux et capture"))
         self.pump()
-        spin = w.rule_fields["shiny_chance_percent"]
+        spin = w.rule_fields["capture_rate_multiplier"]
         scroll = w.rule_pages.currentWidget()
         scroll.ensureWidgetVisible(spin)
         self.pump()

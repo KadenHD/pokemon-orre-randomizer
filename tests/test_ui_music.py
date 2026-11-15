@@ -56,6 +56,7 @@ class MusicTests(unittest.TestCase):
         backend = Mock()
         tracks = {"home": Path("pyrite.wav"), "colosseum": Path("title.wav"), "xd": Path("xd-title.wav")}
         with tempfile.TemporaryDirectory() as directory, patch("orre_randomizer.gui.music_track", side_effect=tracks.get), \
+                patch("orre_randomizer.gui.UpdateChecker.check_once"), \
                 patch("orre_randomizer.gui.MenuMusic", side_effect=lambda parent, path: MenuMusic(parent, path, backend)):
             settings = QSettings(str(Path(directory) / "preferences.ini"), QSettings.Format.IniFormat)
             settings.setValue("interface/sounds", False)

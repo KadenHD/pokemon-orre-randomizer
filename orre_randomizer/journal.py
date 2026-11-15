@@ -11,6 +11,7 @@ from pathlib import Path
 
 from .detail_texts import LANGUAGES, detail_text
 from .pokemon_details import STAT_NAMES, display_name, encounter_details
+from .gift_presentation import order_purification_gifts
 
 
 def _e(value) -> str:
@@ -134,7 +135,7 @@ def _xd_spoilers(summary: dict, language: str) -> str:
                          note + _table(['#', tr('details'), tr('level', level=''), '%'],
                                 [[translate(SPOT_LABELS.get(row['spot'], row['spot']), language) + f" · {row['slot']}",
                                   name(row['species']) + (' ★' if row.get('shiny') else ''),
-                                  '–'.join(map(str, row['levels'])), row['chance']]
+                                  '-'.join(map(str, row['levels'])), row['chance']]
                                  for row in spots]))
     gifts = summary.get('gifts', ())
     if gifts:
@@ -220,9 +221,13 @@ def render_journal(report: dict, language: str = 'fr') -> str:
 
     body += _section(tr('starters'), special_group(('umbreon', 'espeon')))
     shadow_parts = []
-    for row in summary.get('final_shadow_picks', []):
+    shadow_rows = list(summary.get('final_shadow_picks', []))
+    bonus = summary.get('postgame_shadow_lugia', {})
+    if bonus.get('enabled'):
+        shadow_rows.append({'shadow_id': bonus['shadow_id'], 'species_index': bonus['species']})
+    for row in shadow_rows:
         sid, index = row['shadow_id'], row['species_index']
-        title = f"{sid:02d} · " + display_name(row, language)
+        title = f"{sid:02d} · " + display_name(catalog['species'][str(index)] if catalog else row, language)
         if catalog:
             encounter = catalog.get('shadows', {}).get(str(sid), {})
             content = _sheet(encounter_details(catalog, index, level=encounter.get('level'),
@@ -233,7 +238,13 @@ def render_journal(report: dict, language: str = 'fr') -> str:
         content += '<p>' + _e(tr('unknown_shiny' if status is None else 'shiny' if status else 'ordinary')) + '</p>'
         shadow_parts.append(_section(title, content))
     body += _section(tr('shadows') + f" · {len(shadow_parts)}", ''.join(shadow_parts))
-    body += _section(tr('gifts'), special_group(('plusle', 'ho-oh', 'pikachu-event', 'celebi-event')))
+    gift_rows = [dict(key=key) for key in ('plusle', 'ho-oh', 'pikachu-event', 'celebi-event')]
+    if report.get('options', {}).get('accessible_event_gifts'):
+        for row in gift_rows:
+            if row['key'].endswith('-event'):
+                event = row['key'].removesuffix('-event')
+                row['purifications'] = report['options'].get(f'event_{event}_purifications')
+    body += _section(tr('gifts'), special_group(row['key'] for row in order_purification_gifts(gift_rows)))
     if catalog:
         trainer_parts = []
         for trainer in catalog.get('trainers', []):
@@ -245,6 +256,8 @@ def render_journal(report: dict, language: str = 'fr') -> str:
                 rows.append([display_name(details, language), row['level'],
                     tr('shadows') + f" {row['shadow_id']}" if row['shadow_id'] else '', moves])
             title = display_name(trainer, language) + f" · #{trainer['trainer_id']}"
+            for battle in trainer.get('battle_ids', []):
+                title += ' · ' + tr('battle_marker', id=battle)
             trainer_parts.append(_section(title, _table([tr('details'), tr('level', level=''), tr('shadows'), tr('moves')], rows)))
         body += _section(tr('trainers') + f" · {len(trainer_parts)}", ''.join(trainer_parts))
         evolution_rows = [[display_name(species, language), display_name(branch, language), branch['texts'][language]]

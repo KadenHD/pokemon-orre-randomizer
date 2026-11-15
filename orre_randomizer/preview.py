@@ -9,11 +9,13 @@ from pathlib import Path
 import threading
 
 from .artwork import ArtworkError, extract_portraits, extract_spinda_patterns
-from .engine.colo_spinda import colo_spinda_gift_pid
+from .engine.colo_spinda import ORDINARY_SPINDA_OT, colo_spinda_gift_pid, colo_spinda_pid
 from .engine.spinda import SPINDA
+from .engine.species_rules import LEGENDARY_NATIONAL
 from . import service
 from .xd import VERSION as XD_VERSION, XDOptions
 from .options import Options, SPECIAL_OPTIONS
+from .gift_presentation import order_purification_gifts
 from .profiles import CreationReport, validate_seed
 from .pokemon_details import COLOSSEUM_SHADOW_RUSH, encounter_details
 from .preview_cache import PreviewCache, PreviewInput
@@ -78,7 +80,8 @@ def baseline_rows(options: Options) -> dict:
         dex = getattr(options, switch + "_species") if getattr(options, switch) else species
         starters.append(dict(key=key, national_dex=dex if dex > 0 else None, level=level))
     shadows = [dict(shadow_id=key, original=dict(national_dex=species),
-                    national_dex=None if options.randomize_shadows else species)
+                    national_dex=None if options.randomize_shadows and (
+                        options.randomize_legendary_shadows or species not in LEGENDARY_NATIONAL) else species)
                for key, species in BASE_SHADOWS]
     gifts = []
     for key, species in BASE_GIFTS:
@@ -91,7 +94,8 @@ def baseline_rows(options: Options) -> dict:
             else:
                 row["event"] = True
         gifts.append(row)
-    return dict(starters=starters, shadows=shadows, gifts=gifts)
+    return dict(starters=starters, shadows=shadows, gifts=order_purification_gifts(gifts),
+                postgame_shadow_lugia={"enabled": options.postgame_shadow_lugia, "team": []})
 
 
 def _discard_failed_cache(function):
@@ -172,7 +176,9 @@ def preview_starters(source: Path, seed: str, options: Options,
             gifts = [special(key) for key in final if key not in ("umbreon", "espeon")]
             shadows = [dict(row, species=row["species_index"])
                        for row in summary.get("final_shadow_picks", [])]
-            encounters = starters + shadows + gifts
+            event = deepcopy(summary.get("postgame_shadow_lugia", {"enabled": False}))
+            event_team = event.get("team", []) if event.get("enabled") else []
+            encounters = starters + shadows + gifts + event_team
             catalog = summary.get("detail_catalog")
             if catalog:
                 shadow_rush = catalog["moves"].get(str(COLOSSEUM_SHADOW_RUSH))
@@ -185,6 +191,11 @@ def preview_starters(source: Path, seed: str, options: Options,
                     row["details"] = encounter_details(catalog, row["species"], level=actual["level"], moves=actual["moves"], shadow=True)
                     if shadow_rush is not None:
                         row["details"]["initial_shadow_moves"] = [deepcopy(shadow_rush)]
+                for row in event_team:
+                    row["details"] = encounter_details(catalog, row["species"], level=row["level"],
+                        moves=row["moves"], shadow=bool(row.get("shadow_id")))
+                    if row.get("shadow_id") and shadow_rush is not None:
+                        row["details"]["initial_shadow_moves"] = [deepcopy(shadow_rush)]
             shiny_policy = ("original" if not options.custom_shinies else "always" if options.shiny_chance_percent == 100
                             else "never" if options.shiny_chance_percent == 0
                             else "seeded" if options.seeded_shinies else "in-game")
@@ -195,6 +206,10 @@ def preview_starters(source: Path, seed: str, options: Options,
                     row["shiny"] = decisions["specials"][row["key"]]
                 for row in shadows:
                     row["shiny"] = decisions["shadows"][str(row["shadow_id"])]
+                for row in event_team:
+                    field = "shadows" if row.get("shadow_id") else "trainer_slots"
+                    index = row["shadow_id"] if row.get("shadow_id") else row["slot"]
+                    row["shiny"] = decisions[field][str(index)]
             else:
                 for row in encounters:
                     row["shiny"] = shiny_policy == "always"
@@ -204,6 +219,14 @@ def preview_starters(source: Path, seed: str, options: Options,
             for row in gifts:
                 pid = (colo_spinda_gift_pid(spinda_seeds, row["key"], row["shiny"])
                        if shiny_policy != "in-game" else None)
+                pattern_entries.append((row, pid, "spinda_pattern_exact" if pid is not None
+                                        else "spinda_pattern_in_game"))
+            for row in event_team:
+                pid = None
+                if (row.get("species") == SPINDA and shiny_policy != "in-game"
+                        and row["key"] in spinda_seeds and "gender" in row and "nature" in row):
+                    pid = colo_spinda_pid(spinda_seeds[row["key"]], owner=ORDINARY_SPINDA_OT,
+                        gender=row["gender"], nature=row["nature"], shiny=row["shiny"])
                 pattern_entries.append((row, pid, "spinda_pattern_exact" if pid is not None
                                         else "spinda_pattern_in_game"))
             _add_spinda_patterns(iso, pattern_entries)
@@ -234,6 +257,9 @@ def preview_starters(source: Path, seed: str, options: Options,
             for row, chain in requests:
                 shiny = row["shiny"]
                 row["portrait_png"] = portraits.get((row["species"], shiny), b"")
+                if row["species"] == 249 and row.get("shadow_id"):
+                    from .resources import shadow_lugia_portrait
+                    row["portrait_png"] = shadow_lugia_portrait(shiny=bool(shiny))
                 if len(chain) > 1:
                     row["evolution_portraits"] = {str(index): portraits[(index, shiny)] for index in chain
                                                    if (index, shiny) in portraits}
@@ -253,7 +279,8 @@ def preview_starters(source: Path, seed: str, options: Options,
     return {"seed": seed, "options": asdict(options), "engine_version": service.ENGINE_VERSION,
             "game_id": region.game_id, "revision": region.revision,
             "source_sha256": source_hash, "source_iso_sha256": iso_hash,
-            "starters": starters, "shadows": shadows, "gifts": gifts, "shiny_policy": shiny_policy,
+            "starters": starters, "shadows": shadows, "gifts": order_purification_gifts(gifts), "shiny_policy": shiny_policy,
+            "postgame_shadow_lugia": event,
             "family_duplicates": summary.get("story_families", {}).get("duplicates", [])}
 
 
@@ -337,6 +364,10 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                     for row, chain in selected_rows:
                         row["portrait_png"] = portraits.get(row["species"], b"")
                         row["evolution_portraits"] = {str(index): portraits[index] for index in chain if index in portraits}
+            for row in shadows:
+                if row.get("shadow_id") and row.get("species") == 249:
+                    from .resources import shadow_lugia_portrait
+                    row["portrait_png"] = shadow_lugia_portrait(shiny=bool(row.get("shiny")))
             if service.file_hash(source, cancel) != digest:
                 raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
     if on_prepared is not None:

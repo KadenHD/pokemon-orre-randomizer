@@ -99,6 +99,8 @@ class XDSpotTests(unittest.TestCase):
 
     def test_v6_reports_keep_native_shuffle_and_current_reports_require_explicit_pool(self):
         options = asdict(replace(xd.XDOptions.recommended(), poke_spots_full_pokedex=False, custom_shadow_shinies=False))
+        options.pop("keep_shadow_lugia_after_purification")
+        options.pop("randomize_legendary_shadows")
         options.pop("poke_spots_full_pokedex")
         options.pop("custom_shadow_shinies")
         for key in XD_POKE_SPOT_SHINY_FIELDS:
@@ -108,6 +110,7 @@ class XDSpotTests(unittest.TestCase):
                    "revision": 0, "source_iso_sha256": region.iso_sha256, "seed": "old-native", "options": options}
         profile = parse_xd_profile(json.dumps(payload).encode(), report=True)
         self.assertFalse(profile.options.poke_spots_full_pokedex)
+        self.assertTrue(profile.options.randomize_legendary_shadows)
         self.assertFalse(profile.xd_spot_migration)
         self.assertEqual({key: asdict(profile.options)[key] for key in options}, options)
         payload["engine_version"] = xd.VERSION

@@ -39,6 +39,10 @@ class GuiPreviewTests(unittest.TestCase):
         cls.app = QApplication.instance() or QApplication([])
 
     def setUp(self):
+        for target in ("orre_randomizer.ui_music.NativeMusic", "orre_randomizer.ui_audio.winsound"):
+            mocked = patch(target)
+            mocked.start()
+            self.addCleanup(mocked.stop)
         self.folder = tempfile.TemporaryDirectory()
         self.source = Path(self.folder.name) / "original.iso"
         self.source.write_bytes(b"synthetic; preview service mocked")
@@ -258,33 +262,58 @@ class GuiPreviewTests(unittest.TestCase):
                     "Adelbert remet ces cadeaux après le nombre de purifications choisi.", language))
                 self.assertIs(self.window.preview_result, result)
 
-    def test_partial_rate_preview_explains_that_status_is_rolled_in_game(self):
+    def test_purification_gifts_use_numeric_threshold_order_in_pending_and_ready_preview(self):
+        self.window.preview_tabs.setCurrentIndex(2)
+        for celebi, pikachu in ((25, 10), (5, 30), (10, 10), (10, 0)):
+            options = replace(self.window.current_options(), event_celebi_purifications=celebi,
+                              event_pikachu_purifications=pikachu)
+            self.window.set_options(options)
+            # Deliberately provide unsorted completed rows as well as the baseline.
+            ready = baseline_rows(options)
+            by_key = {row['key']: row for row in ready['gifts']}
+            ready['gifts'] = [by_key[key] for key in ('plusle', 'ho-oh', 'celebi-event', 'pikachu-event')]
+            expected = ['plusle', 'ho-oh'] + (['pikachu-event', 'celebi-event'] if pikachu < celebi
+                                             else ['celebi-event', 'pikachu-event'])
+            for language in ('fr', 'en', 'de', 'es', 'it', 'ja'):
+                self.window.language_combo.setCurrentIndex(self.window.language_combo.findData(language))
+                for result in (None, ready):
+                    self.window.preview_result = result
+                    self.window.render_encounters()
+                    rows = [self.window.encounters_tree.topLevelItem(index).data(0, Qt.ItemDataRole.UserRole + 2)
+                            for index in range(self.window.encounters_tree.topLevelItemCount())]
+                    self.assertEqual([row['key'] for row in rows], expected)
+                    self.assertIs(self.window.preview_result, result)
+
+    def test_legacy_unlinked_partial_rate_is_now_seeded_in_the_preview(self):
         result = deepcopy(RESULT)
-        result["shiny_policy"] = "in-game"
+        result["shiny_policy"] = "seeded"
         self.window.set_options(replace(self.window.current_options(), custom_shinies=True, seeded_shinies=False, shiny_chance_percent=1))
         with patch("orre_randomizer.gui.preview_starters", return_value=result):
             self.window.start_preview()
             self.pump_until(lambda: self.window.preview_thread is None)
-        self.assertIn("tiré en jeu", self.window.preview_hint.text())
+        self.assertTrue(self.window.current_options().seeded_shinies)
+        self.assertIn("fixés", self.window.preview_hint.text())
         self.assertNotIn("chromatique", self.window.preview_names["umbreon"].text())
 
-    def test_seeded_status_is_visible_before_calculation_and_checkbox_follows_custom(self):
-        self.assertTrue(self.window.rule_checks["seeded_shinies"].isEnabled())
+    def test_seeded_status_is_visible_before_calculation_without_an_unlink_control(self):
+        self.assertTrue(self.window.rule_checks["seeded_shinies"].isHidden())
+        self.assertFalse(self.window.rule_checks["seeded_shinies"].isEnabled())
         self.window.set_options(replace(self.window.current_options(), custom_shinies=True,
                                         seeded_shinies=True, shiny_chance_percent=1))
-        self.assertTrue(self.window.rule_checks["seeded_shinies"].isEnabled())
+        self.assertFalse(self.window.rule_checks["seeded_shinies"].isEnabled())
         self.assertTrue(self.window.rule_fields["shiny_chance_percent"].isEnabled())
         for language in ("fr", "en", "de", "es", "it", "ja"):
             self.window.language_combo.setCurrentIndex(self.window.language_combo.findData(language))
             self.assertEqual(self.window.preview_shiny_status.text(),
                              translate("Statuts chromatiques fixés par la seed.", language))
         self.window.rule_checks["seeded_shinies"].setChecked(False)
+        self.assertTrue(self.window.current_options().seeded_shinies)
         self.assertTrue(self.window.rule_fields["shiny_chance_percent"].isEnabled())
         self.window.rule_checks["custom_shinies"].setChecked(False)
         self.assertFalse(self.window.rule_checks["seeded_shinies"].isEnabled())
         self.assertFalse(self.window.rule_fields["shiny_chance_percent"].isEnabled())
 
-    def test_seeded_preview_labels_each_status_translates_and_checkbox_invalidates_cache(self):
+    def test_seeded_preview_labels_each_status_translates_and_custom_switch_invalidates_cache(self):
         result = deepcopy(RESULT)
         result["shiny_policy"] = "seeded"
         result["starters"][0]["shiny"] = True
@@ -314,7 +343,7 @@ class GuiPreviewTests(unittest.TestCase):
                 self.assertEqual(self.window.preview_hint.text(), translate(
                     "Espèces et statuts fixés pour une nouvelle partie.", language))
             self.assertEqual(preview.call_count, 1)
-            self.window.rule_checks["seeded_shinies"].click()
+            self.window.rule_checks["custom_shinies"].click()
             self.assertIsNone(self.window.preview_result)
             self.assertTrue(self.window.preview_button.isEnabled())
             self.assertEqual(self.window.encounters_tree.topLevelItemCount(), 4)

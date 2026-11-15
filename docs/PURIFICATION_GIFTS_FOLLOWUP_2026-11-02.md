@@ -99,7 +99,7 @@ This journey starts with a prepared test backup, not a new part.
   The sources remained intact.
 - The mail 0 was already received and read in this old part. Its bit "already read" had to be reset
   to zero on the copy, because the game only applies its effects to the first reading not read. The
-  new opening of the real P★AD then set 3531 natively. This was not a direct write of 3531. This
+  new opening of the real P★DA then set 3531 natively. This was not a direct write of 3531. This
   test does not validate a first delivery from an empty mail box.
 - The long movements were shortened during real door transitions stopped in the engine. The scenario
   route uses three of these shortcuts. Others join the PC and the sanctuary for the control of

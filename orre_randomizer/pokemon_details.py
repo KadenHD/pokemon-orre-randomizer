@@ -258,6 +258,43 @@ def build_detail_catalog(original_rel: bytes, final_rel: bytes, original_dol: by
             "moves": moves, "tms": tms, "trainers": trainers, "shadows": shadows, "specials": specials}
 
 
+def append_postgame_trainer_details(catalog: dict, final_rel: bytes, event: dict) -> None:
+    """Read the appended encounter from final bytes, keeping native rows intact."""
+    if not event.get("enabled"):
+        return
+    trainer_id = event["trainer_id"]
+    if any(row["trainer_id"] == trainer_id for row in catalog["trainers"]):
+        raise FormatError("duplicate bonus trainer in final details")
+    tables = event["tables"]
+    trainer_table, party = tables["trainers"], tables["trainer_pokemon"]
+    at = trainer_table["offset"] + trainer_id * trainer_table["stride"]
+    check_range(final_rel, at, trainer_table["stride"], "bonus trainer details")
+    first = u16(final_rel, at + 4)
+    if first != event["first_party_slot"] or first + 6 > party["count"]:
+        raise FormatError("bonus details team out of bounds")
+    original = next((row for row in catalog["trainers"] if row["trainer_id"] == 437), None)
+    if original is None or u32(final_rel, at + 8) != event["opponent"]["name_id"]:
+        raise FormatError("missing native bonus opponent name")
+    team = []
+    for slot in range(first, first + 6):
+        position = party["offset"] + slot * party["stride"]
+        check_range(final_rel, position, party["stride"], "bonus team details")
+        row = {"slot_index": slot, "species": u16(final_rel, position + 0xA),
+               "level": final_rel[position + 4], "shadow_id": final_rel[position + 3],
+               "moves": [u16(final_rel, position + field) for field in (0x36, 0x3E, 0x46, 0x4E)],
+               "held_item": u16(final_rel, position + 0x12)}
+        if str(row["species"]) not in catalog["species"]:
+            raise FormatError("invalid bonus team species in details")
+        team.append(row)
+    if (team[-1]["species"], team[-1]["shadow_id"]) != (event["species"], 96):
+        raise FormatError("bonus team details lost Shadow Lugia")
+    catalog["trainers"].append({"trainer_id": trainer_id, "class_id": final_rel[at + 3],
+        "names": dict(original["names"]), "team": team, "battle_ids": [event["battle_id"]],
+        "event": "postgame_shadow_lugia"})
+    shadow = dict(team[-1], trainer_ids=[trainer_id])
+    catalog["shadows"]["96"] = {**shadow, "variants": [shadow]}
+
+
 def encounter_details(catalog: dict, species_index: int, *, level: int | None = None,
                       moves=None, shadow: bool = False) -> dict:
     """Select an immutable sheet, adding encounter-specific moves when known."""
@@ -326,8 +363,8 @@ def detail_sections(details: dict, language: str, *, include_move_types: bool = 
                 if include_move_types:
                     value += " · " + " / ".join(row["type_names"][language])
                 value += f" · PP {row['pp']}"
-                value += " · " + detail_text("power", language) + " " + (str(row['power']) if row['power'] > 1 else "—")
-                value += " · " + detail_text("accuracy", language) + " " + (str(row['accuracy']) if row['accuracy'] else "—")
+                value += " · " + detail_text("power", language) + " " + (str(row['power']) if row['power'] > 1 else "-")
+                value += " · " + detail_text("accuracy", language) + " " + (str(row['accuracy']) if row['accuracy'] else "-")
             moves.append(value)
         sections[key] = moves or [detail_text("none", language)]
     sections["stats"] = [" · ".join(detail_text(key, language) + " " + str(details["base_stats"][key])

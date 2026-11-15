@@ -23,6 +23,8 @@ def add_options(parser, option_type, prefix=""):
         argument = "--" + prefix + item.name.replace("_", "-")
         kind = item.metadata["kind"]
         kwargs = {"default": argparse.SUPPRESS, "help": item.metadata["description"].replace("%", "%%")}
+        if item.metadata.get("retired"):
+            kwargs["help"] = argparse.SUPPRESS  # Accept old scripts without advertising a defunct switch.
         if kind == "bool":
             kwargs["action"] = argparse.BooleanOptionalAction
         elif kind == "choice":

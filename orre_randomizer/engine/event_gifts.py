@@ -18,7 +18,7 @@ from .analyze_game import FormatError, parse_fsys, sha256, u32
 from .inspect_tables import u16
 from .rebuild_iso import decoded_member, repack_fsys
 
-VERSION = "purification-event-gifts-v1"
+VERSION = "purification-event-gifts-v2"
 ARCHIVE_NAMES = ("M3_shrine_1F.fsys", "M3_houseC_1F.fsys")
 ARCHIVE_SHA256 = {
     ARCHIVE_NAMES[0]: "79b8dcff18ec5d768010db1ca33ff0ea4ebeb6c8dcb8f93700f44c9b96ae1fa7",
@@ -35,8 +35,13 @@ MESSAGE_BANKS = {
     "IT": (6, "f0effa93a423da9fc824f5f318df993a6882a2baa8a53d1aaae5e93f19aa8c37"),
 }
 # Defeat at the shrine, return home, tablet, incoming mail, mail read, final
-# direction to Mt. Battle. The last flag is set at the end of the last scene.
-STORY_FLAGS = (3527, 2582, 1067, 2860, 3531, 2875)
+# direction to Mt. Battle, followed by the native exchange of P★AD numbers.
+# Home CMS 0x34e4 sets 3535 after messages 0x51da/0x517e. Native std78 sets 1
+# (the pinned community reference incorrectly labels std78/std79 in reverse).
+PHONE_EXCHANGE_FLAG = 3535
+MASTER_BALL_NOTICE_FLAG = 2531
+MASTER_BALL_RECEIPT_FLAG = 3541
+STORY_FLAGS = (3527, 2582, 1067, 2860, 3531, 2875, PHONE_EXCHANGE_FLAG)
 SHADOW_IDS = tuple(range(1, 45)) + (55, 56, 57, 67)
 RECEIPT_FLAGS = {"pikachu-event": 2740, "celebi-event": 2737}
 GIFT_IDS = {"pikachu-event": 5, "celebi-event": 6}
@@ -109,8 +114,12 @@ def _statement(function: int, *arguments: int | bytes) -> bytes:
 
 
 def _story_complete() -> bytes:
-    return _call(81, STORY_FLAGS[0]) + b"".join(
+    complete = _call(81, STORY_FLAGS[0]) + b"".join(
         _call(81, flag) + b"\x21\x82\x82" for flag in STORY_FLAGS[1:])
+    # Native home talk 0x3561 gives the Master Ball while 2531 && !3541.
+    # Custom interactions wait for that handoff rather than replacing it.
+    return (complete + _call(81, MASTER_BALL_NOTICE_FLAG) + b"\x11\x82"
+            + _call(81, MASTER_BALL_RECEIPT_FLAG) + b"\x22\x82\x82\x21\x82\x82")
 
 
 def _purified_count() -> bytes:
@@ -149,9 +158,9 @@ def _talk(message: int) -> bytes:
     return _statement(54, _local(1), _local(2), message) + _statement(55, _local(1), _local(2))
 
 
-def _interaction(base: int, pikachu: int, celebi: int) -> bytes:
+def _interaction(base: int, pikachu: int, celebi: int, *, story_predicate: bytes | None = None) -> bytes:
     code = _Assembler(base)
-    code.emit(_story_complete())
+    code.emit(_story_complete() if story_predicate is None else story_predicate)
     code.jump("return", when_false=True)
     code.emit(_statement(32))
     for key, threshold in (("pikachu-event", pikachu), ("celebi-event", celebi)):
@@ -232,28 +241,11 @@ def _patch_home_cms(original: bytes, expected: str = HOME_CMS_SHA256) -> tuple[b
     epilogue = _push(0) + _push(1) + b"\x1f\x82\x42" + _POP + b"\x05"
     _require(original[0x678:0x68C] == epilogue and u32(original, 0x38) == 0x3561,
              "unexpected home setup/talk signature")
-    code = _Assembler(len(original))
-    code.emit(_story_complete())
-    code.jump("epilogue", when_false=True)
-    # Native hide50(local1, actor0, false), with the original argument expressions.
-    code.emit(original[0x649:0x678])
-    code.mark("epilogue")
-    code.emit(epilogue)
-    result = bytearray(original + code.finish())
-    result[0x678:0x67D] = b"\x06" + struct.pack(">I", len(original))
-    talk = _Assembler(len(result))
-    talk.emit(_story_complete())
-    talk.jump("original", when_false=True)
-    talk.emit(b"\x05")
-    talk.mark("original")
-    talk.emit(b"\x06" + struct.pack(">I", 0x3561))
-    result.extend(talk.finish())
-    struct.pack_into(">I", result, 0x38, talk.base)
-    allowed = ((0x38, 0x3C), (0x678, 0x67D))
-    _only_changes(original, bytes(result), allowed)
-    return bytes(result), {"setup_detour": len(original), "talk_guard": talk.base,
-                            "original_talk_entry": 0x3561, "no_actor_added": True,
-                            "allowed_original_ranges": allowed}
+    # Eagun still has later native dialogue and item handoffs. Never hide his
+    # home actor or redirect its native interaction, regardless of event flags.
+    return original, {"setup_detour": 0x678, "talk_guard": 0x3561,
+                      "original_talk_entry": 0x3561, "no_actor_added": True,
+                      "native_home_unchanged": True, "allowed_original_ranges": ()}
 
 
 # Five localized native messages: offer, success, full storage, thresholds, done.
@@ -328,6 +320,7 @@ def _messages(language: str, pikachu: int, celebi: int) -> tuple[str, ...]:
 
 
 def _encode_text(text: str) -> bytes:
+    text = text.replace("\u2013", "-").replace("\u2014", "-")
     _require(bool(text) and "\0" not in text and "\uffff" not in text, "invalid event dialogue")
     try:
         return b"\xff\xff\x00".join(line.encode("utf-16-be") for line in text.split("\n")) + b"\xff\xff\x02\0\0"
@@ -412,6 +405,7 @@ def patch_event_archive(source: bytes, name: str, options, *, region: str | None
                     "thresholds": {"pikachu-event": pikachu, "celebi-event": celebi},
                     "party_or_pc_success_minimum": -1, "receipt_set_only_after_success": True,
                     "one_delivery_per_interaction": True, "no_actor_added": True,
-                    "original_story_scenes_preserved": True, "home_shrine_exclusive_after_story": True,
+                    "original_story_scenes_preserved": True, "native_home_interactions_preserved": True,
+                    "home_shrine_exclusive_after_story": False,
                     "untargeted_decoded_members_unchanged": True, "members": checks,
                     "details": details, "native_texts": texts, "packing": packing}

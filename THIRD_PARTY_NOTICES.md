@@ -117,6 +117,20 @@ The [move catalog](orre_randomizer/assets/game/text/move-descriptions.json)
 records the original descriptions and their message banks, including the texts
 specific to each game's Shadow moves.
 
+The optional Colosseum postgame event uses XD's original Shadow Lugia model and
+portrait. These are also game resources, separate from the code's MIT license.
+The PKX container and animation scheduling metadata are adapted for Colosseum
+while retaining the original mesh, textures and DAT animation tracks. A custom
+shiny variant swaps the original body and belly material colors and darkens
+the belly texture; its matching
+portrait is recolored from the original face. These modified game resources
+remain separate from the application's MIT license.
+The verified disc hashes, resource identifiers,
+conversion and output hashes are recorded in the
+[model manifest](orre_randomizer/assets/game/models/manifest.json).
+The local export script requires both original game images; neither image,
+their archives nor their executables are distributed.
+
 The home screen additionally uses the original transparent English game logos
 hosted by Bulbagarden Archives, copied without pixel changes:
 

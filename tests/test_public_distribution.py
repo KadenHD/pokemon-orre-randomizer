@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path
 import tempfile
+import time
 import unittest
 import zipfile
 from unittest.mock import patch
@@ -74,8 +75,10 @@ class PublicDistributionTests(unittest.TestCase):
                 encoding="utf-8",
             )
             with patch.object(verify_release, "SOURCE_TEST_TIMEOUT", 2):
+                started = time.monotonic()
                 with self.assertRaisesRegex(RuntimeError, r"(?s)exceeded 2 seconds.*test_waits_forever"):
                     verify_release.verify_source_tests(root)
+                self.assertLess(time.monotonic() - started, 7, "A worker kept the timeout's pipes open")
 
     def test_public_media_exception_is_limited_to_exact_application_branding(self):
         for binary, prefix in ((False, f"{REPOSITORY_NAME}/"), (True, f"{APP_EXECUTABLE}/_internal/")):

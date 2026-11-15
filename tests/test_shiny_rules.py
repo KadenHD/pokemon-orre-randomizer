@@ -82,8 +82,8 @@ class Machine:
                 self.reg[ra]=self.reg[rs]&imm
                 self.cr=(False,self.reg[ra]==0)
             elif op in (32,40):self.reg[rs]=self.read((self.reg[ra]+signed)&MASK,2 if op==40 else 4)
-            elif op in (36,37):
-                address=(self.reg[ra]+signed)&MASK;self.write(address,self.reg[rs])
+            elif op in (36,37,44):
+                address=(self.reg[ra]+signed)&MASK;self.write(address,self.reg[rs],2 if op==44 else 4)
                 if op==37:self.reg[ra]=address
             elif op==46:
                 address=(self.reg[ra]+signed)&MASK
@@ -119,7 +119,7 @@ class Machine:
                 if displacement&0x2000000:displacement-=0x4000000
                 target=pc+displacement
                 if w&1:self.lr=pc+4
-                if target in (NATIVE_RNG,PID_GENERATOR):self.native(target);self.pc=self.lr
+                if target in (NATIVE_RNG,PID_GENERATOR) or target in getattr(self,'native_targets',()):self.native(target);self.pc=self.lr
                 else:self.pc=target
             else:raise AssertionError(f'unsupported {w:08x} at {pc:08x}')
         raise AssertionError('hook did not return')
@@ -194,6 +194,19 @@ class ShinyHookTests(unittest.TestCase):
             self.assertEqual(m.reg[1:3], before[1:3])
             self.assertEqual(m.reg[13:], before[13:])
             self.assertEqual(m.lr, link)
+    def test_bonus_trainer_slots_use_the_same_seeded_policy_with_a_checked_table_limit(self):
+        trainer_flags, shadow_flags = 0x81600000, 0x81602000
+        for index in (5510, 5514, 5515, 5516):
+            machine = Machine(_seeded_trainer_wrapper(SECTION_RAM + 32, trainer_flags, shadow_flags,
+                              trainer_slot_count=5516), SECTION_RAM + 32)
+            machine.reg[3:8] = [0x8050AB00, 1, 7, 0, 0x12345678]
+            machine.reg[30] = 0
+            machine.write(machine.reg[1] + 0x48, index)
+            if index < 5516:
+                machine.write(trainer_flags + index, 1, 1)
+            machine.run()
+            self.assertEqual(is_shiny(machine.reg[3], 0x12345678), index < 5516)
+
     def test_thresholds_endpoints_native_rate_and_invalid_values(self):
         self.assertEqual(chance_threshold(0),0)
         self.assertEqual(chance_threshold(100),COIN_RANGE)
@@ -260,8 +273,10 @@ class ShinyCompositionTests(unittest.TestCase):
             self.assertEqual(apply_shiny_rules(self.original,current,Options())[0],current)
             for percent in (0,1,100):
                 options=replace(Options(),custom_shinies=True,seeded_shinies=False,shiny_chance_percent=percent)
-                result,report=apply_shiny_rules(self.original,current,options)
-                self.assertEqual(apply_shiny_rules(self.original,current,options)[0],result)
+                result,report=apply_shiny_rules(self.original,current,options,seed="legacy-link")
+                self.assertTrue(options.seeded_shinies)
+                self.assertTrue(report['seeded'])
+                self.assertEqual(apply_shiny_rules(self.original,current,options,seed="legacy-link")[0],result)
                 self.assertEqual(len(report['hooks']),7)
                 self.assertEqual(result[PID_GENERATOR-TEXT_TO_RAM:PID_GENERATOR-TEXT_TO_RAM+0x4B4],
                                  self.original[PID_GENERATOR-TEXT_TO_RAM:PID_GENERATOR-TEXT_TO_RAM+0x4B4])
@@ -276,7 +291,7 @@ class ShinyCompositionTests(unittest.TestCase):
         options=replace(Options(),custom_shinies=True,seeded_shinies=False)
         for offset in (next(iter(PID_CALLS.values()))-TEXT_TO_RAM,0xE0,0x1289B8-0x3000,0x98):
             current=bytearray(self.original);current[offset]^=1
-            with self.assertRaises(FormatError):apply_shiny_rules(self.original,bytes(current),options)
+            with self.assertRaises(FormatError):apply_shiny_rules(self.original,bytes(current),options,seed="legacy-link")
 
     def test_seeded_tables_are_the_reported_decisions_and_reuse_branch_is_untouched(self):
         options=replace(Options(),custom_shinies=True,shiny_chance_percent=37.5)

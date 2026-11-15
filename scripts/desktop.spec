@@ -16,6 +16,7 @@ if not (app_assets / 'icon.ico').is_file():
     raise RuntimeError('Build the application icon first: python scripts/build_app_icon.py')
 data_files = [(str(app_assets / name), 'orre_randomizer/assets/app')
               for name in ('icon.ico', 'provenance.json', 'logo.png', 'logo.json')]
+data_files.append((str(root / 'orre_randomizer/windows_update.ps1'), 'orre_randomizer'))
 if os.environ.get('ORRE_BUNDLE_GAME_ASSETS', os.environ.get('COLOSSEUM_BUNDLE_GAME_ASSETS', '1')) == '1':
     data_files.append((str(root / interface_pack), interface_pack))
 a = Analysis([str(root / 'scripts/desktop_entry.py')], pathex=[str(root)],

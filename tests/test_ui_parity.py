@@ -141,7 +141,10 @@ class WorkspaceParityTests(unittest.TestCase):
     def pump_until(self, condition):
         deadline = time.monotonic() + 5
         while not condition() and time.monotonic() < deadline:
-            QTest.qWait(5)
+            # Let Python workers acquire the GIL between Qt event batches.
+            # QTest.qWait can deadlock with a finishing Python QThread on Windows.
+            self.app.processEvents()
+            time.sleep(0.005)
         self.assertTrue(condition())
 
     def tearDown(self):

@@ -49,7 +49,7 @@ a new creation attempt clears the previous log and starts collapsed.
 
 | Surface | Colosseum | XD |
 | --- | --- | --- |
-| Encounter tabs | 2 starters, 48 Shadows, 4 gifts | 1 starter, 83 Shadows, 7 gifts, 9 Poké Spot slots |
+| Encounter tabs | 2 starters, 48 Shadows, 4 gifts; Events for the optional bonus battle | 1 starter, 83 Shadows, 7 gifts, 9 Poké Spot slots |
 | Starter controls | Separate first/second starter and pair rules | One starter |
 | Special encounters | Event gifts and purification rewards | Tutorial Teddiursa, Hordel and Duking trades, Poké Spots |
 | Evolutions and shops | Individual evolution/stone-shop controls | Native XD evolution rules and shop locations |

@@ -23,7 +23,8 @@ if ((Get-Item -LiteralPath $archive).Length -ne $manifest[$archiveName].bytes -o
 
 $build = Join-Path $root 'build'
 New-Item -ItemType Directory -Path $build -Force | Out-Null
-$work = (New-Item -ItemType Directory -Path (Join-Path $build ('installer-' + [guid]::NewGuid()))).FullName
+# Keep compiler input paths below MAX_PATH even in a long project directory.
+$work = (New-Item -ItemType Directory -Path (Join-Path $build ('i-' + [guid]::NewGuid().ToString('N').Substring(0, 12)))).FullName
 $uninstallKey = 'HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\{2EDE9291-8972-4361-9A05-3CC158B9D54B}_is1'
 $silent = @('/VERYSILENT','/SUPPRESSMSGBOXES','/NORESTART')
 $oldPlatform = $env:QT_QPA_PLATFORM
@@ -63,7 +64,7 @@ try {
         throw 'The downloaded Inno Setup compiler does not match its pinned hash.'
     }
     $bootstrapLog = Join-Path $work 'compiler.log'
-    $arguments = $silent + @('/SP-','/PORTABLE=1','/NOICONS', ('/DIR="' + $compilerDirectory + '"'), ('/LOG="' + $bootstrapLog + '"'))
+    $arguments = $silent + @('/SP-','/CURRENTUSER','/PORTABLE=1','/NOICONS', ('/DIR="' + $compilerDirectory + '"'), ('/LOG="' + $bootstrapLog + '"'))
     $setup = Start-Process -FilePath $bootstrap -ArgumentList $arguments -Wait -PassThru -WindowStyle Hidden
     if ($setup.ExitCode -ne 0) {
         if (Test-Path -LiteralPath $bootstrapLog) { Get-Content -LiteralPath $bootstrapLog -Tail 30 }

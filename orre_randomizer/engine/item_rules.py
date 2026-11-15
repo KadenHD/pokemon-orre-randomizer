@@ -63,8 +63,9 @@ def _protected(raw: int, catalog: dict, options, *, shop: bool = False) -> bool:
 
 def _candidates(raw: int, catalog: dict, options) -> list[int]:
     old = catalog[raw]
-    return [index for index, row in catalog.items() if row["safe"] and row["category"] == old["category"]
-            and (not options.items_similar_value or old["price"] / 2 <= row["price"] <= old["price"] * 2)]
+    return [index for index, row in catalog.items() if row["safe"]
+            and (not options.items_similar_value or row["category"] == old["category"]
+                 and old["price"] / 2 <= row["price"] <= old["price"] * 2)]
 
 
 def _order(seed: str, key: str, choices) -> list[int]:
