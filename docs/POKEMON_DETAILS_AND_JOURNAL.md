@@ -5,6 +5,22 @@ The sheet describes the final configured encounter: types, possible abilities,
 base stats, initial moves, learnsets, compatible TMs and evolution routes.
 Names use initial capitals; a small red superscript star marks a known shiny.
 
+Known encounters load automatically from a selected original ROM. This partial
+read never prepares the complete patch plan or selects unknown replacements.
+Click **Calculate preview** to draw randomized encounters. Both paths use the
+same property transforms and encounter readers as ROM creation.
+
+Retained species and their evolution families keep native properties by default;
+**Advanced > Allowed Pokémon > Randomize preserved Pokémon’s properties** opts
+them into the selected rules. Shiny settings and accessible evolution routes
+still apply. Shared TM permutations preserve the original compatible move set,
+not the old TM numbers. Properties are shared by every copy of the species.
+
+Poké Spot encounter levels vary. Their sheets show the resulting level-up
+learnset and TM compatibility, without claiming to know the four active moves
+of a future wild encounter. Possible abilities are fixed for the species;
+individual encounters can choose between them, as in the original game.
+
 ## Evolutions
 
 Routes and conditions come from the final patched data. The sheet does not infer

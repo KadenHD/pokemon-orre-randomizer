@@ -26,6 +26,8 @@ PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE = "xd-story-sha256-v10"
 PREVIOUS_XD_IDENTITY_ENGINE = "xd-story-sha256-v11"
 PREVIOUS_XD_LUGIA_ENGINE = "xd-story-sha256-v12"
 PREVIOUS_LUGIA_ENGINE = "eagun-gift-and-mail-load-v23"
+PREVIOUS_PROPERTIES_ENGINE = "shadow-lugia-appearance-v24"
+PREVIOUS_XD_PROPERTIES_ENGINE = "xd-shadow-lugia-appearance-v13"
 LUGIA_APPEARANCE_APP_VERSION = "1.2.20"
 # Both schemas were exported with the same engine version. Only the complete
 # historical bundle may be absent; a partial bundle is a malformed profile.
@@ -78,7 +80,7 @@ V19_APP_VERSIONS = ("1.2.14", "1.2.15", "1.2.16", "1.2.17")
 V20_ENGINE_VERSION = "story-field-placement-v20"
 V20_APP_VERSIONS = ("1.2.18", "1.2.19")
 CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, V18_APP_VERSION, *V19_APP_VERSIONS, *V20_APP_VERSIONS,
-                        LUGIA_APPEARANCE_APP_VERSION, __version__)
+                        LUGIA_APPEARANCE_APP_VERSION, "1.2.21", "1.2.22", "1.2.23", __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -161,8 +163,8 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
               and payload["engine_version"] == LEGACY_ENGINE_VERSION)
     previous = (payload["app_version"] == PREVIOUS_APP_VERSION
                 and payload["engine_version"] == PREVIOUS_ENGINE_VERSION)
-    current_engine = (payload["app_version"] in (LUGIA_APPEARANCE_APP_VERSION, __version__)
-                      and payload["engine_version"] == ENGINE_VERSION)
+    current_engine = (payload["app_version"] in (LUGIA_APPEARANCE_APP_VERSION, "1.2.21", "1.2.22", "1.2.23", __version__)
+                      and payload["engine_version"] in (ENGINE_VERSION, PREVIOUS_PROPERTIES_ENGINE))
     previous_lugia = (payload["app_version"] in CURRENT_APP_VERSIONS
                       and payload["engine_version"] == PREVIOUS_LUGIA_ENGINE)
     postgame_fields = current_engine or previous_lugia
@@ -200,6 +202,9 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         raise UserError("Ce profil ne correspond pas aux versions prises en charge de Colosseum.")
     values = payload["options"]
     expected_fields = {item.name for item in fields(Options)}
+    legacy_properties = payload["engine_version"] != ENGINE_VERSION
+    if legacy_properties:
+        expected_fields.remove("randomize_preserved_properties")
     # The shop-only safeguard was added without changing the engine version.
     # Accept the complete preceding schema, never a partially missing bundle.
     legacy_shop_policy = (not current_engine or type(values) is dict
@@ -248,6 +253,8 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         if type(digest) is not str or digest != expected:
             raise UserError("L’empreinte du profil ne correspond pas à son contenu. Réexportez le profil d’origine.")
     values = dict(values)
+    if legacy_properties:
+        values["randomize_preserved_properties"] = True
     if legacy_shop_policy:
         values["shop_keep_capture_items"] = False
         values["legacy_shop_scope"] = True
@@ -298,7 +305,7 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
     try:
         payload = _decode_json(data)
         if type(payload) is not dict or payload.get("engine_version") not in (
-            xd.VERSION, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE, PREVIOUS_XD_FIELD_ENGINE, PREVIOUS_XD_SHADOW_SHINY_ENGINE,
+            xd.VERSION, PREVIOUS_XD_PROPERTIES_ENGINE, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE, PREVIOUS_XD_FIELD_ENGINE, PREVIOUS_XD_SHADOW_SHINY_ENGINE,
             PREVIOUS_XD_FULL_SPOT_ENGINE, PREVIOUS_XD_SHUFFLE_ENGINE,
             PREVIOUS_XD_QOL_ENGINE, PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE,
         ):
@@ -319,24 +326,28 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         options = payload["options"]
         seed = payload["seed"]
         expected = {item.name for item in fields(xd.XDOptions)}
-        legacy_shop_policy = (payload["engine_version"] != xd.VERSION or type(options) is dict
+        legacy_properties = payload["engine_version"] != xd.VERSION
+        recent_engine = payload["engine_version"] in (xd.VERSION, PREVIOUS_XD_PROPERTIES_ENGINE)
+        if legacy_properties:
+            expected.remove("randomize_preserved_properties")
+        legacy_shop_policy = (not recent_engine or type(options) is dict
                               and "shop_keep_capture_items" not in options)
         if legacy_shop_policy:
             expected.remove("shop_keep_capture_items")
-        legacy_shadow_policy = payload["engine_version"] != xd.VERSION
-        if (payload["engine_version"] == xd.VERSION and legacy_shop_policy and type(options) is dict
+        legacy_shadow_policy = not recent_engine
+        if (recent_engine and legacy_shop_policy and type(options) is dict
                 and set(options) == expected - {"randomize_legendary_shadows"}):
             legacy_shadow_policy = True
         if legacy_shadow_policy:
             expected.remove("randomize_legendary_shadows")
-        if payload["engine_version"] != xd.VERSION:
+        if not recent_engine:
             expected.remove("keep_shadow_lugia_after_purification")
-        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE):
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_PROPERTIES_ENGINE, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE):
             expected -= XD_POKE_SPOT_SHINY_FIELDS
-        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE,
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_PROPERTIES_ENGINE, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE,
                                              PREVIOUS_XD_FIELD_ENGINE, PREVIOUS_XD_SHADOW_SHINY_ENGINE):
             expected.remove("custom_shadow_shinies")
-        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE, PREVIOUS_XD_FIELD_ENGINE,
+        if payload["engine_version"] not in (xd.VERSION, PREVIOUS_XD_PROPERTIES_ENGINE, PREVIOUS_XD_LUGIA_ENGINE, PREVIOUS_XD_IDENTITY_ENGINE, PREVIOUS_XD_POKE_SPOT_SHINY_ENGINE, PREVIOUS_XD_FIELD_ENGINE,
                                              PREVIOUS_XD_SHADOW_SHINY_ENGINE, PREVIOUS_XD_FULL_SPOT_ENGINE):
             expected.remove("poke_spots_full_pokedex")
         if payload["engine_version"] in (PREVIOUS_XD_ENGINE, LEGACY_XD_ENGINE):
@@ -346,6 +357,8 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         if type(options) is not dict or set(options) != expected:
             raise ValueError
         options = dict(options)
+        if legacy_properties:
+            options["randomize_preserved_properties"] = True
         if legacy_shop_policy:
             options["shop_keep_capture_items"] = False
         if legacy_shadow_policy:

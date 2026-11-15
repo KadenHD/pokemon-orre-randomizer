@@ -253,11 +253,24 @@ def apply_deck_rules(original, current, name, shadow_slots, seed, options, *, mo
             original_species_catalog, eligible, edges, report["trainer_policy_edits"],
         ))
     held_pool = NATIVE_HELD_ITEMS & set(USEFUL_ITEMS) if options.useful_held_items_only else NATIVE_HELD_ITEMS
+    from .preserved_pokemon import preserve_properties
     for index, sid in sorted(active.items()):
         pos = start + index * DPKM_STRIDE
         before_moves = [u16(original, pos + offset) for offset in DPKM_MOVES]
         after_moves = before_moves
-        if options.randomize_trainer_moves:
+        kept = False
+        if preserve_properties(options) and sid:
+            from .engine.species_rules import LEGENDARY_NATIONAL
+            native = original_species_catalog[u16(original, pos)]["national_dex"]
+            kept = (not options.randomize_shadows or sid in protected_shadows or
+                    not options.randomize_legendary_shadows and native in LEGENDARY_NATIONAL)
+            if sid == 1:
+                kept = not options.randomize_tutorial_shadow
+            elif sid == 81:
+                kept = not options.randomize_hordel_gift
+        elif preserve_properties(options):
+            kept = not options.randomize_trainers
+        if options.randomize_trainer_moves and not kept:
             after_moves = move_randomizer.moves(seed, f"xd:{name}:trainer:{index}",
                                                u16(result, pos), result[pos + 2], before_moves)
             if before_moves != after_moves:
@@ -266,7 +279,7 @@ def apply_deck_rules(original, current, name, shadow_slots, seed, options, *, mo
                 report["trainer_move_edits"].append({"index": index, "shadow_id": sid,
                     "before": before_moves, "after": after_moves})
         before_item = u16(original, pos + 4)
-        if options.randomize_held_items and before_item in NATIVE_HELD_ITEMS:
+        if options.randomize_held_items and not kept and before_item in NATIVE_HELD_ITEMS:
             pool = held_pool - {before_item}
             if not any(move in move_randomizer.catalog and move_randomizer.catalog[move]["type"] <= 8
                        and damaging(move_randomizer.catalog[move]) for move in after_moves):

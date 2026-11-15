@@ -92,10 +92,15 @@ def remove_shadow_policy_fields(payload):
         payload["options"].pop(name)
     payload["options"].pop("shop_keep_capture_items")
     payload["options"].pop("legacy_shop_scope")
+    payload["options"].pop("randomize_preserved_properties")
+    from orre_randomizer.service import ENGINE_VERSION
+    from orre_randomizer.profiles import PREVIOUS_PROPERTIES_ENGINE
+    if payload["engine_version"] == ENGINE_VERSION:
+        payload["engine_version"] = PREVIOUS_PROPERTIES_ENGINE
 
 
 def legacy_policy_options(options):
-    return replace(options, randomize_legendary_shadows=True,
+    return replace(options, randomize_preserved_properties=True, randomize_legendary_shadows=True,
                    shop_keep_capture_items=False, legacy_shop_scope=True,
                    postgame_randomize_team=options.randomize_trainers,
                    postgame_randomize_lugia=False)
@@ -443,7 +448,7 @@ class ProfileTests(unittest.TestCase):
         self.assertEqual(parsed.seed, payload['seed'])
         expected = dict(payload['options'], diverse_story_families=False,
                         postgame_shadow_lugia=False, keep_shadow_lugia_after_purification=False,
-                        randomize_legendary_shadows=True,
+                        randomize_legendary_shadows=True, randomize_preserved_properties=True,
                         postgame_randomize_team=payload['options']['randomize_trainers'],
                         postgame_randomize_lugia=False, shop_keep_capture_items=False, legacy_shop_scope=True)
         self.assertEqual(json.loads(self.encode(asdict(parsed.options))), expected)
@@ -555,7 +560,7 @@ class CreationReportTests(unittest.TestCase):
         self.assertEqual(migrated.seed, report['seed'])
         self.assertTrue(migrated.options.seeded_shinies)
         self.assertEqual(migrated.options.shiny_chance_percent, 37.5)
-        old_options = {key: value for key, value in report["options"].items() if key not in SHADOW_POLICY_FIELDS | {"postgame_shadow_lugia", "keep_shadow_lugia_after_purification", "shop_keep_capture_items", "legacy_shop_scope"}}
+        old_options = {key: value for key, value in report["options"].items() if key not in SHADOW_POLICY_FIELDS | {"postgame_shadow_lugia", "keep_shadow_lugia_after_purification", "shop_keep_capture_items", "legacy_shop_scope", "randomize_preserved_properties"}}
         archived = dict(report, application_version="1.2.8", engine_version="story-family-diversity-v16", options=old_options)
         self.assertEqual(parse_creation_report(json.dumps(archived).encode()), result)
         archived = dict(report, application_version="1.2.9", engine_version="story-gift-scenes-v17", options=old_options)
@@ -703,13 +708,15 @@ class ShadowPolicyProfileTests(unittest.TestCase):
                           game_id=region.game_id, revision=region.revision, source_sha256="a" * 64,
                           source_iso_sha256=region.iso_sha256, seed="old-report", options=values)
             migrated = parse_creation_report(self.encode(report), is_xd=is_xd).profile.options
-            expected = replace(options, randomize_legendary_shadows=True) if is_xd else legacy_policy_options(options)
+            expected = replace(options, randomize_legendary_shadows=True) if is_xd else replace(
+                legacy_policy_options(options), randomize_preserved_properties=options.randomize_preserved_properties)
             self.assertEqual(migrated, expected)
 
     def test_xd_historical_engine_and_current_boolean_types_stay_strict(self):
         from orre_randomizer.profiles import PREVIOUS_XD_LUGIA_ENGINE, parse_xd_profile
         payload = self.xd_payload()
         payload["engine_version"] = PREVIOUS_XD_LUGIA_ENGINE
+        payload["options"].pop("randomize_preserved_properties")
         payload["options"].pop("keep_shadow_lugia_after_purification")
         payload["options"].pop("randomize_legendary_shadows")
         payload["options"].pop("shop_keep_capture_items")

@@ -212,6 +212,7 @@ TEXTS = {
 
 # Field identifiers match the Options dataclass.
 OPTION_TEXTS = {
+    "randomize_preserved_properties": ("Randomize preserved Pokémon’s properties", "Apply the ability, move, TM, type and base-stat settings to Pokémon whose species is preserved. Otherwise they keep these original properties. Shiny settings still apply. Species properties are shared by all Pokémon of that species."),
     'readable_stone_names': ('Add spaces to stone names', 'Adds missing spaces to stone names. Names follow the language selected in the game, independently of the app language.'),
     'randomize_trainers': ('Change non-Shadow Pokémon', "Replaces trainers' non-Shadow Pokémon. Levels and moves have separate settings."),
     'randomize_shadows': ('Change Shadow Pokémon', 'Replaces all 48 Shadow Pokémon. Each one keeps the same species across all its encounters.'),

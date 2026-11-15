@@ -1014,6 +1014,8 @@ TEXTS.update({
  'Adelbert · {count} purifications': 'Mauricio · {count} purificaciones',
  'Adelbert remet ces cadeaux après le nombre de purifications choisi.': 'Mauricio entrega estos regalos al alcanzar las purificaciones elegidas.',
 })
+OPTION_TEXTS['randomize_preserved_properties'] = ("Cambiar también los Pokémon conservados", "Aplica los ajustes de habilidades, movimientos, MT, tipos y estadísticas base a los Pokémon cuya especie se conserva. Si se desactiva, mantienen esas propiedades originales. Los ajustes de variocolor siguen activos. Las propiedades de especie son comunes a todos sus ejemplares.")
+
 OPTION_TEXTS.update({
  'event_celebi': ('Sustituir Celebi de evento', 'Cambia el Pokémon de este regalo. Activa el acceso a los regalos de evento para recibirlo de Mauricio; si no, se mantienen los requisitos originales.'),
  'event_pikachu': ('Sustituir Pikachu de evento', 'Cambia el Pokémon de este regalo. Activa el acceso a los regalos de evento para recibirlo de Mauricio; si no, se mantienen los requisitos originales.'),

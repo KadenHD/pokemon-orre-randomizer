@@ -131,6 +131,47 @@ def _pool_function(original: bytes, tables: dict, options):
     return candidates
 
 
+def apply_species_gameplay(original, current, seed, options, tables=None, *, selected_species=None):
+    """Shared per-species properties and learns; no encounter species draw."""
+    tables = expanded_layout(original) if tables is None else tables
+    summary, allowed = {}, set()
+    before_species = current
+    modified_species, species_summary = apply_species_rules(original, before_species, seed, options, tables, selected_species=selected_species)
+    allowed.update(i for i, (a, b) in enumerate(zip(before_species, modified_species)) if a != b)
+    output = bytearray(modified_species)
+    summary["species_properties"] = species_summary
+    catalog = species_catalog(bytes(output), tables)
+    moves = move_catalog(original, tables)
+    learned_edits = []
+    from ..preserved_pokemon import colosseum_species
+    preserved = colosseum_species(original, tables, options)
+    if options.randomize_learnsets:
+        for index, meta in catalog.items():
+            if index in preserved or selected_species is not None and index not in selected_species:
+                continue
+            slots = [(slot, original[meta["offset"] + 0xBA + slot * 4],
+                      u16(original, meta["offset"] + 0xBC + slot * 4)) for slot in range(19)]
+            active = [(slot, level, move) for slot, level, move in slots if level and move in moves]
+            chosen = set()
+            for ordinal, (slot, level, old) in enumerate(active):
+                # Every rolling four learned moves retains the offensive/STAB guarantees.
+                guards = options if ordinal % 4 == 0 else replace(options, ensure_damaging_move=False, ensure_stab_move=False)
+                available_moves = moves
+                if ordinal % 4 and options.no_duplicate_moves and options.ensure_stab_move:
+                    # Reserve scarce STAB moves (Ghost/Steel/Dragon) for the
+                    # required rolling-window slots instead of exhausting them.
+                    available_moves = {i: move for i, move in moves.items() if not (
+                        damaging(move) and move["type"] in meta["types"])}
+                new = choose_moves(seed, f"learn:{index}:{slot}", meta, level, available_moves, guards, 1, chosen)[0]
+                chosen.add(new)
+                pos = meta["offset"] + 0xBC + slot * 4
+                struct.pack_into(">H", output, pos, new)
+                allowed.update((pos, pos + 1))
+                learned_edits.append({"species": index, "slot": slot, "level": level, "before": old, "after": new})
+    summary["learnset_edits"] = learned_edits
+    return bytes(output), summary
+
+
 def apply_rel_rules(original: bytes, current: bytes, seed: str, options, *, allocate_shadows=None) -> tuple[bytes, dict]:
     tables = expanded_layout(original)
     original_species = species_catalog(original, tables)
@@ -169,35 +210,13 @@ def apply_rel_rules(original: bytes, current: bytes, seed: str, options, *, allo
         allowed.update(i for i, (a, b) in enumerate(zip(output, transformed, strict=True)) if a != b)
         output = bytearray(transformed)
     before_species = bytes(output)
-    modified_species, species_summary = apply_species_rules(original, before_species, seed, options, tables)
+    modified_species, properties = apply_species_gameplay(original, before_species, seed, options, tables)
     allowed.update(i for i, (a, b) in enumerate(zip(before_species, modified_species)) if a != b)
     output = bytearray(modified_species)
-    summary["species_properties"] = species_summary
+    summary.update(properties)
     catalog = species_catalog(bytes(output), tables)
     moves = move_catalog(original, tables)
-    learned_edits = []
-    if options.randomize_learnsets:
-        for index, meta in catalog.items():
-            slots = [(slot, original[meta["offset"] + 0xBA + slot * 4],
-                      u16(original, meta["offset"] + 0xBC + slot * 4)) for slot in range(19)]
-            active = [(slot, level, move) for slot, level, move in slots if level and move in moves]
-            chosen = set()
-            for ordinal, (slot, level, old) in enumerate(active):
-                # Every rolling four learned moves retains the offensive/STAB guarantees.
-                guards = options if ordinal % 4 == 0 else replace(options, ensure_damaging_move=False, ensure_stab_move=False)
-                available_moves = moves
-                if ordinal % 4 and options.no_duplicate_moves and options.ensure_stab_move:
-                    # Reserve scarce STAB moves (Ghost/Steel/Dragon) for the
-                    # required rolling-window slots instead of exhausting them.
-                    available_moves = {i: move for i, move in moves.items() if not (
-                        damaging(move) and move["type"] in meta["types"])}
-                new = choose_moves(seed, f"learn:{index}:{slot}", meta, level, available_moves, guards, 1, chosen)[0]
-                chosen.add(new)
-                pos = meta["offset"] + 0xBC + slot * 4
-                struct.pack_into(">H", output, pos, new)
-                allowed.update((pos, pos + 1))
-                learned_edits.append({"species": index, "slot": slot, "level": level, "before": old, "after": new})
-    summary["learnset_edits"] = learned_edits
+    from ..preserved_pokemon import colosseum_encounter_kept
     move_edits, levels, items, protected = [], [], [], []
     held_pool = {u16(original, row["offset"] + 0x12) for row in records} - {0, 0xFFFF}
     if options.useful_held_items_only:
@@ -211,7 +230,8 @@ def apply_rel_rules(original: bytes, current: bytes, seed: str, options, *, allo
             allowed.add(pos + 4)
             levels.append({"index": row["index"], "before": original[pos + 4], "after": level})
         old_moves = [u16(original, pos + field) for field in MOVE_FIELDS]
-        if options.randomize_trainer_moves:
+        kept = colosseum_encounter_kept(original, pos, options)
+        if options.randomize_trainer_moves and not kept:
             if any(move == 0xFFFF or move >= 355 for move in old_moves):
                 protected.append(row["index"])
             else:
@@ -222,7 +242,7 @@ def apply_rel_rules(original: bytes, current: bytes, seed: str, options, *, allo
                 move_edits.append({"index": row["index"], "shadow_id": row["shadow_id"],
                                    "species": index, "level": level, "before": old_moves, "after": new_moves})
         old_item = u16(original, pos + 0x12)
-        if options.randomize_held_items and old_item not in (0, 0xFFFF):
+        if options.randomize_held_items and not kept and old_item not in (0, 0xFFFF):
             new_pool = held_pool - {old_item}
             actual_moves = [u16(output, pos + field) for field in MOVE_FIELDS]
             if not any(m in moves and damaging(moves[m]) and moves[m]["type"] <= 8 for m in actual_moves):
@@ -368,6 +388,9 @@ def apply_dol_rules(original: bytes, current: bytes, original_rel: bytes, rel: b
                 allowed.update((pos + 0x92, pos + 0x93))
         change = {"key": key, "species": index, "level": level}
         do_moves = options.randomize_starter_moves if "xp" in target else options.randomize_gift_moves
+        from ..preserved_pokemon import preserve_properties
+        kept = not getattr(options, SPECIAL_OPTIONS[key])
+        do_moves = do_moves and not (preserve_properties(options) and kept)
         if do_moves:
             new_moves = choose_moves(seed, "special:" + key, catalog[index], level, moves, options)
             change["moves"] = new_moves

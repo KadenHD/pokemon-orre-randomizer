@@ -54,7 +54,7 @@ class XDArenaReservationTests(unittest.TestCase):
 
 
 def _options(**values):
-    return SimpleNamespace(**(vars(Options.none()) | values))
+    return SimpleNamespace(**(vars(Options.none()) | {"randomize_preserved_properties": True} | values))
 
 
 def _deck_fixture():
@@ -95,6 +95,22 @@ def _patch_deck(deck, options, current=None):
 
 
 class XDBattleRulesTests(unittest.TestCase):
+    def test_retained_encounters_keep_moves_and_items_unless_advanced_override_is_enabled(self):
+        native, _ = _deck_fixture()
+        options = _options(randomize_trainer_moves=True, randomize_held_items=True,
+                           randomize_preserved_properties=False,
+                           randomize_tutorial_shadow=False, randomize_hordel_gift=False)
+        species = {index: dict(row, national_dex=index) for index, row in _MoveRandomizer.species.items()}
+        with patch.object(_MoveRandomizer, 'species', species):
+            output, report = _patch_deck(native, options)
+            self.assertEqual(output, native)
+            self.assertFalse(report['trainer_move_edits'])
+            self.assertFalse(report['held_item_edits'])
+            output, report = _patch_deck(native, _options(randomize_trainer_moves=True, randomize_held_items=True))
+            self.assertNotEqual(output, native)
+            self.assertTrue(report['trainer_move_edits'])
+            self.assertTrue(report['held_item_edits'])
+
     def test_xd_battle_rules_only_change_referenced_writable_fields(self):
         native, start = _deck_fixture()
         options = _options(progressive_levels=True, early_level_multiplier=0.5, mid_level_multiplier=1.5,

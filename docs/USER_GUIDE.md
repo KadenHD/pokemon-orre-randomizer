@@ -103,9 +103,30 @@ Poké Spots. A single click opens a Pokémon sheet. A small red star marks a shi
 a question mark represents a replacement not yet calculated.
 
 After selecting an original ROM, fixed encounters load automatically in the
-background. Their portraits, shiny stars and sheets use the same result as ROM
-creation. Randomized replacements stay hidden until you calculate the preview.
+background. This reads only the data needed for those encounters and their
+evolution sheets. Their portraits, shiny stars and properties match ROM creation.
+Randomized replacements are calculated only after clicking **Calculate preview**;
+opening this page does not prepare the complete ROM. If a fixed-encounter load
+is still running when clicked, the full calculation starts after it finishes.
 Changing the seed, ROM or settings discards the previous result.
+
+By default, a Pokémon whose species is preserved also keeps its native abilities,
+starting moves, level-up moves, compatible TM moves, types, base stats and held
+item. Shiny settings and evolution accessibility rules still apply. The advanced
+**Randomize preserved Pokémon’s properties** option, under **Allowed Pokémon**,
+applies the selected property rules to these encounters too. Both randomized
+presets leave it unchecked. A manually chosen replacement starter follows your
+randomization rules even though its species is already known to the preview.
+
+Species tables are shared within each game. Preserving an encounter protects
+that species and its evolution family, including other copies used as randomized
+replacements. TMs are a shared list too: when their moves are shuffled, the
+preserved species' compatibility follows its original learnable moves rather
+than the old TM numbers. Older profiles keep the previous behavior on import
+so their saved settings can reproduce the same game.
+
+A Poké Spot sheet lists level-up moves and compatible TMs. Its four active moves
+depend on the encounter's generated level and are not shown as a fixed set.
 
 The **Summary** tab shows original descriptions under each ability. The **Moves**
 tab shows them for current moves, level-up moves and compatible TMs, where the

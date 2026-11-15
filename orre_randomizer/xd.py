@@ -47,7 +47,7 @@ from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITE
                        validate_tutorial_matchup)
 from .xd_unown_form import patch_xd_unown_form
 
-VERSION = "xd-shadow-lugia-appearance-v13"
+VERSION = "xd-preserved-pokemon-properties-v14"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -112,6 +112,7 @@ class XDOptions:
     allow_gen2: bool = _shared("allow_gen2")
     allow_gen3: bool = _shared("allow_gen3")
     allow_legendaries: bool = _shared("allow_legendaries")
+    randomize_preserved_properties: bool = _shared("randomize_preserved_properties")
     excluded_species: tuple[int, ...] = _shared("excluded_species")
     excluded_types: tuple[int, ...] = _shared("excluded_types")
     custom_shinies: bool = _shared("custom_shinies", description=
@@ -286,6 +287,9 @@ def _pick(seed, key, species, original, *, candidates=None, balance=True):
 
 def _starter(dol: bytes, offset: int, seed: str, species, edges, families, eligible,
              options, move_randomizer, *, fixed_shadow_families=()) -> tuple[bytes, dict]:
+    from .preserved_pokemon import preserve_properties
+    kept = not options.randomize_starter
+    draw_moves = options.randomize_starter_moves and not (preserve_properties(options) and kept)
     offsets = (0, 8, 0x10, 0x14, 0x18, 0x1C, 0x64)
     signature = (0x38600085, 0x3900000A, 0x38C00021, 0x38A00027, 0x3880002C, 0x3800001C, 0x380004E2)
     if tuple(u32(dol, offset + field) for field in offsets) != signature:
@@ -304,7 +308,7 @@ def _starter(dol: bytes, offset: int, seed: str, species, edges, families, eligi
         candidates = [
             index for index in sorted(stage_pool & eligible)
             if (not options.starter_three_stage_families or families[index] in three_stage)
-            and (options.randomize_starter_moves
+            and (draw_moves
                  or any(0 < level <= 10 and move in STARTER_ATTACKS for level, move in species[index][3]))
             and (not options.diverse_story_families or families[index] not in protected_families)
         ]
@@ -312,19 +316,19 @@ def _starter(dol: bytes, offset: int, seed: str, species, edges, families, eligi
             chosen = next((index for index in eligible if species[index][0] == options.starter_species), None)
             if chosen is None:
                 raise FormatError("the selected XD starter is excluded")
-            if not options.randomize_starter_moves and not any(
+            if not draw_moves and not any(
                 0 < level <= 10 and move in STARTER_ATTACKS for level, move in species[chosen][3]
             ):
                 raise FormatError("the selected XD starter needs randomized starting moves")
         else:
             chosen = _pick(seed, "starter", species, 133, candidates=candidates, balance=False)
-        if not options.randomize_starter_moves:
+        if not draw_moves:
             moves = list(dict.fromkeys(
                 move for level, move in species[chosen][3] if 0 < level <= 10 and 0 < move <= 354
             ))[-4:]
             if not set(moves) & STARTER_ATTACKS:
                 moves[0] = next(move for level, move in species[chosen][3] if 0 < level <= 10 and move in STARTER_ATTACKS)
-    if options.randomize_starter_moves:
+    if draw_moves:
         moves = move_randomizer.moves(seed, "xd:starter", chosen, 10, NATIVE_STARTER_MOVES)
     experience = (experience_at_level(species[chosen][1], 10) if chosen != 133 else u16(dol, offset + 0x66))
     result = bytearray(dol)
@@ -605,10 +609,14 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     trade_requirements = dict(GIFT_TRADE_REQUIREMENTS)
     trade_requirements.update(zip(DUKING_TRADES, (row["species"] for row in summary["poke_spots"] if row["slot"] == 3),
                                   strict=True))
-    new_rel, summary["species_gameplay"] = patch_species_gameplay(new_rel, symbols, seed, species, families, options)
+    from .preserved_pokemon import xd_species, preserve_properties
+    protected = xd_species(options, native_story, families=families)
+    new_rel, summary["species_gameplay"] = patch_species_gameplay(
+        new_rel, symbols, seed, species, families, options, preserve_species=protected)
     if any(summary["species_gameplay"][field] for field in ("types_changed", "abilities_changed", "base_stats_changed")):
         dol, summary["battle_simulator"] = protect_simulator_species(original_dol, dol, rel, symbols, region.game_id)
-    new_rel, dol, summary["tm_gameplay"] = patch_tm_gameplay(new_rel, dol, symbols, region.game_id, seed, species, options)
+    new_rel, dol, summary["tm_gameplay"] = patch_tm_gameplay(
+        new_rel, dol, symbols, region.game_id, seed, species, options, preserve_species=protected)
     new_rel, summary["field_items"] = apply_field_items(rel, new_rel, seed, options)
     move_randomizer = XDMoveRandomizer(new_rel, symbols, species, options)
     if options.randomize_starter or options.randomize_starter_moves:
@@ -659,7 +667,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             dol, region.game_id, seed, species, families, reserved if options.diverse_story_families else (),
             read_archive, name_banks=name_banks, eligible=eligible, balance=options.balance_species,
             replace_species=options.randomize_gifts,
-            move_randomizer=move_randomizer if options.randomize_gift_moves else None,
+            move_randomizer=move_randomizer if options.randomize_gift_moves and (
+                options.randomize_gifts or not preserve_properties(options)) else None,
             trade_requirements=trade_requirements, hordel_evolution=hordel_evolution,
         )
     else:

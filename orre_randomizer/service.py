@@ -76,7 +76,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "shadow-lugia-appearance-v24"
+ENGINE_VERSION = "preserved-pokemon-properties-v25"
 
 
 @dataclass(frozen=True, slots=True)

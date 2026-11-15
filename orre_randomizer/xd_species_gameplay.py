@@ -166,7 +166,7 @@ def _learnset(rel, output, seed, index, species, move_catalog, options):
     return changed
 
 
-def patch_species_gameplay(rel, symbols, seed, species, families, options):
+def patch_species_gameplay(rel, symbols, seed, species, families, options, *, preserve_species=(), selected_species=None):
     """Apply optional type, ability, base-stat and level-up move rules in place in the REL layout."""
     report = {"version": VERSION, "types_changed": 0, "abilities_changed": 0,
               "base_stats_changed": 0, "learnset_moves_changed": 0}
@@ -177,6 +177,8 @@ def patch_species_gameplay(rel, symbols, seed, species, families, options):
     ability_pool = {value for row in catalog.values() for value in row["abilities"]} - {0, WONDER_GUARD}
     output = bytearray(rel)
     for index, row in catalog.items():
+        if index in preserve_species or selected_species is not None and index not in selected_species:
+            continue
         pos = row["offset"]
         shedinja = row["national_dex"] == SHEDINJA_NATIONAL
         if options.randomize_types and not shedinja:
@@ -202,11 +204,13 @@ def patch_species_gameplay(rel, symbols, seed, species, families, options):
         final = _species_catalog(output, symbols, species)
         moves = _move_catalog(rel, symbols)
         for index, row in final.items():
+            if index in preserve_species or selected_species is not None and index not in selected_species:
+                continue
             report["learnset_moves_changed"] += _learnset(rel, output, seed, index, row, moves, options)
     return bytes(output), report
 
 
-def patch_tm_gameplay(rel, dol, symbols, game_id, seed, species, options):
+def patch_tm_gameplay(rel, dol, symbols, game_id, seed, species, options, *, preserve_species=(), selected_species=None):
     """Shuffle native TM moves and description IDs, then update compatibility if requested."""
     shuffle, mode = options.randomize_tm_moves, options.tm_compatibility_mode
     report = {"version": VERSION, "tm_compatibility_mode": mode, "tms_moved": 0,
@@ -243,23 +247,30 @@ def patch_tm_gameplay(rel, dol, symbols, game_id, seed, species, options):
             struct.pack_into(">I", rel_out, descriptions[i], u32(rel, descriptions[source]))
         report["tms_moved"] = TM_COUNT
         report["tm_moves"] = final
-    if mode != "original":
+    if mode != "original" or preserve_species:
         catalog = _move_catalog(rel, symbols)
         rows = _species_catalog(rel, symbols, species)
         offensive = [i for i, move in enumerate(final) if move not in UNSAFE_OFFENSE and damaging(catalog[move])]
         for index, row in rows.items():
+            if selected_species is not None and index not in selected_species:
+                continue
             pos = row["offset"] + 0x34
             before = rel[pos:pos + TM_COUNT]
             if not set(before) <= {0, 1}:
                 raise FormatError("unexpected native XD TM compatibility")
             matching = [catalog[move]["type"] in row["types"] for move in final]
-            if mode == "universal":
+            if index in preserve_species:
+                learned = {move for i, move in enumerate(native[:TM_COUNT]) if before[i]}
+                enabled = [int(move in learned) for move in final]
+            elif mode == "original":
+                enabled = list(before)
+            elif mode == "universal":
                 enabled = [1] * TM_COUNT
             elif mode == "type":
                 enabled = matching.copy()
             else:
                 enabled = [_draw(seed, f"tm:compatible:{index}:{i}", (0, 1)) for i in range(TM_COUNT)]
-            if options.tm_ensure_offensive and not any(enabled[i] for i in offensive):
+            if index not in preserve_species and options.tm_ensure_offensive and not any(enabled[i] for i in offensive):
                 compatible = [i for i in offensive if matching[i]]
                 enabled[_draw(seed, f"tm:offensive:{index}", compatible or offensive)] = 1
             rel_out[pos:pos + TM_COUNT] = bytes(enabled)

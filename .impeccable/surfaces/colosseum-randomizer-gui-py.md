@@ -28,6 +28,7 @@ unsupported system languages fall back to English.
 | Advanced rules | Searchable metadata, shared control order and category help; 192 px sidebar or compact selector |
 | Preview tabs | Colosseum: 2 starters, 48 Shadows, 4 gifts and optional-event preview; XD: 1 starter, 83 Shadows, 7 gifts, 9 Poké Spot slots |
 | Pending preview | Native originals and unknown replacements; resolved fixed/manual encounters show their portraits and sheets, with a red star only for a known shiny |
+| Automatic data | Read only retained/manual encounters; the full randomizer and ROM plan start only after Calculate is clicked |
 | Search and scrolling | Names in six languages and National Pokédex IDs; visible-range counter and contrasted scrollbar |
 | Loading | Shared background worker, 115 ms cosmetic cycle, progress, cancellation and stale-result rejection |
 | Current preview | Final seeded results, up-to-date state and optional duplicate-family tab |
@@ -42,6 +43,10 @@ excluded from replacement draws; fixed legendary encounters remain. Original
 shop Balls are preserved. Pokémon only retains moves, TMs and ordinary items;
 Pokémon + moves randomizes those too. Accessible evolutions and family diversity
 are shared defaults.
+
+Retained species keep their native properties and protect their evolution
+families in shared tables. Advanced offers an unchecked property-randomization
+opt-in in both games; shiny and accessible-evolution settings still apply.
 
 Starters, gifts and supported trainer/Shadow encounters use a seeded 5% shiny
 rate. XD's Shadow unlock is a separate control; wild Poké Spots instead roll a

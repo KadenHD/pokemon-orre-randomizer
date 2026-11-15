@@ -1,15 +1,11 @@
-"""Read known encounters through the production preview, off the Qt thread.
-
-The full result remains private until Calculate is pressed.  A baseline is the
-allowlist: randomized species are never leaked by this automatic prefetch.
-"""
+"""Load only retained encounters automatically; full previews require a click."""
 from copy import deepcopy
 from pathlib import Path
 import threading
 
 from PySide6.QtCore import QObject, QTimer, Slot
 
-from .preview import baseline_rows, preview_starters, preview_xd
+from .preview import baseline_rows, preview_known, preview_xd_known
 from .profiles import validate_seed
 from .service import UserError
 from .xd_preview import baseline_rows as xd_baseline_rows
@@ -58,7 +54,8 @@ def known_rows(options, result=None, *, xd=False):
                 else dex, level=65 + index)
                 for index, dex in enumerate((282, 178, 356, 365, 257, 249))]
             actual = result.get('postgame_shadow_lugia', {}).get('team', ())
-            event['team'] = [merge(row, actual[index] if index < len(actual) else None)
+            by_slot = {row.get('slot', 5510 + index): row for index, row in enumerate(actual)}
+            event['team'] = [merge(row, by_slot.get(5510 + index))
                              for index, row in enumerate(event['team'])]
     return baseline
 
@@ -71,6 +68,7 @@ class KnownPreview(QObject):
         self.key = self.running_key = self.failed_key = None
         self.result = self.prepared = self.visible_result = None
         self.reveal_requested = False
+        self.manual_requested = False
         self.timer = QTimer(self)
         self.timer.setSingleShot(True)
         self.timer.setInterval(400)
@@ -91,6 +89,7 @@ class KnownPreview(QObject):
         if current != self.key:
             self.key, self.result, self.prepared, self.failed_key = current, None, None, None
             self.visible_result = None
+            self.manual_requested = self.reveal_requested = False
             if self.running:
                 self.window.preview_cancel_event.set()
             if self.window.detail_window is not None:
@@ -100,7 +99,7 @@ class KnownPreview(QObject):
         if self.workspace.preview_result is not None:
             self.timer.stop()
             return
-        if self.active() and self.result is None and self.failed_key != current:
+        if self.active() and not self.manual_requested and self.result is None and self.failed_key != current:
             if not self.running:
                 self.timer.start()
         else:
@@ -117,7 +116,20 @@ class KnownPreview(QObject):
         self.schedule()
         self.timer.stop()
         if (not self.active() or self.result is not None or self.failed_key == self.key
-                or self.workspace.preview_result is not None):
+                or self.manual_requested or self.workspace.preview_result is not None):
+            return
+        options = self.workspace.current_options()
+        baseline = known_rows(options, xd=self.xd)
+        if self.xd:
+            rows = [baseline['starter'], *baseline['decks']['Story']['shadows'],
+                    *baseline['gifts'], *baseline['poke_spots']]
+            available = any(row.get('species') or row.get('national_dex') for row in rows)
+        else:
+            available = any(row.get('national_dex') for group in ('starters', 'shadows', 'gifts')
+                            for row in baseline[group]) or options.postgame_shadow_lugia and (
+                                not options.postgame_randomize_team or not options.postgame_randomize_lugia)
+        if not available:
+            self.result = self.visible_result = baseline
             return
         if self.window.busy or self.window.preview_thread is not None:
             self.timer.start(200)
@@ -139,26 +151,21 @@ class KnownPreview(QObject):
         arguments = dict(source=source, seed=self.workspace.seed.text(),
                          dolphin_tool=tool, cancel=self.window.preview_cancel_event,
                          cache=self.window.preview_cache)
-        arguments['xd_options' if self.xd else 'options'] = self.workspace.current_options()
+        arguments['xd_options' if self.xd else 'options'] = options
         self.window.launch_preview(arguments, owner=self, succeeded=self.succeeded, failed=self.failed,
                                    roulette=lambda _faces: None,
-                                   task=preview_xd if self.xd else preview_starters)
+                                   task=preview_xd_known if self.xd else preview_known)
         self.workspace.render_preview()
 
     def request_full(self):
-        """Reveal the exact cached plan, or promote its currently running job."""
+        """Queue a full preview after a retained-only job, without promoting it."""
         self.schedule()
-        if self.result is None and not (self.running and self.running_key == self.key
-                                       and not self.window.preview_cancel_event.is_set()):
+        self.timer.stop()
+        self.manual_requested = True
+        if not self.running:
             return False
         self.reveal_requested = True
-        self.workspace.preview_key = self.workspace.preview_running_key = self.key
-        if self.xd:
-            self.workspace.preview_running = self.running
-        if self.result is not None:
-            self.workspace.preview_succeeded(self.result, self.prepared)
-        else:
-            self.workspace.render_preview()
+        self.workspace.render_preview()
         return True
 
     @Slot(dict, object)
@@ -166,12 +173,9 @@ class KnownPreview(QObject):
         if (self.window.preview_cancel_event.is_set() or self.running_key != self.key
                 or self.key != self.workspace.preview_configuration()):
             return
-        self.result, self.prepared = result, prepared
+        self.result, self.prepared = result, None
         self.visible_result = known_rows(self.workspace.current_options(), result, xd=self.xd)
-        if self.reveal_requested:
-            self.workspace.preview_succeeded(result, prepared)
-        else:
-            self.workspace.render_preview()
+        self.workspace.render_preview()
 
     @Slot(object, bool)
     def failed(self, error, cancelled):
@@ -179,8 +183,6 @@ class KnownPreview(QObject):
             return
         if not cancelled:
             self.failed_key = self.key
-        if self.reveal_requested:
-            self.workspace.preview_failed(error, cancelled)
 
     def cancel_preview(self):
         self.timer.stop()
@@ -194,19 +196,22 @@ class KnownPreview(QObject):
             else:
                 self.workspace._preview_action = 'Réessayer'
                 self.workspace._preview_message = 'Annulation de l’aperçu…'
+        self.reveal_requested = False
         self.workspace.render_preview()
 
     def finished_preview(self):
-        reveal = self.reveal_requested
+        reveal, key = self.reveal_requested, self.key
         self.running_key = None
         self.reveal_requested = False
-        if self.xd and reveal:
-            self.workspace.finished_preview()
-        else:
-            if not self.xd:
-                self.workspace.preview_running_key = None
-                if self.workspace._preview_message == 'Annulation de l’aperçu…':
-                    self.workspace._preview_message = 'Aperçu annulé.'
-            self.workspace.render_preview()
+        if not self.xd:
+            self.workspace.preview_running_key = None
+            if self.workspace._preview_message == 'Annulation de l’aperçu…':
+                self.workspace._preview_message = 'Aperçu annulé.'
+        self.workspace.render_preview()
+        if reveal and not self.window.close_after_cancel:
+            def launch():
+                if self.manual_requested and key == self.key and self.active():
+                    self.workspace.start_preview()
+            QTimer.singleShot(0, self, launch)
         if not self.window.close_after_cancel:
             self.schedule()

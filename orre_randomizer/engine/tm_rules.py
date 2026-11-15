@@ -106,13 +106,15 @@ def _tm_records(original: bytes, current: bytes, *, tm_offset: int = TM_OFFSET,
 def apply_tm_tables(original_rel: bytes, current_rel: bytes, original_dol: bytes,
                     current_dol: bytes, seed: str, options, tables: dict, *,
                     tm_offset: int = TM_OFFSET, item_offset: int = ITEM_OFFSET,
-                    native_languages: tuple[str, ...] = ("UK", "GE", "FR", "IT", "SP")) -> tuple[bytes, bytes, dict]:
+                    native_languages: tuple[str, ...] = ("UK", "GE", "FR", "IT", "SP"),
+                    selected_species=None) -> tuple[bytes, bytes, dict]:
     """Pure table transform; the caller validates original file fingerprints.
 
     Compatibility follows final current species types and final TM moves. In
-    ``original`` mode every compatibility byte is preserved even when the
-    offensive guarantee is enabled. In rewriting modes that guarantee may add
-    an off-type TM when no offensive TM of a species' type exists.
+    ``original`` mode keeps compatibility bytes unless a retained species needs
+    its original learnable moves remapped to shuffled TM numbers. The offensive
+    guarantee never changes retained compatibility. In rewriting modes it may
+    add an off-type TM when no offensive TM of a species' type exists.
     """
     shuffle = _flag(options, "randomize_tm_moves", False)
     ensure_offense = _flag(options, "tm_ensure_offensive", True)
@@ -166,11 +168,18 @@ def apply_tm_tables(original_rel: bytes, current_rel: bytes, original_dol: bytes
     additions, unmet = [], []
     if mode != "original" and ensure_offense and not offensive:
         raise FormatError("final TM pool has no ordinary offensive move")
+    from ..preserved_pokemon import colosseum_species
+    preserved = colosseum_species(original_rel, tables, options)
     for index, row in sorted(species.items()):
+        if selected_species is not None and index not in selected_species:
+            continue
         pos = row["offset"] + COMPAT_OFFSET
         before = current_rel[pos:pos + TM_COUNT]
         values = list(before)
-        if mode == "universal":
+        if index in preserved:
+            learned = {move for i, move in enumerate(native) if original_rel[pos + i]}
+            values = [int(move in learned) for move in final_moves]
+        elif mode == "universal":
             values = [1] * TM_COUNT
         elif mode == "type":
             values = [int(moves[move]["type"] in row["types"]) for move in final_moves]
@@ -178,7 +187,7 @@ def apply_tm_tables(original_rel: bytes, current_rel: bytes, original_dol: bytes
             values = [_sample(seed, f"compatibility:{index}:{tm + 1}", 2) for tm in range(TM_COUNT)]
         has_offense = any(values[tm] for tm in offensive)
         added = None
-        if mode != "original" and ensure_offense and not has_offense:
+        if mode != "original" and index not in preserved and ensure_offense and not has_offense:
             matching = [tm for tm in offensive if moves[final_moves[tm]]["type"] in row["types"]]
             pool = matching or offensive
             added = pool[_sample(seed, f"offensive:{index}", len(pool))]
@@ -187,7 +196,7 @@ def apply_tm_tables(original_rel: bytes, current_rel: bytes, original_dol: bytes
                               "move": final_moves[added], "matches_type": bool(matching)})
         if not any(values[tm] for tm in offensive):
             unmet.append(index)
-        if mode != "original":
+        if mode != "original" or index in preserved:
             rel[pos:pos + TM_COUNT] = bytes(values)
             rel_ranges.append((pos, pos + TM_COUNT))
         compatibility.append({"species": index, "national_dex": row["national_dex"],

@@ -115,7 +115,7 @@ def _discard_failed_cache(function):
 def preview_starters(source: Path, seed: str, options: Options,
                      dolphin_tool: Path | None = None, *, progress=None,
                      cancel: threading.Event | None = None,
-                     cache: PreviewCache | None = None, roulette=None, on_prepared=None) -> dict:
+                     cache: PreviewCache | None = None, roulette=None, on_prepared=None, _known_only=False) -> dict:
     """Compute final bytes in memory, never publish an ISO or a report.
 
     RVZ conversion owns a temporary directory and an isolated DolphinTool
@@ -150,13 +150,17 @@ def preview_starters(source: Path, seed: str, options: Options,
             boot = service.check_header(iso)
             iso_hash = image.iso_hash
             region = service.check_disc_identity(boot, iso_hash)
-            if roulette is not None:
+            if roulette is not None and not _known_only:
                 try:
                     roulette(extract_portraits(iso, ROULETTE_SPECIES))
                 except ArtworkError:
                     pass
                 service.checkpoint(cancel)
-            patches, summary = service.build_patches(iso, boot, seed, options, progress, cancel)
+            if _known_only:
+                from .known_encounters import colosseum_known
+                patches, summary = [], colosseum_known(iso, boot, seed, options, cancel)
+            else:
+                patches, summary = service.build_patches(iso, boot, seed, options, progress, cancel)
             service.checkpoint(cancel)
             final = {row["key"]: row for row in summary["special_gameplay"]["specials"]}
             def special(key):
@@ -172,7 +176,7 @@ def preview_starters(source: Path, seed: str, options: Options,
                                                        else "event_pikachu_purifications")
                 return result
 
-            starters = [special(key) for key in ("umbreon", "espeon")]
+            starters = [special(key) for key in ("umbreon", "espeon") if key in final]
             gifts = [special(key) for key in final if key not in ("umbreon", "espeon")]
             shadows = [dict(row, species=row["species_index"])
                        for row in summary.get("final_shadow_picks", [])]
@@ -271,7 +275,7 @@ def preview_starters(source: Path, seed: str, options: Options,
     finally:
         if owned_cache:
             selected_cache.close()
-    if on_prepared is not None:
+    if on_prepared is not None and not _known_only:
         service.checkpoint(cancel)
         on_prepared(service.PreparedPatches(source=source, source_sha256=source_hash, iso_sha256=iso_hash,
                                            seed=seed, options=options, patches=tuple(patches),
@@ -288,7 +292,7 @@ def preview_starters(source: Path, seed: str, options: Options,
 def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                dolphin_tool: Path | None = None, *, progress=None,
                cancel: threading.Event | None = None, cache: PreviewCache | None = None,
-               roulette=None, on_prepared=None) -> dict:
+               roulette=None, on_prepared=None, _known_only=False) -> dict:
     """Read the same verified XD patch plan used by Create, without publishing it."""
     progress = progress or (lambda percent, message: None)
     cancel = cancel or threading.Event()
@@ -313,16 +317,20 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
         with lease as image:
             boot = service.check_header(image.iso, is_xd=True)
             region = service.check_disc_identity(boot, image.iso_hash, is_xd=True)
-            if roulette is not None:
+            if roulette is not None and not _known_only:
                 try:
                     roulette(extract_portraits(image.iso, ROULETTE_SPECIES, is_xd=True))
                 except ArtworkError:
                     pass
                 service.checkpoint(cancel)
             progress(20, "Application des réglages…")
-            patches, summary = service.build_xd_patches(image.iso, boot, seed, xd_options, progress, cancel,
-                                                  include_details=True)
-            prepared = service.PreparedPatches(source=source, source_sha256=digest, iso_sha256=image.iso_hash,
+            if _known_only:
+                from .known_encounters import xd_known
+                patches, summary = [], xd_known(image.iso, boot, seed, xd_options, cancel)
+            else:
+                patches, summary = service.build_xd_patches(image.iso, boot, seed, xd_options, progress, cancel,
+                                                          include_details=True)
+            prepared = None if _known_only else service.PreparedPatches(source=source, source_sha256=digest, iso_sha256=image.iso_hash,
                 seed=seed, options=xd_options, patches=tuple(patches),
                 summary=deepcopy({key: value for key, value in summary.items() if key != 'detail_catalog'}))
             starter = summary.get("starter")
@@ -339,7 +347,7 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                                     else "spinda_pattern_save") for row, key in rewards)
             _add_spinda_patterns(image.iso, pattern_entries, is_xd=True)
             if catalog := summary.pop("detail_catalog", None):
-                rows = [starter, *shadows, *gifts, *poke_spots]
+                rows = [row for row in [starter, *shadows, *gifts, *poke_spots] if row is not None]
                 requests = []
                 for row in rows:
                     details = encounter_details(catalog, row["species"], level=row.get("level"),
@@ -370,7 +378,16 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                     row["portrait_png"] = shadow_lugia_portrait(shiny=bool(row.get("shiny")), game="xd")
             if service.file_hash(source, cancel) != digest:
                 raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
-    if on_prepared is not None:
+    if on_prepared is not None and not _known_only:
         service.checkpoint(cancel)
         on_prepared(prepared)
     return dict(summary, seed=seed, game_id=region.game_id, revision=region.revision, engine_version=XD_VERSION)
+
+
+def preview_known(*args, **kwargs):
+    """Read only retained/manual encounters, never prepare a full ROM plan."""
+    return preview_starters(*args, **kwargs, _known_only=True)
+
+
+def preview_xd_known(*args, **kwargs):
+    return preview_xd(*args, **kwargs, _known_only=True)

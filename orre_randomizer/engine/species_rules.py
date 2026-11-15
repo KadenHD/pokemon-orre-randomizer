@@ -153,7 +153,7 @@ def _redistribute(seed: str, key: str, total: int, locked_hp: bool) -> tuple[int
 
 
 def apply_species_rules(original: bytes, current: bytes, seed: str, options,
-                        tables: dict) -> tuple[bytes, dict]:
+                        tables: dict, *, selected_species=None) -> tuple[bytes, dict]:
     """Apply independent type, ability and stat rules over prior seeded changes.
 
     Family consistency shares keyed first/second draws but preserves whether a
@@ -175,7 +175,11 @@ def apply_species_rules(original: bytes, current: bytes, seed: str, options,
     type_pool = sorted({value for row in catalog.values() for value in row["types"]})
     ability_pool = sorted({value for row in catalog.values() for value in row["abilities"]} - {0, WONDER_GUARD})
     output, allowed, edits = bytearray(current), set(), []
+    from ..preserved_pokemon import colosseum_species
+    preserved = colosseum_species(original, tables, options)
     for index, row in catalog.items():
+        if index in preserved or selected_species is not None and index not in selected_species:
+            continue
         pos = row["offset"]
         protected = row["national_dex"] == SHEDINJA_NATIONAL
         new_types, new_abilities, new_stats = row["types"], row["abilities"], row["stats"]

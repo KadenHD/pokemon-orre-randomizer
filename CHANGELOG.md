@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.24 - 2026-11-16
+
+- Load only retained and manually selected encounters automatically, including
+  their actual sheets and known shiny appearance. Calculate randomized
+  replacements and the complete ROM patch plan only when the user requests
+  the full preview. Queue that request safely after a pending known-data read.
+- Preserve native abilities, moves, learnsets, compatible TM moves, types,
+  base stats and held items for retained encounters. Protect their evolution
+  families in shared species tables; shiny and accessible-evolution rules still
+  apply. Add the shared advanced opt-in for property randomization, unchecked
+  in both games' randomized presets. Import older profiles with their original
+  property rules so saved runs remain reproducible.
+
 ## 1.2.23 - 2026-11-15
 
 - Use XD's circular portrait for added Shadow Lugia appearances in previews

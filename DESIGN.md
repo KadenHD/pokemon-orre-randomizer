@@ -286,7 +286,11 @@ states apply here too; changes discard stale team details.
 Before calculation, known original species appear on the left and unknown
 replacements use question marks. Once the selected original has been read,
 retained/manual encounters can show their portrait and sheet without a full
-preview request. Show the red star and matching portrait only when the current
+preview request. This automatic job reads only known encounters; it never runs
+the full randomizer, allocates unknown replacements or prepares a complete ROM
+plan. Clicking Calculate queues the full worker after a pending known-data read;
+cancellation, navigation and identity changes discard that queued request.
+Show the red star and matching portrait only when the current
 rules establish the shiny status; a known species alone does not establish it.
 Search works before and after calculation using names in all six languages and
 National Pokédex numbers. The counter reports the visible range or no results.

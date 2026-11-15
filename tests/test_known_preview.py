@@ -1,4 +1,4 @@
-"""Known rows reuse the exact background plan without revealing a random draw."""
+"""Automatic known rows never calculate randomized replacements."""
 import os
 os.environ.setdefault('QT_QPA_PLATFORM', 'offscreen')
 from copy import deepcopy
@@ -164,35 +164,39 @@ class KnownPreviewGuiTests(unittest.TestCase):
         workspace.render_preview()
         return workspace
 
-    def test_auto_prefetch_shows_only_known_rows_and_calculate_reuses_it_in_both_games(self):
+    def test_automatic_known_rows_and_full_click_use_separate_jobs_in_both_games(self):
         for xd in (False, True):
             calls = []
             def calculate(**arguments):
                 calls.append(arguments['seed'])
                 options = arguments['xd_options' if xd else 'options']
                 return computed_fixture(options, xd=xd, seed=arguments['seed'])
-            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd' if xd else 'preview_starters'),
-                       side_effect=calculate):
+            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd_known' if xd else 'preview_known'),
+                       side_effect=calculate), patch('orre_randomizer.preview.preview_xd' if xd else 'orre_randomizer.gui.preview_starters', side_effect=calculate) as full:
                 pane = self.select(xd)
                 self.pump(lambda: pane.known_preview.result is not None and self.window.preview_thread is None)
                 self.assertIsNone(pane.preview_result)
+                full.assert_not_called()
+                self.assertIsNone(pane.known_preview.prepared)
                 known = pane.preview_rows()
                 shadows = known['decks']['Story']['shadows'] if xd else known['shadows']
                 self.assertNotIn('details', shadows[0])
                 self.assertIn('details', shadows[73 if xd else 20])
                 pane.start_preview()
-                self.assertIs(pane.preview_result, pane.known_preview.result)
-                self.assertEqual(len(calls), 1)
+                self.pump(lambda: pane.preview_result is not None and self.window.preview_thread is None)
+                self.assertIsNot(pane.preview_result, pane.known_preview.result)
+                self.assertEqual(full.call_count, 1)
+                self.assertEqual(len(calls), 2)
 
-    def test_loading_can_be_promoted_without_a_second_worker(self):
+    def test_click_queues_full_calculation_after_known_worker_cleanup(self):
         for xd in (False, True):
             entered, release = threading.Event(), threading.Event()
             def calculate(**arguments):
                 entered.set()
                 release.wait(3)
                 return computed_fixture(arguments['xd_options' if xd else 'options'], xd=xd)
-            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd' if xd else 'preview_starters'),
-                       side_effect=calculate) as compute:
+            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd_known' if xd else 'preview_known'),
+                       side_effect=calculate) as compute, patch('orre_randomizer.preview.preview_xd' if xd else 'orre_randomizer.gui.preview_starters', side_effect=lambda **args: computed_fixture(args['xd_options' if xd else 'options'], xd=xd)) as full:
                 pane = self.select(xd)
                 self.pump(entered.is_set)
                 self.assertTrue(pane.seed.isEnabled())
@@ -200,10 +204,11 @@ class KnownPreviewGuiTests(unittest.TestCase):
                 pane.start_preview()
                 self.assertIs(self.window.preview_thread, thread)
                 self.assertTrue(pane.known_preview.reveal_requested)
+                full.assert_not_called()
                 release.set()
-                self.pump(lambda: self.window.preview_thread is None)
-                self.assertIsNotNone(pane.preview_result)
+                self.pump(lambda: pane.preview_result is not None and self.window.preview_thread is None)
                 self.assertEqual(compute.call_count, 1)
+                self.assertEqual(full.call_count, 1)
 
     def test_seed_and_source_changes_clear_old_fixed_sheets_and_reject_late_results(self):
         entered = threading.Event()
@@ -214,7 +219,7 @@ class KnownPreviewGuiTests(unittest.TestCase):
                 entered.set()
                 arguments['cancel'].wait(3)
             return computed_fixture(arguments['options'], seed=arguments['seed'])
-        with patch('orre_randomizer.ui_known_preview.preview_starters', side_effect=calculate):
+        with patch('orre_randomizer.ui_known_preview.preview_known', side_effect=calculate):
             pane = self.select()
             self.pump(entered.is_set)
             pane.seed.setText('new-seed')
@@ -235,11 +240,49 @@ class KnownPreviewGuiTests(unittest.TestCase):
             self.assertIsNone(pane.preview_result)
             self.assertIsNone(pane.known_preview.result)
 
+    def test_nothing_known_does_not_read_the_rom_or_draw_a_replacement(self):
+        with patch('orre_randomizer.ui_known_preview.preview_known') as automatic:
+            pane = self.select()
+            pane.set_options(replace(pane.current_options(), randomize_legendary_shadows=True,
+                                     postgame_shadow_lugia=False))
+            pane.known_preview.start()
+            automatic.assert_not_called()
+            self.assertIsNone(self.window.preview_thread)
+            self.assertIsNone(pane.preview_result)
+
+    def test_immediate_click_starts_only_the_full_worker(self):
+        for xd in (False, True):
+            def calculate(**arguments):
+                return computed_fixture(arguments['xd_options' if xd else 'options'], xd=xd)
+            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd_known' if xd else 'preview_known')) as auto, \
+                 patch('orre_randomizer.preview.preview_xd' if xd else 'orre_randomizer.gui.preview_starters', side_effect=calculate) as full:
+                pane = self.select(xd)
+                pane.start_preview()
+                self.pump(lambda: pane.preview_result is not None and self.window.preview_thread is None)
+                auto.assert_not_called()
+                self.assertEqual(full.call_count, 1)
+
+    def test_known_gift_keeps_original_trade_text_while_the_required_replacement_is_unknown(self):
+        def calculate(**arguments):
+            result = computed_fixture(arguments['xd_options'], xd=True)
+            gift = next(row for row in result['gifts'] if row['key'] == 'hordel-trade')
+            gift['required_species'] = gift['required_evolution'] = None
+            return result
+        with patch('orre_randomizer.ui_known_preview.preview_xd_known', side_effect=calculate):
+            pane = self.select(True)
+            pane.set_options(replace(pane.current_options(), randomize_gifts=False))
+            self.pump(lambda: pane.known_preview.result is not None and self.window.preview_thread is None)
+            pane.encounter_tabs.setCurrentIndex(2)
+            item = pane.preview_details.topLevelItem(0)
+            self.assertIn('Échange contre Togepi ou Togetic', item.text(0))
+            self.assertIn('Échange contre ?', item.text(1))
+            self.assertIsNone(pane.preview_result)
+
     def test_option_edits_remove_sheets_immediately_and_fixed_rows_open_with_one_click(self):
         for xd in (False, True):
             def calculate(**arguments):
                 return computed_fixture(arguments['xd_options' if xd else 'options'], xd=xd)
-            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd' if xd else 'preview_starters'),
+            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd_known' if xd else 'preview_known'),
                        side_effect=calculate):
                 pane = self.select(xd)
                 self.pump(lambda: pane.known_preview.result is not None and self.window.preview_thread is None)
@@ -268,7 +311,7 @@ class KnownPreviewGuiTests(unittest.TestCase):
                 entered.set()
                 arguments['cancel'].wait(3)
                 raise Cancelled('Aperçu annulé.')
-            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd' if xd else 'preview_starters'),
+            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd_known' if xd else 'preview_known'),
                        side_effect=calculate):
                 pane = self.select(xd)
                 self.pump(entered.is_set)
@@ -284,7 +327,7 @@ class KnownPreviewGuiTests(unittest.TestCase):
             entered.set()
             arguments['cancel'].wait(3)
             raise Cancelled('Aperçu annulé.')
-        with patch('orre_randomizer.ui_known_preview.preview_starters', side_effect=calculate):
+        with patch('orre_randomizer.ui_known_preview.preview_known', side_effect=calculate):
             self.select()
             self.pump(entered.is_set)
             self.window.close()
@@ -296,7 +339,7 @@ class KnownPreviewGuiTests(unittest.TestCase):
             entered.set()
             release.wait(3)
             return computed_fixture(arguments['options'])
-        with patch('orre_randomizer.ui_known_preview.preview_starters', side_effect=calculate):
+        with patch('orre_randomizer.ui_known_preview.preview_known', side_effect=calculate):
             pane = self.select()
             self.pump(entered.is_set)
             pane.start_preview()
@@ -311,7 +354,7 @@ class KnownPreviewGuiTests(unittest.TestCase):
         for xd in (False, True):
             def calculate(**arguments):
                 return computed_fixture(arguments['xd_options' if xd else 'options'], xd=xd)
-            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd' if xd else 'preview_starters'),
+            with patch('orre_randomizer.ui_known_preview.' + ('preview_xd_known' if xd else 'preview_known'),
                        side_effect=calculate):
                 pane = self.select(xd)
                 pane.set_options(XDOptions.unchanged() if xd else

@@ -1,5 +1,5 @@
 {
-  "app_version": "1.2.21",
+  "app_version": "1.2.24",
   "language": "en",
   "description": "English application and gameplay captures, with text-free XD purification images. Each entry records its capture version; unchanged earlier images are retained.",
   "files": {
@@ -29,17 +29,17 @@
       "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
     },
     "xd-settings.png": {
-      "bytes": 64669,
-      "sha256": "8ae595d47b5e2b04fbee5af59226f991d64841cb29c36050d4a6bc5d1a4de223",
+      "bytes": 69816,
+      "sha256": "196cfef7b4d2a5edad8d21563e1d5f8e63f52c82517c2861dd4b06f19abe4dd3",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Simple mode explains the preset, wild encounter frequency and separate shiny odds.",
+      "description": "Simple preset and current shared protection rules.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "captured_in_version": "1.2.20",
-      "source": "Actual v1.2.20 application with private muted preferences; English offscreen capture, no ROM opened.",
+      "captured_in_version": "1.2.24",
+      "source": "Actual application, English, private muted preferences and blocked update checking. No ROM read for this view.",
       "preset": "Current recommended preset"
     },
     "shadow-pokemon.png": {
@@ -91,28 +91,30 @@
       "captured_in_version": "1.2.15"
     },
     "colosseum-advanced.png": {
-      "bytes": 90238,
-      "sha256": "602e05fa7e05b466f7f958024a4358a58a21e3b24b889d53598218635b1d002a",
+      "bytes": 91859,
+      "sha256": "cb257b55d193b137b8b5897ef642da2d514c19c15f0477e1dfc3b093e7995273",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Advanced move settings for trainers, starters, gifts and learnsets.",
+      "description": "Advanced replacement filters and the unchecked preserved-property opt-in.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.24",
+      "source": "Actual application, English, private muted preferences and blocked update checking. No ROM read for this view."
     },
     "xd-advanced.png": {
-      "bytes": 60208,
-      "sha256": "18e4a97a59e86d33ba3c86439ffa5dea2c4db6b48b4a377e75ff09692b054090",
+      "bytes": 61761,
+      "sha256": "dfd736f61b14b2f8d390fc29d6a6e6a918c5096fa8e2aae244ccfd837a4fcf50",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Advanced move settings, matching the Colosseum tab.",
+      "description": "Advanced replacement filters and the unchecked preserved-property opt-in.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.24",
+      "source": "Actual application, English, private muted preferences and blocked update checking. No ROM read for this view."
     },
     "colosseum-starters-ingame.png": {
       "bytes": 364800,
@@ -248,17 +250,17 @@
       "captured_in_version": "1.2.15"
     },
     "colosseum-simple.png": {
-      "bytes": 89348,
-      "sha256": "8a9e6c4023b1b61170a4eb030992727820c57d10b11c6dfacfcdd7d08d004715",
+      "bytes": 98901,
+      "sha256": "7990dd3d4d09fa2b43da6f917ebe75102ed4c903cebc085d32787a7b41457905",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Simple settings and preset options in Colosseum.",
+      "description": "Simple preset and current shared protection rules.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "captured_in_version": "1.2.20",
-      "source": "Actual v1.2.20 application with private muted preferences; English offscreen capture, no ROM opened.",
+      "captured_in_version": "1.2.24",
+      "source": "Actual application, English, private muted preferences and blocked update checking. No ROM read for this view.",
       "preset": "Current recommended preset"
     },
     "xd-starter-preview.png": {
@@ -422,32 +424,32 @@
       "appearance_kept_after_purification": true
     },
     "colosseum-fixed-preview.png": {
-      "bytes": 92732,
-      "sha256": "43b854bd2709743d1b3148a07f7f2cb2aacc06a044fd9fa765ef1516985d6f78",
+      "bytes": 90373,
+      "sha256": "bfad1766c41ce2d034a788560aeb9f519a2e652ea56dbcaf88007fc00ad1a7bb",
       "kind": "application",
       "language": "en",
       "game": "colosseum",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.21",
+      "captured_in_version": "1.2.24",
       "seed": "known-preview-native-v1221",
       "shiny_chance_percent": 100,
-      "description": "Fixed legendary Shadows show exact shiny portraits before the full preview. Unknown randomized rows remain hidden. Advanced 100% shiny example.",
-      "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
+      "description": "Known-only automatic encounters at 100% shiny rate, with randomized replacements still unknown.",
+      "source": "Actual application and verified original ROM read-only. English, private muted preferences, no full randomizer, ROM output or save access."
     },
     "xd-fixed-preview.png": {
-      "bytes": 66143,
-      "sha256": "d026eb06a1a517426ef81fed789d7092070d109088bef0b1797ae2c750015795",
+      "bytes": 64678,
+      "sha256": "379b7dfadb8c5dd15461d8b65bef289ef579a896ec7e90bb04aeecc2a607a651",
       "kind": "application",
       "language": "en",
       "game": "xd",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.21",
+      "captured_in_version": "1.2.24",
       "seed": "known-preview-native-v1221",
       "shiny_chance_percent": 100,
-      "description": "Fixed legendary Shadows show exact shiny portraits before the full preview. Unknown randomized rows remain hidden. Advanced 100% shiny example.",
-      "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
+      "description": "Known-only automatic encounters at 100% shiny rate, with randomized replacements still unknown.",
+      "source": "Actual application and verified original ROM read-only. English, private muted preferences, no full randomizer, ROM output or save access."
     },
     "colosseum-shadow-lugia-aftermath.png": {
       "bytes": 442758,

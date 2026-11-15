@@ -99,7 +99,10 @@ evolution families, starter experience, and stone names. The matrix also checks
 that the source image is preserved. Configurations cover an unchanged copy, all
 three generations, boss rules, and advanced settings.
 
-The preview uses `build_patches` to read the final starter values. ROM-free tests
+The requested full preview uses `build_patches` to read the final encounter
+values. The automatic preview reads only known encounters and applies the same
+selected property transforms; it never prepares a complete patch plan or draws
+unknown replacements. ROM-free tests
 cover temporary conversion, cancellation, language changes, late results, and error
 handling. Local validation compares the species and levels with the final DOL across
 the three presets, a fixed starter, randomized types and stats, and base forms.

@@ -786,7 +786,8 @@ class XDWorkspace(QWidget):
             self.roulette_timer.stop()
         self.preview_button.setText(self.window.text(self.preview_action))
         self.preview_button.setVisible(not self.preview_running and not ready)
-        self.preview_button.setEnabled(not self.window.busy and (self.window.preview_thread is None or loading_known) and not ready)
+        self.preview_button.setEnabled(not self.window.busy and (self.window.preview_thread is None or loading_known)
+                                       and not ready and not (known and known.reveal_requested))
         self.preview_cancel.setVisible((self.preview_running or loading_known) and not ready)
         self.preview_cancel.setText(self.window.text("Annulation de l’aperçu…" if
             self.preview_running and self.window.preview_cancel_event.is_set() else "Annuler l’aperçu"))
@@ -806,7 +807,8 @@ class XDWorkspace(QWidget):
         self.preview_hint.setVisible(show_wild_rate or not ready and (tab == 0 if self.preview_running else
                                       self.preview_action != "Calculer l’aperçu"))
         self.preview_status.setText("✓ " + self.window.text("Aperçu à jour") if ready else
-                                    self.window.text("Calcul en cours…") if loading_known else "")
+                                    self.window.text("Calcul en cours…" if known.reveal_requested else
+                                                     "Chargement des Pokémon connus…") if loading_known else "")
         self.preview_status.setToolTip(self.window.text(self.preview_message))
         self.preview_status.setVisible(bool(self.preview_status.text()))
         ids = data.get("national_ids", {})
@@ -854,17 +856,18 @@ class XDWorkspace(QWidget):
         spots = data.get("poke_spots", ())
         gifts = data.get("gifts", ())
         def gift_origin(row, *, original=False):
-            required_species = row.get("required_species")
+            key = row.get("key")
+            required_species = GIFT_TRADE_REQUIREMENTS.get(key) if original else row.get("required_species")
             if required_species is not None:
                 evolution = row.get("required_evolution")
                 if original:
-                    required_species = GIFT_TRADE_REQUIREMENTS.get(row["key"], required_species)
-                    if evolution is not None:
-                        evolution = TOGETIC
+                    evolution = TOGETIC if key == "hordel-trade" else None
                 if evolution is not None:
                     return self.window.text("Échange contre {pokemon} ou {evolution}",
                                             pokemon=name(required_species), evolution=name(evolution))
                 return self.window.text("Échange contre {pokemon}", pokemon=name(required_species))
+            if key in GIFT_TRADE_REQUIREMENTS:
+                return self.window.text("Échange contre {pokemon}", pokemon="?")
             return self.window.text("Mont Bataille") if row.get("key", "").startswith("mt-battle-") else ""
 
         rows = ()

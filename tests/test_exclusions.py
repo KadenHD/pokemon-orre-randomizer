@@ -36,13 +36,13 @@ class ExclusionValidationTests(unittest.TestCase):
         legacy = profile_data("v08", Options.recommended())
         legacy.update(app_version="0.8.0", engine_version="starter-evolution-stages-v9")
         legacy["game"] = dict(LEGACY_GAME)
-        for name in NEW_POLICY_FIELDS | SHINY_FIELDS | EVENT_GIFT_FIELDS | V15_FIELDS | SHADOW_POLICY_FIELDS | SHOP_POLICY_FIELDS | {"diverse_story_families", "postgame_shadow_lugia", "keep_shadow_lugia_after_purification"}:
+        for name in NEW_POLICY_FIELDS | SHINY_FIELDS | EVENT_GIFT_FIELDS | V15_FIELDS | SHADOW_POLICY_FIELDS | SHOP_POLICY_FIELDS | {"diverse_story_families", "postgame_shadow_lugia", "keep_shadow_lugia_after_purification", "randomize_preserved_properties"}:
             legacy["options"].pop(name)
         from tests.test_profiles import ProfileTests
         ProfileTests().sign(legacy)
         self.assertEqual(parse_profile(encode(legacy)).options, replace(Options.recommended(), seeded_shinies=False,
                                                                       accessible_event_gifts=False,
-                                                                      randomize_legendary_shadows=True,
+                                                                      randomize_legendary_shadows=True, randomize_preserved_properties=True,
                                                                       shop_keep_capture_items=False,
                                                                       legacy_shop_scope=True,
                                                                       postgame_randomize_team=True))

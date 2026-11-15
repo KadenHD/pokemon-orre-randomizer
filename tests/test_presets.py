@@ -92,6 +92,7 @@ class PresetTests(unittest.TestCase):
                 profile = load_profile(path, is_xd=game == "xd")
                 expected = dict(payload["options"])
                 expected["randomize_legendary_shadows"] = True
+                expected["randomize_preserved_properties"] = True
                 expected["keep_shadow_lugia_after_purification"] = False
                 expected["shop_keep_capture_items"] = False
                 if game == "colosseum":
@@ -119,6 +120,7 @@ class PresetTests(unittest.TestCase):
             payload = json.loads((FIXTURES / f"rc2-{game}-species.json").read_text("utf-8"))
             expected = dict(payload["options"])
             expected["randomize_legendary_shadows"] = True
+            expected["randomize_preserved_properties"] = True
             expected["keep_shadow_lugia_after_purification"] = False
             expected["shop_keep_capture_items"] = False
             if game == "colosseum":
@@ -145,7 +147,7 @@ class PresetTests(unittest.TestCase):
     def test_v100_colosseum_profile_keeps_its_saved_values(self):
         payload = json.loads((FIXTURES / "rc2-colosseum-species.json").read_text("utf-8"))
         payload["app_version"] = "1.0.0"
-        expected = dict(payload["options"], postgame_shadow_lugia=False,
+        expected = dict(payload["options"], postgame_shadow_lugia=False, randomize_preserved_properties=True,
                         shop_keep_capture_items=False,
                         legacy_shop_scope=True,
                         keep_shadow_lugia_after_purification=False,

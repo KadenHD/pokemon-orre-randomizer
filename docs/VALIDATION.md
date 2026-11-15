@@ -22,6 +22,42 @@ historical evidence rather than the current feature specification.
 
 Counts evolve; the Actions run for a release tag records that build's results.
 
+### Known-only automatic previews and retained properties (2026-11-16)
+
+The v1.2.24 full local suite passed 938 tests across 109 isolated modules.
+Two Windows symlink checks are skipped because this host cannot create those
+links. All four Rust codec tests passed. The rebuilt Windows EXE passed 204
+interface states in six languages, using isolated preferences and muted audio.
+The public archive and embedded-code audit found no local user-home paths.
+
+
+Additional checks cover the known-only worker, queued full requests, cancellation,
+seed/source invalidation, single-click sheets, strict option types and shared
+six-language copy. Original Colosseum and XD inputs were read without creating
+an ISO or touching a save. The known-only entry points reject any call to the
+full builders in integration tests; XD also rejects species draws and whole-deck
+processing in that path.
+
+For the two desktop presets, retained/manual sheets, shiny status and portraits
+were compared with the full production preview on the same original and seed.
+Further cases cover native starters/gifts/Poké Spots and the advanced property
+override with a manually selected starter. No compared field differed.
+On this machine, the desktop-default known projection took about 2.2-2.7 seconds,
+versus 8.0-14.3 seconds for the full preview. Both include original-file checking;
+these are local measurements, not a timing guarantee for other hardware or RVZs.
+
+Profiles exported by the actual v1.2.23 source were imported into the changed
+engine. Every in-memory patch offset, size and SHA-256 matched that source for
+both games and both randomized presets. Synthetic tests independently check
+that preserved species retain the same learnable TM moves after a shared TM
+permutation, while other species still follow the requested rules.
+
+Twelve muted Qt captures cover known previews in all six languages, plus two
+advanced-settings captures. These are desktop/read-only checks, not new Dolphin
+playthroughs or validation of future wild encounter levels. Poké Spot sheets
+continue to list learnsets and compatible TMs without predicting four active
+moves for a future encounter of variable level.
+
 ### Added-model artwork formats (v1.2.23)
 
 The targeted group passed 165 tests across 15 isolated modules without skips.

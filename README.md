@@ -130,7 +130,15 @@ Check your starters, gifts and Shadow Pokémon before creating the ROM. Both
 games show the full Shadow roster, with 48 entries in Colosseum and 83 in XD.
 With an original ROM selected, Pokémon kept by your settings load automatically,
 including their sheets and seeded shiny appearance. Randomized replacements
-stay hidden until you calculate the preview.
+are calculated only when you click **Calculate preview**. Loading the preview
+page does not draw those replacements or prepare the complete ROM.
+
+Pokémon whose species is kept by your settings retain their native abilities,
+moves, TM moves, types and base stats; your shiny settings still apply. Enable
+**Randomize preserved Pokémon’s properties** in **Advanced > Allowed Pokémon**
+to apply the selected property rules to them too. Species tables are shared:
+retaining a species protects its evolution family and every copy of those
+species. Evolution accessibility rules still apply.
 
 The fixed-encounter examples below use a 100% shiny rate.
 

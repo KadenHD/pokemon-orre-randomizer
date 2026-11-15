@@ -351,6 +351,8 @@ TEXTS.update({
  'Adelbert · {count} purifications': 'ローガン · {count}匹リライブ',
  'Adelbert remet ces cadeaux après le nombre de purifications choisi.': '指定した数のリライブ後、ローガンからプレゼントを受け取れます。',
 })
+OPTION_TEXTS['randomize_preserved_properties'] = ("維持するポケモンの能力もランダム化", "種類を維持するポケモンにも特性・技・わざマシン・タイプ・種族値の設定を適用します。オフの場合は元の能力を維持します。色違いの設定は引き続き適用されます。同じ種類のポケモンは種族の能力を共有します。")
+
 OPTION_TEXTS.update({
  'event_celebi': ('イベントのセレビィを変更', 'このプレゼントのポケモンを変更します。イベントのプレゼントを入手可能にするとローガンから受け取れます。無効の場合は元の入手条件が必要です。'),
  'event_pikachu': ('イベントのピカチュウを変更', 'このプレゼントのポケモンを変更します。イベントのプレゼントを入手可能にするとローガンから受け取れます。無効の場合は元の入手条件が必要です。'),

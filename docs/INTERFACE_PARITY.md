@@ -29,6 +29,9 @@ Before calculation, encounter lists show the native species in the original
 column and a question mark for an unknown replacement. A manually selected or
 unchanged encounter can already show its portrait and sheet once the original
 data is loaded. Known shiny status supplies the matching portrait and red star.
+This automatic read covers only known encounters. Clicking **Calculate preview**
+starts the full randomizer; it does not reveal an already-computed hidden draw.
+If the read is pending, the full job waits for cleanup instead of running twice.
 Search works before and after calculation using names in all six languages and
 National Pokédex numbers.
 

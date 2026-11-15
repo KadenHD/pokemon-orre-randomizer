@@ -14,7 +14,7 @@ PRESET_DESCRIPTIONS = (
 )
 CUSTOM_PRESET = "Réglages personnalisés : vos options ne correspondent plus à un choix prédéfini. Ouvrez Avancé pour les voir ou les modifier. Choisir un des trois modes ci-dessus remplacera ces réglages."
 PRESET_EVOLUTIONS = "Les évolutions sont accessibles dans le jeu. Le tirage évite les familles en double entre starters, Pokémon obscurs et cadeaux quand les règles le permettent."
-PRESET_LEGENDARIES = "Les légendaires et fabuleux sont exclus des tirages. Les légendaires obscurs d’origine gardent leur espèce. Les tirages se règlent en mode Avancé."
+PRESET_LEGENDARIES = "Les légendaires et fabuleux sont exclus des tirages. Les légendaires obscurs d’origine gardent leur espèce. Les Pokémon conservés gardent leurs propriétés d’origine, sauf leur statut chromatique. Les tirages se règlent en mode Avancé."
 PRESET_SHINIES = "Taux chromatique : 5 %, fixé par la seed. Le statut est conservé après capture et purification."
 COLOSSEUM_PRESET_NATIVE = "Les cadeaux événementiels et la quête bonus de Lugia obscur sont activés. L’équipe de Jakylla et son Lugia ne sont pas randomisés."
 XD_PRESET_NATIVE = "Poké Places : 5 % de chance d’être chromatique à chaque nouvelle rencontre, visible avant le combat. Les fréquences d’apparition des espèces sont conservées. Doking demande le Pokémon rare de chaque lieu."
@@ -25,7 +25,7 @@ CATEGORY_HELP = {
     "Capacités": "Choisissez les capacités à changer et les protections à appliquer.",
     "CT": "Les descriptions suivent les capacités tirées. Les CS restent inchangées.",
     "Boss": "Ces réglages concernent les boss de l’histoire. Le choix de chaque obscur est conservé lors de ses réapparitions.",
-    "Pokémon autorisés": "Ces filtres s’appliquent aux Pokémon remplacés.",
+    "Pokémon autorisés": "Réglez les remplacements et les propriétés des Pokémon conservés.",
     "Talents": "Garde Mystik reste réservé à Munja.",
     "Statistiques": "Les statistiques sont redistribuées pour chaque espèce. Munja garde 1 PV de base.",
     "Types": "Les nouveaux types sont pris en compte pour les capacités du même type.",

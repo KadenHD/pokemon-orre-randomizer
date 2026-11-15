@@ -928,6 +928,8 @@ TEXTS.update({
  'Adelbert · {count} purifications': 'Sophos · {count} Erlösungen',
  'Adelbert remet ces cadeaux après le nombre de purifications choisi.': 'Sophos vergibt die Geschenke nach den gewählten Erlösungen.',
 })
+OPTION_TEXTS['randomize_preserved_properties'] = ("Auch beibehaltene Pokémon ändern", "Wendet die Einstellungen für Fähigkeiten, Attacken, TMs, Typen und Basiswerte auch auf Pokémon mit beibehaltener Art an. Sonst bleiben diese Eigenschaften unverändert. Die Einstellungen für schillernde Pokémon gelten weiterhin. Arteigenschaften werden von allen Exemplaren geteilt.")
+
 OPTION_TEXTS.update({
  'event_celebi': ('Event-Celebi ersetzen', 'Ändert das Pokémon dieses Geschenks. Aktiviere den Zugang zu Event-Geschenken, um es von Sophos zu erhalten. Sonst gelten die ursprünglichen Voraussetzungen.'),
  'event_pikachu': ('Event-Pikachu ersetzen', 'Ändert das Pokémon dieses Geschenks. Aktiviere den Zugang zu Event-Geschenken, um es von Sophos zu erhalten. Sonst gelten die ursprünglichen Voraussetzungen.'),

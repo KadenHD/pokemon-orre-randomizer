@@ -1143,12 +1143,14 @@ class MainWindow(QMainWindow):
             self.roulette_timer.stop()
         self.preview_button.setText(self.text(self._preview_action))
         self.preview_button.setVisible(not running and not ready)
-        self.preview_button.setEnabled(not self.busy and (self.preview_thread is None or loading_known) and not ready)
+        self.preview_button.setEnabled(not self.busy and (self.preview_thread is None or loading_known)
+                                       and not ready and not (known and known.reveal_requested))
         self.preview_status.setVisible(ready or loading_known)
         self.preview_hint.setVisible(not ready and not running and self._preview_action != "Calculer l’aperçu")
         self.preview_status.setToolTip(self.text(self._preview_message))
         status = (self.text("Aperçu à jour") if ready else
                   self.text("Annulation de l’aperçu…") if self.preview_cancel_event.is_set() else
+                  self.text("Chargement des Pokémon connus…") if loading_known and not known.reveal_requested else
                   self.text("Calcul en cours…"))
         self.preview_status.setText(("✓ " if ready else "") + status)
         self.preview_status.setAccessibleName(status)

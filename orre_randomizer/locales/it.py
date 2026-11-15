@@ -979,6 +979,8 @@ TEXTS.update({
  'Adelbert · {count} purifications': 'Salapuzio · {count} purificazioni',
  'Adelbert remet ces cadeaux après le nombre de purifications choisi.': 'Salapuzio offre questi regali dopo il numero scelto di purificazioni.',
 })
+OPTION_TEXTS['randomize_preserved_properties'] = ("Modifica anche i Pokémon conservati", "Applica le impostazioni di abilità, mosse, MT, tipi e statistiche base ai Pokémon la cui specie viene conservata. Altrimenti queste proprietà restano originali. Le impostazioni cromatiche continuano ad applicarsi. Le proprietà di specie sono condivise da tutti gli esemplari.")
+
 OPTION_TEXTS.update({
  'event_celebi': ('Sostituisci Celebi evento', 'Cambia il Pokémon di questo regalo. Attiva l’accesso ai regali evento per riceverlo da Salapuzio; altrimenti restano necessarie le condizioni originali.'),
  'event_pikachu': ('Sostituisci Pikachu evento', 'Cambia il Pokémon di questo regalo. Attiva l’accesso ai regali evento per riceverlo da Salapuzio; altrimenti restano necessarie le condizioni originali.'),

@@ -98,6 +98,10 @@ def effective_setting_names(options):
     add(('ensure_damaging_move','ensure_stab_move','no_duplicate_moves','ban_self_destruct','ban_ohko','moves_mode'),
         any(getattr(options,name) for name in ('randomize_trainer_moves','randomize_starter_moves','randomize_gift_moves','randomize_learnsets')))
     add(('abilities_family_consistent',), options.randomize_abilities)
+    add(('randomize_preserved_properties',), any(getattr(options, name) for name in (
+        'randomize_abilities', 'randomize_types', 'randomize_stats', 'randomize_learnsets',
+        'randomize_starter_moves', 'randomize_gift_moves', 'randomize_trainer_moves',
+        'randomize_tm_moves', 'randomize_held_items')) or options.tm_compatibility_mode != 'original')
     add(('preserve_stat_totals',), options.randomize_stats)
     add(('types_family_consistent',), options.randomize_types)
     add(('useful_held_items_only',), options.randomize_held_items)

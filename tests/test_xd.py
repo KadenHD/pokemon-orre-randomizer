@@ -21,7 +21,7 @@ from orre_randomizer.xd_shops import STONE_PRICE, patch_stone_price
 
 def legacy_options(options):
     return {name: value for name, value in asdict(options).items()
-            if name not in {"keep_shadow_lugia_after_purification", "randomize_legendary_shadows", "shop_keep_capture_items"}}
+            if name not in {"keep_shadow_lugia_after_purification", "randomize_legendary_shadows", "shop_keep_capture_items", "randomize_preserved_properties"}}
 
 
 def boot_for(game_id):
@@ -40,7 +40,7 @@ class XDTests(unittest.TestCase):
                 "revision": 0, "source_iso_sha256": region.iso_sha256, "seed": "old-wild",
                 "options": {k: v for k, v in legacy_options(options).items() if k not in XD_POKE_SPOT_SHINY_FIELDS}}
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
-        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True,
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True, randomize_preserved_properties=True,
                                                   shop_keep_capture_items=False, custom_poke_spot_shinies=False))
         self.assertFalse(profile.options.custom_poke_spot_shinies)
 
@@ -56,7 +56,7 @@ class XDTests(unittest.TestCase):
         for key in XD_POKE_SPOT_SHINY_FIELDS:
             payload["options"].pop(key)
         profile = parse_xd_profile(json.dumps(payload).encode(), report=True)
-        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True,
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True, randomize_preserved_properties=True,
                                                   shop_keep_capture_items=False, custom_poke_spot_shinies=False))
         self.assertTrue(profile.options.poke_spots_full_pokedex)
         self.assertFalse(profile.options.custom_shadow_shinies)
@@ -75,7 +75,7 @@ class XDTests(unittest.TestCase):
         for key in XD_POKE_SPOT_SHINY_FIELDS:
             data["options"].pop(key)
         profile = parse_xd_profile(json.dumps(data).encode(), report=True)
-        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True,
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True, randomize_preserved_properties=True,
                                                   shop_keep_capture_items=False, custom_poke_spot_shinies=False))
         self.assertFalse(profile.xd_spot_migration)
         with TemporaryDirectory() as folder:
@@ -86,6 +86,7 @@ class XDTests(unittest.TestCase):
             payload.pop("configuration_sha256")
             payload["engine_version"] = PREVIOUS_XD_QOL_ENGINE
             payload["options"].pop("keep_shadow_lugia_after_purification")
+            payload["options"].pop("randomize_preserved_properties")
             payload["options"].pop("randomize_legendary_shadows")
             payload["options"].pop("shop_keep_capture_items")
             payload["options"].pop("poke_spots_full_pokedex")
@@ -96,7 +97,7 @@ class XDTests(unittest.TestCase):
             payload["configuration_sha256"] = hashlib.sha256(canonical).hexdigest()
             path.write_text(json.dumps(payload), encoding="utf-8")
             self.assertEqual(load_profile(path, is_xd=True).options,
-                             replace(options, randomize_legendary_shadows=True,
+                             replace(options, randomize_legendary_shadows=True, randomize_preserved_properties=True,
                                      shop_keep_capture_items=False, custom_poke_spot_shinies=False))
 
     def test_xd_profile_preserves_typed_options_and_rejects_colosseum_import(self):
@@ -119,6 +120,7 @@ class XDTests(unittest.TestCase):
             payload = save_profile(path, "previous-xd-lugia", options)
         payload["engine_version"] = PREVIOUS_XD_LUGIA_ENGINE
         payload["options"].pop("keep_shadow_lugia_after_purification")
+        payload["options"].pop("randomize_preserved_properties")
         payload["options"].pop("randomize_legendary_shadows")
         payload["options"].pop("shop_keep_capture_items")
         def sign():
@@ -127,7 +129,7 @@ class XDTests(unittest.TestCase):
             payload["configuration_sha256"] = hashlib.sha256(canonical).hexdigest()
         sign()
         profile = parse_xd_profile(json.dumps(payload).encode())
-        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True, shop_keep_capture_items=False))
+        self.assertEqual(profile.options, replace(options, randomize_legendary_shadows=True, randomize_preserved_properties=True, shop_keep_capture_items=False))
         self.assertFalse(profile.options.keep_shadow_lugia_after_purification)
         payload["seed"] = "unsigned-change"
         with self.assertRaises(UserError):
