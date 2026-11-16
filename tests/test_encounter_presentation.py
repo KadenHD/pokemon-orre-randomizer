@@ -11,8 +11,8 @@ from orre_randomizer.i18n import translate, LANGUAGES
 from orre_randomizer.preview import BASE_SHADOWS, baseline_rows
 
 try:
-    from PySide6.QtCore import QBuffer, QIODevice, QSettings, Qt, QCoreApplication, QEvent
-    from PySide6.QtGui import QPixmap, QColor
+    from PySide6.QtCore import QBuffer, QIODevice, QPoint, QPointF, QSettings, Qt, QCoreApplication, QEvent
+    from PySide6.QtGui import QPixmap, QColor, QWheelEvent
     from PySide6.QtWidgets import QApplication, QAbstractItemView
     from orre_randomizer.gui import MainWindow
 except ImportError:
@@ -126,6 +126,64 @@ class EncounterViewTests(unittest.TestCase):
                 for x, y in ((0, 0), (41, 0), (0, 41), (41, 41)):
                     self.assertEqual(png.pixelColor(x, y).alpha(), 0 if xd else 255)
                 self.assertEqual(png.pixelColor(21, 21).alpha(), 255)
+
+    def test_horizontal_gestures_do_not_pan_rows_or_header_and_vertical_scroll_still_works(self):
+        w = self.window
+        for xd in (False, True):
+            with self.subTest(xd=xd):
+                (w.show_xd if xd else w.show_colosseum)()
+                pane = w.xd if xd else w
+                pane.step = 1
+                if xd:
+                    pane.pages.setCurrentIndex(1)
+                pane.refresh_navigation()
+                pane.workspace_tabs.setCurrentIndex(1)
+                (pane.encounter_tabs if xd else pane.preview_tabs).setCurrentIndex(1)
+                tree = pane.preview_details if xd else pane.encounters_tree
+                # Hiding a scrollbar alone still permits wheel/selection panning
+                # when the header's minimum widths exceed the available space.
+                tree.header().setMinimumSectionSize(180)
+                tree.setFixedWidth(300)
+                for _ in range(3):
+                    self.app.processEvents()
+                vertical = tree.verticalScrollBar()
+                self.assertGreater(vertical.maximum(), 0)
+
+                def wheel(target, pixels, angles, modifiers=Qt.KeyboardModifier.NoModifier):
+                    pos = QPoint(30, min(15, target.height() - 1))
+                    event = QWheelEvent(QPointF(pos), QPointF(target.mapToGlobal(pos)),
+                                        pixels, angles, Qt.MouseButton.NoButton, modifiers,
+                                        Qt.ScrollPhase.ScrollUpdate, False)
+                    self.app.sendEvent(target, event)
+                    self.app.processEvents()
+                    return event
+
+                for target in (tree.viewport(), tree.header().viewport()):
+                    for pixels, angles, modifiers in (
+                        (QPoint(-90, 0), QPoint(), Qt.KeyboardModifier.NoModifier),
+                        (QPoint(), QPoint(-120, 0), Qt.KeyboardModifier.NoModifier),
+                        (QPoint(), QPoint(0, -120), Qt.KeyboardModifier.ShiftModifier),
+                    ):
+                        before_y = vertical.value()
+                        event = wheel(target, pixels, angles, modifiers)
+                        self.assertEqual(tree.header().offset(), 0)
+                        self.assertEqual(tree.horizontalOffset(), 0)
+                        self.assertEqual(vertical.value(), before_y)
+                        self.assertTrue(event.isAccepted())
+                self.assertEqual(tree.horizontalScrollBar().maximum(), 0)
+                tree.setCurrentItem(tree.topLevelItem(0), tree.result_column)
+                tree.scrollToItem(tree.topLevelItem(0))
+                self.app.processEvents()
+                self.assertEqual(tree.header().offset(), 0)
+                for target, pixels, angles in (
+                    (tree.viewport(), QPoint(), QPoint(0, -120)),
+                    (tree.viewport(), QPoint(-30, -60), QPoint(-120, -120)),
+                    (tree.header().viewport(), QPoint(), QPoint(0, -120)),
+                ):
+                    vertical.setValue(0)
+                    wheel(target, pixels, angles)
+                    self.assertGreater(vertical.value(), 0)
+                    self.assertEqual(tree.header().offset(), 0)
 
 
 if __name__ == '__main__':

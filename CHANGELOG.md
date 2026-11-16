@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Disable horizontal panning in both games' encounter tables, including
+  trackpad gestures, Shift+wheel and input over the header. Keep vertical
+  scrolling and ignore the horizontal part of diagonal gestures.
+
 ## 1.2.25 - 2026-11-16
 
 - Display Colosseum's final four native Shadow entries as 45-48, keeping their

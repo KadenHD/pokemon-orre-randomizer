@@ -1,7 +1,7 @@
 """Shared Qt layouts for the Colosseum and XD wizards."""
 import secrets
 
-from PySide6.QtCore import QEvent, QObject, QPointF, QSize, QTimer, Qt
+from PySide6.QtCore import QEvent, QObject, QPoint, QPointF, QSize, QTimer, Qt
 from PySide6.QtGui import QWheelEvent, QTextDocument
 from PySide6.QtWidgets import (
     QApplication, QAbstractItemView, QComboBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
@@ -412,6 +412,9 @@ class EncounterTable(QTreeWidget):
         self.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.header().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.header_viewport = self.header().viewport()
+        self.header_viewport.installEventFilter(self)
+        self.horizontalScrollBar().rangeChanged.connect(self.lock_horizontal_position)
         self.row_layout_timer = QTimer(self)
         self.row_layout_timer.setSingleShot(True)
         self.row_layout_timer.timeout.connect(self.layout_rows)
@@ -455,6 +458,34 @@ class EncounterTable(QTreeWidget):
     def resizeEvent(self, event):
         super().resizeEvent(event)
         self.schedule_row_layout()
+
+    def lock_horizontal_position(self, *_args):
+        # A hidden scrollbar can still pan through wheel input or scrollTo().
+        scrollbar = self.horizontalScrollBar()
+        if scrollbar.minimum() or scrollbar.maximum():
+            scrollbar.setRange(0, 0)
+        self.header().setOffset(0)
+
+    def wheelEvent(self, event):
+        if event.modifiers() & Qt.KeyboardModifier.ShiftModifier:
+            event.accept()
+            return
+        if event.pixelDelta().x() or event.angleDelta().x():
+            if event.pixelDelta().y() or event.angleDelta().y():
+                vertical = QWheelEvent(event.position(), event.globalPosition(),
+                                       QPoint(0, event.pixelDelta().y()), QPoint(0, event.angleDelta().y()),
+                                       event.buttons(), event.modifiers(), event.phase(), event.inverted())
+                vertical.setTimestamp(event.timestamp())
+                super().wheelEvent(vertical)
+            event.accept()
+            return
+        super().wheelEvent(event)
+
+    def eventFilter(self, watched, event):
+        if event.type() == QEvent.Type.Wheel and watched is self.header_viewport:
+            self.wheelEvent(event)
+            return True
+        return super().eventFilter(watched, event)
 
     def visible_count(self, text):
         items = [item for i in range(self.topLevelItemCount())

@@ -302,6 +302,9 @@ use Original Pokémon / Location and encounter rate / With this seed. Metadata o
 own middle column and remains searchable; replacement cells contain only the
 portrait, Pokémon name, shiny star and level. Long conditions wrap into taller
 rows with pixel scrolling, including when one row is taller than the viewport.
+Encounter tables keep a fixed horizontal position. Consume horizontal and
+Shift+wheel gestures over both rows and headers; diagonal gestures scroll only
+vertically. Selection and resizing must not introduce a horizontal offset.
 Native Shadow roster numbers are display values, never internal game IDs.
 
 During calculation, a cosmetic cycle updates eligible portraits/names every
