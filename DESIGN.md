@@ -230,6 +230,8 @@ unknown portraits.
 Added-model portraits follow the selected game's format in every preview and
 sheet: opaque square in Colosseum, circular with transparent corners in XD.
 Use the shared model-artwork formatter and retain the complete silhouette.
+XD unknown portraits and cosmetic roulette frames use the same circular
+silhouette; a rounded QLabel border alone must not be used to mask an image.
 DNA whole-body artwork is a separate resource; see docs/CUSTOM_MODELS.md.
 
 ## Components
@@ -294,6 +296,13 @@ Show the red star and matching portrait only when the current
 rules establish the shiny status; a known species alone does not establish it.
 Search works before and after calculation using names in all six languages and
 National Pokédex numbers. The counter reports the visible range or no results.
+
+Gift tables use Original Pokémon / How to obtain / With this seed. XD Poké Spots
+use Original Pokémon / Location and encounter rate / With this seed. Metadata occupies its
+own middle column and remains searchable; replacement cells contain only the
+portrait, Pokémon name, shiny star and level. Long conditions wrap into taller
+rows with pixel scrolling, including when one row is taller than the viewport.
+Native Shadow roster numbers are display values, never internal game IDs.
 
 During calculation, a cosmetic cycle updates eligible portraits/names every
 115 ms. It does not determine the draw. Progress, loading text and cancellation

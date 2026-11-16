@@ -35,6 +35,16 @@ If the read is pending, the full job waits for cleanup instead of running twice.
 Search works before and after calculation using names in all six languages and
 National Pokédex numbers.
 
+Gifts in both games share three columns: **Original Pokémon**, **How to obtain**
+and **With this seed**. XD Poké Spots use **Location and encounter rate** in the middle.
+Locations, acquisition conditions and rates remain in that column while calculating;
+portrait roulette only updates the replacement column. Long conditions wrap,
+and pixel scrolling makes every line reachable at the minimum window height.
+All XD unknown portraits and roulette frames are circular. Colosseum stays square.
+
+Colosseum's last four native Shadow entries display 45-48 instead of internal
+IDs 55, 56, 57 and 67. Rendering never rewrites these IDs in a ROM or save.
+
 Both previews use the same Qt worker lifecycle. Cosmetic cycling during loading
 does not draw Pokémon or alter the seed. The final result comes from the production
 patch plan. ROM, seed or rule changes invalidate that result and any open sheet.

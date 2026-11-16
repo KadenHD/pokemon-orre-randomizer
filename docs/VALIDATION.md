@@ -22,6 +22,29 @@ historical evidence rather than the current feature specification.
 
 Counts evolve; the Actions run for a release tag records that build's results.
 
+### Encounter columns and XD portrait shapes (v1.2.25)
+
+The complete local suite passed 944 tests across 110 isolated modules. Two
+Windows symlink checks are skipped because this host cannot create those links.
+All four Rust codec tests passed. Checks cover the displayed Shadow roster
+numbers, unchanged engine IDs, three-column gift and Poké Spot tables,
+six-language acquisition conditions, wrapped text, pixel scrolling and circular
+XD placeholders and roulette portraits.
+
+Nine English README captures use the actual application and read-only original
+inputs. They include known-only encounters, both games' full starter, Shadow
+and gift previews, and XD's location/rate column. Each image has its capture
+version, settings, dimensions and hash recorded in the media manifest.
+
+Separate muted Dolphin instances used European test ISOs built by the current
+production pipeline and copied, deliberately staged checkpoints. Colosseum
+checks covered normal and shiny Shadow Lugia in battle, Psychic and Shadow
+Rush. XD checks covered the shiny XD001 presentation, both Shadow Lugia
+palettes in battle, Protect and the shiny Lugia's Shadow Rush. These observations
+confirm the exercised entry, idle and move animations; they do not cover every
+move, all 17 animation slots or a complete playthrough. Original input, donor
+card and emulator hashes remained unchanged. Personal profiles were not used.
+
 ### Known-only automatic previews and retained properties (2026-11-16)
 
 The v1.2.24 full local suite passed 938 tests across 109 isolated modules.

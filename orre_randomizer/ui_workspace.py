@@ -2,9 +2,9 @@
 import secrets
 
 from PySide6.QtCore import QEvent, QObject, QPointF, QSize, QTimer, Qt
-from PySide6.QtGui import QWheelEvent
+from PySide6.QtGui import QWheelEvent, QTextDocument
 from PySide6.QtWidgets import (
-    QApplication, QComboBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
+    QApplication, QAbstractItemView, QComboBox, QHBoxLayout, QHeaderView, QLabel, QLineEdit,
     QListWidget, QListWidgetItem, QPlainTextEdit, QProgressBar, QScrollArea, QScrollBar,
     QStackedWidget, QTabBar, QToolButton, QTreeWidget, QVBoxLayout, QWidget,
 )
@@ -401,17 +401,60 @@ class EncounterTable(QTreeWidget):
         self.setVerticalScrollBar(self.scrollbar)
         self.setObjectName("encountersPreview")
         self.setColumnCount(2)
+        self.result_column = 1
         self.name_delegate = PreviewNameDelegate(self)
+        self.context_delegate = PreviewNameDelegate(self, wrap_plain=True)
         self.setItemDelegateForColumn(1, self.name_delegate)
         self.setIconSize(QSize(42, 42))
         self.setRootIsDecorated(False)
         self.setIndentation(0)
         self.setWordWrap(True)
+        self.setVerticalScrollMode(QAbstractItemView.ScrollMode.ScrollPerPixel)
         self.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.header().setSectionResizeMode(QHeaderView.ResizeMode.Stretch)
+        self.row_layout_timer = QTimer(self)
+        self.row_layout_timer.setSingleShot(True)
+        self.row_layout_timer.timeout.connect(self.layout_rows)
+        self.header().sectionResized.connect(self.schedule_row_layout)
         window.bind(self.setAccessibleName, accessible_name)
         window.bind(self.setAccessibleDescription,
                     "Cliquez sur une ligne ou appuyez sur Entrée pour ouvrir la fiche du Pokémon obtenu.")
+
+    def set_context_column(self, heading=None):
+        result_column = 2 if heading else 1
+        if self.result_column == result_column:
+            return
+        self.setItemDelegateForColumn(self.result_column, None)
+        self.setColumnCount(result_column + 1)
+        self.result_column = result_column
+        if heading:
+            self.setItemDelegateForColumn(1, self.context_delegate)
+        self.setItemDelegateForColumn(result_column, self.name_delegate)
+        self.schedule_row_layout()
+
+    def schedule_row_layout(self, *_args):
+        self.row_layout_timer.start(0)
+
+    def layout_rows(self):
+        for index in range(self.topLevelItemCount()):
+            item = self.topLevelItem(index)
+            height = 54
+            # Shadow rows have only a short name and level. Measure wrapped
+            # text only for the few gift/Poké Spot rows with a context column.
+            for column in range(self.columnCount() if self.result_column == 2 else 0):
+                margin = 58 if column == self.result_column else 24
+                width = max(40, self.columnWidth(column)-margin)
+                document = QTextDocument()
+                document.setDefaultFont(self.font())
+                document.setDocumentMargin(0)
+                document.setPlainText(item.text(column))
+                document.setTextWidth(width)
+                height = max(height, round(document.size().height())+16)
+            item.setSizeHint(0, QSize(0, height))
+
+    def resizeEvent(self, event):
+        super().resizeEvent(event)
+        self.schedule_row_layout()
 
     def visible_count(self, text):
         items = [item for i in range(self.topLevelItemCount())

@@ -274,7 +274,8 @@ class KnownPreviewGuiTests(unittest.TestCase):
             self.pump(lambda: pane.known_preview.result is not None and self.window.preview_thread is None)
             pane.encounter_tabs.setCurrentIndex(2)
             item = pane.preview_details.topLevelItem(0)
-            self.assertIn('Échange contre Togepi ou Togetic', item.text(0))
+            self.assertIn('Élekid', item.text(0))
+            self.assertNotIn('Échange', item.text(0))
             self.assertIn('Échange contre ?', item.text(1))
             self.assertIsNone(pane.preview_result)
 

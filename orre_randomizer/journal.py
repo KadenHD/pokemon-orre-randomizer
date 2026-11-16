@@ -12,6 +12,7 @@ from pathlib import Path
 from .detail_texts import LANGUAGES, detail_text
 from .pokemon_details import STAT_NAMES, display_name, encounter_details
 from .gift_presentation import order_purification_gifts
+from .encounter_presentation import colosseum_shadow_number
 
 
 def _e(value) -> str:
@@ -227,7 +228,7 @@ def render_journal(report: dict, language: str = 'fr') -> str:
         shadow_rows.append({'shadow_id': bonus['shadow_id'], 'species_index': bonus['species']})
     for row in shadow_rows:
         sid, index = row['shadow_id'], row['species_index']
-        title = f"{sid:02d} · " + display_name(catalog['species'][str(index)] if catalog else row, language)
+        title = f"{colosseum_shadow_number(sid):02d} · " + display_name(catalog['species'][str(index)] if catalog else row, language)
         if catalog:
             encounter = catalog.get('shadows', {}).get(str(sid), {})
             content = _sheet(encounter_details(catalog, index, level=encounter.get('level'),

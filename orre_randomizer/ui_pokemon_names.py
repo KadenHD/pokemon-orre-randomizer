@@ -15,8 +15,14 @@ def shiny_name_html(name, star_size):
 class PreviewNameDelegate(QStyledItemDelegate):
     """Draw a rich name inside the native text area, beside its portrait."""
 
+    def __init__(self, parent=None, *, wrap_plain=False):
+        super().__init__(parent)
+        self.wrap_plain = wrap_plain
+
     def paint(self, painter, option, index):
         markup = index.data(RICH_NAME_ROLE)
+        if self.wrap_plain:
+            markup = escape(index.data(Qt.ItemDataRole.DisplayRole) or "").replace("\n", "<br>")
         if not markup:
             super().paint(painter, option, index)
             return

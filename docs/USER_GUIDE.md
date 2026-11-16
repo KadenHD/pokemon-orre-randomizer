@@ -128,6 +128,16 @@ so their saved settings can reproduce the same game.
 A Poké Spot sheet lists level-up moves and compatible TMs. Its four active moves
 depend on the encounter's generated level and are not shown as a fixed set.
 
+Gift previews show acquisition conditions in their own middle column. Plusle's
+replacement is obtained after the first Story Mode victory over Miror B. Ho-Oh's
+replacement requires purifying the original 48 Shadow Pokémon, then clearing all
+100 Mt. Battle fights in Battle Mode with an unchanged team registered from
+Story Mode. Eagun's added gifts show your configured purification thresholds.
+These native requirements are documented in the
+[in-game gift reference](https://bulbapedia.bulbagarden.net/wiki/List_of_in-game_event_Pok%C3%A9mon_in_Pok%C3%A9mon_Colosseum_and_Pok%C3%A9mon_XD).
+XD trade conditions follow the current replacements; Poké Spot encounter rates
+appear in a separate middle column. Search also matches this metadata.
+
 The **Summary** tab shows original descriptions under each ability. The **Moves**
 tab shows them for current moves, level-up moves and compatible TMs, where the
 game supplies a description. Pokémon types and regular move types use the

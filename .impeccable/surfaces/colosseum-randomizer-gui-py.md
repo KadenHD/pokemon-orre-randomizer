@@ -2,7 +2,7 @@
 version: 1
 slug: "colosseum-randomizer-gui-py"
 primary_target: "orre_randomizer/gui.py"
-related_targets: ["orre_randomizer/xd_ui.py", "orre_randomizer/ui_theme.py", "orre_randomizer/ui_workspace.py", "orre_randomizer/ui_bonus_event.py", "orre_randomizer/ui_pokemon_details.py", "orre_randomizer/workspace_copy.py", "orre_randomizer/workspace_i18n.py", "orre_randomizer/ui_home.py", "orre_randomizer/ui_updates.py", "orre_randomizer/update_service.py"]
+related_targets: ["orre_randomizer/xd_ui.py", "orre_randomizer/ui_theme.py", "orre_randomizer/ui_workspace.py", "orre_randomizer/ui_portraits.py", "orre_randomizer/ui_bonus_event.py", "orre_randomizer/ui_pokemon_details.py", "orre_randomizer/workspace_copy.py", "orre_randomizer/workspace_i18n.py", "orre_randomizer/ui_home.py", "orre_randomizer/ui_updates.py", "orre_randomizer/update_service.py"]
 ---
 
 # Surface: Shared game workspaces
@@ -29,6 +29,7 @@ unsupported system languages fall back to English.
 | Preview tabs | Colosseum: 2 starters, 48 Shadows, 4 gifts and optional-event preview; XD: 1 starter, 83 Shadows, 7 gifts, 9 Poké Spot slots |
 | Pending preview | Native originals and unknown replacements; resolved fixed/manual encounters show their portraits and sheets, with a red star only for a known shiny |
 | Automatic data | Read only retained/manual encounters; the full randomizer and ROM plan start only after Calculate is clicked |
+| Encounter metadata | Gifts and Poké Spots use a middle column for conditions or encounter rates; long rows support pixel scrolling |
 | Search and scrolling | Names in six languages and National Pokédex IDs; visible-range counter and contrasted scrollbar |
 | Loading | Shared background worker, 115 ms cosmetic cycle, progress, cancellation and stale-result rejection |
 | Current preview | Final seeded results, up-to-date state and optional duplicate-family tab |

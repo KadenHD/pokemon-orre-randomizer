@@ -269,7 +269,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                         window.preview_search.clear()
                         window.preview_tabs.setCurrentIndex(2)
                         assert window.encounters_tree.topLevelItemCount() == 4
-                        assert window.status.text() == window.text("Adelbert remet ces cadeaux après le nombre de purifications choisi.")
+                        assert window.status.text() == window.text("Les conditions d’obtention sont indiquées pour chaque cadeau.")
                         window.preview_tabs.setCurrentIndex(1)
                         assert window.preview_shiny_status.text() == window.text(
                             "★ 100 % : starters chromatiques garantis." if policy == "always"

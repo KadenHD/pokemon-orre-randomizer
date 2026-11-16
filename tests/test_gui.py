@@ -371,11 +371,12 @@ class GuiTests(unittest.TestCase):
             self.assertEqual(xd.preview_details.topLevelItemCount(), 2)
             duking, hordel = (xd.preview_details.topLevelItem(i) for i in range(2))
             for row in (duking, hordel):
-                for column in range(2):
-                    self.assertEqual(row.textAlignment(column), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop)
-            self.assertIn("Gobou · Niv. 20\nDoking demande Pikachu · Roche\n15 % des rencontres", duking.text(1))
-            self.assertIn("Échange contre Togepi ou Togetic", hordel.text(0))
-            self.assertIn("\nÉchange contre Pikachu ou Raichu", hordel.text(1))
+                for column in range(3):
+                    self.assertEqual(row.textAlignment(column), Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+            self.assertEqual(duking.text(2), "Gobou · Niv. 20")
+            self.assertIn("Doking demande Pikachu · Roche\n15 % des rencontres", duking.text(1))
+            self.assertEqual(hordel.text(0), "Élekid")
+            self.assertIn("Échange contre Pikachu ou Raichu", hordel.text(1))
             window.language_combo.setCurrentIndex(window.language_combo.findData("en"))
             self.assertEqual(xd.encounter_tabs.currentIndex(), 2)
             self.assertIn("Duking wants Pikachu · Rock\n15% of encounters", xd.preview_details.topLevelItem(0).text(1))

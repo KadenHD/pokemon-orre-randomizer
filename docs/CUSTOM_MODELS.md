@@ -4,6 +4,13 @@ Treat an added appearance as a set of resources for one specimen. Adding a
 battle model alone does not cover field scenes, portraits or the DNA lab.
 Use this procedure for every new model, including recolors of an existing one.
 
+The bundled Shadow Lugia uses XD001's original animation data. Colosseum adapts
+the container and its 17 scheduling slots to native timing/flags; it retains
+XD's skeleton and DAT tracks. Normal and shiny Shadow Lugia have identical
+scheduling data in both games: only materials and the belly texture are changed.
+The read-only original-model audit reproduces the bundled Colosseum conversion.
+This establishes data preservation, not a new visual playthrough of every move.
+
 ## Resource contract
 
 | Use | Required resource and format |

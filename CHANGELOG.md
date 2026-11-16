@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.2.25 - 2026-11-16
+
+- Display Colosseum's final four native Shadow entries as 45-48, keeping their
+  internal IDs unchanged. Use the same roster numbers in duplicate-family
+  labels and the offline journal; the optional bonus encounter is entry 49.
+- Give gifts and XD Poké Spots a middle column for acquisition conditions,
+  locations and encounter rates. Add Plusle and Ho-Oh's original requirements in all six
+  languages. Wrap long conditions and allow pixel scrolling through tall rows.
+- Use circular XD placeholders and clip every XD preview portrait to the same
+  silhouette, including starter roulette frames. Keep Colosseum portraits square.
+- Keep long acquisition text inside its column and refresh nine English README
+  previews, including XD's Poké Spot locations and encounter rates.
+
 ## 1.2.24 - 2026-11-16
 
 - Load only retained and manually selected encounters automatically, including

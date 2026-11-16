@@ -1,5 +1,5 @@
 {
-  "app_version": "1.2.24",
+  "app_version": "1.2.25",
   "language": "en",
   "description": "English application and gameplay captures, with text-free XD purification images. Each entry records its capture version; unchanged earlier images are retained.",
   "files": {
@@ -15,18 +15,18 @@
       "source": "Actual v1.2.20 application with private muted preferences; English offscreen capture, no ROM opened."
     },
     "colosseum-settings.png": {
-      "bytes": 83090,
-      "sha256": "a97fce279dcfca9b0be2cff23178374ece2ecbea9b7269b0712e03540198f832",
+      "bytes": 83712,
+      "sha256": "30acc5386c768c8d10411891cc909e8c93ea8cdb4e75927fb6e266c53f0c1007",
       "kind": "application",
       "language": "en",
       "game": "colosseum",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.21",
-      "seed": "known-preview-native-v1221",
+      "captured_in_version": "1.2.25",
+      "seed": "orre-showcase-5",
       "shiny_chance_percent": 5,
-      "description": "Starter preview with current portrait and sheet-button spacing.",
-      "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
+      "description": "Seeded starter preview and circular XD portraits.",
+      "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
     },
     "xd-settings.png": {
       "bytes": 69816,
@@ -43,16 +43,18 @@
       "preset": "Current recommended preset"
     },
     "shadow-pokemon.png": {
-      "bytes": 109814,
-      "sha256": "dee7a6d8ec98ba1d4e427b0179a27a629aeac2c13bcce580d33956f976f8d753",
+      "bytes": 111022,
+      "sha256": "5f44ad8ffa6168ab79dc6cd5bf0f7a6f97df6d7bc1c6210314dd1ef6300331c4",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "The randomized Shadow roster preview.",
+      "description": "Seeded Shadow roster with single-click Pokémon sheets.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.25",
+      "shiny_chance_percent": 5,
+      "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
     },
     "pokemon-sheet.png": {
       "bytes": 47878,
@@ -264,55 +266,60 @@
       "preset": "Current recommended preset"
     },
     "xd-starter-preview.png": {
-      "bytes": 46763,
-      "sha256": "b9401749069e9be037a3f2bdc24559c0fcf2836ad855f0eb56f17fc48bb703d1",
+      "bytes": 48684,
+      "sha256": "94b096c4da64bee49fa8dd767ebd92ed0db59e511f8c6e9a63dbcd2fccd93d9c",
       "kind": "application",
       "language": "en",
       "game": "xd",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.21",
-      "seed": "known-preview-native-v1221",
+      "captured_in_version": "1.2.25",
+      "seed": "orre-xd-showcase-3",
       "shiny_chance_percent": 5,
-      "description": "Starter preview with current portrait and sheet-button spacing.",
-      "source": "Actual English widgets, private muted preferences, offscreen capture. Cached production preview verified against the same ROM plan; no replacement draw or UI image editing."
+      "description": "Seeded starter preview and circular XD portraits.",
+      "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
     },
     "xd-shadow-pokemon.png": {
-      "bytes": 73933,
-      "sha256": "432621b1d0630a2fdfc5689c0df37a272178036f10996f653050680a944eb3c1",
+      "bytes": 75959,
+      "sha256": "c8f27421f90bd76ac809cb753dbfcd8b2371896538b56a8b9fc2b5f3aa53a40a",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Original and randomized Shadow roster with shiny status.",
+      "description": "Seeded Shadow roster with single-click Pokémon sheets.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.25",
+      "shiny_chance_percent": 5,
+      "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
     },
     "colosseum-gifts.png": {
       "kind": "application",
       "language": "en",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "description": "Gift preview, with Eagun rewards ordered by 10 and 25 purifications.",
-      "source": "Current app, private settings, muted offscreen capture; preview reads the original European ROM without changing it.",
-      "bytes": 99684,
-      "sha256": "c0477a290459b3bd07f17c702a742114d79875c82620cccd0a271f5557977487",
+      "description": "Gift requirements in a dedicated middle column.",
+      "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access.",
+      "bytes": 108452,
+      "sha256": "a42e625c8c991c07ae00bda929c3a04417aac150fe48d699db26ef0d462041d3",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.20"
+      "captured_in_version": "1.2.25",
+      "shiny_chance_percent": 5
     },
     "xd-gifts.png": {
-      "bytes": 85214,
-      "sha256": "3f983e567f1a684bad3947167cf8d6235b19f1091f0b8bfc21c245a189b99b53",
+      "bytes": 87036,
+      "sha256": "190114dd93b0856e17ba9d593dc07c1b8802ed1a64e14aa8db680b6231e4af5e",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "XD gift preview, with the trade requirements and their encounter rates.",
+      "description": "Gift requirements in a dedicated middle column.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "captured_in_version": "1.2.15"
+      "captured_in_version": "1.2.25",
+      "shiny_chance_percent": 5,
+      "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
     },
     "xd-pokemon-sheet.png": {
       "bytes": 31136,
@@ -424,32 +431,32 @@
       "appearance_kept_after_purification": true
     },
     "colosseum-fixed-preview.png": {
-      "bytes": 90373,
-      "sha256": "bfad1766c41ce2d034a788560aeb9f519a2e652ea56dbcaf88007fc00ad1a7bb",
+      "bytes": 90564,
+      "sha256": "3f22a7d0ff1e18f24ff252038f959a601d4fa1f7288d326b7673a9e935e4e6c8",
       "kind": "application",
       "language": "en",
       "game": "colosseum",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.24",
-      "seed": "known-preview-native-v1221",
+      "captured_in_version": "1.2.25",
+      "seed": "orre-showcase-5",
       "shiny_chance_percent": 100,
-      "description": "Known-only automatic encounters at 100% shiny rate, with randomized replacements still unknown.",
-      "source": "Actual application and verified original ROM read-only. English, private muted preferences, no full randomizer, ROM output or save access."
+      "description": "Known encounters at 100% shiny odds; randomized replacements still unknown.",
+      "source": "Actual English application with private muted preferences. Verified original read-only; known-only data projection. No ISO output, emulator or save access."
     },
     "xd-fixed-preview.png": {
-      "bytes": 64678,
-      "sha256": "379b7dfadb8c5dd15461d8b65bef289ef579a896ec7e90bb04aeecc2a607a651",
+      "bytes": 67818,
+      "sha256": "c9e9e7e3365741db16f0b6e10757c2944d0ca3d2de86c0d4fa99220fb665c313",
       "kind": "application",
       "language": "en",
       "game": "xd",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.24",
-      "seed": "known-preview-native-v1221",
+      "captured_in_version": "1.2.25",
+      "seed": "orre-xd-showcase-3",
       "shiny_chance_percent": 100,
-      "description": "Known-only automatic encounters at 100% shiny rate, with randomized replacements still unknown.",
-      "source": "Actual application and verified original ROM read-only. English, private muted preferences, no full randomizer, ROM output or save access."
+      "description": "Known encounters at 100% shiny odds; randomized replacements still unknown.",
+      "source": "Actual English application with private muted preferences. Verified original read-only; known-only data projection. No ISO output, emulator or save access."
     },
     "colosseum-shadow-lugia-aftermath.png": {
       "bytes": 442758,
@@ -463,6 +470,20 @@
       "seed": "postgame-lugia-qa",
       "description": "Final exchange after capturing Shadow Lugia; all three characters remain framed.",
       "source": "Actual muted European Dolphin validation of the v1.2.21 camera fix, captured from the local candidate before the application version bump. Private copied QA card; native screenshot without visual edits."
+    },
+    "xd-pokespot-preview.png": {
+      "bytes": 82859,
+      "sha256": "b972535b49a2c721bc679810792ed3923d7070ed3f2f5a40099a9147d5a26af3",
+      "kind": "application",
+      "language": "en",
+      "game": "xd",
+      "width": 1100,
+      "height": 800,
+      "captured_in_version": "1.2.25",
+      "description": "Poké Spot locations and encounter rates in the middle column.",
+      "seed": "orre-xd-showcase-3",
+      "shiny_chance_percent": 5,
+      "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
     }
   }
 }

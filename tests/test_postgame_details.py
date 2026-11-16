@@ -56,7 +56,7 @@ class BonusDetailsTests(unittest.TestCase):
         for language in LANGUAGES:
             html = render_journal(report, language)
             self.assertIn(detail_text('battle_marker', language, id=566), html)
-            self.assertIn('96 · Lugia', html)
+            self.assertIn('49 · Lugia', html)
         with self.assertRaises(FormatError):
             append_postgame_trainer_details(catalog, data, event)
 

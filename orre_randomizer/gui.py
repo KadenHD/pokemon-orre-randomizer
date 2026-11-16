@@ -56,6 +56,8 @@ from .resources import MUSIC_FILES, application_icon, application_logo, interfac
 from .i18n import LANGUAGES, Message, is_translatable, language_preference, resolve_language, translate
 from .workspace_copy import (CATEGORY_HELP, COLOSSEUM_PRESET_NATIVE, CUSTOM_PRESET, PRESET_DESCRIPTIONS,
                              PRESET_EVOLUTIONS, PRESET_LEGENDARIES, PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE, STEP_HELP)
+from .encounter_presentation import colosseum_gift_condition, colosseum_shadow_number
+from .ui_portraits import circular_portrait, unknown_portrait
 
 
 class Worker(QObject):
@@ -652,7 +654,7 @@ class MainWindow(QMainWindow):
         party.addStretch(1)
         self.preview_pages.addWidget(scroll_area(self.party_strip))
         self.unknown_portrait = self.placeholder_portrait("#172c33", "#8be8e7")
-        self.xd_unknown_portrait = self.placeholder_portrait("#382527", "#ffb384")
+        self.xd_unknown_portrait = self.placeholder_portrait("#382527", "#ffb384", circular=True)
         self.encounters_tree = EncounterTable(self, "Tirage des Pokémon obscurs et offerts")
         self.encounters_scrollbar = self.encounters_tree.scrollbar
         self.preview_pages.addWidget(self.encounters_tree)
@@ -722,9 +724,7 @@ class MainWindow(QMainWindow):
             if self.workspace_tabs.currentIndex() == 1:
                 message = "Aperçu pour une nouvelle partie. Aucune ROM n’a été créée."
                 if self.preview_tabs.currentIndex() == 2:
-                    message = ("Adelbert remet ces cadeaux après le nombre de purifications choisi."
-                               if self.rule_checks["accessible_event_gifts"].isChecked()
-                               else "Les événements gardent leurs conditions d’obtention.")
+                    message = "Les conditions d’obtention sont indiquées pour chaque cadeau."
             self.status.setStyleSheet("")
             self.set_status(message)
 
@@ -1195,10 +1195,10 @@ class MainWindow(QMainWindow):
         names.update({row["key"]: self.text("{name} (cadeau)", name=self.preview_species_name(row))
                       for row in result["gifts"]})
         names.update({f"shadow:{row['shadow_id']}": self.text("{name} (obscur nº {number})",
-                      name=self.preview_species_name(row), number=f"{row['shadow_id']:02d}")
+                      name=self.preview_species_name(row), number=f"{colosseum_shadow_number(row['shadow_id']):02d}")
                       for row in result["shadows"]})
         names.update({f"shadow:{row['shadow_id']}": self.text("{name} (obscur nº {number})",
-                      name=self.preview_species_name(row), number=f"{row['shadow_id']:02d}")
+                      name=self.preview_species_name(row), number=f"{colosseum_shadow_number(row['shadow_id']):02d}")
                       for row in result.get("postgame_shadow_lugia", {}).get("team", []) if row.get("shadow_id")})
         self.preview_tabs.setTabText(self.family_tab, self.text("Doublons · {count}", count=len(groups)))
         self.family_duplicates.setText("\n\n".join(" · ".join(names[key] for key in group) for group in groups))
@@ -1213,15 +1213,8 @@ class MainWindow(QMainWindow):
         label.setText(markup or name)
 
     @staticmethod
-    def placeholder_portrait(background, foreground):
-        placeholder = QPixmap(42, 42)
-        placeholder.fill(QColor(background))
-        painter = QPainter(placeholder)
-        painter.setPen(QColor(foreground))
-        painter.setFont(QFont("Segoe UI", 16, QFont.Weight.Bold))
-        painter.drawText(placeholder.rect(), Qt.AlignmentFlag.AlignCenter, "?")
-        painter.end()
-        return QIcon(placeholder)
+    def placeholder_portrait(background, foreground, *, circular=False):
+        return unknown_portrait(background, foreground, circular=circular)
 
     def preview_portrait(self, row, *, xd=False):
         image = QPixmap()
@@ -1231,7 +1224,7 @@ class MainWindow(QMainWindow):
             image.load(str(self.artwork[key]))
         if image.isNull():
             return self.xd_unknown_portrait if xd else self.unknown_portrait
-        return QIcon(image)
+        return QIcon(circular_portrait(image) if xd else image)
 
     @Slot(object)
     def load_roulette_faces(self, faces):
@@ -1264,8 +1257,8 @@ class MainWindow(QMainWindow):
             row = item.data(0, Qt.ItemDataRole.UserRole + 2)
             if row.get("national_dex") is None and viewport.intersects(tree.visualItemRect(item)):
                 name, icon = sample(index)
-                item.setText(1, name)
-                item.setIcon(1, icon)
+                item.setText(tree.result_column, name)
+                item.setIcon(tree.result_column, icon)
 
     def render_shiny_status(self):
         self.preview_shiny_status.setText(self.shiny_status_text(self.current_options()))
@@ -1305,9 +1298,11 @@ class MainWindow(QMainWindow):
             return
         tree = self.encounters_tree
         tree.clear()
-        tree.setHeaderLabels([self.text("Pokémon d’origine"), self.text("Avec cette seed")])
         result = self.preview_rows()
         field = "gifts" if self.preview_tabs.currentIndex() == 2 else "shadows"
+        tree.set_context_column(self.text("Conditions d’obtention") if field == "gifts" else None)
+        tree.setHeaderLabels([self.text("Pokémon d’origine"), *([self.text("Conditions d’obtention")] if field == "gifts" else []), self.text("Avec cette seed")])
+        result_column = tree.result_column
         rows = result.get(field, [])
         if field == "gifts":
             rows = order_purification_gifts(rows)
@@ -1321,27 +1316,27 @@ class MainWindow(QMainWindow):
         for row in rows:
             original = self.preview_species_name(row.get("original", {}))
             if field == "shadows":
-                original = self.text("{number} · {name}", number=f"{row['shadow_id']:02d}", name=original)
-            elif row.get("purifications") is not None:
-                count = row["purifications"]
-                source = "Adelbert · {count} purification" if count == 1 else "Adelbert · {count} purifications"
-                original += "\n" + self.text(source, count=count)
-            elif row.get("event"):
-                original = self.text("{name} · Événement", name=original)
+                original = self.text("{number} · {name}", number=f"{colosseum_shadow_number(row['shadow_id']):02d}", name=original)
+            condition = colosseum_gift_condition(row, self.text) if field == "gifts" else ""
             name = self.preview_row_name(row)
-            item = QTreeWidgetItem(tree, [original, name])
+            item = QTreeWidgetItem(tree, [original, condition, name] if field == "gifts" else [original, name])
+            for column in range(tree.columnCount()):
+                item.setTextAlignment(column, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
             if row.get("shiny"):
-                item.setData(1, RICH_NAME_ROLE, self.preview_row_name(row, rich=True))
+                item.setData(result_column, RICH_NAME_ROLE, self.preview_row_name(row, rich=True))
             item.setToolTip(0, original)
-            item.setToolTip(1, name)
-            words = [original, name, str(row.get("national_dex", "")), str(row.get("shadow_id", ""))]
+            item.setToolTip(result_column, name)
+            if condition:
+                item.setToolTip(1, condition)
+            words = [original, condition, name, str(row.get("national_dex", "")), str(row.get("shadow_id", ""))]
             for record in (row, row.get("original", {})):
                 words.extend(record.get("name_" + lang) or names.get(record.get("national_dex"), "")
                              for lang, names in SPECIES_NAMES.items())
             item.setData(0, Qt.ItemDataRole.UserRole, search_key(" ".join(words)))
             item.setData(0, Qt.ItemDataRole.UserRole + 2, row)
-            item.setIcon(1, self.preview_portrait(row))
+            item.setIcon(result_column, self.preview_portrait(row))
             item.setSizeHint(0, QSize(0, 46))
+        tree.schedule_row_layout()
         self.filter_encounters()
 
     def filter_encounters(self):

@@ -157,6 +157,12 @@ check Poké Spot encounters and see what Duking wants in each trade.
 | ![Colosseum Shadow Pokémon preview](docs/images/shadow-pokemon.png) | ![XD Shadow Pokémon preview](docs/images/xd-shadow-pokemon.png) |
 | ![Colosseum gift preview](docs/images/colosseum-gifts.png) | ![XD gift and trade preview](docs/images/xd-gifts.png) |
 
+Gift requirements have their own column, including Plusle's story reward,
+Ho-Oh's Mt. Battle requirements and the purification rewards. XD's Poké Spot
+preview groups each location and encounter rate beside the replacement.
+
+![XD Poké Spot locations, encounter rates and randomized Pokémon](docs/images/xd-pokespot-preview.png)
+
 Colosseum's event gifts no longer need a distribution disc. With **Make event
 gifts obtainable** enabled, Eagun offers the Pikachu gift after 10 purifications
 and the Celebi gift after 25 at the Relic Stone. Both can be randomized, and

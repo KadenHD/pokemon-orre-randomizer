@@ -851,24 +851,24 @@ class XDWorkspace(QWidget):
         tree = self.preview_details
         position = tree.verticalScrollBar().value()
         tree.clear()
-        tree.setHeaderLabels([self.window.text("Pokémon d’origine"), self.window.text("Avec cette seed")])
+        context_header = self.window.text("Conditions d’obtention" if tab == 2 else "Lieu et fréquence") if tab in (2, 3) else None
+        tree.set_context_column(context_header)
+        tree.setHeaderLabels([self.window.text("Pokémon d’origine"), *([context_header] if context_header else []), self.window.text("Avec cette seed")])
+        result_column = tree.result_column
         shadows = data.get("decks", {}).get("Story", {}).get("shadows", ())
         spots = data.get("poke_spots", ())
         gifts = data.get("gifts", ())
-        def gift_origin(row, *, original=False):
+        def gift_condition(row):
             key = row.get("key")
-            required_species = GIFT_TRADE_REQUIREMENTS.get(key) if original else row.get("required_species")
-            if required_species is not None:
+            required = row.get("required_species")
+            if required is not None:
                 evolution = row.get("required_evolution")
-                if original:
-                    evolution = TOGETIC if key == "hordel-trade" else None
                 if evolution is not None:
-                    return self.window.text("Échange contre {pokemon} ou {evolution}",
-                                            pokemon=name(required_species), evolution=name(evolution))
-                return self.window.text("Échange contre {pokemon}", pokemon=name(required_species))
+                    return self.window.text("Échange contre {pokemon} ou {evolution}", pokemon=name(required), evolution=name(evolution))
+                return self.window.text("Échange contre {pokemon}", pokemon=name(required))
             if key in GIFT_TRADE_REQUIREMENTS:
                 return self.window.text("Échange contre {pokemon}", pokemon="?")
-            return self.window.text("Mont Bataille") if row.get("key", "").startswith("mt-battle-") else ""
+            return self.window.text("Mont Bataille") if key and key.startswith("mt-battle-") else ""
 
         rows = ()
         if tab == 1:
@@ -877,48 +877,46 @@ class XDWorkspace(QWidget):
             rows = []
             trades = duking_trade_encounters(spots)
             for row in gifts:
-                original_offer = gift_origin(row, original=True)
                 trade = trades.get(row["key"])
+                condition = gift_condition(row)
                 if trade is not None:
                     spot = self.window.text(SPOT_LABELS[trade["spot"]])
                     requested = trade.get("species")
-                    offer = self.window.text("Doking demande {pokemon} · {spot}",
-                                             pokemon=name(requested) if requested is not None else "?", spot=spot)
+                    condition = self.window.text("Doking demande {pokemon} · {spot}",
+                                                 pokemon=name(requested) if requested is not None else "?", spot=spot)
                     if "chance" in trade:
-                        frequency = self.window.text("{chance} % des rencontres", chance=trade["chance"])
-                        offer += f"\n{frequency}"
-                    suffix = f"\n{offer}"
-                else:
-                    seeded_offer = gift_origin(row)
-                    suffix = f"\n{seeded_offer}" if seeded_offer != original_offer else ""
-                rows.append((row, original_offer, suffix))
+                        condition += "\n" + self.window.text("{chance} % des rencontres", chance=trade["chance"])
+                rows.append((row, "", condition))
         elif tab == 3:
-            rows = [(row, self.window.text(SPOT_LABELS.get(row["spot"], row["spot"])),
-                     f" · {row['chance']} %" if "chance" in row else "") for row in spots]
-        for row, prefix, suffix in rows:
+            rows = []
+            for row in spots:
+                spot = self.window.text(SPOT_LABELS.get(row["spot"], row["spot"]))
+                frequency = self.window.text("{chance} % des rencontres", chance=row["chance"]) if "chance" in row else "?"
+                rows.append((row, "", spot + " · " + frequency))
+        for row, prefix, condition in rows:
             original = name(row.get("original", row["species"]))
-            native = (f"{original}\n{prefix}" if tab == 2 else f"{prefix} · {original}") if prefix else original
-            result = f"{encounter(row)}{suffix}"
+            native = f"{prefix} · {original}" if prefix else original
+            result = encounter(row)
             number = self.national_dex(row, data)
-            child = QTreeWidgetItem(tree, [native, result])
-            words = [native, result, str(number or ""), str(row.get("shadow_id", ""))]
+            child = QTreeWidgetItem(tree, [native, condition, result] if context_header else [native, result])
+            for column in range(tree.columnCount()):
+                child.setTextAlignment(column, Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignVCenter)
+            words = [native, condition, result, str(number or ""), str(row.get("shadow_id", ""))]
             for national in (number, ids.get(str(row.get("original")), row.get("original"))):
                 if national:
                     words.append(f"#{national:03d}")
                     words.extend(names[national] for names in SPECIES_NAMES.values() if national in names)
             child.setData(0, Qt.ItemDataRole.UserRole, search_key(" ".join(words)))
             child.setData(0, Qt.ItemDataRole.UserRole + 2, row)
-            if tab == 2:
-                alignment = Qt.AlignmentFlag.AlignLeft | Qt.AlignmentFlag.AlignTop
-                child.setTextAlignment(0, alignment)
-                child.setTextAlignment(1, alignment)
-            child.setSizeHint(0, QSize(0, 64 if suffix.count("\n") == 2 else 46))
+            child.setSizeHint(0, QSize(0, 54))
             child.setToolTip(0, native)
-            child.setToolTip(1, result)
-            child.setIcon(1, self.window.preview_portrait(dict(row, national_dex=number), xd=True))
+            child.setToolTip(result_column, result)
+            if context_header:
+                child.setToolTip(1, condition)
+            child.setIcon(result_column, self.window.preview_portrait(dict(row, national_dex=number), xd=True))
             if row.get("shiny"):
-                detail = escape(suffix).replace("\n", "<br>")
-                child.setData(1, RICH_NAME_ROLE, f"{encounter(row, rich=True)}{detail}")
+                child.setData(result_column, RICH_NAME_ROLE, encounter(row, rich=True))
+        tree.schedule_row_layout()
         self.preview_search.setVisible(0 < tab < self.family_tab)
         tree.setVisible(0 < tab < self.family_tab)
         self.encounter_hint.setText(self.window.text("Calcul en cours…" if rolling else
@@ -986,8 +984,8 @@ class XDWorkspace(QWidget):
             row = item.data(0, Qt.ItemDataRole.UserRole + 2)
             if row.get("species") is None and not item.isHidden() and viewport.intersects(tree.visualItemRect(item)):
                 name, icon = sample(index)
-                item.setText(1, name)
-                item.setIcon(1, icon)
+                item.setText(tree.result_column, name)
+                item.setIcon(tree.result_column, icon)
 
     def open_starter_details(self):
         row = self.preview_rows().get("starter")

@@ -51,7 +51,7 @@ def baseline_rows(options):
         if key == 'hordel-trade':
             gift['required_evolution'] = TOGETIC
         gifts.append(gift)
-    spots = [row(original, options.randomize_poke_spots, spot=spot, slot=index)
+    spots = [row(original, options.randomize_poke_spots, spot=spot, slot=index, chance=(50, 35, 15)[index-1])
              for spot, species in SPOT_SPECIES.items() for index, original in enumerate(species, 1)]
     return dict(starter=starter, decks={'Story': {'shadows': shadows}}, gifts=gifts,
                 poke_spots=spots, national_ids={str(key): value for key, value in NATIONAL_IDS.items()})

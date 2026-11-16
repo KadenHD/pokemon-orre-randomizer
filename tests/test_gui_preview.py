@@ -181,8 +181,8 @@ class GuiPreviewTests(unittest.TestCase):
             self.assertEqual(tree.topLevelItemCount(), count)
             row = tree.topLevelItem(0)
             self.assertIn(name, row.text(0))
-            self.assertEqual(row.text(1), "?")
-            self.assertFalse(row.icon(1).isNull())
+            self.assertEqual(row.text(self.window.encounters_tree.result_column), "?")
+            self.assertFalse(row.icon(self.window.encounters_tree.result_column).isNull())
             self.window.show_encounter_detail(row)
             self.assertIsNone(self.window.detail_window)
 
@@ -230,12 +230,12 @@ class GuiPreviewTests(unittest.TestCase):
             self.window.rule_fields[name].setValue(value)
             self.assertIsNone(self.window.preview_result)
             self.assertEqual(self.window.encounters_tree.topLevelItemCount(), 4)
-        self.assertIn("Adelbert", self.window.status.text())
+        self.assertIn("conditions d’obtention", self.window.status.text())
         self.window.preview_key = self.window.preview_configuration()
         self.window.preview_result = deepcopy(RESULT)
         self.window.rule_checks["accessible_event_gifts"].setChecked(False)
         self.assertIsNone(self.window.preview_result)
-        self.assertEqual(self.window.status.text(), "Les événements gardent leurs conditions d’obtention.")
+        self.assertEqual(self.window.status.text(), "Les conditions d’obtention sont indiquées pour chaque cadeau.")
 
     def test_purification_gift_rows_keep_original_names_and_localize_donor(self):
         self.window.step = 1
@@ -256,10 +256,11 @@ class GuiPreviewTests(unittest.TestCase):
                 original = self.window.encounters_tree.topLevelItem(0).text(0)
                 self.assertIn(self.window.preview_species_name(gift["original"]), original)
                 source = "Adelbert · {count} purification" if count == 1 else "Adelbert · {count} purifications"
-                self.assertIn(translate(source, language).format(count=count), original)
-                self.assertIn(donor, original)
+                condition = self.window.encounters_tree.topLevelItem(0).text(1)
+                self.assertIn(translate(source, language).format(count=count), condition)
+                self.assertIn(donor, condition)
                 self.assertEqual(self.window.status.text(), translate(
-                    "Adelbert remet ces cadeaux après le nombre de purifications choisi.", language))
+                    "Les conditions d’obtention sont indiquées pour chaque cadeau.", language))
                 self.assertIs(self.window.preview_result, result)
 
     def test_purification_gifts_use_numeric_threshold_order_in_pending_and_ready_preview(self):
@@ -334,12 +335,12 @@ class GuiPreviewTests(unittest.TestCase):
                 self.assertEqual(self.window.preview_names["espeon"].text(), expected)
                 self.window.preview_tabs.setCurrentIndex(1)
                 shadow = self.window.encounters_tree.topLevelItem(0)
-                self.assertEqual(shadow.text(1), expected)
-                self.assertIsNone(shadow.data(1, RICH_NAME_ROLE))
+                self.assertEqual(shadow.text(self.window.encounters_tree.result_column), expected)
+                self.assertIsNone(shadow.data(self.window.encounters_tree.result_column, RICH_NAME_ROLE))
                 self.window.preview_tabs.setCurrentIndex(2)
                 gift = self.window.encounters_tree.topLevelItem(0)
-                self.assertIn(shiny + " ★", gift.text(1))
-                self.assertIn(shiny + "&nbsp;<sup", gift.data(1, RICH_NAME_ROLE))
+                self.assertIn(shiny + " ★", gift.text(self.window.encounters_tree.result_column))
+                self.assertIn(shiny + "&nbsp;<sup", gift.data(self.window.encounters_tree.result_column, RICH_NAME_ROLE))
                 self.assertEqual(self.window.preview_hint.text(), translate(
                     "Espèces et statuts fixés pour une nouvelle partie.", language))
             self.assertEqual(preview.call_count, 1)
@@ -373,21 +374,21 @@ class GuiPreviewTests(unittest.TestCase):
             tree = self.window.encounters_tree
             self.assertEqual(tree.topLevelItemCount(), 1)
             self.assertIn("Mentali", tree.topLevelItem(0).text(0))
-            self.assertIn("Arcko", tree.topLevelItem(0).text(1))
+            self.assertIn("Arcko", tree.topLevelItem(0).text(self.window.encounters_tree.result_column))
             self.window.preview_tabs.setCurrentIndex(2)
-            self.assertIn("Événement", tree.topLevelItem(0).text(0))
+            self.assertIn("événementielle", tree.topLevelItem(0).text(1))
             self.window.preview_tabs.setCurrentIndex(1)
             for language in ("en", "de", "es", "it", "ja", "fr"):
                 self.window.language_combo.setCurrentIndex(self.window.language_combo.findData(language))
                 if language == "ja":
                     self.assertIn("エーフィ", tree.topLevelItem(0).text(0))
-                    self.assertIn("キモリ", tree.topLevelItem(0).text(1))
+                    self.assertIn("キモリ", tree.topLevelItem(0).text(self.window.encounters_tree.result_column))
             self.window.workspace_tabs.setCurrentIndex(0)
             self.window.workspace_tabs.setCurrentIndex(1)
             self.assertEqual(preview.call_count, 1)
             self.window.seed.setText("changed")
             self.assertEqual(tree.topLevelItemCount(), 48)
-            self.assertEqual(tree.topLevelItem(0).text(1), "?")
+            self.assertEqual(tree.topLevelItem(0).text(self.window.encounters_tree.result_column), "?")
             self.assertIn("modifiés", self.window.preview_hint.text())
             self.assertEqual(preview.call_count, 1)
 
