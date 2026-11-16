@@ -60,9 +60,9 @@ class PreviewCache:
         self.close()
 
     @contextmanager
-    def lease(self, source: Path, source_hash: str, dolphin_tool: Path,
+    def lease(self, source: Path, source_hash: str, dolphin_tool: Path | None,
               progress, cancel: threading.Event):
-        from . import service
+        from . import service, disc_images
 
         while not self._gate.acquire(timeout=0.05):
             service.checkpoint(cancel)
@@ -79,8 +79,7 @@ class PreviewCache:
                 self._active = entered = True
                 invalidated = self._invalidate
                 self._invalidate = False
-            tool = Path(dolphin_tool).resolve()
-            key = (str(source.resolve()), source_hash, str(tool), service.file_hash(tool, cancel))
+            key = (str(source.resolve()), source_hash, disc_images.BACKEND)
             if invalidated or key != self._key:
                 self._discard()
             hit = self._temporary is not None
@@ -97,9 +96,10 @@ class PreviewCache:
                 if shutil.disk_usage(work).free < needed:
                     raise service.UserError("Espace disque insuffisant : il faut au moins {needed:.1f} Gio libres dans le dossier de sortie.",
                                             needed=needed / 1024**3)
-                progress(8, "Conversion RVZ → ISO avec DolphinTool…")
+                progress(8, "Décompression de la ROM…")
                 iso = work / "source.iso"
-                service.convert(tool, source, iso, work, cancel)
+                service.convert(None, source, iso, work, cancel,
+                    lambda done, total: progress(8 + int(7 * done / max(total, 1)), "Décompression de la ROM…"))
                 self._iso_hash = service.file_hash(iso, cancel)
                 self._key = key
             service.checkpoint(cancel)

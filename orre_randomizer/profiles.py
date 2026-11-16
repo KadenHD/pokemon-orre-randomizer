@@ -377,7 +377,7 @@ def load_xd_creation_report(path: Path) -> Profile:
 def parse_creation_report(data: bytes, *, is_xd=False) -> CreationReport:
     if len(data) > MAX_REPORT_BYTES:
         raise UserError("Rapport trop volumineux : la limite est de 32 Mio.")
-    invalid = "Rapport JSON invalide. Sélectionnez le fichier .iso.json ou .rvz.json créé avec la ROM."
+    invalid = "Rapport JSON invalide. Sélectionnez le fichier .iso.json, .gcm.json ou .rvz.json créé avec la ROM."
     try:
         payload = _decode_json(data)
     except (ValueError, UnicodeError, RecursionError) as error:

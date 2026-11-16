@@ -276,20 +276,18 @@ class StarterPreviewTests(unittest.TestCase):
         tool.touch()
         temporary = []
 
-        def convert(selected_tool, source, destination, work, cancel):
-            self.assertEqual(selected_tool, tool)
+        def convert(selected_tool, source, destination, work, cancel, progress=None):
+            self.assertIsNone(selected_tool)
             self.assertEqual(source, rvz)
             self.assertEqual(destination.parent, work)
             self.assertNotEqual(work, self.root)
             temporary.append(work)
             destination.write_bytes(self.source.read_bytes())
 
-        with self.assertRaises(service.RVZToolRequired):
-            preview_starters(rvz, "seed", Options())
         with ExitStack() as stack:
             self.pipeline(stack)
             stack.enter_context(patch.object(service, "convert", side_effect=convert))
-            result = preview_starters(rvz, "seed", Options(), tool)
+            result = preview_starters(rvz, "seed", Options())
         self.assertFalse(temporary[0].exists())
         self.assertEqual(rvz.read_bytes(), b"synthetic compressed source")
         self.assertEqual(result["source_iso_sha256"], hashlib.sha256(self.source.read_bytes()).hexdigest())

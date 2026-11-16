@@ -19,18 +19,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--edition", choices=("local", "public"), default="local")
     parser.add_argument("--report", required=True, type=Path)
+    parser.add_argument("--release-dir", type=Path, help="Check a separate local candidate directory")
     args = parser.parse_args()
     if sys.platform != "win32":
         parser.error("The frozen Windows app must run on Windows.")
     if args.report.exists() or args.report.with_suffix("").exists():
         parser.error("Choose a new report path; previous evidence is kept.")
-    release = ROOT / "dist" / ("public" if args.edition == "public" else "")
+    release = args.release_dir.resolve() if args.release_dir else ROOT / "dist" / ("public" if args.edition == "public" else "")
     manifest = json.loads((release / "SHA256SUMS.json").read_text("utf-8"))
     archives = [name for name in manifest if name.endswith("-windows-x64.zip")]
     if len(archives) != 1:
         parser.error("Expected exactly one Windows archive in the release manifest.")
     # Run the hash/integrity/media audit before extraction or execution.
-    subprocess.run([sys.executable, str(ROOT/"scripts/verify_release.py"), "--edition", args.edition], check=True, cwd=ROOT)
+    audit = [sys.executable, str(ROOT/"scripts/verify_release.py"), "--edition", args.edition]
+    if args.release_dir:
+        audit += ["--release-dir", str(release)]
+    subprocess.run(audit, check=True, cwd=ROOT)
     build = ROOT / "build"
     build.mkdir(exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="smoke-étoile ", dir=build) as folder:
@@ -62,6 +66,7 @@ def main():
                                (diagnostic.read_text("utf-8") if diagnostic.is_file() else "No report"))
         data = json.loads(diagnostic.read_text("utf-8"))
         assert data["successful"] and data["frozen"] and data["codec"] == "rust-lzss-v1"
+        assert data["disc_converter"].startswith("nod-2.0.0-alpha.11-")
         assert data["application_icon_available"] and {16, 256} <= set(data["application_icon_sizes"])
         assert len(data["home_states"]) == 12
         assert len(data["xd_states"]) == 36

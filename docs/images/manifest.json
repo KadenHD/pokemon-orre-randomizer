@@ -4,15 +4,15 @@
   "description": "English application and gameplay captures, with text-free XD purification images. Each entry records its capture version; unchanged earlier images are retained.",
   "files": {
     "home.png": {
-      "bytes": 149717,
-      "sha256": "cdb8efdf8792eed1b5e915c1310bec7ff0eade461a7ff7eb1f00601c3b194163",
+      "bytes": 150518,
+      "sha256": "4f024e04edf92326c29a1d3bbe3d98c835d638edcde3370e8b9e9471e39165ac",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Home and both game cards.",
-      "captured_in_version": "1.2.20",
-      "source": "Actual v1.2.20 application with private muted preferences; English offscreen capture, no ROM opened."
+      "captured_in_version": "1.2.26",
+      "description": "Home and both game cards, with ISO/GCM/RVZ support.",
+      "source": "Actual v1.2.26 application. English offscreen capture with private muted preferences; no ROM opened."
     },
     "colosseum-settings.png": {
       "bytes": 83712,
@@ -484,6 +484,28 @@
       "seed": "orre-xd-showcase-3",
       "shiny_chance_percent": 5,
       "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
+    },
+    "colosseum-output-formats.png": {
+      "bytes": 70979,
+      "sha256": "e1da40aab8611476dc1f03e10149bcb4097922e907b368c7440c9837e33e0982",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "captured_in_version": "1.2.26",
+      "description": "ISO, GCM and RVZ output choices, with integrated conversion.",
+      "source": "Actual v1.2.26 application. English offscreen capture with private muted preferences; no ROM opened."
+    },
+    "xd-output-formats.png": {
+      "bytes": 42074,
+      "sha256": "6d9ef89cbdb46669da83acfbd47ffebfd3796c450409c3d2f1de6df14d8456ad",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "captured_in_version": "1.2.26",
+      "description": "ISO, GCM and RVZ output choices, with integrated conversion.",
+      "source": "Actual v1.2.26 application. English offscreen capture with private muted preferences; no ROM opened."
     }
   }
 }

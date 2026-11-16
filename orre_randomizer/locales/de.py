@@ -115,31 +115,7 @@ TEXTS = {
                                                                                                                                                                                                                                                        'Läden '
                                                                                                                                                                                                                                                        'zufällig.',
  'Remplace les Pokémon des dresseurs, les obscurs, les starters et les cadeaux, avec une puissance proche de l’original.\nGarde les capacités de départ, les apprentissages par niveau et les CT. Les objets restent en place, sauf les pierres ajoutées en boutique.': 'Ersetzt Trainer-Pokémon, Crypto-Pokémon, Starter und Geschenke durch ähnlich starke Pokémon.\nStartattacken, Attacken durch Levelaufstieg und TMs bleiben erhalten. Items bleiben an ihrem Platz; nur Entwicklungssteine kommen in die Läden.',
- 'Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/RVZ.': 'Erstellt '
-                                                                                                                                                                                      'eine '
-                                                                                                                                                                                      'neue '
-                                                                                                                                                                                      'ROM '
-                                                                                                                                                                                      'mit '
-                                                                                                                                                                                      'unveränderten '
-                                                                                                                                                                                      'Spieldaten. '
-                                                                                                                                                                                      'Pokémon, '
-                                                                                                                                                                                      'Attacken '
-                                                                                                                                                                                      'und '
-                                                                                                                                                                                      'Items '
-                                                                                                                                                                                      'bleiben '
-                                                                                                                                                                                      'erhalten.\n'
-                                                                                                                                                                                      'Damit '
-                                                                                                                                                                                      'kannst '
-                                                                                                                                                                                      'du '
-                                                                                                                                                                                      'das '
-                                                                                                                                                                                      'Spiel '
-                                                                                                                                                                                      'kopieren '
-                                                                                                                                                                                      'oder '
-                                                                                                                                                                                      'zwischen '
-                                                                                                                                                                                      'ISO '
-                                                                                                                                                                                      'und '
-                                                                                                                                                                                      'RVZ '
-                                                                                                                                                                                      'umwandeln.',
+ 'Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/GCM/RVZ.': 'Erstellt eine neue ROM mit unveränderten Spieldaten. Pokémon, Attacken und Items bleiben erhalten.\nDamit kannst du das Spiel kopieren oder zwischen ISO, GCM und RVZ umwandeln.',
  'Réglages personnalisés : vos options ne correspondent plus à un choix prédéfini. Ouvrez Avancé pour les voir ou les modifier. Choisir un des trois modes ci-dessus remplacera ces réglages.': 'Eigene '
                                                                                                                                                                                                 'Einstellungen: '
                                                                                                                                                                                                 'Deine '
@@ -169,15 +145,10 @@ TEXTS = {
                                                                      'werden beim Erstellen der ROM '
                                                                      'ausgewählt.',
  'Créez votre ROM': 'Erstelle deine ROM',
- 'Pour une sortie RVZ, DolphinTool sera demandé à la création si nécessaire.': 'Für eine RVZ-Ausgabe wird '
-                                                                               'DolphinTool bei Bedarf beim '
-                                                                               'Erstellen der ROM abgefragt.',
  'Retour': 'Zurück',
  'Continuer': 'Weiter',
  'Réglages : {preset}\nSeed : {seed}': 'Einstellungen: {preset}\nSeed: {seed}',
- 'Choisissez un fichier ISO ou RVZ existant.': 'Wähle eine vorhandene ISO- oder RVZ-Datei.',
- 'Indiquez DolphinTool à l’étape ROM pour lire cette RVZ.': 'Wähle DolphinTool im Schritt „ROM“, um diese '
-                                                            'RVZ zu lesen.',
+ 'Choisissez un fichier ISO, GCM ou RVZ existant.': 'Wähle eine vorhandene ISO-, GCM- oder RVZ-Datei.',
  'Le mode Avancé permet de modifier chaque option du choix sélectionné.': 'Unter „Erweitert“ kannst du die '
                                                                           'einzelnen Optionen anpassen.',
  'Vérifiez la destination, puis créez la ROM.': 'Prüfe den Speicherort und erstelle dann die ROM.',
@@ -206,8 +177,8 @@ TEXTS = {
                                                                                    'Auswahl gilt bis zum '
                                                                                    'Schließen der App.',
  'Randomiser Colosseum': 'Colosseum randomisieren',
- 'ROM européenne · ISO ou RVZ · Traitement local': 'Europäische ROM · ISO oder RVZ · Lokale Verarbeitung',
- 'Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici': 'ISO- oder RVZ-Datei auswählen oder hier ablegen',
+ 'ROM européenne · ISO, GCM ou RVZ · Traitement local': 'Europäische ROM · ISO, GCM oder RVZ · Lokale Verarbeitung',
+ 'Sélectionnez un fichier ISO, GCM ou RVZ, ou glissez-le ici': 'ISO-, GCM- oder RVZ-Datei auswählen oder hier ablegen',
  'ROM d’origine': 'Original-ROM',
  'ROM d’&origine': '&Original-ROM',
  'Parcourir…': 'Durchsuchen…',
@@ -314,21 +285,6 @@ TEXTS = {
  'Un rapport avec la seed et les réglages sera enregistré à côté de la ROM.': 'Ein Bericht mit Seed und '
                                                                               'Einstellungen wird neben der '
                                                                               'ROM gespeichert.',
- 'Conversion RVZ · DolphinTool': 'RVZ-Umwandlung · DolphinTool',
- 'DolphinTool': 'DolphinTool',
- 'DolphinTool.exe fourni avec votre installation de Dolphin': 'DolphinTool.exe aus deiner '
-                                                              'Dolphin-Installation',
- 'DolphinTool est nécessaire pour lire ou créer une RVZ. Utilisez celui fourni avec Dolphin.': 'Zum Lesen '
-                                                                                               'oder '
-                                                                                               'Erstellen '
-                                                                                               'einer RVZ '
-                                                                                               'wird '
-                                                                                               'DolphinTool '
-                                                                                               'benötigt. '
-                                                                                               'Verwende die '
-                                                                                               'mit Dolphin '
-                                                                                               'gelieferte '
-                                                                                               'Version.',
  'Choisissez la ROM d’origine.': 'Wähle die Original-ROM.',
  'Progression de la création': 'Fortschritt der ROM-Erstellung',
  'Détails': 'Details',
@@ -345,12 +301,9 @@ TEXTS = {
  'Exporter le profil': 'Profil exportieren',
  'Profil Colosseum (*.json)': 'Colosseum-Profil (*.json)',
  'Choisir la ROM d’origine': 'Original-ROM auswählen',
- 'ROM GameCube (*.iso *.rvz)': 'GameCube-ROM (*.iso *.rvz)',
+ 'ROM GameCube (*.iso *.gcm *.rvz)': 'GameCube-ROM (*.iso *.gcm *.rvz)',
  'Choisir où enregistrer la ROM': 'Speicherort der ROM auswählen',
  'Image {format} (*.{extension})': '{format}-Abbild (*.{extension})',
- 'Choisir DolphinTool': 'DolphinTool auswählen',
- 'DolphinTool (DolphinTool.exe DolphinTool);;Tous les fichiers (*)': 'DolphinTool (DolphinTool.exe '
-                                                                     'DolphinTool);;Alle Dateien (*)',
  'Choisissez la ROM d’origine et l’emplacement de la nouvelle ROM.': 'Wähle die Original-ROM und den '
                                                                      'Speicherort der neuen ROM.',
  'ROM créée et vérifiée.\n{path}': 'ROM erstellt und geprüft.\n{path}',
@@ -390,8 +343,8 @@ TEXTS = {
                                                                                                                 'Pokémon“.',
  "Création annulée. Aucun fichier de sortie n'a été conservé.": 'Erstellen abgebrochen. Keine Ausgabedatei '
                                                                 'wurde behalten.',
- 'Sélectionnez un fichier ISO ou RVZ existant.': 'Wähle eine vorhandene ISO- oder RVZ-Datei aus.',
- 'Enregistrez la nouvelle ROM au format .iso ou .rvz.': 'Speichere die neue ROM als .iso oder .rvz.',
+ 'Sélectionnez un fichier ISO, GCM ou RVZ existant.': 'Wähle eine vorhandene ISO-, GCM- oder RVZ-Datei aus.',
+ 'Enregistrez la nouvelle ROM au format .iso, .gcm ou .rvz.': 'Speichere die neue ROM als .iso, .gcm oder .rvz.',
  'Choisissez un autre fichier de sortie pour conserver la ROM d’origine.': 'Wähle eine andere Ausgabedatei, '
                                                                            'damit die Original-ROM erhalten '
                                                                            'bleibt.',
@@ -404,19 +357,6 @@ TEXTS = {
                                                                        'Ordner.',
  'Saisissez une seed de 1 à 256 octets UTF-8.': 'Gib einen Seed mit einer Länge von 1 bis 256 UTF-8-Bytes '
                                                 'ein.',
- 'Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.': 'Wähle für RVZ '
-                                                                                              'DolphinTool '
-                                                                                              'aus deiner '
-                                                                                              'Dolphin-Installation '
-                                                                                              'aus.',
- "La conversion RVZ a dépassé 30 minutes. Vérifiez DolphinTool et l'espace libre.": 'Die RVZ-Umwandlung '
-                                                                                    'dauert länger als 30 '
-                                                                                    'Minuten. Prüfe '
-                                                                                    'DolphinTool und den '
-                                                                                    'freien Speicherplatz.',
- 'La conversion a échoué. Vérifiez la ROM et le fonctionnement de DolphinTool.': 'Umwandlung fehlgeschlagen. '
-                                                                                 'Prüfe die ROM und die '
-                                                                                 'Funktion von DolphinTool.',
  'ROM non prise en charge. Utilisez Colosseum Europe (GC6P01, révision 0), complet et sans modification.': 'Nicht '
                                                                                                            'unterstützte '
                                                                                                            'ROM. '
@@ -480,7 +420,7 @@ TEXTS = {
                                                                                                                      'Kopie.',
  'Lecture de la ROM d’origine…': 'Original-ROM wird gelesen…',
  'Vérification de la ROM d’origine…': 'Original-ROM wird geprüft…',
- 'Conversion RVZ → ISO avec DolphinTool…': 'RVZ wird mit DolphinTool in ISO umgewandelt…',
+ 'Décompression de la ROM…': 'ROM wird entpackt…',
  'Vérification de l’ISO décompressée…': 'Entpackte ISO wird geprüft…',
  'Application des réglages…': 'Einstellungen werden angewendet…',
  'Compression des données du jeu…': 'Spieldaten werden komprimiert…',

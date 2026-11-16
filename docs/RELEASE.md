@@ -14,6 +14,14 @@ application assets and interface pack. Run `python scripts/build_app_icon.py` to
 
 Use Python 3.12 or later with Rust and MSVC.
 
+The native build fetches the dependencies locked in `native/disc/Cargo.lock`,
+including nod at an immutable Git revision. C/C++ build tools compile its static
+compression libraries. The Windows package includes `orre_disc.dll` alongside
+the LZSS library and collects dependency licenses under `licenses/disc/`.
+No Dolphin executable is bundled or required for conversion. The packaged smoke
+test performs a synthetic GCM → RVZ → ISO roundtrip with the developer PATH
+removed. Actual game files are never bundled.
+
 ```powershell
 python -m pip install -r requirements-build.txt
 python scripts/fetch_qt_notices.py

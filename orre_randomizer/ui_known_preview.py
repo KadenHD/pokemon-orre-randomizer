@@ -135,13 +135,10 @@ class KnownPreview(QObject):
             self.timer.start(200)
             return
         source = Path(self.workspace.source.text().strip())
-        tool_text = self.workspace.tool.text().strip()
-        tool = Path(tool_text) if tool_text else None
+        tool = None
         try:
             validate_seed(self.workspace.seed.text())
-            if source.suffix.lower() not in ('.iso', '.rvz') or not source.is_file():
-                return
-            if source.suffix.lower() == '.rvz' and (tool is None or not tool.is_file()):
+            if source.suffix.lower() not in ('.iso', '.gcm', '.rvz') or not source.is_file():
                 return
         except (OSError, UserError, ValueError):
             return

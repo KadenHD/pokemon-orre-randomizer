@@ -189,8 +189,7 @@ class GuiPreviewTests(unittest.TestCase):
     def test_seed_options_source_and_tool_changes_clear_previous_result(self):
         for mutate in (lambda: self.window.seed.setText("new"),
                        lambda: self.window.set_options(replace(self.window.current_options(), starter_umbreon=False)),
-                       lambda: self.window.source.setText(str(self.source.with_name("other.iso"))),
-                       lambda: self.window.tool.setText("C:/other/DolphinTool.exe")):
+                       lambda: self.window.source.setText(str(self.source.with_name("other.iso")))):
             self.window.preview_key = self.window.preview_configuration()
             self.window.preview_result = deepcopy(RESULT)
             self.window.render_preview()

@@ -173,7 +173,7 @@ class GameSelection(QWidget):
         title = window.label("Choisissez un jeu")
         title.setObjectName("section")
         heading.addWidget(title)
-        heading.addWidget(window.note("ISO ou RVZ · Europe, USA et Japon"))
+        heading.addWidget(window.note("ISO, GCM ou RVZ · Europe, USA et Japon"))
         layout.addWidget(header)
         layout.addSpacing(16)
         self.choices = QBoxLayout(QBoxLayout.Direction.LeftToRight)

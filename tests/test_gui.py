@@ -247,18 +247,11 @@ class GuiTests(unittest.TestCase):
         xd.source.setText("C:/original.RVZ")
         self.assertEqual(xd.format.currentText(), "RVZ")
         self.assertEqual(Path(xd.destination.text()).name, "xd-randomized.rvz")
-        self.assertFalse(xd.source_conversion.isHidden())
-        self.assertFalse(xd.tool_block.isHidden())
-        xd.source_conversion.click()
-        self.assertTrue(xd.tool_block.isHidden())
-        self.assertFalse(xd.output_tool_block.isHidden())
-        xd.tool.setText("C:/DolphinTool.exe")
-        self.assertEqual(xd.output_tool.text(), xd.tool.text())
-        xd.format.setCurrentText("ISO")
-        self.assertTrue(xd.tool_block.isHidden())
-        self.assertTrue(xd.output_tool_block.isHidden())
-        xd.source.setText("C:/original.iso")
-        self.assertTrue(xd.tool_block.isHidden())
+        self.assertEqual([xd.format.itemText(i) for i in range(xd.format.count())], ["ISO", "GCM", "RVZ"])
+        for value in ("ISO", "GCM", "RVZ"):
+            xd.format.setCurrentText(value)
+            self.assertTrue(xd.destination.text().endswith("." + value.lower()))
+        self.assertFalse(hasattr(xd, "tool"))
         xd.rules["randomize_shadows"].setChecked(False)
         self.assertFalse(xd.rules["unique_shadow_families"].isEnabled())
 
@@ -523,30 +516,21 @@ class GuiTests(unittest.TestCase):
         self.assertNotEqual(self.window.destination.text(), self.window.source.text())
         self.window.format.setCurrentText("RVZ")
         self.assertTrue(self.window.destination.text().endswith(".rvz"))
-        self.assertTrue(self.window.advanced_toggle.isHidden())
-        self.assertTrue(self.window.advanced.isHidden())
-        self.assertFalse(self.window.output_conversion.isHidden())
-        self.window.tool.setText("C:/Dolphin/DolphinTool.exe")
-        self.assertEqual(self.window.output_tool.text(), self.window.tool.text())
-        self.window.output_tool.setText("C:/Other/DolphinTool.exe")
-        self.assertEqual(self.window.tool.text(), self.window.output_tool.text())
-        self.window.format.setCurrentText("ISO")
-        self.assertTrue(self.window.output_conversion.isHidden())
-        self.window.format.setCurrentText("RVZ")
-        self.assertEqual(self.window.output_tool.text(), "C:/Other/DolphinTool.exe")
+        self.assertFalse(hasattr(self.window, "tool"))
+        self.assertEqual([self.window.format.itemText(i) for i in range(self.window.format.count())], ["ISO", "GCM", "RVZ"])
 
-    def test_conversion_field_follows_source_extension_and_preserves_tool(self):
-        self.assertTrue(self.window.advanced_toggle.isHidden())
-        self.assertTrue(self.window.advanced.isHidden())
-        self.window.tool.setText("C:/Dolphin/DolphinTool.exe")
-        for value, visible in (("C:/partie.RVZ", True), ("C:/partie.iso", False),
-                               ("C:/partie.rvz.iso", False), ("", False),
-                               ("  C:/partie.rvz  ", True), ("C:/partie.txt", False)):
-            with self.subTest(source=value):
-                self.window.source.setText(value)
-                self.assertEqual(not self.window.advanced_toggle.isHidden(), visible)
-                self.assertEqual(not self.window.advanced.isHidden(), visible)
-                self.assertEqual(self.window.tool.text(), "C:/Dolphin/DolphinTool.exe")
+    def test_each_input_offers_all_three_outputs_without_external_tool_fields(self):
+        for owner in (self.window, self.window.xd):
+            owner.destination.setText(str(Path(self.preferences_dir.name)/"new.iso"))
+            for input_format in ("ISO", "GCM", "RVZ"):
+                owner.source.setText("C:/source." + input_format.lower())
+                self.assertEqual(owner.format.currentText(), input_format)
+                self.assertEqual(owner.format.count(), 3)
+                for output_format in ("ISO", "GCM", "RVZ"):
+                    owner.format.setCurrentText(output_format)
+                    self.assertEqual(Path(owner.destination.text()).suffix, "." + output_format.lower())
+                self.assertFalse(hasattr(owner, "tool"))
+                self.assertFalse(hasattr(owner, "output_tool"))
 
     def test_browsing_or_dropping_rom_updates_conversion_field(self):
         from unittest.mock import patch
@@ -554,21 +538,19 @@ class GuiTests(unittest.TestCase):
         from PySide6.QtGui import QDropEvent
         with patch("orre_randomizer.gui.QFileDialog.getOpenFileName", return_value=("C:/partie.rvz", "")):
             self.window.choose_source()
-        self.assertFalse(self.window.advanced.isHidden())
-        for filename in ("partie.iso", "partie.RVZ", "autre.iso"):
+        for filename in ("partie.iso", "partie.RVZ", "autre.gcm"):
             mime = QMimeData()
             mime.setUrls([QUrl.fromLocalFile(str(Path(self.preferences_dir.name)/filename))])
             event = QDropEvent(QPointF(10, 10), Qt.DropAction.CopyAction, mime,
                                Qt.MouseButton.LeftButton, Qt.KeyboardModifier.NoModifier)
             self.window.dropEvent(event)
             self.assertTrue(event.isAccepted())
-            self.assertEqual(not self.window.advanced.isHidden(), filename.lower().endswith(".rvz"))
             self.assertEqual(self.window.format.currentText(), Path(filename).suffix[1:].upper())
             self.assertEqual(Path(self.window.destination.text()).suffix, Path(filename).suffix.lower())
 
     def test_output_format_defaults_to_each_new_source_and_keeps_custom_basename(self):
         self.window.destination.setText(str(Path(self.preferences_dir.name)/"ma-partie.iso"))
-        for extension in ("RVZ", "iso", "rvz"):
+        for extension in ("RVZ", "iso", "gcm", "rvz"):
             with self.subTest(extension=extension):
                 self.window.source.setText("  C:/original." + extension + "  ")
                 self.assertEqual(self.window.format.currentText(), extension.upper())
@@ -577,10 +559,7 @@ class GuiTests(unittest.TestCase):
     def test_manual_output_format_survives_suggestions_and_step_navigation(self):
         source = Path(self.preferences_dir.name)/"original.rvz"
         source.write_bytes(b"synthetic path fixture; no conversion is run")
-        tool = source.with_name("DolphinTool.exe")
-        tool.write_bytes(b"synthetic converter path; never executed")
         self.window.source.setText(str(source))
-        self.window.tool.setText(str(tool))
         self.window.suggest_destination()
         self.assertEqual(self.window.format.currentText(), "RVZ")
         self.assertTrue(self.window.destination.text().endswith(".rvz"))
@@ -593,26 +572,19 @@ class GuiTests(unittest.TestCase):
         self.assertEqual(self.window.format.currentText(), "ISO")
         self.assertTrue(self.window.destination.text().endswith(".iso"))
 
-    def test_iso_to_rvz_requires_tool_in_output_field_without_opening_dialog(self):
+    def test_iso_to_rvz_starts_worker_without_requesting_an_external_tool(self):
         from unittest.mock import patch
         source = Path(self.preferences_dir.name)/"source.iso"
-        source.write_bytes(b"synthetic input, no worker should start")
+        source.write_bytes(b"synthetic input; worker mocked")
         self.window.source.setText(str(source))
         self.window.destination.setText(str(source.with_name("output.rvz")))
-        self.window.tool.clear()
-        self.window.step = 2
-        self.window.refresh_navigation()
-        self.window.show()
-        with patch("orre_randomizer.gui.QFileDialog.getOpenFileName") as dialog:
+        with patch("orre_randomizer.gui.QFileDialog.getOpenFileName") as dialog, \
+             patch.object(self.window, "start_worker") as start:
             self.window.start()
         dialog.assert_not_called()
-        self.assertTrue(self.window.output_tool.isVisible())
-        self.assertFalse(self.window.busy)
-        self.assertIsNone(self.window.thread)
-        self.assertTrue(self.window.advanced_toggle.isHidden())
-        self.assertTrue(self.window.advanced.isHidden())
-        self.assertIn("DolphinTool", self.window.status.text())
-        self.assertFalse(source.with_name("output.rvz").exists())
+        start.assert_called_once()
+        self.assertIsNone(start.call_args.args[0]["dolphin_tool"])
+        self.window.busy = False
 
     def test_none_preset_and_shadow_dependency(self):
         from orre_randomizer.options import Options

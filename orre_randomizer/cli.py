@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 from .engine.analyze_game import FormatError
-from .service import Options, UserError, find_dolphin_tool, randomize
+from .service import Options, UserError, randomize
 from .profiles import XD_SPOT_MIGRATION, load_profile
 from .xd import XDOptions
 
@@ -38,7 +38,7 @@ def main() -> int:
     for stream in (sys.stdout, sys.stderr):
         if hasattr(stream, "reconfigure"):
             stream.reconfigure(encoding="utf-8", errors="replace")
-    parser = argparse.ArgumentParser(description="Create a separate, seeded Pokémon Colosseum or XD ISO/RVZ.")
+    parser = argparse.ArgumentParser(description="Create a separate, seeded Pokémon Colosseum or XD ISO/GCM/RVZ.")
     parser.add_argument("source", type=Path)
     parser.add_argument("destination", type=Path)
     parser.add_argument("--game", choices=("colosseum", "xd"), default="colosseum")
@@ -49,7 +49,7 @@ def main() -> int:
     parser.add_argument("--profile", type=Path, help="Profil JSON exporté par l’application")
     parser.add_argument("--journal-language", choices=("fr", "en", "de", "es", "it", "ja"), default="fr",
                         help="Langue du journal HTML ; ne change pas la langue du jeu")
-    parser.add_argument("--dolphin-tool", type=Path, default=find_dolphin_tool())
+    parser.add_argument("--dolphin-tool", type=Path, help=argparse.SUPPRESS)  # Legacy argument; ignored.
     parser.add_argument("--keep-specials", action="store_true")
     parser.add_argument("--allow-shadow-family-duplicates", action="store_true")
     parser.add_argument("--keep-evolutions", action="store_true")

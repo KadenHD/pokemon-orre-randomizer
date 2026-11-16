@@ -51,9 +51,14 @@ class ServiceTests(unittest.TestCase):
                 service.validate_paths(self.source, self.output, seed, None)
         service.validate_paths(self.source, self.output, "été 🎲", None)
 
-    def test_rvz_requires_external_converter(self):
-        with self.assertRaises(service.UserError):
-            service.validate_paths(self.source, self.output.with_suffix(".rvz"), "seed", None)
+    def test_all_formats_are_accepted_without_external_converter(self):
+        for source_format in ("iso", "gcm", "rvz"):
+            source = self.root / ("original." + source_format)
+            source.write_bytes(b"read-only input")
+            for output_format in ("iso", "gcm", "rvz"):
+                target = self.root / ("new." + output_format)
+                result = service.validate_paths(source, target, "seed")
+                self.assertEqual(result[:2], (source.resolve(), target.resolve()))
 
     def test_invalid_header_leaves_no_output_or_temp(self):
         before = set(self.root.iterdir())

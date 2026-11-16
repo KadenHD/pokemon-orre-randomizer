@@ -4,6 +4,7 @@ import argparse
 from dataclasses import replace
 import json
 import os
+import hashlib
 from pathlib import Path
 import sys
 import tempfile
@@ -13,7 +14,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings, Qt, qVersion
     from PySide6.QtGui import QFont, QFontDatabase
     from PySide6.QtWidgets import QApplication, QScrollArea
-    from . import __version__, native_codec
+    from . import __version__, native_codec, disc_images
     from .engine.analyze_game import decompress_lzss_python
     from .engine.rebuild_iso import compress_lzss_python
     from .gui import MainWindow, recommended_preset
@@ -47,6 +48,23 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
             "rom_opened": False, "personal_preferences_opened": False,
             "home_states": [], "states": [], "exclusion_states": [], "shiny_states": [], "preview_states": [],
             "consolidation_states": [], "xd_states": [], "xd_parity_states": []}
+    data["disc_converter"] = None
+    if disc_images.library_path().is_file():
+        import threading
+        with tempfile.TemporaryDirectory(prefix="disc-diagnostic-") as directory:
+            source = Path(directory) / "synthetic.gcm"
+            sample = bytearray(262144)
+            sample[:6] = b"GC6E01"
+            sample[0x1c:0x20] = b"\xc2\x33\x9f\x3d"
+            source.write_bytes(sample)
+            compressed = source.with_suffix(".rvz")
+            decoded = source.with_suffix(".iso")
+            disc_images.convert(source, compressed, threading.Event())
+            disc_images.convert(compressed, decoded, threading.Event())
+            assert hashlib.sha256(decoded.read_bytes()).digest() == hashlib.sha256(sample).digest()
+            data["disc_converter"] = disc_images.BACKEND
+    if data["frozen"]:
+        assert data["disc_converter"], "The packaged app must include the disc converter"
     data["windows_update_helper_available"] = Path(__file__).with_name("windows_update.ps1").is_file()
     data["automatic_updates_supported"] = automatic_updates_supported()
     data["update_package_kind"] = update_kind()

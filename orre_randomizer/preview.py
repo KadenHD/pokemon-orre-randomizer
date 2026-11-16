@@ -12,7 +12,7 @@ from .artwork import ArtworkError, extract_portraits, extract_spinda_patterns
 from .engine.colo_spinda import ORDINARY_SPINDA_OT, colo_spinda_gift_pid, colo_spinda_pid
 from .engine.spinda import SPINDA
 from .engine.species_rules import LEGENDARY_NATIONAL
-from . import service
+from . import service, disc_images
 from .xd import VERSION as XD_VERSION, XDOptions
 from .options import Options, SPECIAL_OPTIONS
 from .gift_presentation import order_purification_gifts
@@ -56,15 +56,13 @@ def report_rom_matches(report: CreationReport, source: Path, dolphin_tool: Path 
                        cache: PreviewCache, cancel: threading.Event) -> bool:
     source = source.resolve()
     extension = source.suffix.lower()
-    if extension not in (".iso", ".rvz") or not source.is_file():
-        raise service.UserError("Sélectionnez un fichier ISO ou RVZ existant.")
+    if extension not in disc_images.SUFFIXES or not source.is_file():
+        raise service.UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
     digest = service.file_hash(source, cancel)
-    if extension == ".iso":
+    if extension in disc_images.RAW_SUFFIXES:
         return digest == report.region.iso_sha256
     if digest == report.source_sha256:
         return True
-    if dolphin_tool is None or not dolphin_tool.is_file():
-        raise service.RVZToolRequired("Indiquez DolphinTool à l’étape ROM pour comparer cette RVZ.")
     with cache.lease(source, digest, dolphin_tool, lambda *_: None, cancel) as image:
         matches = image.iso_hash == report.region.iso_sha256
     if service.file_hash(source, cancel) != digest:
@@ -118,8 +116,7 @@ def preview_starters(source: Path, seed: str, options: Options,
                      cache: PreviewCache | None = None, roulette=None, on_prepared=None, _known_only=False) -> dict:
     """Compute final bytes in memory, never publish an ISO or a report.
 
-    RVZ conversion owns a temporary directory and an isolated DolphinTool
-    profile. An optional per-window cache reuses the decoded ISO across seeds;
+    RVZ conversion uses the integrated library and an owned temporary directory. An optional per-window cache reuses the decoded ISO across seeds;
     the original input and cached ISO are rehashed on every request.
     No independent RNG or approximation of the starter constraints is used.
     """
@@ -128,11 +125,9 @@ def preview_starters(source: Path, seed: str, options: Options,
     seed = validate_seed(seed)
     options = service.validate_options(options)
     source = Path(source).expanduser().resolve()
-    if not source.is_file() or source.suffix.lower() not in (".iso", ".rvz"):
-        raise service.UserError("Sélectionnez un fichier ISO ou RVZ existant.")
+    if not source.is_file() or source.suffix.lower() not in disc_images.SUFFIXES:
+        raise service.UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
     rvz = source.suffix.lower() == ".rvz"
-    if rvz and (dolphin_tool is None or not dolphin_tool.is_file()):
-        raise service.RVZToolRequired("Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.")
     service.checkpoint(cancel)
     if not rvz:
         service.check_header(source)
@@ -299,11 +294,9 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
     seed = validate_seed(seed)
     source = Path(source).expanduser().resolve()
     extension = source.suffix.lower()
-    if extension not in (".iso", ".rvz") or not source.is_file():
-        raise service.UserError("Sélectionnez un fichier ISO ou RVZ existant.")
+    if extension not in disc_images.SUFFIXES or not source.is_file():
+        raise service.UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
     rvz = extension == ".rvz"
-    if rvz and (dolphin_tool is None or not Path(dolphin_tool).is_file()):
-        raise service.RVZToolRequired("Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.")
     service.checkpoint(cancel)
     if not rvz:
         service.check_header(source, is_xd=True)
@@ -312,7 +305,7 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
     with (PreviewCache() if cache is None else nullcontext(cache)) as selected:
         if not rvz:
             selected.invalidate()
-        lease = (selected.lease(source, digest, Path(dolphin_tool), progress, cancel)
+        lease = (selected.lease(source, digest, None, progress, cancel)
                  if rvz else nullcontext(PreviewInput(source, digest, False)))
         with lease as image:
             boot = service.check_header(image.iso, is_xd=True)

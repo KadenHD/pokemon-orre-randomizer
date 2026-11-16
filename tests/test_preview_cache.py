@@ -32,9 +32,9 @@ class PreviewCacheTests(unittest.TestCase):
 
     @contextmanager
     def pipeline(self):
-        def convert(tool, source, destination, work, cancel):
+        def convert(tool, source, destination, work, cancel, progress=None):
             self.works.append(work)
-            destination.write_bytes(b'iso:' + source.read_bytes() + tool.read_bytes())
+            destination.write_bytes(b'iso:' + source.read_bytes())
         with ExitStack() as stack:
             stack.enter_context(patch.object(service, 'check_header', return_value=b'header'))
             stack.enter_context(patch.object(service, 'check_disc_identity', return_value=REGIONS[0]))
@@ -70,8 +70,8 @@ class PreviewCacheTests(unittest.TestCase):
             self.assertFalse(self.works[0].exists())
             self.tool.write_bytes(b'tool B')
             self.preview(cache)
-            self.assertEqual(conversion.call_count, 3)
-            self.assertFalse(self.works[1].exists())
+            self.assertEqual(conversion.call_count, 2)  # Legacy external tool is ignored.
+            self.assertTrue(self.works[1].exists())
 
     def test_corrupt_cached_iso_is_rejected_and_not_returned(self):
         with self.pipeline() as (_, conversion), PreviewCache() as cache:

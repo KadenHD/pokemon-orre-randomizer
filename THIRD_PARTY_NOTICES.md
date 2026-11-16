@@ -89,7 +89,22 @@ and using the sheets or journal does not contact PokéAPI.
 The optional LZSS codec in `native/` is this project's MIT code, with no third-party
 Rust crates. The bundled DLL is built using Rust 1.93.1 and includes parts of the
 Rust standard library. Upstream copyright and license notices are preserved in
-`licenses/rust/`. Its source and offline build instructions accompany this project.
+`licenses/rust/`. Its source and build instructions accompany this project.
+
+## Integrated disc converter
+
+`native/disc/` links [nod](https://github.com/encounter/nod), version
+2.0.0-alpha.11, at revision `481f50d76078ca602d4858d53778c24eed7d79ee`.
+nod is dual-licensed MIT OR Apache-2.0; this distribution uses the MIT option.
+The library reads ISO/GCM/RVZ and writes lossless RVZ with Zstandard compression.
+It is compiled into `orre_disc.dll` with its compression dependencies linked
+statically. It contains no game data and is separate from Dolphin.
+
+The pinned dependency versions and upstream sources are recorded in
+`native/disc/Cargo.lock`. Copyright notices and license texts for the compiled
+Rust crates and bundled compression sources accompany the application in
+`licenses/disc/`, with a machine-readable dependency inventory. The build collects
+these from the exact dependency sources used on the target platform.
 
 ## Format research
 

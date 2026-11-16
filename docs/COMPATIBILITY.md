@@ -1,6 +1,6 @@
 # Supported original discs
 
-Both games accept ISO or RVZ. Every supported decoded ISO is 1,459,978,240 bytes.
+Both games accept ISO, GCM or RVZ. Every supported decoded disc is 1,459,978,240 bytes.
 The header selects a candidate; the complete ISO SHA-256 must match before any
 patch. Executables and archives have further content checks. All entries are
 **revision 0**. Modified images, unknown revisions and incomplete dumps are rejected.
@@ -14,9 +14,11 @@ patch. Executables and archives have further content checks. All entries are
 | XD | USA | `GXXE01` | `806a962155560d191435f7ba670bfb3471404c04f3494ad1a02d833508bf482f` |
 | XD | Japan | `GXXJ01` | `4a77d6d25292bc97ba18502296415d9297e7138d61e19e2512d0a26d57f90ae2` |
 
-RVZ is decoded with DolphinTool before validation. ISO-only processing does not
-need it. Output format is independent of input format. Sources and existing saves
-are preserved.
+RVZ is decoded by the bundled Rust library before validation, without an external
+converter. GCM and ISO contain the same raw disc bytes. Every input format offers
+all three output formats; the input format is selected by default. RVZ output
+uses Zstandard level 5, 128 KiB blocks and no scrubbing. A full decode and hash
+comparison verifies every created RVZ. Sources and existing saves are preserved.
 
 ## Languages and profiles
 

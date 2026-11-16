@@ -3,7 +3,6 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass, fields, replace
 from functools import wraps
-import configparser
 import copy
 import hashlib
 import json
@@ -11,7 +10,6 @@ import os
 from pathlib import Path
 import shutil
 import struct
-import subprocess
 import tempfile
 import threading
 import time
@@ -69,7 +67,7 @@ from .locales.selection_names import SPECIES_NAMES
 from .native_codec import backend, cancellation_scope, CodecCancelled
 from .options import Options, SPECIAL_OPTIONS
 from .i18n import Message, LANGUAGES
-from . import xd
+from . import xd, disc_images
 
 ISO_SIZE = 1_459_978_240
 ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
@@ -104,10 +102,6 @@ class UserError(Exception):
 
 class Cancelled(UserError):
     pass
-
-
-class RVZToolRequired(UserError):
-    """The paths are valid, but RVZ conversion still needs DolphinTool."""
 
 
 def validate_setting_values(options):
@@ -164,25 +158,14 @@ def file_hash(path: Path, cancel: threading.Event, progress: Progress | None = N
     return digest.hexdigest()
 
 
-def find_dolphin_tool() -> Path | None:
-    """Discover an existing tool, without installing or distributing Dolphin."""
-    import sys
-    base = Path(sys.executable).parent if getattr(sys, "frozen", False) else Path(__file__).resolve().parents[1]
-    for name in ("DolphinTool.exe", "DolphinTool", "Dolphin-x64/DolphinTool.exe"):
-        if (base / name).is_file():
-            return base / name
-    found = shutil.which("DolphinTool") or shutil.which("DolphinTool.exe")
-    return Path(found) if found else None
-
-
 def validate_paths(source: Path, destination: Path, seed: str,
-                   dolphin_tool: Path | None) -> tuple[Path, Path, Path]:
+                   dolphin_tool: Path | None = None) -> tuple[Path, Path, Path]:
     source, destination = source.expanduser().resolve(), destination.expanduser().resolve()
     report = destination.with_suffix(destination.suffix + ".json")
-    if not source.is_file() or source.suffix.lower() not in (".iso", ".rvz"):
-        raise UserError("Sélectionnez un fichier ISO ou RVZ existant.")
-    if destination.suffix.lower() not in (".iso", ".rvz"):
-        raise UserError("Enregistrez la nouvelle ROM au format .iso ou .rvz.")
+    if not source.is_file() or source.suffix.lower() not in disc_images.SUFFIXES:
+        raise UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
+    if destination.suffix.lower() not in disc_images.SUFFIXES:
+        raise UserError("Enregistrez la nouvelle ROM au format .iso, .gcm ou .rvz.")
     if source == destination or (destination.exists() and os.path.samefile(source, destination)):
         raise UserError("Choisissez un autre fichier de sortie pour conserver la ROM d’origine.")
     if os.path.lexists(destination) or os.path.lexists(report) or os.path.lexists(destination.with_suffix(destination.suffix + ".html")):
@@ -191,53 +174,22 @@ def validate_paths(source: Path, destination: Path, seed: str,
         raise UserError("Le dossier de sortie n’existe pas. Choisissez un dossier existant.")
     if not seed.strip() or len(seed.encode("utf-8")) > 256:
         raise UserError("Saisissez une seed de 1 à 256 octets UTF-8.")
-    if ".rvz" in (source.suffix.lower(), destination.suffix.lower()):
-        if dolphin_tool is None or not dolphin_tool.is_file():
-            raise RVZToolRequired("Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.")
     return source, destination, report
 
 
-def convert(tool: Path, source: Path, destination: Path, work: Path,
-            cancel: threading.Event) -> None:
-    """Run unattended conversion using only this job's temporary Dolphin profile.
-
-    Disable modal panic dialogs, while retaining exit-code/output checks here
-    and the pipeline's full-byte and RVZ roundtrip verification.
-    """
+def convert(tool: Path | None, source: Path, destination: Path, work: Path,
+            cancel: threading.Event, progress=None) -> None:
+    """Convert in process. Legacy tool/work arguments are ignored."""
     checkpoint(cancel)
-    user = work / "dolphin-user"
-    config_path = user / "Config" / "Dolphin.ini"
-    config_path.parent.mkdir(parents=True, exist_ok=True)
-    config = configparser.ConfigParser(interpolation=None)
-    config.optionxform = str
-    config.read(config_path, encoding="utf-8-sig")
-    if not config.has_section("Interface"):
-        config.add_section("Interface")
-    config.set("Interface", "UsePanicHandlers", "False")
-    with config_path.open("w", encoding="utf-8") as settings:
-        config.write(settings)
-    args = [str(tool.resolve()), "convert", "-i", str(source), "-o", str(destination),
-            "-f", destination.suffix[1:].lower(), "-u", str(user)]
-    if destination.suffix.lower() == ".rvz":
-        args += ["-b", "131072", "-c", "zstd", "-l", "5"]
-    checkpoint(cancel)
-    with (work / "conversion.log").open("wb") as log:
-        process = subprocess.Popen(args, stdout=log, stderr=subprocess.STDOUT,
-                                   creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-        deadline = time.monotonic() + 1800
-        try:
-            while process.poll() is None:
-                checkpoint(cancel)
-                if time.monotonic() > deadline:
-                    raise UserError("La conversion RVZ a dépassé 30 minutes. Vérifiez DolphinTool et l'espace libre.")
-                cancel.wait(0.15)
-        finally:
-            if process.poll() is None:
-                process.kill()
-                process.wait()
-    checkpoint(cancel)
-    if process.returncode or not destination.is_file():
-        raise UserError("La conversion a échoué. Vérifiez la ROM et le fonctionnement de DolphinTool.")
+    try:
+        disc_images.convert(source, destination, cancel, progress)
+    except disc_images.DiscCancelled:
+        checkpoint(cancel)
+        raise Cancelled("Création annulée. Aucun fichier de sortie n'a été conservé.") from None
+    except disc_images.DiscError as error:
+        if not disc_images.library_path().is_file():
+            raise UserError("Le convertisseur intégré est absent. Réinstallez l’application complète.") from error
+        raise UserError("La conversion a échoué. Vérifiez la ROM et l’espace libre.") from error
 
 
 def read_exact(stream, offset: int, size: int) -> bytes:
@@ -888,7 +840,7 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
         raise UserError("Espace disque insuffisant : il faut au moins {needed:.1f} Gio libres dans le dossier de sortie.", needed=needed / 1024**3)
     checkpoint(cancel)
     progress(0, "Lecture de la ROM d’origine…")
-    if source.suffix.lower() == ".iso":
+    if source.suffix.lower() in disc_images.RAW_SUFFIXES:
         check_header(source, is_xd=is_xd)
     source_hash = file_hash(source, cancel, progress, 0, 8, "Vérification de la ROM d’origine…")
     # TemporaryDirectory owns only a fresh random directory, under the selected parent.
@@ -896,11 +848,12 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
         work = Path(temp)
         iso = source
         if source.suffix.lower() == ".rvz":
-            progress(8, "Conversion RVZ → ISO avec DolphinTool…")
+            progress(8, "Décompression de la ROM…")
             iso = work / "source.iso"
-            convert(dolphin_tool, source, iso, work, cancel)
+            convert(None, source, iso, work, cancel,
+                    lambda done, total: progress(8 + int(7 * done / max(total, 1)), "Décompression de la ROM…"))
         boot = check_header(iso, is_xd=is_xd)
-        iso_hash = source_hash if iso == source else file_hash(iso, cancel, progress, 9, 18, "Vérification de l’ISO décompressée…")
+        iso_hash = source_hash if iso == source else file_hash(iso, cancel, progress, 15, 18, "Vérification de l’ISO décompressée…")
         region = check_disc_identity(boot, iso_hash, is_xd=is_xd)
         timings["input_validation"] = round(time.monotonic() - started, 4)
         phase = time.monotonic()
@@ -941,10 +894,12 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
         if destination.suffix.lower() == ".rvz":
             progress(83, "Compression de la nouvelle RVZ…")
             pending = work / "randomized.rvz"
-            convert(dolphin_tool, pending_iso, pending, work, cancel)
+            convert(None, pending_iso, pending, work, cancel,
+                    lambda done, total: progress(83 + int(3 * done / max(total, 1)), "Compression de la nouvelle RVZ…"))
             progress(86, "Vérification de la RVZ créée…")
             roundtrip = work / "roundtrip.iso"
-            convert(dolphin_tool, pending, roundtrip, work, cancel)
+            convert(None, pending, roundtrip, work, cancel,
+                    lambda done, total: progress(86 + int(3 * done / max(total, 1)), "Vérification de la RVZ créée…"))
             if file_hash(roundtrip, cancel) != output_iso_hash:
                 raise FormatError("RVZ roundtrip changed output ISO bytes")
         output_hash = output_iso_hash if pending == pending_iso else file_hash(pending, cancel)
@@ -961,7 +916,7 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
                   "preview_plan_reused": reused,
                   "summary": summary, "journal": str(journal_path), "journal_language": journal_language,
                   "elapsed_seconds": round(time.monotonic() - started, 2),
-                  "codec": backend(), "stage_seconds": timings,
+                  "codec": backend(), "disc_converter": disc_images.BACKEND, "stage_seconds": timings,
                   "runtime_validation": "Technical verification only; full playthrough and balance are not certified."}
         if is_xd:
             report["game"] = "xd"

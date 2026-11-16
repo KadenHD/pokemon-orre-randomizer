@@ -58,10 +58,11 @@ def verify_source_tests(directory: Path) -> str:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--edition", choices=("local", "public"), default="local")
+    parser.add_argument("--release-dir", type=Path, help="Audit a separate local candidate directory")
     args = parser.parse_args()
     (ROOT / "build").mkdir(exist_ok=True)
     public = args.edition == "public"
-    release = ROOT / "dist" / ("public" if public else "")
+    release = args.release_dir.resolve() if args.release_dir else ROOT / "dist" / ("public" if public else "")
     manifest = json.loads((release / "SHA256SUMS.json").read_text())
     checks = []
     for filename, expected in manifest.items():
@@ -102,6 +103,10 @@ def main():
             if helper_name not in archive.namelist():
                 raise RuntimeError("Windows update helper is missing")
             if binary:
+                if BINARY_ROOT + "orre_randomizer/_native/orre_disc.dll" not in archive.namelist():
+                    raise RuntimeError("The integrated disc converter is missing")
+                if f"{APP_EXECUTABLE}/licenses/disc/dependencies.json" not in archive.namelist():
+                    raise RuntimeError("Disc converter dependency notices are missing")
                 root = f"{APP_EXECUTABLE}/"
                 owned = json.loads(archive.read(root + "update-files.json"))
                 entries = [name[len(root):] for name in archive.namelist()]

@@ -10,7 +10,7 @@ STEP_HELP = (
 PRESET_DESCRIPTIONS = (
     "Randomise les Pokémon et leurs talents. Tous les stades d’évolution sont possibles, sans équilibrage de puissance.\nRandomise aussi les capacités, les apprentissages par niveau, les CT, les objets tenus et le contenu des coffres et des boutiques. Les objets protégés et les Balls d’origine en boutique sont conservés.",
     "Randomise les Pokémon et leurs talents. Tous les stades d’évolution sont possibles, sans équilibrage de puissance.\nLes capacités, les apprentissages par niveau, les CT et les objets ne sont pas randomisés. Les pierres d’évolution sont ajoutées en boutique.",
-    "Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/RVZ.",
+    "Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/GCM/RVZ.",
 )
 CUSTOM_PRESET = "Réglages personnalisés : vos options ne correspondent plus à un choix prédéfini. Ouvrez Avancé pour les voir ou les modifier. Choisir un des trois modes ci-dessus remplacera ces réglages."
 PRESET_EVOLUTIONS = "Les évolutions sont accessibles dans le jeu. Le tirage évite les familles en double entre starters, Pokémon obscurs et cadeaux quand les règles le permettent."

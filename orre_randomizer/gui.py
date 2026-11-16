@@ -27,7 +27,8 @@ from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
 
 from . import APP_NAME, __version__
 from .engine.analyze_game import FormatError
-from .service import Cancelled, Options, RVZToolRequired, UserError, find_dolphin_tool, randomize, validate_options, validate_paths, check_header
+from .disc_images import FORMATS, SUFFIXES, RAW_SUFFIXES
+from .service import Cancelled, Options, UserError, randomize, validate_options, validate_paths, check_header
 from .profiles import load_creation_report, load_profile, save_profile, validate_seed
 from .preferences import application_preferences
 from .presets import recommended_preset, species_preset
@@ -307,25 +308,11 @@ class MainWindow(QMainWindow):
         source_layout.addSpacing(16)
         self.source, self.source_button = file_field(
             source_layout, self, "ROM d’&origine", "ROM d’origine",
-            "Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici", "Parcourir…", self.choose_source)
+            "Sélectionnez un fichier ISO, GCM ou RVZ, ou glissez-le ici", "Parcourir…", self.choose_source)
         source_layout.addWidget(self.note("La ROM sera vérifiée avant la création. Aucun fichier existant ne sera remplacé."))
         self.art_note = self.note(ROM_USE_NOTICE)
         source_layout.addWidget(self.art_note)
         self.source.editingFinished.connect(self.suggest_destination)
-        self.advanced_toggle = QToolButton()
-        self.bind(self.advanced_toggle.setText, "Conversion RVZ · DolphinTool")
-        self.advanced_toggle.setCheckable(True)
-        self.advanced_toggle.setToolButtonStyle(Qt.ToolButtonStyle.ToolButtonTextBesideIcon)
-        self.advanced_toggle.setArrowType(Qt.ArrowType.RightArrow)
-        source_layout.addWidget(self.advanced_toggle, 0, Qt.AlignmentFlag.AlignLeft)
-        self.advanced, self.tool = self.build_tool_field()
-        found = find_dolphin_tool()
-        if found:
-            self.tool.setText(str(found))
-        self.advanced.layout().addWidget(self.note("DolphinTool est nécessaire pour lire ou créer une RVZ. Utilisez celui fourni avec Dolphin."))
-        source_layout.addWidget(self.advanced)
-        self.advanced.hide()
-        self.advanced_toggle.toggled.connect(self.toggle_advanced)
         source_layout.addStretch(1)
 
         self.build_settings_workspace()
@@ -341,20 +328,14 @@ class MainWindow(QMainWindow):
             "Choisissez où enregistrer la nouvelle ROM", "Enregistrer sous…", self.choose_destination)
         self.destination.editingFinished.connect(self.sync_format)
         self.format = QComboBox()
-        self.format.addItems(["ISO", "RVZ"])
+        self.format.addItems(FORMATS)
         self.bind(self.format.setAccessibleName, "Format de sortie")
         format_row = QHBoxLayout()
         format_row.addWidget(self.label("Format de sortie"))
         format_row.addWidget(self.format)
         format_row.addStretch(1)
         output_layout.addLayout(format_row)
-        self.output_conversion, self.output_tool = self.build_tool_field(label=True)
-        self.output_tool.setText(self.tool.text())
-        self.tool.textChanged.connect(self.output_tool.setText)
-        self.output_tool.textChanged.connect(self.tool.setText)
-        output_layout.addWidget(self.output_conversion)
         self.format.currentTextChanged.connect(self.format_changed)
-        self.output_conversion.hide()
         output_layout.addWidget(self.note("Un rapport avec la seed et les réglages sera enregistré à côté de la ROM."))
         self.review_toggle = QToolButton()
         self.bind(self.review_toggle.setText, "Réglages appliqués")
@@ -440,7 +421,7 @@ class MainWindow(QMainWindow):
                             (QPalette.ColorRole.PlaceholderText, "#b0c6bd")):
             palette.setColor(role, QColor(color))
         self.setPalette(palette)
-        self.xd = XDWorkspace(self, found)
+        self.xd = XDWorkspace(self)
         self.game_views.addWidget(self.xd)
         self.setStyleSheet(STYLE)
         self.set_advanced_mode(False)
@@ -450,14 +431,10 @@ class MainWindow(QMainWindow):
         self.language_combo.currentIndexChanged.connect(self.change_language)
         self.seed.textChanged.connect(self.refresh_review)
         self.source.textChanged.connect(self.refresh_review)
-        self.source.textChanged.connect(self.update_conversion_visibility)
         self.source.textChanged.connect(self.match_source_format)
         self.seed.textChanged.connect(self.invalidate_preview)
         self.source.textChanged.connect(self.invalidate_preview)
-        self.tool.textChanged.connect(self.invalidate_preview)
         self.source.textChanged.connect(self.schedule_report_rom_check)
-        self.tool.textChanged.connect(self.schedule_report_rom_check)
-        self.update_conversion_visibility()
         images, sounds = interface_assets()
         self.apply_artwork(images)
         self.audio.set_paths(sounds)
@@ -549,8 +526,6 @@ class MainWindow(QMainWindow):
         self.title.setText("RANDOMIZER" if not self.xd_logo.isNull() else "POKÉMON XD")
         self.title.setAccessibleName("Pokémon XD")
         self.profile_menu.show()
-        if not self.xd.tool.text() and self.tool.text():
-            self.xd.tool.setText(self.tool.text())
         self.xd.refresh_preview_identity()
         self.apply_game_style()
         self.xd.focus_current_step()
@@ -785,15 +760,11 @@ class MainWindow(QMainWindow):
             if index > self.step:
                 source = Path(self.source.text().strip())
                 if not self.source.text().strip() or not source.is_file():
-                    raise UserError("Sélectionnez un fichier ISO ou RVZ existant.")
-                if source.suffix.lower() not in (".iso", ".rvz"):
-                    raise UserError("Sélectionnez un fichier ISO ou RVZ existant.")
-                if source.suffix.lower() == ".iso":
+                    raise UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
+                if source.suffix.lower() not in SUFFIXES:
+                    raise UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
+                if source.suffix.lower() in RAW_SUFFIXES:
                     check_header(source)
-                elif not self.tool.text().strip() or not Path(self.tool.text().strip()).is_file():
-                    self.advanced_toggle.setChecked(True)
-                    self.tool.setFocus()
-                    raise RVZToolRequired("Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.")
                 self.suggest_destination()
                 if index == 2:
                     validate_seed(self.seed.text())
@@ -1128,7 +1099,7 @@ class MainWindow(QMainWindow):
             identity = (stat.st_dev, stat.st_ino, stat.st_size, stat.st_mtime_ns, stat.st_ctime_ns) if stat else None
         except (OSError, ValueError):
             identity = None
-        return source, self.seed.text(), self.current_options(), self.tool.text().strip(), identity
+        return source, self.seed.text(), self.current_options(), None, identity
 
     def update_preview_controls(self):
         known = getattr(self, 'known_preview', None)
@@ -1354,7 +1325,7 @@ class MainWindow(QMainWindow):
         self.preview_count.setText(self.encounters_tree.visible_count(self.text))
 
     def invalidate_preview(self):
-        cache_source_key = (self.source.text().strip(), self.tool.text().strip())
+        cache_source_key = self.source.text().strip()
         if cache_source_key != self._cache_source_key:
             self.preview_cache.invalidate()
             self._cache_source_key = cache_source_key
@@ -1387,11 +1358,8 @@ class MainWindow(QMainWindow):
             validate_seed(self.seed.text())
             options = validate_options(self.current_options())
             source = Path(self.source.text().strip())
-            if not source.is_file() or source.suffix.lower() not in (".iso", ".rvz"):
-                raise UserError("Sélectionnez un fichier ISO ou RVZ existant.")
-            tool = Path(self.tool.text().strip()) if self.tool.text().strip() else None
-            if source.suffix.lower() == ".rvz" and (tool is None or not tool.is_file()):
-                raise RVZToolRequired("Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.")
+            if not source.is_file() or source.suffix.lower() not in SUFFIXES:
+                raise UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
         except (UserError, OSError) as error:
             self.preview_failed(error, False)
             return
@@ -1402,7 +1370,7 @@ class MainWindow(QMainWindow):
         self.roulette_faces.clear()
         self.roulette_index = 0
         self.launch_preview(dict(source=source, seed=self.seed.text(), options=options,
-                                 dolphin_tool=tool, cancel=self.preview_cancel_event, cache=self.preview_cache),
+                                 dolphin_tool=None, cancel=self.preview_cancel_event, cache=self.preview_cache),
                             owner=self, succeeded=self.preview_succeeded, failed=self.preview_failed,
                             roulette=self.load_roulette_faces)
         self.render_preview()
@@ -1545,7 +1513,7 @@ class MainWindow(QMainWindow):
         if self.home.updating:
             return
         path, _ = QFileDialog.getOpenFileName(self, self.text("Reprendre depuis un rapport…"), "",
-                                             self.text("Rapport de création (*.iso.json *.rvz.json);;Fichiers JSON (*.json)"))
+                                             self.text("Rapport de création (*.iso.json *.gcm.json *.rvz.json);;Fichiers JSON (*.json)"))
         if path:
             self.import_creation_report(Path(path))
 
@@ -1573,9 +1541,8 @@ class MainWindow(QMainWindow):
         owner = owner or self
         if owner.report_check is not None or owner.creation_report is None or self.close_after_cancel:
             return
-        tool = owner.tool.text().strip()
         owner.report_check = ReportRomCheck(self, owner.creation_report, Path(owner.source.text().strip()),
-                                            Path(tool) if tool else None, self.preview_cache)
+                                            None, self.preview_cache)
         owner.report_check.finished.connect(lambda: self.report_rom_checked(owner=owner),
                                             Qt.ConnectionType.QueuedConnection)
         owner.report_check.start()
@@ -1633,44 +1600,15 @@ class MainWindow(QMainWindow):
     def profile_filter(self):
         return self.text("Profil XD (*.json)" if self.game_views.currentWidget() is self.xd else "Profil Colosseum (*.json)")
 
-    def toggle_advanced(self, checked):
-        self.advanced.setVisible(checked and Path(self.source.text().strip()).suffix.lower() == ".rvz")
-        self.advanced_toggle.setArrowType(Qt.ArrowType.DownArrow if checked else Qt.ArrowType.RightArrow)
-
-    def update_conversion_visibility(self):
-        rvz = Path(self.source.text().strip()).suffix.lower() == ".rvz"
-        self.advanced_toggle.setVisible(rvz)
-        self.advanced_toggle.setChecked(rvz)
-        self.toggle_advanced(rvz)
-
-    def build_tool_field(self, *, label=False):
-        block = QWidget()
-        layout = QVBoxLayout(block)
-        layout.setContentsMargins(0, 0, 0, 0)
-        field = QLineEdit()
-        self.bind(field.setAccessibleName, "DolphinTool")
-        self.bind(field.setPlaceholderText, "DolphinTool.exe fourni avec votre installation de Dolphin")
-        browse = self.button("Parcourir…")
-        browse.clicked.connect(lambda: self.choose_tool(field))
-        if label:
-            title = self.label("DolphinTool pour la sortie RVZ")
-            title.setBuddy(field)
-            layout.addWidget(title)
-        row = QHBoxLayout()
-        row.addWidget(field, 1)
-        row.addWidget(browse)
-        layout.addLayout(row)
-        return block, field
-
     def choose_source(self):
-        path, _ = QFileDialog.getOpenFileName(self, self.text("Choisir la ROM d’origine"), self.source.text(), self.text("ROM GameCube (*.iso *.rvz)"))
+        path, _ = QFileDialog.getOpenFileName(self, self.text("Choisir la ROM d’origine"), self.source.text(), self.text("ROM GameCube (*.iso *.gcm *.rvz)"))
         if path:
             self.source.setText(path)
             self.suggest_destination()
 
     def match_source_format(self):
         extension = Path(self.source.text().strip()).suffix.lower()
-        if extension in (".iso", ".rvz"):
+        if extension in SUFFIXES:
             self.format.setCurrentText(extension[1:].upper())
 
     def suggest_destination(self):
@@ -1681,11 +1619,10 @@ class MainWindow(QMainWindow):
     def format_changed(self, value):
         if self.destination.text():
             self.destination.setText(str(Path(self.destination.text()).with_suffix("." + value.lower())))
-        self.output_conversion.setVisible(value == "RVZ")
 
     def sync_format(self):
         extension = Path(self.destination.text()).suffix.lower()
-        if extension in (".iso", ".rvz"):
+        if extension in SUFFIXES:
             self.format.setCurrentText(extension[1:].upper())
 
     def choose_destination(self):
@@ -1697,18 +1634,13 @@ class MainWindow(QMainWindow):
             self.destination.setText(path if Path(path).suffix else path + "." + extension)
             self.sync_format()
 
-    def choose_tool(self, field):
-        path, _ = QFileDialog.getOpenFileName(self, self.text("Choisir DolphinTool"), field.text(), self.text("DolphinTool (DolphinTool.exe DolphinTool);;Tous les fichiers (*)"))
-        if path:
-            field.setText(path)
-
     def dragEnterEvent(self, event):
         if self.home.updating:
             event.ignore()
             return
         urls = event.mimeData().urls()
         if (self.game_views.currentWidget() in (self.colosseum, self.xd) and not self.busy and len(urls) == 1
-                and urls[0].isLocalFile() and Path(urls[0].toLocalFile()).suffix.lower() in (".iso", ".rvz")):
+                and urls[0].isLocalFile() and Path(urls[0].toLocalFile()).suffix.lower() in SUFFIXES):
             event.acceptProposedAction()
 
     def dropEvent(self, event):
@@ -1731,17 +1663,13 @@ class MainWindow(QMainWindow):
         self.sync_format()
         self.invalidate_preview()
         source_text, dest_text = self.source.text().strip(), self.destination.text().strip()
-        tool = Path(self.tool.text().strip()) if self.tool.text().strip() else None
         try:
             if not source_text or not dest_text:
                 raise UserError("Choisissez la ROM d’origine et l’emplacement de la nouvelle ROM.")
-            source, destination, _ = validate_paths(Path(source_text), Path(dest_text), self.seed.text(), tool)
+            source, destination, _ = validate_paths(Path(source_text), Path(dest_text), self.seed.text())
             options = validate_options(self.current_options())
         except (UserError, OSError) as error:
             self.show_error(error, False)
-            if isinstance(error, RVZToolRequired) and self.output_conversion.isVisible():
-                self.output_tool.setFocus()
-                self.output_scroll.ensureWidgetVisible(self.output_tool)
             return
         self.busy = True
         self.step = 2
@@ -1760,7 +1688,7 @@ class MainWindow(QMainWindow):
         self.set_status("Lecture de la ROM d’origine…")
         arguments = dict(source=source, destination=destination, seed=self.seed.text(),
                          options=options,
-                         dolphin_tool=tool, prepared_patches=self.preview_plan)
+                         dolphin_tool=None, prepared_patches=self.preview_plan)
         arguments["journal_language"] = self.language
         self.start_worker(arguments, self.on_progress, self.succeeded, self.show_error)
 

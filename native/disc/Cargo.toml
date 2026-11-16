@@ -1,0 +1,19 @@
+[package]
+name = "orre-disc"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[lib]
+name = "orre_disc"
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+nod = { git = "https://github.com/encounter/nod.git", rev = "481f50d76078ca602d4858d53778c24eed7d79ee", version = "=2.0.0-alpha.11", default-features = false, features = ["compress-bzip2-static", "compress-lzma-static", "compress-zstd-static", "threading"] }
+
+[profile.release]
+lto = true
+codegen-units = 1
+panic = "unwind"
+
+[workspace]

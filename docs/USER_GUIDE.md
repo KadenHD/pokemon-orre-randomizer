@@ -28,6 +28,13 @@ Both games use **ROM → Settings → Create**. Supply an unmodified
 files are never replaced. Start a new game in Dolphin to match the preview;
 the app never imports or edits saves.
 
+ISO, GCM and RVZ inputs all offer **ISO**, **GCM** and **RVZ** as output choices.
+The input's format is selected by default. GCM contains the same raw disc data
+as ISO. The Windows app includes its own RVZ conversion library: no external
+DolphinTool path, installation or download is needed. Conversion runs in the
+background worker, supports cancellation and never scrubs disc data. Every RVZ
+output is decoded and compared with the verified raw output before publication.
+
 **Pokémon + moves** and **Pokémon only** randomize species and abilities, with
 family diversity and a custom 5% shiny chance where supported. Every evolution
 stage is eligible: starters do not need to be base forms or belong to three-stage
@@ -352,14 +359,17 @@ permit shinies. See [shiny behavior](SHINIES.md).
 
 Creation writes the verified image, a JSON report and an offline HTML journal
 in the interface language. Keep the report, source identity, seed and engine
-version for reproduction. RVZ bytes also depend on DolphinTool's version.
+version for reproduction. The report records the bundled converter version;
+compressed RVZ bytes can depend on that version as well.
 
-Allow roughly 1.5 GiB for ISO → ISO, 2.8 GiB for RVZ → ISO and up to 5.6 GiB
+Allow roughly 1.5 GiB for ISO/GCM → ISO/GCM, 2.8 GiB for RVZ → ISO/GCM and up to 5.6 GiB
 for RVZ → RVZ. An RVZ preview can retain a decoded ISO in temporary storage
 until the window closes. Completion, cancellation and handled errors remove
 owned temporary files. A forced stop can leave `.orre-*` directories; inspect
 their location before removing them.
 
 The CLI retains its existing defaults: use a profile for exact desktop settings.
-Run `python -m orre_randomizer.cli --help`; add `--game xd` for XD profiles,
-`--dolphin-tool` for RVZ and `--journal-language en` for an English journal.
+Run `python -m orre_randomizer.cli --help`; add `--game xd` for XD profiles
+and `--journal-language en` for an English journal. All three file formats work
+through the same pipeline. In a source checkout, build the native libraries
+with `python scripts/build_native.py` before using RVZ.

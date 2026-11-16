@@ -135,36 +135,7 @@ TEXTS = {
                                                                                                                                                                                                                                                        'y '
                                                                                                                                                                                                                                                        'tiendas.',
  'Remplace les Pokémon des dresseurs, les obscurs, les starters et les cadeaux, avec une puissance proche de l’original.\nGarde les capacités de départ, les apprentissages par niveau et les CT. Les objets restent en place, sauf les pierres ajoutées en boutique.': 'Sustituye los Pokémon de los Entrenadores, los oscuros, los iniciales y los de regalo por Pokémon de fuerza similar.\nConserva los movimientos iniciales, los aprendidos al subir de nivel y las MT. Los objetos se mantienen, salvo las piedras añadidas a las tiendas.',
- 'Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/RVZ.': 'Crea '
-                                                                                                                                                                                      'una '
-                                                                                                                                                                                      'ROM '
-                                                                                                                                                                                      'nueva '
-                                                                                                                                                                                      'con '
-                                                                                                                                                                                      'los '
-                                                                                                                                                                                      'datos '
-                                                                                                                                                                                      'del '
-                                                                                                                                                                                      'juego '
-                                                                                                                                                                                      'sin '
-                                                                                                                                                                                      'cambios. '
-                                                                                                                                                                                      'No '
-                                                                                                                                                                                      'modifica '
-                                                                                                                                                                                      'Pokémon, '
-                                                                                                                                                                                      'movimientos '
-                                                                                                                                                                                      'ni '
-                                                                                                                                                                                      'objetos.\n'
-                                                                                                                                                                                      'Usa '
-                                                                                                                                                                                      'este '
-                                                                                                                                                                                      'modo '
-                                                                                                                                                                                      'para '
-                                                                                                                                                                                      'copiar '
-                                                                                                                                                                                      'el '
-                                                                                                                                                                                      'juego '
-                                                                                                                                                                                      'o '
-                                                                                                                                                                                      'convertir '
-                                                                                                                                                                                      'entre '
-                                                                                                                                                                                      'ISO '
-                                                                                                                                                                                      'y '
-                                                                                                                                                                                      'RVZ.',
+ 'Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/GCM/RVZ.': 'Crea una ROM nueva con los datos del juego sin cambios. No modifica Pokémon, movimientos ni objetos.\nUsa este modo para copiar el juego o convertir entre ISO, GCM y RVZ.',
  'Réglages personnalisés : vos options ne correspondent plus à un choix prédéfini. Ouvrez Avancé pour les voir ou les modifier. Choisir un des trois modes ci-dessus remplacera ces réglages.': 'Ajustes '
                                                                                                                                                                                                 'personalizados: '
                                                                                                                                                                                                 'tus '
@@ -201,15 +172,10 @@ TEXTS = {
  'Starters d’origine · Les remplaçants seront tirés à la création.': 'Iniciales originales · Los sustitutos '
                                                                      'se eligen al crear la ROM.',
  'Créez votre ROM': 'Crea tu ROM',
- 'Pour une sortie RVZ, DolphinTool sera demandé à la création si nécessaire.': 'Para la salida RVZ, se '
-                                                                               'pedirá DolphinTool al crear '
-                                                                               'la ROM si es necesario.',
  'Retour': 'Atrás',
  'Continuer': 'Continuar',
  'Réglages : {preset}\nSeed : {seed}': 'Ajustes: {preset}\nSemilla: {seed}',
- 'Choisissez un fichier ISO ou RVZ existant.': 'Elige un archivo ISO o RVZ existente.',
- 'Indiquez DolphinTool à l’étape ROM pour lire cette RVZ.': 'Selecciona DolphinTool en el paso «ROM» para '
-                                                            'leer este RVZ.',
+ 'Choisissez un fichier ISO, GCM ou RVZ existant.': 'Elige un archivo ISO, GCM o RVZ existente.',
  'Le mode Avancé permet de modifier chaque option du choix sélectionné.': 'Abre «Avanzado» para cambiar cada '
                                                                           'opción.',
  'Vérifiez la destination, puis créez la ROM.': 'Comprueba el destino y crea la ROM.',
@@ -238,8 +204,8 @@ TEXTS = {
                                                                                    'se mantiene hasta que '
                                                                                    'cierres la aplicación.',
  'Randomiser Colosseum': 'Aleatorizar Colosseum',
- 'ROM européenne · ISO ou RVZ · Traitement local': 'ROM europea · ISO o RVZ · Procesamiento local',
- 'Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici': 'Selecciona un archivo ISO o RVZ, o arrástralo '
+ 'ROM européenne · ISO, GCM ou RVZ · Traitement local': 'ROM europea · ISO, GCM o RVZ · Procesamiento local',
+ 'Sélectionnez un fichier ISO, GCM ou RVZ, ou glissez-le ici': 'Selecciona un archivo ISO, GCM o RVZ, o arrástralo '
                                                           'aquí',
  'ROM d’origine': 'ROM original',
  'ROM d’&origine': 'ROM &original',
@@ -352,17 +318,6 @@ TEXTS = {
  'Un rapport avec la seed et les réglages sera enregistré à côté de la ROM.': 'Se guardará un informe con la '
                                                                               'semilla y los ajustes junto a '
                                                                               'la ROM.',
- 'Conversion RVZ · DolphinTool': 'Conversión RVZ · DolphinTool',
- 'DolphinTool': 'DolphinTool',
- 'DolphinTool.exe fourni avec votre installation de Dolphin': 'DolphinTool.exe de tu instalación de Dolphin',
- 'DolphinTool est nécessaire pour lire ou créer une RVZ. Utilisez celui fourni avec Dolphin.': 'DolphinTool '
-                                                                                               'es necesario '
-                                                                                               'para leer o '
-                                                                                               'crear un '
-                                                                                               'RVZ. Usa la '
-                                                                                               'copia '
-                                                                                               'incluida con '
-                                                                                               'Dolphin.',
  'Choisissez la ROM d’origine.': 'Elige la ROM original.',
  'Progression de la création': 'Progreso de creación de la ROM',
  'Détails': 'Detalles',
@@ -379,12 +334,9 @@ TEXTS = {
  'Exporter le profil': 'Exportar perfil',
  'Profil Colosseum (*.json)': 'Perfil de Colosseum (*.json)',
  'Choisir la ROM d’origine': 'Elige la ROM original',
- 'ROM GameCube (*.iso *.rvz)': 'ROM de GameCube (*.iso *.rvz)',
+ 'ROM GameCube (*.iso *.gcm *.rvz)': 'ROM de GameCube (*.iso *.gcm *.rvz)',
  'Choisir où enregistrer la ROM': 'Elige dónde guardar la ROM',
  'Image {format} (*.{extension})': 'Imagen {format} (*.{extension})',
- 'Choisir DolphinTool': 'Elige DolphinTool',
- 'DolphinTool (DolphinTool.exe DolphinTool);;Tous les fichiers (*)': 'DolphinTool (DolphinTool.exe '
-                                                                     'DolphinTool);;Todos los archivos (*)',
  'Choisissez la ROM d’origine et l’emplacement de la nouvelle ROM.': 'Elige la ROM original y dónde guardar '
                                                                      'la nueva ROM.',
  'ROM créée et vérifiée.\n{path}': 'ROM creada y verificada.\n{path}',
@@ -426,8 +378,8 @@ TEXTS = {
                                                                                                                 'permitidos».',
  "Création annulée. Aucun fichier de sortie n'a été conservé.": 'Creación cancelada. No se ha conservado '
                                                                 'ningún archivo de salida.',
- 'Sélectionnez un fichier ISO ou RVZ existant.': 'Selecciona un archivo ISO o RVZ existente.',
- 'Enregistrez la nouvelle ROM au format .iso ou .rvz.': 'Guarda la nueva ROM como .iso o .rvz.',
+ 'Sélectionnez un fichier ISO, GCM ou RVZ existant.': 'Selecciona un archivo ISO, GCM o RVZ existente.',
+ 'Enregistrez la nouvelle ROM au format .iso, .gcm ou .rvz.': 'Guarda la nueva ROM como .iso, .gcm o .rvz.',
  'Choisissez un autre fichier de sortie pour conserver la ROM d’origine.': 'Elige otro archivo de salida '
                                                                            'para conservar la ROM original.',
  'Ce nom est déjà utilisé par une ROM ou un rapport. Choisissez-en un autre.': 'Ya existe una ROM o un '
@@ -436,22 +388,6 @@ TEXTS = {
  'Le dossier de sortie n’existe pas. Choisissez un dossier existant.': 'La carpeta de salida no existe. '
                                                                        'Elige una carpeta existente.',
  'Saisissez une seed de 1 à 256 octets UTF-8.': 'Introduce una semilla de entre 1 y 256 bytes UTF-8.',
- 'Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.': 'Para usar '
-                                                                                              'RVZ, '
-                                                                                              'selecciona '
-                                                                                              'DolphinTool '
-                                                                                              'de tu '
-                                                                                              'instalación '
-                                                                                              'de Dolphin.',
- "La conversion RVZ a dépassé 30 minutes. Vérifiez DolphinTool et l'espace libre.": 'La conversión RVZ ha '
-                                                                                    'superado los 30 '
-                                                                                    'minutos. Comprueba '
-                                                                                    'DolphinTool y el '
-                                                                                    'espacio libre en disco.',
- 'La conversion a échoué. Vérifiez la ROM et le fonctionnement de DolphinTool.': 'La conversión ha fallado. '
-                                                                                 'Comprueba la ROM y el '
-                                                                                 'funcionamiento de '
-                                                                                 'DolphinTool.',
  'ROM non prise en charge. Utilisez Colosseum Europe (GC6P01, révision 0), complet et sans modification.': 'ROM '
                                                                                                            'no '
                                                                                                            'compatible. '
@@ -522,7 +458,7 @@ TEXTS = {
                                                                                                                      'intacta.',
  'Lecture de la ROM d’origine…': 'Leyendo la ROM original…',
  'Vérification de la ROM d’origine…': 'Comprobando la ROM original…',
- 'Conversion RVZ → ISO avec DolphinTool…': 'Convirtiendo RVZ → ISO con DolphinTool…',
+ 'Décompression de la ROM…': 'Descomprimiendo la ROM…',
  'Vérification de l’ISO décompressée…': 'Comprobando el ISO descomprimido…',
  'Application des réglages…': 'Aplicando los ajustes…',
  'Compression des données du jeu…': 'Comprimiendo los datos del juego…',

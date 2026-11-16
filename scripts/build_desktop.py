@@ -26,6 +26,7 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
                                   ("licenses", {".txt", ".json", ".md"}), (".github", {".yml", ".md"})):
         files += [p for p in (ROOT / directory).rglob("*") if p.is_file() and p.suffix in extensions]
     files += [ROOT / "native/Cargo.toml", ROOT / "native/Cargo.lock", ROOT / "native/src/lib.rs"]
+    files += [ROOT / "native/disc/Cargo.toml", ROOT / "native/disc/Cargo.lock", ROOT / "native/disc/src/lib.rs"]
     files.append(ROOT / "docs/reverse-engineering/baseline.json")
     documentation = ROOT / "docs/images"
     for name in documentation_media(lambda name: (documentation / name).read_bytes()):
@@ -72,6 +73,7 @@ def zip_sources(destination: Path, *, include_game_assets: bool = True):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-only", action="store_true")
+    parser.add_argument("--output-dir", type=Path, help="Use a separate directory for a local candidate build")
     parser.add_argument("--edition", choices=("local", "public"), default="local",
                         help="Choose the output directory; both editions include the verified interface pack")
     parser.add_argument("--skip-freeze", action="store_true", help="Repackage the already tested executable without recompiling it")
@@ -96,7 +98,7 @@ def main():
                 or set(home_logos()) != {"colosseum", "xd"}):
             raise SystemExit("The exported interface pack is incomplete.")
     source_files(include_game_assets=include_game_assets)
-    release = ROOT / "dist" / ("public" if args.edition == "public" else "")
+    release = args.output_dir.resolve() if args.output_dir else ROOT / "dist" / ("public" if args.edition == "public" else "")
     release.mkdir(parents=True, exist_ok=True)
     source_zip = release / f"{REPOSITORY_NAME}-{__version__}-source.zip"
     if source_zip.exists():

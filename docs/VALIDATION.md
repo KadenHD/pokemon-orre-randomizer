@@ -6,6 +6,19 @@ historical evidence rather than the current feature specification.
 
 ## Automated and packaged checks
 
+- The integrated converter is tested with a synthetic GameCube container across
+  all nine ISO/GCM/RVZ input/output pairs, and through both games' publication
+  pipelines. Tests cover Unicode paths, cancellation, malformed input,
+  callback errors, existing-file protection, reports and temporary-file cleanup.
+  Runtime conversion tests forbid launching any external executable.
+- On 2026-11-16, the native reader decoded all six supported retail RVZ originals
+  to their expected ISO SHA-256 hashes. For both European games, native RVZ
+  output was also decoded independently by DolphinTool and compared byte for
+  byte with the original raw disc. Source RVZ hashes were unchanged. DolphinTool
+  was used only as an independent development check; it is not part of the app.
+- Windows diagnostics require the bundled disc-conversion library and exercise
+  a synthetic GCM → RVZ → ISO roundtrip without a developer PATH. This verifies
+  container conversion and packaging; it does not certify a new gameplay run.
 - Python tests cover guarded edits, disc identity, both games' options, allocation,
   previews, profiles, translations, reports and GUI state.
 - Preset tests compare all shared fields across games and balance fields across

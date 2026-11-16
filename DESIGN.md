@@ -325,8 +325,9 @@ name and description; Shadow badges use white lettering in Colosseum and
 black lettering in XD, with the localized label in all six languages.
 
 Create shows **Applied settings**, grouped by category with values and units.
-Inactive remembered values are omitted. RVZ output exposes its DolphinTool field
-and shares the path selected in ROM. Both games provide progress, cancellation,
+Inactive remembered values are omitted. All ISO/GCM/RVZ inputs offer the same
+three output formats, initially matching the input. Conversion is integrated;
+no external-converter fields are shown. Both games provide progress, cancellation,
 a stage log and links to the output folder, JSON report and offline journal.
 The shared **Details** disclosure stays hidden during input validation. It appears
 only on Create after generation starts, retains the resulting log, and is hidden

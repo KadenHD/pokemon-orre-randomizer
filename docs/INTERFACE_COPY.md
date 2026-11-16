@@ -12,7 +12,7 @@ and the intentional differences between Colosseum and XD.
 | --- | --- | --- |
 | Pokémon + capacités | Pokémon + moves | Randomizes Pokémon and abilities without power matching; also randomizes moves, learnsets, TMs, compatibility, held items, treasure and shops |
 | Pokémon seuls | Pokémon only | Uses the same Pokémon and ability selection; keeps moves, learnsets, TMs and ordinary items |
-| Copie à l’identique | Unchanged copy | Keeps all game data; can convert ISO/RVZ |
+| Copie à l’identique | Unchanged copy | Keeps all game data; can convert ISO/GCM/RVZ |
 
 Both randomizing presets enable accessible evolutions, Evolution stones in shops,
 family diversity, starters from all evolution stages and a seeded 5% shiny

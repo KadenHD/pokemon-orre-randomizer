@@ -16,7 +16,8 @@ from PySide6.QtWidgets import (
 from .i18n import Message
 from .locales.selection_names import SPECIES_NAMES
 from .profiles import XD_SPOT_MIGRATION, load_creation_report, load_profile, save_profile, validate_seed
-from .service import RVZToolRequired, UserError, check_header, validate_paths
+from .disc_images import FORMATS, SUFFIXES, RAW_SUFFIXES
+from .service import UserError, check_header, validate_paths
 from .ui_icons import CATEGORY_SYMBOLS
 from .ui_exclusions import ExcludedSelection, search_key
 from .settings_presentation import (configuration_review, effective_xd_setting_names,
@@ -70,7 +71,7 @@ DEPENDENCIES = {
 
 
 class XDWorkspace(QWidget):
-    def __init__(self, window, tool_path):
+    def __init__(self, window):
         super().__init__()
         self.window = window
         self.result = None
@@ -103,15 +104,9 @@ class XDWorkspace(QWidget):
         rom.addSpacing(16)
         self.source, _ = file_field(
             rom, window, "ROM d’&origine", "ROM d’origine",
-            "Sélectionnez un fichier ISO ou RVZ, ou glissez-le ici", "Parcourir…", self.choose_source)
+            "Sélectionnez un fichier ISO, GCM ou RVZ, ou glissez-le ici", "Parcourir…", self.choose_source)
         rom.addWidget(window.note("La ROM sera vérifiée avant la création. Aucun fichier existant ne sera remplacé."))
         rom.addWidget(window.note(ROM_USE_NOTICE))
-        self.tool_block, self.tool = window.build_tool_field()
-        self.tool_block.layout().addWidget(window.note(
-            "DolphinTool est nécessaire pour lire ou créer une RVZ. Utilisez celui fourni avec Dolphin."))
-        self.source_conversion = self.disclosure("Conversion RVZ · DolphinTool", self.tool_block)
-        rom.addWidget(self.source_conversion, 0, Qt.AlignmentFlag.AlignLeft)
-        rom.addWidget(self.tool_block)
         rom.addStretch(1)
 
         settings = wizard_page(self.pages, scrolling=False)
@@ -135,7 +130,7 @@ class XDWorkspace(QWidget):
             "Choisissez où enregistrer la nouvelle ROM", "Enregistrer sous…", self.choose_destination)
         self.format = QComboBox()
         window.bind(self.format.setAccessibleName, "Format de sortie")
-        self.format.addItems(("ISO", "RVZ"))
+        self.format.addItems(FORMATS)
         format_row = QHBoxLayout()
         format_label = window.label("Format de sortie")
         format_label.setBuddy(self.format)
@@ -143,12 +138,6 @@ class XDWorkspace(QWidget):
         format_row.addWidget(self.format)
         format_row.addStretch(1)
         output.addLayout(format_row)
-        self.output_tool_block, self.output_tool = window.build_tool_field(label=True)
-        self.tool.textChanged.connect(self.output_tool.setText)
-        self.output_tool.textChanged.connect(self.tool.setText)
-        if tool_path:
-            self.tool.setText(str(tool_path))
-        output.addWidget(self.output_tool_block)
         output.addWidget(window.note("Un rapport avec la seed et les réglages sera enregistré à côté de la ROM."))
         self.review = QLabel()
         self.review.setWordWrap(True)
@@ -216,12 +205,9 @@ class XDWorkspace(QWidget):
         self.source.textChanged.connect(self.source_changed)
         self.source.textChanged.connect(self.invalidate_preview)
         self.seed.textChanged.connect(self.invalidate_preview)
-        self.tool.textChanged.connect(self.invalidate_preview)
         self.source.textChanged.connect(lambda: window.schedule_report_rom_check(owner=self))
-        self.tool.textChanged.connect(lambda: window.schedule_report_rom_check(owner=self))
         self.destination.textChanged.connect(self.destination_changed)
         self.format.currentTextChanged.connect(self.format_changed)
-        self.update_tool()
         self.set_options(XDOptions.recommended())
         self.refresh_navigation()
 
@@ -475,9 +461,6 @@ class XDWorkspace(QWidget):
                 if index == 2:
                     validate_seed(self.seed.text())
             except (UserError, OSError) as error:
-                if isinstance(error, RVZToolRequired):
-                    self.source_conversion.setChecked(True)
-                    self.tool.setFocus()
                 self.failed(error, False)
                 self.refresh_navigation()
                 return
@@ -490,12 +473,10 @@ class XDWorkspace(QWidget):
     def validate_source(self):
         value = self.source.text().strip()
         source = Path(value)
-        if source.suffix.lower() not in (".iso", ".rvz") or not source.is_file():
-            raise UserError("Sélectionnez un fichier ISO ou RVZ existant.")
-        if source.suffix.lower() == ".iso":
+        if source.suffix.lower() not in SUFFIXES or not source.is_file():
+            raise UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
+        if source.suffix.lower() in RAW_SUFFIXES:
             check_header(source, is_xd=True)
-        elif not self.tool.text().strip() or not Path(self.tool.text().strip()).is_file():
-            raise RVZToolRequired("Pour utiliser le format RVZ, sélectionnez DolphinTool dans votre installation de Dolphin.")
 
     def import_configuration(self, path, *, report=False):
         try:
@@ -627,8 +608,7 @@ class XDWorkspace(QWidget):
                 return path, None
 
         source = self.source.text().strip()
-        tool = file_key(self.tool.text()) if Path(source).suffix.lower() == ".rvz" else None
-        return file_key(source), self.seed.text(), self.current_options(), tool
+        return file_key(source), self.seed.text(), self.current_options(), None
 
     def refresh_preview_identity(self):
         if self.preview_key is not None and self.preview_key != self.preview_configuration():
@@ -636,7 +616,7 @@ class XDWorkspace(QWidget):
 
     @Slot()
     def invalidate_preview(self):
-        cache_key = self.source.text().strip(), self.tool.text().strip()
+        cache_key = self.source.text().strip()
         if cache_key != self._cache_source_key:
             self.window.preview_cache.invalidate()
             self._cache_source_key = cache_key
@@ -679,7 +659,6 @@ class XDWorkspace(QWidget):
             return
         from .preview import preview_xd
 
-        tool = self.tool.text().strip()
         try:
             validate_seed(self.seed.text())
             validate_options(self.current_options())
@@ -700,7 +679,7 @@ class XDWorkspace(QWidget):
         self.preview_cancel.setFocus()
         self.window.launch_preview(
             dict(source=Path(source), seed=self.seed.text(), xd_options=self.preview_key[2],
-                 dolphin_tool=Path(tool) if tool else None, cache=self.window.preview_cache,
+                 dolphin_tool=None, cache=self.window.preview_cache,
                  cancel=self.window.preview_cancel_event),
             owner=self, succeeded=self.preview_succeeded, failed=self.preview_failed,
             progress=self.on_preview_progress, roulette=self.load_roulette_faces,
@@ -1016,7 +995,7 @@ class XDWorkspace(QWidget):
     def choose_source(self):
         text = self.window.text
         path, _ = QFileDialog.getOpenFileName(self, text("Choisir la ROM d’origine"),
-                                             self.source.text(), text("ROM GameCube (*.iso *.rvz)"))
+                                             self.source.text(), text("ROM GameCube (*.iso *.gcm *.rvz)"))
         if path:
             self.source.setText(path)
 
@@ -1034,31 +1013,21 @@ class XDWorkspace(QWidget):
     def source_changed(self, value):
         source = Path(value.strip())
         suffix = source.suffix.lower()
-        if suffix in (".iso", ".rvz"):
+        if suffix in SUFFIXES:
             self.format.setCurrentText(suffix[1:].upper())
             if not self.destination.text().strip():
                 self.destination.setText(str(source.with_name(f"xd-randomized{suffix}")))
-        self.source_conversion.setChecked(suffix == ".rvz")
-        self.update_tool()
 
     def destination_changed(self, value):
         suffix = Path(value.strip()).suffix.lower()
-        if suffix in (".iso", ".rvz"):
+        if suffix in SUFFIXES:
             self.format.setCurrentText(suffix[1:].upper())
-        self.update_tool()
 
     def format_changed(self, value):
         destination = self.destination.text().strip()
         suffix = "." + value.lower()
         if destination and Path(destination).name and Path(destination).suffix.lower() != suffix:
             self.destination.setText(str(Path(destination).with_suffix(suffix)))
-        self.update_tool()
-
-    def update_tool(self):
-        source_rvz = Path(self.source.text().strip()).suffix.lower() == ".rvz"
-        self.source_conversion.setVisible(source_rvz)
-        self.tool_block.setVisible(source_rvz and self.source_conversion.isChecked())
-        self.output_tool_block.setVisible(self.format.currentText() == "RVZ")
 
     def set_status(self, message="", *, error=False):
         if error != self.status_error:
@@ -1086,21 +1055,13 @@ class XDWorkspace(QWidget):
             self.set_status("Un calcul est déjà en cours. Réessayez dans un instant.")
             return
         self.creation_log.reset()
-        source, destination, tool = (field.text().strip() for field in (self.source, self.destination, self.tool))
-        tool_path = Path(tool) if tool else None
+        source, destination = (field.text().strip() for field in (self.source, self.destination))
         try:
             if not source or not destination:
                 raise UserError("Choisissez la ROM d’origine et l’emplacement de la nouvelle ROM.")
-            source, destination, _ = validate_paths(Path(source), Path(destination), self.seed.text(), tool_path)
+            source, destination, _ = validate_paths(Path(source), Path(destination), self.seed.text())
             options = validate_options(self.current_options())
         except (UserError, OSError) as error:
-            if isinstance(error, RVZToolRequired):
-                if Path(self.source.text().strip()).suffix.lower() == ".rvz":
-                    self.go_step(0)
-                    self.source_conversion.setChecked(True)
-                    self.tool.setFocus()
-                else:
-                    self.output_tool.setFocus()
             self.failed(error, False)
             return
         self.refresh_preview_identity()
@@ -1122,7 +1083,7 @@ class XDWorkspace(QWidget):
         self.set_status("Lecture de la ROM d’origine…")
         self.window.start_worker(
             dict(source=source, destination=destination, seed=self.seed.text(),
-                 dolphin_tool=tool_path, journal_language=self.window.language, xd_options=options,
+                 dolphin_tool=None, journal_language=self.window.language, xd_options=options,
                  prepared_patches=self.preview_plan),
             self.on_progress, self.succeeded, self.failed,
         )

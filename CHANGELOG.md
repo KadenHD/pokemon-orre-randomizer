@@ -1,7 +1,15 @@
 # Changelog
 
-## Unreleased
+## 1.2.26 - 2026-11-16
 
+- Integrate lossless RVZ conversion through a bundled Rust library. Remove
+  DolphinTool path fields and the external converter requirement from both games.
+- Accept GCM input and output. Every ISO, GCM or RVZ input offers all three output
+  formats, with the input format selected by default. Preserve cancellation,
+  source checks, exclusive output creation and full RVZ roundtrip verification.
+- Include the locked converter sources and dependency notices in distributions;
+  verify native conversion in the relocated Windows application smoke test.
+- Remove local account and workspace paths from native library diagnostics.
 - Disable horizontal panning in both games' encounter tables, including
   trackpad gestures, Shift+wheel and input over the header. Keep vertical
   scrolling and ignore the horizontal part of diagonal gestures.

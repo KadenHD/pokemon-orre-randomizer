@@ -8,9 +8,10 @@ sys.path.insert(0, str(root))
 from orre_randomizer import APP_EXECUTABLE, __version__
 
 native_codec = root / 'orre_randomizer/_native/orre_lzss.dll'
+disc_codec = root / 'orre_randomizer/_native/orre_disc.dll'
 interface_pack = 'orre_randomizer/assets/game'
 app_assets = root / 'orre_randomizer/assets/app'
-if not native_codec.is_file():
+if not native_codec.is_file() or not disc_codec.is_file():
     raise RuntimeError('Build the Rust codec first: python scripts/build_native.py')
 if not (app_assets / 'icon.ico').is_file():
     raise RuntimeError('Build the application icon first: python scripts/build_app_icon.py')
@@ -20,7 +21,8 @@ data_files.append((str(root / 'orre_randomizer/windows_update.ps1'), 'orre_rando
 if os.environ.get('ORRE_BUNDLE_GAME_ASSETS', os.environ.get('COLOSSEUM_BUNDLE_GAME_ASSETS', '1')) == '1':
     data_files.append((str(root / interface_pack), interface_pack))
 a = Analysis([str(root / 'scripts/desktop_entry.py')], pathex=[str(root)],
-             binaries=[(str(native_codec), 'orre_randomizer/_native')],
+             binaries=[(str(native_codec), 'orre_randomizer/_native'),
+                       (str(disc_codec), 'orre_randomizer/_native')],
              datas=data_files,
              hiddenimports=[], hookspath=[], hooksconfig={},
              runtime_hooks=[], excludes=['PySide6.QtQml', 'PySide6.QtQuick',
