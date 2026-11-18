@@ -27,8 +27,9 @@ class HDImages(unittest.TestCase):
     def test_resolver_accepts_format_case_and_mipmap_alias(self):
         path = self.root / "TEX1_8x8_m_abc_14.DDS"
         Image.new("RGBA", (32, 32)).save(path, format="DDS")
-        self.assertEqual(resolve_texture(self.root, "tex1_8x8_abc_14.png"), path)
-        self.assertEqual(resolve_texture(self.root, "tex1_8x8_m_abc_14.png"), path)
+        # Windows runners may expose TEMP through a DOS 8.3 path alias.
+        self.assertEqual(resolve_texture(self.root, "tex1_8x8_abc_14.png"), path.resolve())
+        self.assertEqual(resolve_texture(self.root, "tex1_8x8_m_abc_14.png"), path.resolve())
         with self.assertRaises(FileNotFoundError):
             resolve_texture(self.root, "tex1_8x8_def_14.png")
         with self.assertRaises(ValueError):
