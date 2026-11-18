@@ -59,7 +59,11 @@ class ModelArtworkTests(unittest.TestCase):
                 square = _png_pixels(shadow_lugia_portrait(shiny=shiny, game="colosseum"), (42, 42))
                 circle = _png_pixels(shadow_lugia_portrait(shiny=shiny, game="xd"), (42, 42))
                 self.assertEqual(square[3::4], bytes((255,)) * (42 * 42))
-                self.assertEqual(circle, make_xd_shadow_lugia_round_portrait(source, reference=reference))
+                from orre_randomizer.model_portraits import registered_portrait
+                registered = registered_portrait(pack, game="xd", shiny=shiny)
+                expected = (_png_pixels(registered, (42, 42)) if registered is not None
+                            else make_xd_shadow_lugia_round_portrait(source, reference=reference))
+                self.assertEqual(circle, expected)
                 self.assertEqual(circle[3::4], reference[3::4])
                 self.assertEqual(circle[:4], bytes(4))
                 self.assertNotEqual(square, circle)

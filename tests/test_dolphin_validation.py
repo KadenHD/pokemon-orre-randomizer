@@ -48,6 +48,24 @@ class DolphinValidationTests(unittest.TestCase):
         arguments.update(changes)
         return launcher.validate_job(**arguments)
 
+    def texture_view(self, suffix=".png"):
+        from PIL import Image
+        from orre_randomizer.hd_packs import PACKS
+        pack = PACKS["xd"]
+        view = self.build / "Shared/TextureViews" / (pack.key + "-GXXP01-initial-" + "a" * 24) / "Load"
+        source = view / "Textures/GXXP01" / ("tex1_32x32_0123456789abcdef_14" + suffix)
+        source.parent.mkdir(parents=True, exist_ok=True)
+        image = Image.new("RGBA", (128, 128), (100, 120, 160, 255))
+        image.save(source, **({"pixel_format": "DXT5"} if suffix == ".dds" else {}))
+        (view.parent / "complete.json").write_text(json.dumps({"pack": pack.key, "game_id": "GXXP01", "overlays": 0}))
+        marker = self.build / "Shared/TexturePacks" / pack.key / "installed.json"
+        marker.parent.mkdir(parents=True, exist_ok=True)
+        marker.write_text(json.dumps({"key": pack.key, "archives": [p.sha256 for p in pack.parts]}))
+        target = self.profile / "Load/Textures/GXXP01" / source.name
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.hardlink_to(source)
+        return view, source, target
+
     def run_job(self, code=0, callback=None):
         class Process:
             def __init__(self, argv, **kwargs):
@@ -128,6 +146,111 @@ class DolphinValidationTests(unittest.TestCase):
         (self.profile / "GC/linked.raw").hardlink_to(self.personal / "GC/card.raw")
         with self.assertRaisesRegex(ValueError, "Hardlinked"):
             self.validate()
+
+    def test_readonly_pinned_texture_links_require_explicit_opt_in(self):
+        view, source, target = self.texture_view()
+        with self.assertRaisesRegex(ValueError, "Hardlinked"):
+            self.validate()
+        self.config.write_text("[General]\nLoadPath = " + (self.profile / "Load").as_posix())
+        result = self.validate(readonly_texture_view=view)
+        self.assertEqual(result[2], self.profile)
+        self.assertTrue(os.path.samefile(source, target))
+
+    def test_readonly_dds_links_are_validated_without_rewriting_any_pixels(self):
+        view, source, target = self.texture_view(".dds")
+        before = source.read_bytes()
+        self.validate(readonly_texture_view=view)
+        self.assertEqual(source.read_bytes(), before)
+        self.assertEqual(target.read_bytes(), before)
+
+    def test_real_dolphin_mipmap_and_arbitrary_mip_suffixes_remain_permitted(self):
+        view, source, target = self.texture_view(".dds")
+        stem = source.stem
+        for suffix in ("_mip1", "_arb", "_arb_mip2"):
+            target.unlink()
+            renamed = source.with_name(stem + suffix + ".dds")
+            source.rename(renamed)
+            source = renamed
+            target = target.with_name(source.name)
+            target.hardlink_to(source)
+            with self.subTest(suffix=suffix):
+                self.validate(readonly_texture_view=view)
+
+    def test_readonly_texture_option_still_rejects_cards_configs_states_and_dumps(self):
+        view, source, _ = self.texture_view()
+        for relative in ("GC/card.raw", "Config/other.ini", "StateSaves/state.sav",
+                         "Dump/Textures/GXXP01/tex1_32x32_0123456789abcdef_14.png"):
+            path = self.profile / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.hardlink_to(source)
+            with self.subTest(relative=relative), self.assertRaisesRegex(ValueError, "permitted game texture"):
+                self.validate(readonly_texture_view=view)
+            path.unlink()
+
+    def test_readonly_texture_option_never_allows_external_load_or_write_paths(self):
+        view, _, _ = self.texture_view()
+        for key, path in (("LoadPath", view), ("MemcardAPath", self.personal / "GC/card.raw")):
+            self.config.write_text("[General]\n" + key + " = " + path.as_posix())
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, "escapes"):
+                self.validate(readonly_texture_view=view)
+        self.config.write_text("[General]\nDumpPath = " + (self.profile / "Load").as_posix())
+        with self.assertRaisesRegex(ValueError, "overlap readonly"):
+            self.validate(readonly_texture_view=view)
+
+    def test_profile_texture_cannot_be_an_unrelated_file_with_the_same_name(self):
+        view, source, target = self.texture_view()
+        target.unlink()
+        unrelated = self.build / "unrelated.png"
+        unrelated.write_bytes(source.read_bytes())
+        target.hardlink_to(unrelated)
+        with self.assertRaisesRegex(ValueError, "exact canonical view"):
+            self.validate(readonly_texture_view=view)
+
+    def test_nonflat_or_wrong_game_texture_hardlinks_are_refused(self):
+        view, source, target = self.texture_view()
+        target.unlink()
+        for relative in ("Load/Textures/GC6P01/" + source.name,
+                         "Load/Textures/GXXP01/nested/" + source.name):
+            wrong = self.profile / relative
+            wrong.parent.mkdir(parents=True, exist_ok=True)
+            wrong.hardlink_to(source)
+            with self.subTest(relative=relative), self.assertRaisesRegex(ValueError, "permitted game texture"):
+                self.validate(readonly_texture_view=view)
+            wrong.unlink()
+
+    def test_forged_image_or_oversized_input_is_refused_even_when_samefile(self):
+        view, source, _ = self.texture_view()
+        original = source.read_bytes()
+        for payload in (b"card data" * 32, b"\x89PNG\r\n\x1a\n" + b"card data" * 32):
+            source.write_bytes(payload)
+            with self.subTest(payload=payload[:12]), self.assertRaises(ValueError):
+                self.validate(readonly_texture_view=view)
+        source.write_bytes(original)
+        with source.open("r+b") as stream:
+            stream.truncate(64 * 1024**2 + 1)
+        with self.assertRaisesRegex(ValueError, "64MB"):
+            self.validate(readonly_texture_view=view)
+
+    def test_wrong_pack_receipt_or_noncanonical_view_is_refused(self):
+        view, _, _ = self.texture_view()
+        marker = view.parent / "complete.json"
+        metadata = json.loads(marker.read_text())
+        for key, value in (("pack", "untrusted-pack"), ("game_id", "invalid")):
+            marker.write_text(json.dumps(dict(metadata, **{key: value})))
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.validate(readonly_texture_view=view)
+        marker.write_text(json.dumps(metadata))
+        with self.assertRaisesRegex(ValueError, "canonical PackStore"):
+            self.validate(readonly_texture_view=self.build)
+        with self.assertRaises(ValueError):
+            self.validate(readonly_texture_view=self.profile)
+
+    def test_linked_view_ancestor_is_rejected_before_image_access(self):
+        view, _, _ = self.texture_view()
+        original = Path.is_symlink
+        with patch.object(Path, "is_symlink", lambda path: path == view.parent or original(path)):
+            with self.assertRaisesRegex(ValueError, "Linked paths"):
+                self.validate(readonly_texture_view=view)
 
     def test_gecko_test_sections_with_bare_codes_do_not_hide_external_paths(self):
         (self.profile / "GameSettings").mkdir()

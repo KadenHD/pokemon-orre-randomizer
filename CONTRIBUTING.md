@@ -102,6 +102,18 @@ The accelerated Windows build requires Rust and a compatible MSVC linker.
 The `native/` crate has no external dependencies and can be built and tested
 offline. Running the Python version with the fallback codec requires no Rust toolchain.
 
+Version 2 also builds `native/launcher/`, a dependency-free Rust bootstrap, and
+the Windows C music renderer. The latter needs MSVC and a Windows SDK;
+`scripts/build_music.py` discovers the toolchain, downloads a pinned CC0 MusyX
+source archive and verifies its hash before compilation. It records the renderer
+hash and source revision beside the DLL. The game-folder launcher is a separate
+process using the same packaged Qt runtime, not a second emulator.
+
+When an HD recipe changes, increment `HD_CACHE_REVISION` in `play_folders.py`
+so existing folders prepare fresh assets. Added custom models require complete
+material coverage, including unchanged source maps. Keep native images intact
+and register new GPU body/head captures with their exact material provenance.
+
 ```powershell
 python -m pip install -r requirements-build.txt
 python scripts/build_native.py

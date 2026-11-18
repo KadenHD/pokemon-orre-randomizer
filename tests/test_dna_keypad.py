@@ -6,7 +6,7 @@ from pathlib import Path
 from orre_randomizer.artwork import _decode_pixels
 from orre_randomizer.engine.dna_keypad import (
     DNA_KEYPAD_SPECIES, _SPINDA_ART_RECT, _SPINDA_BODY_ART_RECT, _body_pixels,
-    _tile_art, _tile_rows, _TILE_ORIGINS, patch_dna_keypad,
+    _tile_art, _tile_rows, _TILE_ORIGINS, patch_dna_keypad, _CUSTOM_BODY_ART_RECT,
 )
 from orre_randomizer.engine.dna_keypad_runtime import _sample_offsets
 from orre_randomizer.engine.unown_form import unown_suffix
@@ -64,6 +64,21 @@ class DnaKeypadTests(unittest.TestCase):
                 self.assertEqual(_body_pixels(b'', members, 201, True, index), b'\0\0\xff\xff' * 4096)
             with self.assertRaisesRegex(FormatError, 'full-body'):
                 _body_pixels(b'', members, 249, False)
+
+    def test_custom_body_uses_more_of_the_key_without_changing_the_bevel(self):
+        template = b'\0\xff\0\xff' * (128 * 128)
+        body = bytes(channel for y in range(64) for x in range(64)
+                     for channel in ((255, 0, 0, 255) if 2 <= x < 62 and 2 <= y < 62 else (0, 0, 0, 0)))
+        retail = _decode_pixels(128, 128, 4, _tile_art(template, body, 64, 64, 0))
+        custom = _decode_pixels(128, 128, 4, _tile_art(template, body, 64, 64, 0, rect=_CUSTOM_BODY_ART_RECT))
+        def red_area(image):
+            return sum(r > 200 and g < 30 for r, g, _b, _a in zip(*[iter(image)] * 4))
+        self.assertGreater(red_area(custom), red_area(retail) * 1.1)
+        for y in range(128):
+            for x in range(128):
+                if min(x, y, 127 - x, 127 - y) < 4:
+                    at = (y * 128 + x) * 4
+                    self.assertEqual(custom[at:at + 4], retail[at:at + 4])
 
     def test_atypical_retail_body_dimensions_keep_both_corners_and_their_proportions(self):
         for width, height, fitted in ((64, 59, (0, 2, 64, 59)), (64, 68, (2, 0, 60, 64)),

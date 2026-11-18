@@ -5,6 +5,7 @@ import unittest
 import json
 import hashlib
 from pathlib import Path
+from unittest.mock import patch
 
 from orre_randomizer.artwork import _texture, _png_pixels
 from orre_randomizer.engine.analyze_game import FormatError, parse_fsys
@@ -65,6 +66,44 @@ def archive(colosseum=False):
 
 
 class ShadowLugiaFaceTests(unittest.TestCase):
+    def test_registered_violet_variants_share_app_pixels_without_reapplying_a_matte(self):
+        from orre_randomizer.artwork import _png
+        from orre_randomizer.model_artwork import format_model_portrait
+        square = [bytes(color) * (42 * 42) for color in ((82, 24, 107, 255), (164, 82, 189, 255))]
+        circle = [format_model_portrait(pixels, game="xd", artwork_size=42) for pixels in square]
+
+        def portrait(_root, *, game, shiny=False, scale=1):
+            self.assertEqual(scale, 1)
+            return _png((42, 42), (square if game == "colosseum" else circle)[int(shiny)])
+
+        with patch("orre_randomizer.model_portraits.registered_portrait", side_effect=portrait):
+            for colo in (False, True):
+                source = archive(colosseum=colo)
+                before = parse_fsys(source)["members"]
+                output, report = (append_colosseum_shadow_lugia_face(source) if colo
+                                  else append_shadow_lugia_shiny_face(source))
+                after = parse_fsys(output)["members"]
+                for old, new in zip(before, after, strict=False):
+                    self.assertEqual(decoded_member(source, old), decoded_member(output, new))
+                self.assertTrue(report["registered_portraits"])
+                self.assertIn("violet", report["background"])
+                if colo:
+                    member = next(row for row in after if int(row["identifier_raw"], 16) == COLOSSEUM_RESOURCE)
+                    self.assertEqual(_texture(decoded_member(output, member), (42, 84)), b"".join(square))
+                else:
+                    self.assertFalse(report["black_background_inside_circle"])
+                    for shiny, resource in ((False, NORMAL_RESOURCE), (True, SHINY_RESOURCE)):
+                        member = next(row for row in after if int(row["identifier_raw"], 16) == resource)
+                        actual = _texture(decoded_member(output, member), (42, 84))
+                        expected = circle[int(shiny)] * 2
+                        for at in range(0, len(actual), 4):
+                            self.assertLessEqual(abs(actual[at + 3] - expected[at + 3]), 18)
+                            tolerance = 4 if expected[at + 3] == 255 else 8
+                            self.assertTrue(all(abs(a - b) <= tolerance for a, b in
+                                zip(actual[at:at + 3], expected[at:at + 3])))
+                            if not expected[at + 3]:
+                                self.assertEqual(actual[at:at + 4], bytes(4))
+
     def test_xd_specimen_face_reads_its_own_pid_and_owner_for_every_shadow_slot(self):
         rare_check, specimen = 0x80103000, 0x80603000
         for shadow in (1, 30, 73, 83):
@@ -261,13 +300,19 @@ class ShadowLugiaFaceTests(unittest.TestCase):
             self.assertEqual(old['sha256_stored'], new['sha256_stored'])
             self.assertEqual(decoded_member(source, old), decoded_member(output, new))
         self.assertEqual(int(after[-1]['identifier_raw'], 16), SHINY_RESOURCE)
-        self.assertEqual(decoded_member(output, after[-1]), make_shadow_lugia_face_texture(texture()))
+        from orre_randomizer.model_portraits import registered_portrait
+        pack = Path(__file__).resolve().parents[1] / 'orre_randomizer/assets/game/models'
+        registered = registered_portrait(pack, game='xd', shiny=True)
+        portrait = _png_pixels(registered, (42, 42)) if registered is not None else None
+        self.assertEqual(decoded_member(output, after[-1]), make_shadow_lugia_face_texture(texture(), portrait=portrait))
         normal = next(row for row in after if int(row['identifier_raw'],16) == NORMAL_RESOURCE)
-        self.assertEqual(decoded_member(output,normal),make_shadow_lugia_face_texture(texture(),shiny=False))
+        registered_normal = registered_portrait(pack, game='xd')
+        normal_pixels = _png_pixels(registered_normal, (42, 42)) if registered_normal is not None else None
+        self.assertEqual(decoded_member(output,normal),make_shadow_lugia_face_texture(texture(),shiny=False,portrait=normal_pixels))
         self.assertEqual(report['group'], GROUP)
         self.assertTrue(report['normal_member_unchanged'])
-        self.assertTrue(report['black_background_inside_circle'])
-        self.assertTrue(report['native_circular_alpha_unchanged'])
+        self.assertEqual(report['black_background_inside_circle'], registered is None)
+        self.assertEqual(report['native_circular_alpha_unchanged'], registered is None)
         with self.assertRaises(FormatError):
             append_shadow_lugia_shiny_face(output)
 
@@ -287,16 +332,22 @@ class ShadowLugiaFaceTests(unittest.TestCase):
         output,report=append_colosseum_shadow_lugia_face(archive(colosseum=True))
         member=next(row for row in parse_fsys(output)['members']if int(row['identifier_raw'],16)==COLOSSEUM_RESOURCE)
         frames=_texture(decoded_member(output,member),(42,84))
-        expected=b''.join(_png_pixels((pack/name).read_bytes(),(42,42))for name in
-                          ('dark-lugia-ui.png','dark-lugia-shiny-ui.png'))
+        from orre_randomizer.resources import shadow_lugia_portrait
+        shadow_lugia_portrait.cache_clear()
+        expected=b''.join(_png_pixels(shadow_lugia_portrait(game='colosseum',shiny=shiny),(42,42))
+                          for shiny in (False,True))
         self.assertEqual(frames,expected)
         self.assertEqual(frames[3::4],bytes((255,))*(42*84))
-        reference=_png_pixels((pack/'dark-lugia.png').read_bytes(),(42,42))
-        for index in shadow_lugia_background_mask(reference):
-            for start in (0,42*42*4):
-                at=start+index*4
-                self.assertEqual(frames[at:at+4],b'\0\0\0\xff')
-        self.assertIn('opaque black',report['background'])
+        if report['registered_portraits']:
+            self.assertIn('violet',report['background'])
+            self.assertTrue(any(frames[:3]))
+        else:
+            reference=_png_pixels((pack/'dark-lugia.png').read_bytes(),(42,42))
+            for index in shadow_lugia_background_mask(reference):
+                for start in (0,42*42*4):
+                    at=start+index*4
+                    self.assertEqual(frames[at:at+4],b'\0\0\0\xff')
+            self.assertIn('opaque black',report['background'])
 
     def test_real_xd_faces_keep_native_circle_and_contain_entire_source_artwork(self):
         root=Path(__file__).resolve().parents[1]

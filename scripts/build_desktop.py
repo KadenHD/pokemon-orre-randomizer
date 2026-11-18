@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import shutil
+import struct
 import subprocess
 import sys
 import zipfile
@@ -17,6 +18,71 @@ from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME, __version__
 from scripts.release_media import documentation_media
 
 
+NATIVE_RUNTIME_NAMES = ("orre_lzss.dll", "orre_disc.dll", "orre_musyx.dll", "OrreLauncher.exe")
+RUNTIME_BUILD_RECORD = "_internal/orre_randomizer/_native/build-inputs.json"
+REQUIRED_RUNTIME_MODULES = frozenset((
+    "orre_randomizer.play_folders", "orre_randomizer.ui_play", "orre_randomizer.play_music",
+    "orre_randomizer.native_music_state", "orre_randomizer.native_music_render",
+    "orre_randomizer.native_music_output", "orre_randomizer.native_music_volume",
+    "orre_randomizer.hd_images", "orre_randomizer.hd_overlays", "orre_randomizer.hd_spinda_diagram",
+    "orre_randomizer.engine.dna_hd_tiles", "orre_randomizer.engine.dna_spinda_hd",
+    "orre_randomizer.engine.spinda_diagram",
+))
+REQUIRED_IMAGE_DECODERS = frozenset(("PIL.DdsImagePlugin", "PIL.PngImagePlugin"))
+
+
+def validate_build_dependencies():
+    for line in (ROOT / "requirements-build.txt").read_text(encoding="utf-8").splitlines():
+        if "==" in line and not line.lstrip().startswith("#"):
+            name, expected = line.strip().split("==", 1)
+            if version(name) != expected:
+                raise RuntimeError("Build dependency differs from requirements-build.txt: " + name)
+
+
+def validate_pe_x64(path: Path):
+    """Inspect the PE header without loading or executing a native dependency."""
+    data = path.read_bytes()
+    if len(data) < 64 or data[:2] != b"MZ":
+        raise RuntimeError("Invalid native Windows runtime: " + path.name)
+    offset = struct.unpack_from("<I", data, 0x3c)[0]
+    if offset > len(data) - 6 or data[offset:offset + 4] != b"PE\0\0" or struct.unpack_from("<H", data, offset + 4)[0] != 0x8664:
+        raise RuntimeError("The Windows runtime must be x64: " + path.name)
+
+
+def validate_native_runtime():
+    from scripts.build_music import PIN
+    native = ROOT / "orre_randomizer/_native"
+    for name in NATIVE_RUNTIME_NAMES:
+        validate_pe_x64(native / name)
+    record = json.loads((native / "orre_musyx.json").read_text(encoding="utf-8"))
+    required = {"abi": 1, "source_commit": PIN,
+        "renderer_sha256": hashlib.sha256((native / "orre_musyx.dll").read_bytes()).hexdigest(),
+        "patches_sha256": hashlib.sha256((ROOT / "native/music/patches.json").read_bytes()).hexdigest(),
+        "adapter_sha256": hashlib.sha256((ROOT / "native/music/renderer_adapter.c").read_bytes()).hexdigest()}
+    if any(record.get(key) != value for key, value in required.items()):
+        raise RuntimeError("The music renderer is stale or its build provenance differs; rebuild it before freezing.")
+
+
+def runtime_build_inputs() -> dict:
+    """Content identities only; the record never contains local absolute paths."""
+    files = list((ROOT / "orre_randomizer").rglob("*.py"))
+    files += [ROOT / "orre_randomizer/_native" / name for name in (*NATIVE_RUNTIME_NAMES, "orre_musyx.json")]
+    files += [ROOT / name for name in ("scripts/desktop.spec", "scripts/desktop_entry.py", "scripts/build_desktop.py",
+        "scripts/build_native.py", "scripts/build_music.py", "pyproject.toml", "requirements-build.txt",
+        "native/music/patches.json", "native/music/renderer_adapter.c", "orre_randomizer/windows_update.ps1",
+        "orre_randomizer/assets/game/provenance.json", "orre_randomizer/assets/app/provenance.json",
+        "orre_randomizer/assets/app/logo.json", "orre_randomizer/assets/app/controller.json")]
+    for folder in ("native", "native/disc", "native/launcher"):
+        files += [ROOT / folder / name for name in ("Cargo.toml", "Cargo.lock")]
+        files += list((ROOT / folder / "src").rglob("*.rs"))
+    identities = {}
+    for path in sorted(files):
+        if path.is_symlink() or not path.resolve().is_relative_to(ROOT.resolve()):
+            raise RuntimeError("External runtime input refused")
+        identities[path.relative_to(ROOT).as_posix()] = hashlib.sha256(path.read_bytes()).hexdigest()
+    return {"schema": 1, "version": __version__, "files": identities}
+
+
 def source_files(*, include_game_assets: bool = True) -> list[Path]:
     files = [ROOT / name for name in ("README.md", "CHANGELOG.md", "RESEARCH.md", "LICENSE", "THIRD_PARTY_NOTICES.md",
              "CONTRIBUTING.md", "PRODUCT.md", "DESIGN.md", "pyproject.toml", "requirements-build.txt", ".gitignore", ".gitattributes",
@@ -25,8 +91,10 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
                                   ("scripts", {".py", ".ps1", ".spec", ".iss"}), ("docs", {".md"}),
                                   ("licenses", {".txt", ".json", ".md"}), (".github", {".yml", ".md"})):
         files += [p for p in (ROOT / directory).rglob("*") if p.is_file() and p.suffix in extensions]
-    files += [ROOT / "native/Cargo.toml", ROOT / "native/Cargo.lock", ROOT / "native/src/lib.rs"]
-    files += [ROOT / "native/disc/Cargo.toml", ROOT / "native/disc/Cargo.lock", ROOT / "native/disc/src/lib.rs"]
+    for folder in ("native", "native/disc", "native/launcher"):
+        files += [ROOT / folder / name for name in ("Cargo.toml", "Cargo.lock")]
+        files += [path for path in (ROOT / folder / "src").rglob("*.rs") if path.is_file()]
+    files += [path for path in (ROOT / "native/music").rglob("*") if path.is_file() and path.suffix in {".c", ".h", ".json", ".md", ".txt"}]
     files.append(ROOT / "docs/reverse-engineering/baseline.json")
     documentation = ROOT / "docs/images"
     for name in documentation_media(lambda name: (documentation / name).read_bytes()):
@@ -34,7 +102,7 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
     files += [ROOT / "tests/fixtures/presets" / f"rc2-{game}-{mode}.json"
               for game in ("colosseum", "xd") for mode in ("moves", "species")]
     files += [ROOT / "orre_randomizer/assets/app" / name
-              for name in ("icon.png", "icon.ico", "provenance.json", "logo.png", "logo.json", "README.md")]
+              for name in ("icon.png", "icon.ico", "provenance.json", "logo.png", "logo.json", "controller.png", "controller.json", "README.md")]
     # Explicit local interface pack exported once from the supplied game. Never
     # sweep game/, build/, user caches or arbitrary assets into a distribution.
     if include_game_assets:
@@ -80,7 +148,8 @@ def main():
     args = parser.parse_args()
     include_game_assets = True
     app_assets = ROOT / "orre_randomizer/assets/app"
-    for filename, allowed in (("provenance.json", {"icon.png", "icon.ico"}), ("logo.json", {"logo.png"})):
+    for filename, allowed in (("provenance.json", {"icon.png", "icon.ico"}), ("logo.json", {"logo.png"}),
+                              ("controller.json", {"controller.png"})):
         manifest = json.loads((app_assets / filename).read_text("utf-8"))
         if set(manifest["files"]) != allowed:
             raise SystemExit("Unexpected application assets in " + filename)
@@ -106,6 +175,7 @@ def main():
     if not args.source_only:
         if sys.platform != "win32":
             raise SystemExit("Build the Windows executable on Windows; use --source-only elsewhere.")
+        validate_build_dependencies()
         work = ROOT / "build" / ("pyinstaller-public" if args.edition == "public" else "pyinstaller")
         app = release / "windows" / f"{APP_EXECUTABLE}-{__version__}"
         for folder in (app, work):
@@ -123,11 +193,21 @@ def main():
             Path(sys.base_prefix), Path(sys.base_prefix) / "Scripts", windows / "System32", windows)))
         if not args.skip_freeze:
             subprocess.run([sys.executable, str(ROOT / "scripts/build_native.py")], cwd=ROOT, check=True)
+            validate_native_runtime()
+            build_inputs = runtime_build_inputs()
             subprocess.run(command, cwd=ROOT, env=environment, check=True)
+            if build_inputs != runtime_build_inputs():
+                raise SystemExit("Runtime sources changed during compilation. Rebuild in a new candidate directory.")
+            (app / RUNTIME_BUILD_RECORD).write_text(json.dumps(build_inputs, indent=2) + "\n", encoding="utf-8")
         elif not (app / f"{APP_EXECUTABLE}.exe").is_file():
             raise SystemExit("No executable to repackage; build it first.")
         elif json.loads((app / "build-edition.json").read_text("utf-8"))["game_assets"] != include_game_assets:
             raise SystemExit("Executable edition mismatch; rebuild it before packaging.")
+        else:
+            validate_native_runtime()
+            record = app / RUNTIME_BUILD_RECORD
+            if not record.is_file() or json.loads(record.read_text("utf-8")) != runtime_build_inputs():
+                raise SystemExit("The frozen executable does not match the current runtime sources. Rebuild it before packaging.")
         (app / "build-edition.json").write_text(json.dumps({"edition": args.edition,
             "game_assets": include_game_assets}, indent=2) + "\n", encoding="utf-8")
         for name in ("README.md", "CHANGELOG.md", "RESEARCH.md", "CONTRIBUTING.md", "LICENSE", "THIRD_PARTY_NOTICES.md", "requirements-build.txt"):
@@ -146,7 +226,7 @@ def main():
             raise SystemExit("Run python scripts/fetch_qt_notices.py before packaging Qt binaries.")
         shutil.copytree(sources, app / "third-party-sources", dirs_exist_ok=True)
         (app / "build-versions.json").write_text(json.dumps({name: version(name) for name in
-            ("PySide6-Essentials", "shiboken6", "pyinstaller")}, indent=2) + "\n", encoding="utf-8")
+            ("PySide6-Essentials", "shiboken6", "Pillow", "pyinstaller")}, indent=2) + "\n", encoding="utf-8")
     zip_sources(source_zip, include_game_assets=include_game_assets)
     if not args.source_only:
         # Include the full application source beside replaceable Qt DLLs.

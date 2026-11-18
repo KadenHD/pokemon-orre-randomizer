@@ -35,6 +35,8 @@ from .preview import ROULETTE_SPECIES
 from .workspace_copy import (CATEGORY_HELP, CUSTOM_PRESET, PRESET_DESCRIPTIONS, PRESET_EVOLUTIONS,
                              PRESET_LEGENDARIES, PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE,
                              STEP_HELP, XD_CATEGORY_HELP, XD_PRESET_NATIVE)
+from .ui_game_folder import PlayFolderFields
+from .play_folders import create_game_folder
 
 
 RULES = presentation_fields(XDOptions)
@@ -124,20 +126,34 @@ class XDWorkspace(QWidget):
         output = wizard_page(self.pages)
         self.output_scroll = self.pages.widget(self.pages.count() - 1)
         output.setSpacing(8)
-        self.add_heading(output, "Créez votre ROM")
+        self.output_heading = self.add_heading(output, "Créez votre ROM")
+        self.rom_output_fields = QWidget()
+        rom_output_layout = QVBoxLayout(self.rom_output_fields)
+        rom_output_layout.setContentsMargins(0, 0, 0, 0)
+        output.addWidget(self.rom_output_fields)
         self.destination, _ = file_field(
-            output, window, "&Nouvelle ROM", "Nouvelle ROM",
+            rom_output_layout, window, "&Nouvelle ROM", "Nouvelle ROM",
             "Choisissez où enregistrer la nouvelle ROM", "Enregistrer sous…", self.choose_destination)
         self.format = QComboBox()
         window.bind(self.format.setAccessibleName, "Format de sortie")
         self.format.addItems(FORMATS)
-        format_row = QHBoxLayout()
+        format_widget = QWidget()
+        format_row = QHBoxLayout(format_widget)
+        format_row.setContentsMargins(0, 0, 0, 0)
         format_label = window.label("Format de sortie")
         format_label.setBuddy(self.format)
         format_row.addWidget(format_label)
         format_row.addWidget(self.format)
         format_row.addStretch(1)
-        output.addLayout(format_row)
+        output.addWidget(format_widget)
+        self.play_folder = PlayFolderFields(window, self, "xd")
+        window.bind(lambda fallback: self.output_heading.setText(window.text("Créez votre partie") if self.play_folder.enabled.isChecked() else fallback), "Créez votre ROM")
+        output.addWidget(self.play_folder)
+        self.play_folder.attach_format(format_widget, output)
+        self.play_folder.enabled.toggled.connect(lambda enabled: self.rom_output_fields.setVisible(not enabled))
+        self.rom_output_fields.setVisible(not self.play_folder.enabled.isChecked())
+        self.play_folder.enabled.toggled.connect(self.refresh_navigation)
+        self.play_folder.enabled.toggled.connect(lambda enabled: self.output_heading.setText(window.text("Créez votre partie" if enabled else "Créez votre ROM")))
         output.addWidget(window.note("Un rapport avec la seed et les réglages sera enregistré à côté de la ROM."))
         self.review = QLabel()
         self.review.setWordWrap(True)
@@ -163,6 +179,10 @@ class XDWorkspace(QWidget):
         self.journal_button.clicked.connect(window.show_journal)
         self.journal_button.hide()
         result_row.addWidget(self.journal_button)
+        self.launcher_button = window.button("Ouvrir le lanceur")
+        self.launcher_button.clicked.connect(window.open_result_launcher)
+        self.launcher_button.hide()
+        result_row.addWidget(self.launcher_button)
         result_row.addStretch(1)
         output.addLayout(result_row)
         output.addStretch(1)
@@ -376,7 +396,7 @@ class XDWorkspace(QWidget):
             button.setIcon(self.window.cursor_icon if index == self.step else QIcon())
             button.setEnabled(not self.window.busy)
         self.home_button.setText(text("Accueil" if self.step == 0 else "Retour"))
-        action = ("Créer la ROM" if effective_xd_setting_names(self.current_options())
+        action = ("Créer le dossier" if self.play_folder.enabled.isChecked() else "Créer la ROM" if effective_xd_setting_names(self.current_options())
                   else "Créer une copie à l’identique")
         self.create_button.setText(text(action if self.step == 2 else "Continuer"))
         self.home_button.setEnabled(not self.window.busy)
@@ -991,6 +1011,7 @@ class XDWorkspace(QWidget):
         label = self.window.label(title)
         label.setObjectName("section")
         layout.addWidget(label)
+        return label
 
     def choose_source(self):
         text = self.window.text
@@ -1057,9 +1078,15 @@ class XDWorkspace(QWidget):
         self.creation_log.reset()
         source, destination = (field.text().strip() for field in (self.source, self.destination))
         try:
-            if not source or not destination:
+            if not source or (not destination and not self.play_folder.enabled.isChecked()):
                 raise UserError("Choisissez la ROM d’origine et l’emplacement de la nouvelle ROM.")
-            source, destination, _ = validate_paths(Path(source), Path(destination), self.seed.text())
+            request = None
+            if self.play_folder.enabled.isChecked():
+                source = Path(source).expanduser().resolve()
+                request = self.play_folder.request(source, "." + self.format.currentText().lower(), self.seed.text())
+                destination = request.folder / "Game" / ("game." + self.format.currentText().lower())
+            else:
+                source, destination, _ = validate_paths(Path(source), Path(destination), self.seed.text())
             options = validate_options(self.current_options())
         except (UserError, OSError) as error:
             self.failed(error, False)
@@ -1081,11 +1108,14 @@ class XDWorkspace(QWidget):
         self.progress.setValue(0)
         self.progress.show()
         self.set_status("Lecture de la ROM d’origine…")
-        self.window.start_worker(
-            dict(source=source, destination=destination, seed=self.seed.text(),
+        arguments = dict(source=source, destination=destination, seed=self.seed.text(),
                  dolphin_tool=None, journal_language=self.window.language, xd_options=options,
-                 prepared_patches=self.preview_plan),
+                 prepared_patches=self.preview_plan)
+        if request is not None:
+            arguments["request"] = request
+        self.window.start_worker(arguments,
             self.on_progress, self.succeeded, self.failed,
+            task=create_game_folder if request is not None else None,
         )
         self.refresh_navigation()
 
@@ -1098,6 +1128,7 @@ class XDWorkspace(QWidget):
     @Slot(dict)
     def succeeded(self, report):
         self.result = report
+        self.launcher_button.setVisible(bool(report.get("play_folder")))
         self.progress.setValue(100)
         self.set_status(Message("ROM créée et vérifiée.\n{path}", path=report["output"]))
         self.folder_button.show()

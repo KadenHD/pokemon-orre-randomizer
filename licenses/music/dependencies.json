@@ -1,0 +1,10 @@
+{
+  "musyx": {
+    "repository": "https://github.com/AxioDL/musyx",
+    "commit": "717404d77c17a95dd101bbe737d0f9549ab600e6",
+    "archive_sha256": "378a43b85da94a64549019956dc1cfac8134ce1ffbe6d9e31f9358659906e29d",
+    "license": "CC0-1.0",
+    "notice": "musyx-CC0.txt",
+    "modifications": "DSP four-tap sample-rate conversion, signed-envelope/unsigned-mixer compatibility, bounded sentinel monitoring, retail reverb pre-delay compatibility; adapter exposes bounded DSP ADPCM decoder"
+  }
+}

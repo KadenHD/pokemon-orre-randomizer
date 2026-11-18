@@ -1,18 +1,18 @@
 {
-  "app_version": "1.2.25",
+  "app_version": "2.0.0",
   "language": "en",
-  "description": "English application and gameplay captures, with text-free XD purification images. Each entry records its capture version; unchanged earlier images are retained.",
+  "description": "English application and gameplay captures. Each entry records its capture version; unchanged earlier gameplay images are retained.",
   "files": {
     "home.png": {
-      "bytes": 150518,
-      "sha256": "4f024e04edf92326c29a1d3bbe3d98c835d638edcde3370e8b9e9471e39165ac",
+      "bytes": 155032,
+      "sha256": "601b9906137b51ce02ca1aafc0b2abf1e9326c8896b3322e3842bd5adfff4081",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.26",
-      "description": "Home and both game cards, with ISO/GCM/RVZ support.",
-      "source": "Actual v1.2.26 application. English offscreen capture with private muted preferences; no ROM opened."
+      "captured_in_version": "2.0.0",
+      "description": "Game selection and shared HD/game-folder actions.",
+      "source": "Actual Qt application, muted private preferences. Demonstration folder paths/seed; no personal settings or ROM used for UI capture. HD installation status read from the verified private QA cache."
     },
     "colosseum-settings.png": {
       "bytes": 83712,
@@ -486,26 +486,90 @@
       "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
     },
     "colosseum-output-formats.png": {
-      "bytes": 70979,
-      "sha256": "e1da40aab8611476dc1f03e10149bcb4097922e907b368c7440c9837e33e0982",
+      "bytes": 99931,
+      "sha256": "3b35c2a0475905d75d667de8ea10f40fe3af4d7629c78afeab0a25a8e59ad4b0",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.26",
-      "description": "ISO, GCM and RVZ output choices, with integrated conversion.",
-      "source": "Actual v1.2.26 application. English offscreen capture with private muted preferences; no ROM opened."
+      "captured_in_version": "2.0.0",
+      "description": "Colosseum game-folder creation with all three output formats.",
+      "source": "Actual Qt application, muted private preferences. Demonstration folder paths/seed; no personal settings or ROM used for UI capture. HD installation status read from the verified private QA cache.",
+      "game": "colosseum"
     },
     "xd-output-formats.png": {
-      "bytes": 42074,
-      "sha256": "6d9ef89cbdb46669da83acfbd47ffebfd3796c450409c3d2f1de6df14d8456ad",
+      "bytes": 71366,
+      "sha256": "1bc2baa25731d100af1e7ff49e38cc0f476bdaee3fa930da96d3c588e668fcd4",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "1.2.26",
-      "description": "ISO, GCM and RVZ output choices, with integrated conversion.",
-      "source": "Actual v1.2.26 application. English offscreen capture with private muted preferences; no ROM opened."
+      "captured_in_version": "2.0.0",
+      "description": "XD game-folder creation with all three output formats.",
+      "source": "Actual Qt application, muted private preferences. Demonstration folder paths/seed; no personal settings or ROM used for UI capture. HD installation status read from the verified private QA cache.",
+      "game": "xd"
+    },
+    "colosseum-launcher.png": {
+      "bytes": 136222,
+      "sha256": "288b78007ca381a4827941ceecf9292a1d4746d96b0fa6393614986a07df81d8",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "captured_in_version": "2.0.0",
+      "description": "Colosseum per-game launcher with speed, graphics and isolated saves.",
+      "source": "Actual Qt application, muted private preferences. Demonstration folder paths/seed; no personal settings or ROM used for UI capture. HD installation status read from the verified private QA cache.",
+      "game": "colosseum",
+      "controller_artwork": {
+        "authors": [
+          "Evan-Amos",
+          "Alphathon"
+        ],
+        "license": "CC-BY-SA-3.0",
+        "source": "https://commons.wikimedia.org/wiki/File:GameCube_controller.png"
+      }
+    },
+    "xd-launcher.png": {
+      "bytes": 112325,
+      "sha256": "8e8faaf7cbd0fd149075e82d27b1832403389da3344b16d87559e4f9750699ea",
+      "kind": "application",
+      "language": "en",
+      "width": 1100,
+      "height": 800,
+      "captured_in_version": "2.0.0",
+      "description": "XD per-game launcher with speed, graphics and isolated saves.",
+      "source": "Actual Qt application, muted private preferences. Demonstration folder paths/seed; no personal settings or ROM used for UI capture. HD installation status read from the verified private QA cache.",
+      "game": "xd",
+      "controller_artwork": {
+        "authors": [
+          "Evan-Amos",
+          "Alphathon"
+        ],
+        "license": "CC-BY-SA-3.0",
+        "source": "https://commons.wikimedia.org/wiki/File:GameCube_controller.png"
+      }
+    },
+    "hd-packs.png": {
+      "bytes": 99761,
+      "sha256": "71c0817b9c4596f70699ac90cf9c46d37cf39317c0384e82f6cebc8882eee44f",
+      "kind": "application",
+      "language": "en",
+      "width": 1000,
+      "height": 800,
+      "captured_in_version": "2.0.0",
+      "description": "Shared HD manager with visible per-pack author credits, fixed versions, download sizes and the XD dependency on both packs.",
+      "source": "Actual English Qt application with private muted preferences. Sephie and mikeyX credits visible. Installed status read from verified QA cache; only the displayed cache path is replaced with a demonstration path. Public release URLs active; no ROM, personal settings or emulator accessed."
+    },
+    "hd-custom-lugia-portraits.png": {
+      "bytes": 97831,
+      "sha256": "2ff691a0931230a8d3fadb2a9a80162c69b9e9502c173e276dbd0a4d76188dd5",
+      "kind": "model-artwork-comparison",
+      "language": "en",
+      "width": 864,
+      "height": 574,
+      "captured_in_version": "2.0.0",
+      "description": "Original and HD portraits of normal and shiny Shadow Lugia, with square Colosseum and round XD frames.",
+      "source": "The eight registered native-mesh portrait renders. Native GPU textures and pinned-pack HD materials use the same 86-joint pose and normalized head crop. Original 42px portraits are displayed at 4x with nearest-neighbor solely for this comparison. No personal data or save content is shown."
     }
   }
 }

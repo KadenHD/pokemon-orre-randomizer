@@ -2,6 +2,7 @@
 import hashlib
 import json
 from pathlib import Path
+import shutil
 import tempfile
 import time
 import unittest
@@ -47,7 +48,7 @@ class PublicDistributionTests(unittest.TestCase):
             relative = path.relative_to(build_desktop.ROOT).as_posix()
             self.assertNotIn("assets/game/", relative)
             if relative not in {"docs/images/" + name for name in DOCUMENTATION_IMAGES} | {"orre_randomizer/assets/app/icon.png", "orre_randomizer/assets/app/icon.ico",
-                                "orre_randomizer/assets/app/logo.png"}:
+                                "orre_randomizer/assets/app/logo.png", "orre_randomizer/assets/app/controller.png"}:
                 self.assertNotIn(path.suffix.lower(), {".iso", ".rvz", ".fsys", ".raw", ".sav", ".png", ".ico", ".wav", ".dll"})
 
     def test_documentation_media_rejects_tampering_and_unknown_names(self):
@@ -66,6 +67,10 @@ class PublicDistributionTests(unittest.TestCase):
             root = Path(folder)
             tests = root / "tests"
             tests.mkdir()
+            scripts = root / "scripts"
+            scripts.mkdir()
+            for name in ("run_tests.py", "test_processes.py"):
+                shutil.copyfile(build_desktop.ROOT / "scripts" / name, scripts / name)
             (tests / "test_hanging.py").write_text(
                 "from threading import Event\n"
                 "from unittest import TestCase\n"

@@ -24,8 +24,8 @@ if __package__:
 else:
     from test_processes import windows_test_job
 
-MODULE_TIMEOUT = 90
-SUITE_TIMEOUT = 9 * 60
+MODULE_TIMEOUT = 120
+SUITE_TIMEOUT = 12 * 60
 
 
 def worker(pattern: str, report: Path, timeout: float) -> int:

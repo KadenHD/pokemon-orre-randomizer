@@ -133,6 +133,7 @@ audio device. System fonts and accessible Qt controls remain the desktop convent
 - Small authentic portraits beside localized, accessible text.
 - Persistent navigation, visible scrolling and explicit loading states.
 - Shared wording and behavior across all six interface languages.
+- Visible choices, authored navigation icons and proportional controller artwork in the shared launcher flow.
 
 ## Colors
 
@@ -144,7 +145,7 @@ changes. The complete XD substitutions remain in `xd_stylesheet()`.
 
 - **Cyan state / teal selection:** focus, checked controls and the active view in Colosseum.
 - **Warm focus / red selection:** the same states in XD.
-- **Neutral silver focus:** home header controls, independent of either game's palette.
+- **Neutral silver focus:** home controls and shared HD-pack actions, independent of either game's palette.
 
 ### Secondary
 
@@ -208,6 +209,22 @@ cut-corner panel is centered in the available body space and bounded to 560 px.
 It stays visible at the minimum window size without scrolling or resizing the
 window. The header remains visible with its controls disabled.
 
+Creation can extend the existing form into a two-column layout: fields on the
+left and the generated folder contents on the right, divided by a fine vertical
+rule. Below 820 px of available form width, hide the sidebar and show its compact
+filename note. Keep the wizard navigation and creation action outside the scroll.
+
+The per-game launcher has a fixed 1,100 × 800 px window. Its audio/shortcuts and
+controls/saves columns stay side by side, with no vertical or horizontal page
+scroll. The identity header and Open folder / Play footer surround the
+direct-content work panel. A Dolphin recovery action appears only when its
+saved executable is unavailable. The shared HD manager uses a fixed 1,000 × 800 px
+window and the neutral menu frame. Its pack rows keep logo, information and
+actions grouped horizontally; its main panel also has no page scrolling.
+Download URLs and hashes open separately in a fixed 900 × 480 px details dialog,
+rather than expanding the manager's page. The existing resizable wizard and
+encounter-list scrolling rules remain separate from these fixed surfaces.
+
 ## Elevation & Depth
 
 Depth comes from darker fields, tonal panels and two angular outlines. The app
@@ -255,6 +272,46 @@ labels and help. Follow `docs/INTERFACE_PARITY.md` and `docs/INTERFACE_COPY.md`.
 **The Shared Template Rule.** Common controls have the same order, words and
 behavior in both games. Do not create a separate XD synonym or omit a shared
 feature to fit its theme.
+
+### Game-folder creation and launcher
+
+Use visible, mutually exclusive native buttons for the short graphics, speed
+and input-preset choices. The format row uses the same control while creating
+a folder; ROM-only output retains the existing selector. Equal button widths,
+zero spacing and theme-specific checked borders keep the current value visible
+without opening a menu. Labels and accessible names remain localized Qt text.
+
+The folder sidebar lists generated filenames in fine bordered rows with authored
+file/folder icons. A thin divider separates it from the working form. Launcher
+sections reuse the subheading type role, with finer horizontal rules between
+settings groups and framed key labels beside shortcut actions. The reference
+GameCube photograph communicates the standard layout; it is not a device
+detection indicator. Render the complete image with its aspect ratio preserved,
+without stretching or cropping. Its source and attribution accompany the asset.
+Keep the same structure in the Colosseum and XD themes.
+
+Show HD installation readiness beside graphics and keep the pack-manager action
+nearby. Availability and experimental audio explanations are working status,
+not decorations. The independent-music checkbox stays disabled and unchecked
+until the final combined-output audio gate passes, including saved manifests
+that request it. Do not remove that status to match demonstration data. The fixed
+launcher layout keeps main settings and footer actions on one page; the Dolphin
+recovery chooser belongs in the footer rather than adding a full path row to
+its panel. The normal footer keeps the two approved actions: an ivory outline
+folder and Open folder on the left, a gold triangle and Play on the right.
+Use the authored, proportionally rendered icons instead of platform stock
+icons. These larger footer actions and the stronger identity/page headings
+preserve the approved mockups' visual hierarchy without changing the wizard's
+existing type scale.
+
+### Shared HD manager
+
+Use charcoal fields, ivory labels and silver outlines for resources shared by
+both games. Each angular pack row groups the original game logo, pinned version,
+download/installed sizes, current status and Install/Reinstall action. Keep
+source and download details available beneath the main choices, with progress
+and cancellation separate from the rows. Custom-overlay help qualifies coverage
+as matching textures; the visual system does not imply complete HD coverage.
 
 ### Presets and dependent controls
 
@@ -338,6 +395,8 @@ on other steps. Each new attempt clears the previous log and starts collapsed.
 Home keeps neutral music/sound/language controls and game-specific selection
 tiles. Both music and menu sounds start enabled when available and remember
 independent preferences. Audio availability never blocks randomization.
+HD packs and Open a game use the same neutral secondary controls beneath the
+game choices; their shared scope does not inherit either game's accent.
 
 A newer stable release adds one secondary update button below both game
 tiles and above the credit. It reuses the neutral home-control face, gray border

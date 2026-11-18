@@ -13,6 +13,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -74,14 +75,100 @@ def inside(path: Path, directory: Path) -> bool:
     return path != directory and path.is_relative_to(directory)
 
 
-def reject_links(path: Path) -> None:
+def reject_link_paths(path: Path) -> None:
     """A lexical path inside build must not redirect to an original elsewhere."""
     selected = path.absolute()
     for part in (selected, *selected.parents):
         if part.is_symlink() or (hasattr(part, "is_junction") and part.is_junction()):
             raise ValueError(f"Linked paths are not allowed in validation jobs: {part}")
+
+
+def reject_links(path: Path) -> None:
+    reject_link_paths(path)
+    selected = path.absolute()
     if selected.is_file() and selected.stat().st_nlink > 1:
         raise ValueError(f"Hardlinked files are not allowed in validation jobs: {selected}")
+
+
+def _small_json(path: Path) -> dict:
+    reject_links(path)
+    if not path.is_file() or path.stat().st_size > 16384:
+        raise ValueError("Missing or invalid canonical texture-view metadata.")
+    try:
+        result = json.loads(path.read_text("utf-8"))
+    except (UnicodeError, json.JSONDecodeError) as error:
+        raise ValueError("Invalid canonical texture-view metadata.") from error
+    if not isinstance(result, dict):
+        raise ValueError("Invalid canonical texture-view metadata.")
+    return result
+
+
+def _readonly_texture_view(view: Path, build: Path, profile: Path, personal: Path,
+                           emulator_directory: Path, report: Path) -> tuple[Path, str]:
+    reject_link_paths(view)
+    view = view.resolve(strict=True)
+    if (not view.is_dir() or not inside(view, build) or view.name != "Load" or
+            view.parent.parent.name != "TextureViews"):
+        raise ValueError("Select a canonical PackStore TextureViews/<identity>/Load below build/.")
+    for other in (profile, personal, emulator_directory):
+        if view == other or view.is_relative_to(other) or other.is_relative_to(view):
+            raise ValueError("The canonical texture view must be disjoint from Dolphin directories.")
+    if report == view or inside(report, view):
+        raise ValueError("Monitoring reports cannot be written into the texture view.")
+    complete = _small_json(view.parent / "complete.json")
+    game_id = complete.get("game_id")
+    if not isinstance(game_id, str) or not re.fullmatch(r"(?:GC6|GXX)[EPJ]01", game_id):
+        raise ValueError("Invalid canonical texture-view game identity.")
+    # The script also runs directly from scripts/, outside the package import path.
+    if str(ROOT) not in sys.path:
+        sys.path.insert(0, str(ROOT))
+    from orre_randomizer.hd_packs import PACKS
+    pack = PACKS["colosseum" if game_id.startswith("GC6") else "xd"]
+    installed = _small_json(view.parent.parent.parent / "TexturePacks" / pack.key / "installed.json")
+    generation = installed.get("generation", "initial")
+    if (complete.get("pack") != pack.key or installed.get("key") != pack.key or
+            installed.get("archives") != [part.sha256 for part in pack.parts] or
+            not isinstance(generation, str) or not re.fullmatch(r"initial|[0-9a-f]{32}", generation) or
+            not re.fullmatch(re.escape(pack.key + "-" + game_id + "-" + generation + "-") + r"[0-9a-f]{24}", view.parent.name)):
+        raise ValueError("Canonical texture view does not match its pinned pack installation.")
+    textures = view / "Textures" / game_id
+    reject_link_paths(textures)
+    if not textures.is_dir():
+        raise ValueError("Canonical texture view has no game texture directory.")
+    return view, game_id
+
+
+def _readonly_texture_link(path: Path, profile: Path, view: Path, game_id: str) -> None:
+    reject_link_paths(path)
+    relative = path.relative_to(profile)
+    if (len(relative.parts) != 4 or relative.parts[:3] != ("Load", "Textures", game_id) or
+            not re.fullmatch(r"tex1_[a-z0-9_]+\.(?:png|dds)", path.name, re.IGNORECASE)):
+        raise ValueError(f"Hardlinked input is not a permitted game texture: {path}")
+    source = view / "Textures" / game_id / path.name
+    reject_link_paths(source)
+    if not source.is_file() or not os.path.samefile(path, source):
+        raise ValueError("Hardlinked texture does not match the exact canonical view file.")
+    size = source.stat().st_size
+    if not 0 < size <= 64 * 1024**2:
+        raise ValueError("A readonly texture exceeds the 64MB input limit.")
+    with source.open("rb") as stream:
+        header = stream.read(128)
+    expected_format = path.suffix[1:].upper()
+    if (expected_format == "PNG" and not header.startswith(b"\x89PNG\r\n\x1a\n") or
+            expected_format == "DDS" and (len(header) < 128 or header[:8] != b"DDS |\0\0\0")):
+        raise ValueError("Readonly texture has an invalid PNG/DDS signature.")
+    from PIL import Image
+    try:
+        with Image.open(source, formats=("PNG", "DDS")) as image:
+            if (image.format != expected_format or min(image.size) < 1 or max(image.size) > 8192 or
+                    image.width * image.height > 8192**2):
+                raise ValueError("Readonly texture has invalid image dimensions or format.")
+            if expected_format == "DDS":
+                image.load()  # Verify the compressed payload, not only its header.
+            else:
+                image.verify()
+    except (OSError, SyntaxError, Image.DecompressionBombError) as error:
+        raise ValueError("Readonly texture is not a valid image.") from error
 
 
 def snapshot_profile(profile: Path) -> dict[str, dict]:
@@ -106,7 +193,8 @@ def changed_entries(before: dict, after: dict) -> list[str]:
 
 
 def validate_job(emulator: Path, iso: Path, profile: Path, report: Path,
-                 personal_profile: Path, *, workspace: Path = ROOT) -> tuple[Path, Path, Path, Path, Path]:
+                 personal_profile: Path, *, workspace: Path = ROOT,
+                 readonly_texture_view: Path | None = None) -> tuple[Path, Path, Path, Path, Path]:
     workspace = workspace.resolve(strict=True)
     build = workspace / "build"
     for path in (emulator, profile, report):
@@ -137,8 +225,13 @@ def validate_job(emulator: Path, iso: Path, profile: Path, report: Path,
         raise ValueError("The image must stay outside the writable profile and emulator directory.")
     if report == iso or inside(report, profile) or inside(report, emulator.parent):
         raise ValueError("Keep monitoring reports outside the writable Dolphin directories.")
+    texture_view = (_readonly_texture_view(readonly_texture_view, build, profile, personal_profile,
+                                          emulator.parent, report) if readonly_texture_view is not None else None)
     for path in profile.rglob("*"):
-        reject_links(path)
+        if texture_view and path.is_file() and path.stat().st_nlink > 1:
+            _readonly_texture_link(path, profile, *texture_view)
+        else:
+            reject_links(path)
     # Custom paths can override -u. Reject any writable target outside this run.
     configs = list((profile / "Config").glob("*.ini"))
     configs += list((profile / "GameSettings").glob("*.ini"))
@@ -157,6 +250,10 @@ def validate_job(emulator: Path, iso: Path, profile: Path, report: Path,
                 target = (target if target.is_absolute() else emulator.parent / target).resolve()
                 if not inside(target, profile):
                     raise ValueError(f"Writable Dolphin path escapes the isolated profile: {section}.{key}")
+                if texture_view and key.lower() != "loadpath":
+                    inputs = profile / "Load/Textures" / texture_view[1]
+                    if target == inputs or target.is_relative_to(inputs) or inputs.is_relative_to(target):
+                        raise ValueError("Writable Dolphin targets cannot overlap readonly texture inputs.")
                 reject_links(target)
     siblings = [report, report.with_suffix(report.suffix + ".stdout.log"),
                 report.with_suffix(report.suffix + ".stderr.log")]
@@ -167,9 +264,11 @@ def validate_job(emulator: Path, iso: Path, profile: Path, report: Path,
 
 def run_validation(emulator: Path, iso: Path, profile: Path, report: Path,
                    personal_profile: Path, protect_files: list[Path] | None = None,
-                   *, workspace: Path = ROOT, debugger: bool = False) -> dict:
+                   *, workspace: Path = ROOT, debugger: bool = False,
+                   readonly_texture_view: Path | None = None) -> dict:
     emulator, iso, profile, report, personal_profile = validate_job(
-        emulator, iso, profile, report, personal_profile, workspace=workspace)
+        emulator, iso, profile, report, personal_profile, workspace=workspace,
+        readonly_texture_view=readonly_texture_view)
     protected = [iso, emulator, *(Path(p).resolve(strict=True) for p in protect_files or [])]
     before_files = snapshot_files(protected)
     before_personal = snapshot_profile(personal_profile)

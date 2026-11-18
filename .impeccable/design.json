@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-16T12:16:51.468072Z",
+  "generatedAt": "2026-11-18T00:02:38.016974Z",
   "title": "Design System: Pokémon Orre Randomizer",
   "extensions": {
     "colorMeta": {
@@ -515,7 +515,7 @@
       },
       "subheading": {
         "displayName": "Subheading",
-        "purpose": "Section and Pokémon identity."
+        "purpose": "Section labels, Pokémon identity, launcher settings groups and shared pack hierarchy."
       },
       "body": {
         "displayName": "Body",
@@ -553,6 +553,10 @@
       },
       {
         "name": "compact-title-width",
+        "value": "820px"
+      },
+      {
+        "name": "folder-sidebar-min-width",
         "value": "820px"
       }
     ]
@@ -650,6 +654,20 @@
       "description": "Active update view: neutral clipped frame, bounded to 560 px and centered in the body. Other controls are locked. Cancel is available only during download.",
       "html": "<section class=\"ds-update\" aria-busy=\"true\" aria-label=\"Updating to the next version\"><svg aria-hidden=\"true\" viewBox=\"0 0 560 210\" preserveAspectRatio=\"none\"><path d=\"M12 1H548L559 12V198L548 209H12L1 198V12Z\" fill=\"#191b1e\" stroke=\"#cbd0d8\" stroke-width=\"2\" vector-effect=\"non-scaling-stroke\"/><path d=\"M13 5H547L555 13V197L547 205H13L5 197V13Z\" fill=\"none\" stroke=\"#727782\" vector-effect=\"non-scaling-stroke\"/></svg><div><h3>Updating to the next version</h3><p>Downloading update...</p><progress value=\"22\" max=\"100\" aria-label=\"Download progress\">22%</progress><button>Cancel</button></div></section>",
       "css": ".ds-update{position:relative;max-width:560px;width:100%;margin:auto;color:#eceef2;font:14px \"Segoe UI\",sans-serif;text-align:center}.ds-update>svg{position:absolute;inset:0;width:100%;height:100%}.ds-update>div{position:relative;padding:24px;display:grid;gap:16px}.ds-update h3{font-size:23px;font-weight:650;margin:0}.ds-update p{margin:0}.ds-update progress{width:100%;height:24px;accent-color:#535b66}.ds-update button{justify-self:center;background:#202327;color:#eceef2;border:1px solid #727782;border-radius:4px;padding:4px 12px;font:inherit;min-height:28px}.ds-update button:hover,.ds-update button:focus-visible{background:#30343a;border:2px solid #cbd0d8;padding:3px 11px;outline:none}"
+    },
+    {
+      "name": "Visible short choices",
+      "kind": "custom",
+      "description": "Mutually exclusive native buttons expose format, graphics, speed and input choices; checked state follows the selected game theme. The launcher uses a fixed 1,100 × 800 px layout with persistent Open folder and Play actions.",
+      "html": "<div class=\"ds-choices\" role=\"group\" aria-label=\"Graphics\"><button aria-pressed=\"true\">Original</button><button aria-pressed=\"false\">HD</button></div>",
+      "css": ".ds-choices{display:flex;gap:0;font:14px \"Segoe UI\",sans-serif}.ds-choices button{flex:1;background:#172c33;color:#f2f6f1;border:1px solid #9eafa9;border-radius:4px;min-height:28px;padding:4px 12px;font:inherit}.ds-choices button[aria-pressed=true]{background:#125359;border:2px solid #71e2e6;padding:3px 11px}.ds-choices button:hover{background:#24483f;border-color:#bce9de}.ds-choices button:focus-visible{border:2px solid #71e2e6;padding:3px 11px;outline:none}.ds-choices button:active{background:#0a3935}"
+    },
+    {
+      "name": "Shared pack row",
+      "kind": "card",
+      "description": "Neutral angular grouping for game identity, pinned version, download/installed sizes and installation action. The original game logo stays proportional. The shared manager is fixed at 1,000 × 800 px without page scrolling; download details open separately.",
+      "html": "<section class=\"ds-pack-row\"><div><strong>Pokémon Colosseum</strong><p>Pinned version</p><small>Download and installed sizes</small></div><div><p>Installation status</p><button>Install</button></div></section>",
+      "css": ".ds-pack-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;background:#191b1e;color:#eceef2;border:1px solid #727782;clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 11px,100% calc(100% - 11px),calc(100% - 11px) 100%,11px 100%,0 calc(100% - 11px),0 11px);font:14px \"Segoe UI\",sans-serif}.ds-pack-row p{margin:8px 0}.ds-pack-row small{font-size:13px;color:#cbd0d8}.ds-pack-row button{background:#202327;color:#eceef2;border:1px solid #727782;border-radius:4px;min-height:28px;padding:4px 12px;font:inherit}.ds-pack-row button:hover,.ds-pack-row button:focus-visible{background:#30343a;border-color:#cbd0d8;outline:1px solid #cbd0d8}.ds-pack-row button:active{background:#17191c}.ds-pack-row strong{font-size:18px;font-weight:600}"
     }
   ],
   "narrative": {
@@ -661,7 +679,8 @@
       "Cut-corner frames and tonal surfaces without decorative shadows.",
       "Small authentic portraits beside localized, accessible text.",
       "Persistent navigation, visible scrolling and explicit loading states.",
-      "Shared wording and behavior across all six interface languages."
+      "Shared wording and behavior across all six interface languages.",
+      "Visible choices, authored navigation icons and proportional controller artwork in the shared launcher flow."
     ],
     "rules": [
       {

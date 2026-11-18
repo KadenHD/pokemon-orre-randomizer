@@ -7,7 +7,9 @@
 A native Python/Qt desktop app, Windows first, for players with an unmodified
 Colosseum or XD image. It creates a separate randomized image locally without
 requiring extraction or command-line tools. Rust accelerates the shared codec;
-the Python fallback remains available. The app does not manage emulator saves.
+the Python fallback remains available. Version 2 can create a game folder with
+a small launcher and an isolated Dolphin profile. Existing personal emulator
+saves are never imported, moved or edited implicitly.
 
 ## Primary workflow
 
@@ -35,6 +37,37 @@ Advanced settings use stable field identifiers and metadata, searchable in all
 six interface languages. Switching views does not reset settings. Preview and
 creation use the same patch plan off the interface thread. Creation verifies
 the result and writes a portable-settings report and offline journal.
+
+## Game folders and shared resources
+
+Create a new folder with `Game/game.iso`, `.gcm` or `.rvz`, `Launcher.exe`,
+`game.json`, `DolphinUser/`, `Textures/` and `README.txt`. ROM-only creation stays
+available. Detect Dolphin or select it manually; Dolphin is not bundled.
+The launcher reopens the party independently of the randomizer, retaining its
+graphics, speed, controls and saves. Generated filenames stay in English.
+
+The neutral HD manager installs one pinned, hash-verified pack per game/version.
+Game folders reuse it and retain their recorded runtime and pack after updates.
+HD sources are original community releases by their authors, recorded with
+exact archive hashes and credits. Retrieve packs automatically from the approved
+HTTPS origin or distribution folder, without asking players to select ZIPs.
+Prepare both packs for private storage together;
+production hosting requires a separate proposal and the user's approval.
+Rebuild custom materials and body artwork whenever a pinned source changes.
+Custom x4 textures derive from actual pinned-pack donors and override matching
+HD names. Native meshes remain in the ROM. Missing newly authored HD assets
+block HD preparation; unchanged stock omissions retain stock behavior. HD does
+not add polygons or HQ audio.
+
+The launcher shares the incumbent Colosseum/XD layout and uses their respective
+themes. It offers 100%/200% base speed, hold Tab for 200%, Shift+Tab for 50%,
+keyboard/XInput presets and native Dolphin remapping. Speed shortcuts require
+the owned game window to have focus. The experimental independent-music option
+is disabled until final combined-output validation passes. Its implementation
+is limited to verified Europe revision-0 images on Windows.
+It keeps gameplay music at normal speed; effects/cries and prerecorded movies
+follow game speed. Native audio is the fallback when the helper cannot follow.
+Do not describe this option as validated for every scene, region or emulator.
 
 Custom shiny rates for supported starters, gifts and trainer/Shadow encounters
 use the seed; the retired Colosseum unlink flag is normalized after profile verification.

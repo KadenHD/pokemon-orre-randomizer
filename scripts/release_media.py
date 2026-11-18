@@ -4,6 +4,7 @@ import json
 
 
 DOCUMENTATION_IMAGES = frozenset(("home.png", "colosseum-settings.png",
+                                 "colosseum-launcher.png", "xd-launcher.png", "hd-packs.png", "hd-custom-lugia-portraits.png",
                                  "colosseum-output-formats.png", "xd-output-formats.png",
                                  "xd-settings.png", "pokemon-sheet.png", "shadow-pokemon.png",
                                  "colosseum-starters-ingame.png", "xd-starter-ingame.png",

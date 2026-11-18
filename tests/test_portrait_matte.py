@@ -65,7 +65,10 @@ class PortraitMatteTests(unittest.TestCase):
             self.skipTest('optional game resource pack is not present')
         shadow_lugia_portrait.cache_clear()
         for shiny,name in ((False,'dark-lugia-ui.png'),(True,'dark-lugia-shiny-ui.png')):
-            self.assertEqual(shadow_lugia_portrait(shiny=shiny),(bundle_root()/'models'/name).read_bytes())
+            from orre_randomizer.model_portraits import registered_portrait
+            registered = registered_portrait(bundle_root()/'models', game='colosseum', shiny=shiny)
+            expected = registered if registered is not None else (bundle_root()/'models'/name).read_bytes()
+            self.assertEqual(shadow_lugia_portrait(shiny=shiny), expected)
 
     def test_wrong_dimensions_are_rejected(self):
         with self.assertRaises(ValueError):

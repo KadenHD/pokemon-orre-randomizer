@@ -11,6 +11,7 @@ from .update_service import allowed_download
 from .update_apply import automatic_updates_supported
 from .ui_updates import UpdateInstaller
 from .ui_theme import MenuPanel
+from .ui_game_folder import show_packs
 
 
 class GameChoice(QPushButton):
@@ -195,6 +196,18 @@ class GameSelection(QWidget):
             button.clicked.connect(callback)
             self.choices.addWidget(button, 1)
         layout.addLayout(self.choices, 1)
+        utilities = QHBoxLayout()
+        utilities.addStretch(1)
+        packs = window.button("Packs HD")
+        packs.setObjectName("updateDownload")
+        packs.clicked.connect(lambda: show_packs(window))
+        utilities.addWidget(packs)
+        open_game = window.button("Ouvrir une partie…")
+        open_game.setObjectName("updateDownload")
+        open_game.clicked.connect(window.choose_play_folder)
+        utilities.addWidget(open_game)
+        utilities.addStretch(1)
+        layout.addLayout(utilities)
         self.update_button = QPushButton()
         self.update_button.setObjectName("updateDownload")
         self.update_button.setCursor(Qt.CursorShape.PointingHandCursor)
@@ -323,6 +336,7 @@ class GameSelection(QWidget):
             return
         if self.update_release is not None and allowed_download(self.update_release):
             if (self.window.busy or self.window.preview_thread is not None
+                    or getattr(getattr(self.window, "pack_dialog", None), "thread", None) is not None
                     or self.window.report_check is not None or self.window.xd.report_check is not None):
                 self.update_failed("busy")
                 return
@@ -336,6 +350,9 @@ class GameSelection(QWidget):
                         self.window.profile_menu, self.window.music_toggle, self.window.sound_toggle,
                         self.window.language_combo, self.window.import_profile_button,
                         self.window.export_profile_button, self.window.import_report_button)
+            dialog = getattr(self.window, "pack_dialog", None)
+            if dialog is not None:
+                controls += (dialog,)
             self.blocked_controls = [(control, control.isEnabled()) for control in controls]
             self.saved_focus = self.window.focusWidget()
             self.saved_accept_drops = self.window.acceptDrops()

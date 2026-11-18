@@ -8,3 +8,6 @@
 # Interface metadata is hashed byte-for-byte alongside the images and audio.
 # Preserve its exported bytes on Windows and Linux checkouts.
 orre_randomizer/assets/game/** -text
+# The validated music recipe pins these exact bytes, including line endings.
+native/music/patches.json -text
+native/music/renderer_adapter.c -text

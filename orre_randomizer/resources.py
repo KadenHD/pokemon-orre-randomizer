@@ -10,6 +10,7 @@ from .artwork import ArtworkError, _png_pixels, load_cached_artwork
 from .i18n import LANGUAGES
 from .menu_sounds import MenuSoundError, load_cached_menu_sounds
 from .model_artwork import XD_ARTWORK_SIZE, format_model_portrait
+from .model_portraits import registered_portrait
 
 
 def application_icon() -> Path | None:
@@ -32,6 +33,12 @@ def shadow_lugia_portrait(*, shiny=False, game="colosseum") -> bytes:
     """Dark Lugia face in the selected game's native portrait shape."""
     if game not in ("colosseum", "xd"):
         raise ValueError("unsupported portrait game")
+    try:
+        registered = registered_portrait(bundle_root() / "models", game=game, shiny=shiny)
+    except ValueError:
+        return b""
+    if registered is not None:
+        return registered
     path = bundle_root() / ("models/dark-lugia-shiny-ui.png" if shiny else "models/dark-lugia-ui.png")
     if not path.is_file() or path.is_symlink():
         return b""

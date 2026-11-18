@@ -15,6 +15,54 @@ The approved Orre wordmark uses the same original icon and is included under the
 same license. Its transparent PNG, generation prompt and hash are recorded in
 `orre_randomizer/assets/app/logo.json`.
 
+## Independent music renderer and external HD packs
+
+### Controller photograph
+
+`orre_randomizer/assets/app/controller.png` is the standard indigo GameCube
+controller photographed by Evan-Amos, with background removal by Alphathon.
+Source: [Wikimedia Commons](https://commons.wikimedia.org/wiki/File:GameCube_controller.png).
+It is included unchanged under [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/),
+independently of the application's MIT license. Qt scales it proportionally at
+display time. Its source URL, authors, license and SHA-256 are recorded in
+`controller.json`. No endorsement by its authors or Nintendo is implied.
+
+### Music renderer and texture sources
+
+The optional native music renderer uses the CC0-1.0
+[AxioDL MusyX reimplementation](https://github.com/AxioDL/musyx), pinned to
+commit `717404d77c17a95dd101bbe737d0f9549ab600e6`. The adapter, exact build inputs,
+patches and provenance are in `native/music/`, `scripts/build_music.py` and
+`licenses/music/`. The source archive is verified before building. No original
+game music banks are shipped with this renderer; supported banks are extracted
+locally from a verified user-supplied ROM into its shared cache. Original game
+audio remains subject to its respective rights.
+
+Optional texture packs come from their original community authors:
+[Colosseum HD Pack V2, credited to Sephie](https://www.reddit.com/r/DolphinEmulator/comments/sxzxi2/)
+and [Pokémon XG/XD HD Texture Pack v1.0 by mikeyX](https://forums.dolphin-emu.org/Thread-pokemon-xg-xd-hd-texture-pack-v1-0).
+The application pins exact author archives and hashes in `orre_randomizer/hd_packs.py`.
+See [HD sources](docs/HD_SOURCES.md) for credits, archive selection and storage.
+Their authorship, game artwork rights and distribution terms are independent
+of this project's MIT license. No complete HD pack or Dolphin executable is
+bundled in the Orre application. Generated custom x4 overlays do not transfer
+ownership of the underlying game assets. See [game-folder storage and texture
+priority](docs/GAME_FOLDERS.md).
+
+Pillow 13.0.0 decodes PNG and DDS source textures when preparing custom HD
+overlays. Its MIT-CMU license and bundled dependency notices are preserved in
+`licenses/images/Pillow-LICENSE.txt`. The application restricts this reader to
+PNG and DDS; original compressed pack textures remain unchanged on disk.
+Source: [Pillow](https://github.com/python-pillow/Pillow/tree/13.0.0).
+
+The bundled `models/dark-lugia-body-x4.png` and shiny counterpart are whole-body
+renders of the original game mesh with materials derived from the pinned XD
+HD pack. Their model identity, HD donor hashes and capture method are recorded
+in `models/hd-fullbody-manifest.json`. These derivative images remain separate
+from the code's MIT license, as do their native-resolution counterparts.
+The matching `models/dark-lugia-head-x4.png` and shiny head are crops of those
+same pack-textured GPU captures; their parent hashes and crop are in that manifest.
+
 ## Qt for Python / Qt / Shiboken
 
 The desktop application uses unmodified PySide6 Essentials and Shiboken 6.11.2,

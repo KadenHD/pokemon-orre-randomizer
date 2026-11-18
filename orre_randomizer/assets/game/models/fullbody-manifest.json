@@ -12,43 +12,270 @@
     "colosseum_port_sha256": "8c2aefb914ea1aee9407418495edf318f21a52fe443d1b84b9de5dae69401364",
     "shiny_port_sha256": "2525cf6af605706e1d89d70b84d7c3721f4dfbe1e7fae782849a1d44d55167d9"
   },
-  "capture": "Native Colosseum menuModelRender RGBA8 framebuffer before the DNA hologram tint, rendered in an isolated Dolphin instance. Whole-body mesh, textures, native lighting and red eyes retained. Purified display-only fixtures omit Shadow aura particles.",
-  "conversion": "Crop the complete transparent silhouette, fit within 56px without changing aspect ratio, area-filter premultiplied RGBA into a 64px transparent canvas. No recoloring or generated artwork.",
+  "capture": "Two native256 GPU renders with exact86 shared model matrices; actual game textures.",
+  "conversion": "Shared normalized crop and placement; premultiplied RGBA BOX reduction to64. No recolor, bitmap flip or stroke.",
   "rights": "Original game-derived resources, separate from the MIT code license. See THIRD_PARTY_NOTICES.md.",
   "files": {
     "dark-lugia-body.png": {
       "shiny": false,
-      "bytes": 3619,
-      "sha256": "b70d0a84a3f73177fe23e6bfedd633d5c7d5f69075a796e2e71f7dfcc6973cd6",
-      "source_RGBA_sha256": "1a5aec95009409f8a90db781b3309a138f4f2e7b072a6baef3ff95e9f39b1b12",
-      "source_capture_sha256": "b8c4ff57e587a2c3a0e51bec9d2d7a92a900a4a9e3e07d6afcf7d8535212fa50",
+      "bytes": 2972,
+      "sha256": "787f8f4f4659213d0ddb450e4b8f528139b327b0f5b3a2cbd9e60b63a1706c3f",
+      "source_RGBA_sha256": "3561dfdda5425068a3dabbae08597bd7142cdbcfc984bb7b4e4798a5d93b974c",
+      "source_capture_sha256": "35fd8ee4847ee2066923a3a2eeaac2e43b16de9536f8350d76465c53bfdc6665",
+      "source_dimensions": [
+        256,
+        256
+      ],
       "source_alpha_bbox": [
-        37,
-        53,
-        202,
-        188
+        12,
+        48,
+        198,
+        189
+      ],
+      "source_crop_box": [
+        12.0,
+        48.0,
+        199.0,
+        190.0
       ],
       "fitted_dimensions": [
-        56,
+        60,
         46
-      ]
+      ],
+      "source_roi": [
+        12.0,
+        48.0,
+        199.0,
+        190.0
+      ],
+      "placement": [
+        2,
+        9
+      ],
+      "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+      "alpha_sha256": "db18cfa6beab5b3c1c7207296bdb908c1cd785bf4aa47268bea2e2ae9c66fae6"
     },
     "dark-lugia-shiny-body.png": {
       "shiny": true,
-      "bytes": 3827,
-      "sha256": "bbaef9cb9763237ea681a2098ef498a7cf16414f304998e733238700da8ec8df",
-      "source_RGBA_sha256": "048baacb391633568488e55c9fdd0905ae6739fd3d7eedc4ef295af0bf72fa6b",
-      "source_capture_sha256": "dc7230e903019469470fd0a47239be9c31d509f06f56e44f95a1d06f2cad7f48",
+      "bytes": 3319,
+      "sha256": "13e8ac8a11e2b58a04323d4d64edb75b08b5a69099245026cf554b1376ec0feb",
+      "source_RGBA_sha256": "ef98114c6ed436513ff5ebd6a0f6d0ad7ed1ff57945c94e05a3d08e8572c8946",
+      "source_capture_sha256": "ac2369b2cbae96599aaf67eebde14f2dea008acfa0d1ec5aef66e256ff93ad9f",
+      "source_dimensions": [
+        256,
+        256
+      ],
       "source_alpha_bbox": [
-        35,
-        52,
-        202,
-        188
+        12,
+        48,
+        198,
+        189
+      ],
+      "source_crop_box": [
+        12.0,
+        48.0,
+        199.0,
+        190.0
       ],
       "fitted_dimensions": [
-        56,
+        60,
         46
-      ]
+      ],
+      "source_roi": [
+        12.0,
+        48.0,
+        199.0,
+        190.0
+      ],
+      "placement": [
+        2,
+        9
+      ],
+      "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+      "alpha_sha256": "db18cfa6beab5b3c1c7207296bdb908c1cd785bf4aa47268bea2e2ae9c66fae6"
     }
-  }
+  },
+  "common_capture": {
+    "schema": 1,
+    "method": "Native HSD USER_DEF_MTX, all86 native mesh joint matrices shared across four independent GPU renders",
+    "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+    "matrix_count": 86,
+    "old_native_pose_replayed": false,
+    "canonical_pose_sha256": "27b0053c45873ccdde5573fcee7a09442f6e47c6e11bbf3b3a0ca9187029abce",
+    "canonical_root_srt": [
+      -0.0872664600610733,
+      1.0660446882247925,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "canonical_wrapper_srt": [
+      0.0,
+      -1.4206980466842651,
+      0.0,
+      0.0,
+      1.5,
+      1.5,
+      1.5,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "root_matrix": "3ef7991ebd9c3c553f5f390600000000000000003f7f069e3db27eb500000000bf60134fbd2ca3033ef6a7eb00000000",
+    "wrapper_matrix": "3fb36b3dbdea5a80bf058a85000000003e045db13fbf44f63ca025d6000000003f04a6b2bd817a423fb3ff9700000000",
+    "camera": {
+      "method": "Unmodified native menuModelRender analyzer camera, no camera writes",
+      "direct_CObj_parameters_located": false,
+      "projection_correspondence": "Raw framebuffer silhouettes compared after exact4x area reduction",
+      "native_hd_silhouette_iou_threshold128": 0.9908068223055522
+    },
+    "crop_native256": [
+      12,
+      48,
+      199,
+      190
+    ],
+    "crop_normalized": [
+      0.046875,
+      0.1875,
+      0.77734375,
+      0.7421875
+    ],
+    "roi_normalized": [
+      0.046875,
+      0.1875,
+      0.77734375,
+      0.7421875
+    ],
+    "fitted_dimensions_native": [
+      60,
+      46
+    ],
+    "padding_native": [
+      2,
+      9
+    ],
+    "native_source_dimensions": [
+      256,
+      256
+    ],
+    "hd_source_dimensions": [
+      1024,
+      1024
+    ],
+    "fit_native64": [
+      60,
+      46
+    ],
+    "fit_hd256": [
+      240,
+      184
+    ],
+    "placement_native64": [
+      2,
+      9
+    ],
+    "placement_hd256": [
+      8,
+      36
+    ],
+    "fit_normalized": [
+      0.9375,
+      0.71875
+    ],
+    "placement_normalized": [
+      0.03125,
+      0.140625
+    ],
+    "normal_shiny_alpha_identical": true,
+    "source_material_parent_sha256": "2f5d467c15d2481cf0b6eba6b97f891c360dbb4e8775f50bba7351c36736da1a",
+    "captures": {
+      "native-normal": {
+        "raw_sha256": "35fd8ee4847ee2066923a3a2eeaac2e43b16de9536f8350d76465c53bfdc6665",
+        "rgba_sha256": "3561dfdda5425068a3dabbae08597bd7142cdbcfc984bb7b4e4798a5d93b974c",
+        "dimensions": [
+          256,
+          256
+        ],
+        "source_alpha_bbox": [
+          12,
+          48,
+          198,
+          189
+        ],
+        "alpha_sha256": "34a4f8f83c6864bffe20857d623b3281b59c3eaea3889a479ca8b414a2f04be0",
+        "probe_receipt_sha256": "bb2b774115d28a6a08c267ad07823e0ad420a84335cdb04036def1a90bd5946a",
+        "source_mode": "native",
+        "shiny": false,
+        "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+        "matrix_count": 86
+      },
+      "native-shiny": {
+        "raw_sha256": "ac2369b2cbae96599aaf67eebde14f2dea008acfa0d1ec5aef66e256ff93ad9f",
+        "rgba_sha256": "ef98114c6ed436513ff5ebd6a0f6d0ad7ed1ff57945c94e05a3d08e8572c8946",
+        "dimensions": [
+          256,
+          256
+        ],
+        "source_alpha_bbox": [
+          12,
+          48,
+          198,
+          189
+        ],
+        "alpha_sha256": "34a4f8f83c6864bffe20857d623b3281b59c3eaea3889a479ca8b414a2f04be0",
+        "probe_receipt_sha256": "954830cc3332ad3a7abd0d14bceb1725f68539447500dd3603d63b885114481e",
+        "source_mode": "native",
+        "shiny": true,
+        "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+        "matrix_count": 86
+      },
+      "hd-normal": {
+        "raw_sha256": "a716c90f3f4d7686cb2b8caf47dc7e3732a808cc6b8bdc5f0ed3c65963a5cca4",
+        "rgba_sha256": "2c679db36b282821fc59ef58e904de18b393742e2287d9e2542de6662f87a812",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "source_alpha_bbox": [
+          48,
+          193,
+          793,
+          757
+        ],
+        "alpha_sha256": "5df7369c4ed6dbc69c914c82b866e4a7309cf012c21fce27745e279f15cca7ab",
+        "probe_receipt_sha256": "0c9c8a97f89fed93395df71139d1236f65754130c07c2df599df3f4b177aace0",
+        "source_mode": "hd",
+        "shiny": false,
+        "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+        "matrix_count": 86
+      },
+      "hd-shiny": {
+        "raw_sha256": "2865a655b81b028c81378a87f4b74d1b4408eded7467843e947866a922dd0967",
+        "rgba_sha256": "a5248fc22ddec1503d9cbd5f62ac9e15f26bc6b122e6492315a99bdd641d7829",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "source_alpha_bbox": [
+          48,
+          193,
+          793,
+          757
+        ],
+        "alpha_sha256": "5df7369c4ed6dbc69c914c82b866e4a7309cf012c21fce27745e279f15cca7ab",
+        "probe_receipt_sha256": "160f33e9fee5762dc2297b9f4c1ff59c145120ba4971998a17125aa3a4e22b7e",
+        "source_mode": "hd",
+        "shiny": true,
+        "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+        "matrix_count": 86
+      }
+    }
+  },
+  "review_only": false
 }

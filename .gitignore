@@ -35,6 +35,7 @@ __pycache__/
 *.lnk
 /native/target/
 /native/disc/target/
+/native/launcher/target/
 /orre_randomizer/_native/
 /dist/
 /.venv/

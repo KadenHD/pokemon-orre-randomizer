@@ -12,8 +12,8 @@ from .shadow_lugia_palette import make_shadow_lugia_portrait
 from ..portrait_matte import matte_shadow_lugia_portrait
 from ..model_artwork import XD_ARTWORK_SIZE, format_model_portrait
 
-VERSION = "shadow-lugia-black-matte-face-v4"
-XD_VERSION = "shadow-lugia-specimen-round-face-v6"
+VERSION = "shadow-lugia-registered-square-face-v5"
+XD_VERSION = "shadow-lugia-specimen-round-face-v7"
 ARCHIVE = "poke_face.fsys"
 GROUP = 0x5C0
 SOURCE_RESOURCE = 0x21581200
@@ -183,14 +183,26 @@ def append_colosseum_shadow_lugia_face(archive: bytes, *, normal=None, shiny=Non
                   and int(row['identifier_raw'], 16) & 0xFF00 == 0x1200]
     if len(candidates) != 1:
         raise FormatError("expected one native Colosseum Lugia face")
+    registered = False
     if normal is None or shiny is None:
         from ..artwork import _png_pixels
+        from ..model_portraits import registered_portrait
         pack = Path(__file__).resolve().parents[1]/'assets/game/models'
-        normal = _png_pixels((pack/'dark-lugia.png').read_bytes(), (42, 42))
-        shiny = _png_pixels((pack/'dark-lugia-shiny.png').read_bytes(), (42, 42))
-        reference = normal
-        normal = matte_shadow_lugia_portrait(normal, reference=reference)
-        shiny = matte_shadow_lugia_portrait(shiny, reference=reference)
+        try:
+            new_normal = registered_portrait(pack, game="colosseum")
+            new_shiny = registered_portrait(pack, game="colosseum", shiny=True)
+        except ValueError as error:
+            raise FormatError("Registered Shadow Lugia portraits are corrupt") from error
+        if new_normal is not None and new_shiny is not None:
+            registered = True
+            normal = _png_pixels(new_normal, (42, 42))
+            shiny = _png_pixels(new_shiny, (42, 42))
+        else:
+            normal = _png_pixels((pack/'dark-lugia.png').read_bytes(), (42, 42))
+            shiny = _png_pixels((pack/'dark-lugia-shiny.png').read_bytes(), (42, 42))
+            reference = normal
+            normal = matte_shadow_lugia_portrait(normal, reference=reference)
+            shiny = matte_shadow_lugia_portrait(shiny, reference=reference)
     source = decoded_member(archive, candidates[0])
     atlas = make_colosseum_shadow_lugia_face(source, normal, shiny)
     output = append_actor_models(archive, {}, archive, int(candidates[0]['identifier_raw'], 16),
@@ -198,7 +210,8 @@ def append_colosseum_shadow_lugia_face(archive: bytes, *, normal=None, shiny=Non
     return output, {'version': VERSION, 'archive': ARCHIVE, 'group': GROUP,
                     'resource': COLOSSEUM_RESOURCE, 'native_format': 'RGBA8 / 42x84',
                     'normal_member_unchanged': True,
-                    'background': 'opaque black, original outer Shadow frame unchanged',
+                    'background': 'opaque violet square' if registered else 'opaque black, original outer Shadow frame unchanged',
+                    'registered_portraits': registered,
                     'atlas_sha256': hashlib.sha256(atlas).hexdigest()}
 
 
@@ -216,7 +229,7 @@ def make_xd_shadow_lugia_round_portrait(pixels: bytes, *, reference: bytes) -> b
                                  artwork_size=XD_ARTWORK_SIZE)
 
 
-def make_shadow_lugia_face_texture(source: bytes, *, shiny=True) -> bytes:
+def make_shadow_lugia_face_texture(source: bytes, *, shiny=True, portrait: bytes | None = None) -> bytes:
     """Repack native CI8 so eye-mask colors never leak into shared whites."""
     # Native face249dark has two identical 42px frames sharing one RGB5A3
     # palette. Its ordinary face descriptor always selects the second frame.
@@ -228,8 +241,16 @@ def make_shadow_lugia_face_texture(source: bytes, *, shiny=True) -> bytes:
     from ..artwork import _texture
     original = _texture(source, (42, 84))
     frames = [original[start:start+42*42*4] for start in (0, 42*42*4)]
-    pixels = b''.join(make_xd_shadow_lugia_round_portrait(
-        make_shadow_lugia_portrait(frame) if shiny else frame, reference=frame) for frame in frames)
+    if portrait is None:
+        pixels = b''.join(make_xd_shadow_lugia_round_portrait(
+            make_shadow_lugia_portrait(frame) if shiny else frame, reference=frame) for frame in frames)
+    else:
+        if len(portrait) != 42 * 42 * 4:
+            raise FormatError("A registered XD face must be one round 42px portrait")
+        # This resource belongs to one saved specimen. Both atlas rows must
+        # contain its selected variant because the stock descriptor can use
+        # either row during native menu/cache drawing.
+        pixels = portrait * 2
     result = bytearray(source[:128]+bytes(4544))
     palette = {}
     for y in range(84):
@@ -267,8 +288,16 @@ def append_shadow_lugia_shiny_face(archive: bytes) -> tuple[bytes, dict]:
     if len(candidates) != 1:
         raise FormatError("expected one native Shadow Lugia face")
     source = decoded_member(archive, candidates[0])
-    normal = make_shadow_lugia_face_texture(source, shiny=False)
-    rare = make_shadow_lugia_face_texture(source)
+    from ..artwork import _png_pixels
+    from ..model_portraits import registered_portrait
+    pack = Path(__file__).resolve().parents[1] / 'assets/game/models'
+    try:
+        portraits = [registered_portrait(pack, game="xd", shiny=variant) for variant in (False, True)]
+    except ValueError as error:
+        raise FormatError("Registered Shadow Lugia portraits are corrupt") from error
+    pixels = [None if image is None else _png_pixels(image, (42, 42)) for image in portraits]
+    normal = make_shadow_lugia_face_texture(source, shiny=False, portrait=pixels[0])
+    rare = make_shadow_lugia_face_texture(source, portrait=pixels[1])
     output = append_actor_models(archive, {}, archive, SOURCE_RESOURCE,
                                  {NORMAL_RESOURCE: ('face249dark_black', normal),
                                   SHINY_RESOURCE: ('face249dark_shiny', rare)}, resource_type=0x1200)
@@ -278,7 +307,9 @@ def append_shadow_lugia_shiny_face(archive: bytes) -> tuple[bytes, dict]:
               'source_sha256': hashlib.sha256(source).hexdigest(),
               'shiny_sha256': hashlib.sha256(rare).hexdigest(),
               'normal_member_unchanged': True, 'native_format': 'CI8 / RGB5A3',
-              'header_unchanged': True, 'native_circular_alpha_unchanged': True,
-              'black_background_inside_circle': True, 'artwork_size': XD_ARTWORK_SIZE,
+              'header_unchanged': True, 'native_circular_alpha_unchanged': pixels[0] is None,
+              'black_background_inside_circle': pixels[0] is None, 'artwork_size': XD_ARTWORK_SIZE,
+              'registered_portraits': pixels[0] is not None,
+              'background': 'native violet palette, round frame' if pixels[0] is not None else 'opaque black inside native alpha',
               'eye_mask_palette_split': True}
     return output, report

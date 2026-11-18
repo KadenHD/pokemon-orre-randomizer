@@ -24,9 +24,13 @@ Temporary download and staging files are removed after the attempt; a small
 local diagnostic log remains. Updating starts only after clicking the button.
 
 Both games use **ROM → Settings → Create**. Supply an unmodified
-[supported original](COMPATIBILITY.md). Choose a new output path: existing
-files are never replaced. Start a new game in Dolphin to match the preview;
-the app never imports or edits saves.
+[supported original](COMPATIBILITY.md). Choose a new game folder, or turn off
+the launcher option to create only a ROM. Existing outputs are never replaced.
+The launcher uses its own saves and settings. Start a new game to match the
+preview; no existing personal save is imported or edited implicitly.
+
+See [game folders, HD packs and launcher controls](GAME_FOLDERS.md) for setup,
+storage, speed and experimental independent music.
 
 ISO, GCM and RVZ inputs all offer **ISO**, **GCM** and **RVZ** as output choices.
 The input's format is selected by default. GCM contains the same raw disc data

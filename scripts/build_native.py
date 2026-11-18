@@ -41,6 +41,14 @@ def main():
             shutil.copyfile(compiled, destination)
         print(destination)
     collect_disc_licenses()
+    launcher = ROOT / "native/launcher/Cargo.toml"
+    subprocess.run(["cargo", "build", "--release", "--locked", "--manifest-path", str(launcher)],
+                   check=True, env=build_environment())
+    launcher_name = "orre-launcher.exe" if sys.platform == "win32" else "orre-launcher"
+    shutil.copyfile(launcher.parent / "target/release" / launcher_name,
+                    destination_dir / ("OrreLauncher.exe" if sys.platform == "win32" else "OrreLauncher"))
+    if sys.platform == "win32":
+        subprocess.run([sys.executable, str(ROOT / "scripts/build_music.py")], check=True)
     toolchain = Path(subprocess.check_output(["rustc", "--print", "sysroot"], text=True).strip())
     docs = toolchain / "share/doc/rust"
     licenses = ROOT / "licenses/rust"
@@ -49,7 +57,10 @@ def main():
         shutil.copytree(docs / "licenses", licenses / "licenses", dirs_exist_ok=True)
     for name in ("COPYRIGHT-library.html", "COPYRIGHT.html"):
         if (docs / name).is_file():
-            shutil.copyfile(docs / name, licenses / (name + ".txt"))
+            target = licenses / (name + ".txt")
+            if (not target.is_file() or hashlib.sha256((docs / name).read_bytes()).digest()
+                    != hashlib.sha256(target.read_bytes()).digest()):
+                shutil.copyfile(docs / name, target)
     (licenses / "toolchain.txt").write_text(subprocess.check_output(["rustc", "--version"], text=True), encoding="utf-8")
 
 

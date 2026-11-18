@@ -138,6 +138,7 @@ class WorkspaceParityTests(unittest.TestCase):
         settings = QSettings(str(self.root / "prefs.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
         settings.setValue("interface/sounds", False)
+        settings.setValue("launcher/createFolder", False)  # ROM-only worker parity.
         self.window = MainWindow(settings=settings, system_languages=["fr-FR"])
 
     def pump_until(self, condition):

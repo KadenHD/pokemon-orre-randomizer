@@ -1209,16 +1209,72 @@
       "sha256": "bb4cf75b0870abf395c1b51e29b1a08b9e11258f5be2b47944aec3f5474d88a7"
     },
     "models/dark-lugia-body.png": {
-      "bytes": 3619,
-      "sha256": "b70d0a84a3f73177fe23e6bfedd633d5c7d5f69075a796e2e71f7dfcc6973cd6"
+      "bytes": 2972,
+      "sha256": "787f8f4f4659213d0ddb450e4b8f528139b327b0f5b3a2cbd9e60b63a1706c3f"
     },
     "models/dark-lugia-shiny-body.png": {
-      "bytes": 3827,
-      "sha256": "bbaef9cb9763237ea681a2098ef498a7cf16414f304998e733238700da8ec8df"
+      "bytes": 3319,
+      "sha256": "13e8ac8a11e2b58a04323d4d64edb75b08b5a69099245026cf554b1376ec0feb"
     },
     "models/fullbody-manifest.json": {
-      "bytes": 2066,
-      "sha256": "b4dd552cfb6f81e6f5a8885969244759ab1647c2535586c1de98676d3bf06b57"
+      "bytes": 8135,
+      "sha256": "a3dfa5365bca6c1ab8ddae3bcb893d13cf73038b2f843663607782fc99a5e7d4"
+    },
+    "models/dark-lugia-body-x4.png": {
+      "bytes": 25774,
+      "sha256": "4a139b0fd2e7948c68ed642e792670b133546d33eef8a4ec302e42ed2866d094"
+    },
+    "models/dark-lugia-shiny-body-x4.png": {
+      "bytes": 32500,
+      "sha256": "ad547c55cdc2ac7b3a9a4adc3550b9250e774aa362128ef85977a80788112adb"
+    },
+    "models/hd-fullbody-manifest.json": {
+      "bytes": 81121,
+      "sha256": "e32d10fd44d709510a68a5ff3d6956c914cf8c99ca28fe233ef673610db6b486"
+    },
+    "models/dark-lugia-head-x4.png": {
+      "bytes": 15072,
+      "sha256": "cabfdb9d442ad70c23779a1e5a267f52348e3d7a47a02f5692269fa4f32ad3c8"
+    },
+    "models/dark-lugia-shiny-head-x4.png": {
+      "bytes": 16581,
+      "sha256": "dd7646297ca0f1ede8783b9976fe852c123bcf8f1b2ad97a7572cc8ee818b688"
+    },
+    "models/shadow-lugia-colosseum-normal-native.png": {
+      "bytes": 4455,
+      "sha256": "7929e73ae8005e36014c481f8a798f44e01a6837aa0960805f0be82dafe14982"
+    },
+    "models/shadow-lugia-colosseum-normal-x4.png": {
+      "bytes": 31190,
+      "sha256": "e5728e791d1c36cc72583259741ecc77e01dca2018790cc6daadbf17bf5f860a"
+    },
+    "models/shadow-lugia-colosseum-shiny-native.png": {
+      "bytes": 4893,
+      "sha256": "dfce5aa806b6db0091eb688cc6182c1f25ac088c12a413983ef3330b33db69d3"
+    },
+    "models/shadow-lugia-colosseum-shiny-x4.png": {
+      "bytes": 37394,
+      "sha256": "b83dac586a22de91f948b90b430f7c1332136d83b5d6a89bd2e0d0c0bfb1c702"
+    },
+    "models/shadow-lugia-xd-normal-native.png": {
+      "bytes": 4009,
+      "sha256": "a0a96440287fa4453ca4055fdf9eff6517bb01e730080062e51e7fe1aa8f151d"
+    },
+    "models/shadow-lugia-xd-normal-x4.png": {
+      "bytes": 28624,
+      "sha256": "41aff5f1e4adfc9cd89ddaf476c511cb090492e7df30cd4af132052b3a9ad3a5"
+    },
+    "models/shadow-lugia-xd-shiny-native.png": {
+      "bytes": 4407,
+      "sha256": "c0ad6d520df774e84d9cdf4c8420345ae70b4cbe8981ac8eba1ad445d5d1ddcc"
+    },
+    "models/shadow-lugia-xd-shiny-x4.png": {
+      "bytes": 34395,
+      "sha256": "f788e4674683fdf8d80f0d83f325cf7e7727266dc244e11b7d34b6bea0df0d63"
+    },
+    "models/portrait-variants.json": {
+      "bytes": 14643,
+      "sha256": "a790dbe0f578b95c4012a478dca416b7bf7d9fa1083a3b7b5a18d74d4e46ffe9"
     }
   },
   "additional_sources": [
@@ -1235,5 +1291,6 @@
   "ability_descriptions_metadata": "text/ability-descriptions.json",
   "move_descriptions_metadata": "text/move-descriptions.json",
   "bonus_model_metadata": "models/manifest.json",
-  "shadow_lugia_body_metadata": "models/fullbody-manifest.json"
+  "shadow_lugia_body_metadata": "models/fullbody-manifest.json",
+  "shadow_lugia_portrait_metadata": "models/portrait-variants.json"
 }

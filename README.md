@@ -17,6 +17,8 @@
 Choose your game, supply a clean ISO, GCM or RVZ, and create a new adventure from a
 seed. Everything runs locally. Your original ROM is preserved, and the app
 writes a separate, verified image with a settings report and an offline journal.
+Version 2 adds a game folder with its own launcher, saves and Dolphin settings,
+plus optional shared HD texture packs.
 No ROM, save file, or emulator is included.
 
 ![Game selection: Colosseum and XD](docs/images/home.png)
@@ -45,19 +47,80 @@ artwork, and music, see the [game media notices](THIRD_PARTY_NOTICES.md#game-int
 1. Choose **Colosseum** or **XD**, then select your original ROM in **ROM**.
 2. In **Settings**, choose a preset and a seed. Preview the starters, Shadow
    Pokémon and gifts, or open **Advanced** to adjust individual rules.
-3. In **Create**, review **Applied settings** and choose a new ISO, GCM or RVZ path.
-4. Open the output in Dolphin and start a new game.
+3. In **Create**, review **Applied settings**, choose a new game folder and select
+   your Dolphin executable. Pick ISO, GCM or RVZ, with Original or HD graphics.
+4. Open **Launcher.exe** in that folder and click **Play**. Start a new game to
+   match your preview. The launcher works after closing the randomizer.
 
 All three input formats offer all three output formats. The suggested output
 format matches your input. **RVZ conversion is built in**: the Windows app
 includes a Rust library and needs no DolphinTool installation or path.
 GCM is the same raw disc data as ISO, with a different extension. Conversion
 preserves game data; each created RVZ is decoded again and checked against the
-complete output ISO. The app does not launch Dolphin or manage your saves.
+complete output ISO. Turn off **Create a game folder with a launcher** if you
+only want a ROM to open in your usual emulator setup.
 
 | Colosseum | XD |
 | --- | --- |
-| ![ISO, GCM and RVZ output in Colosseum](docs/images/colosseum-output-formats.png) | ![ISO, GCM and RVZ output in XD](docs/images/xd-output-formats.png) |
+| ![Create a Colosseum game folder](docs/images/colosseum-output-formats.png) | ![Create an XD game folder](docs/images/xd-output-formats.png) |
+
+### A launcher for each run
+
+Keep a run's ROM, memory card, save states and controls together. Dolphin is
+detected automatically when possible, or selected manually. The launcher uses
+that run's `DolphinUser/` profile; it never takes over your usual saves. All
+generated file and folder names stay in English. Dolphin itself is not bundled.
+
+Choose a base speed of 100% or 200%, hold **Tab** for 200% or **Shift + Tab**
+for 50%, then release to return to your selected speed. Keyboard and XInput
+controller presets can be remapped in Dolphin.
+
+| Colosseum launcher | XD launcher |
+| --- | --- |
+| ![Colosseum game launcher](docs/images/colosseum-launcher.png) | ![XD game launcher](docs/images/xd-launcher.png) |
+
+The optional **Keep music at 100%** companion is available on Windows with
+verified Europe revision-0 images and the checked renderer recipe. It separates gameplay music from
+game speed; sound effects, cries and the complete picture/soundtrack of
+prerecorded movies follow the game. It uses the original audio, not a HQ music
+pack. Other configurations retain native audio. See the
+[supported audio configuration and validation](docs/reverse-engineering/NATIVE_MUSIC_HOST.md).
+
+### Shared HD packs
+
+Install the optional HD packs from Home or either launcher. Each Orre release
+pins specific upstream versions and SHA-256 hashes. Install once per game and
+version, then reuse the pack across your runs; existing game folders keep their
+recorded version. Downloads support cancellation and resuming.
+
+HD packs by **Sephie** ([Colosseum, published by u/Bun-bun45](https://www.reddit.com/r/DolphinEmulator/comments/sxzxi2/))
+and **mikeyX** ([XD/XG](https://forums.dolphin-emu.org/Thread-pokemon-xg-xd-hd-texture-pack-v1-0)).
+Their work remains separately credited; see [HD sources and rights](docs/HD_SOURCES.md).
+
+Custom x4 textures, portraits and whole-body artwork use the actual HD packs
+as their source, including Shadow Lugia and its shiny variant. Native custom
+models stay in the ROM. A model imported from the other game can require both
+packs; missing custom artwork blocks HD preparation instead of substituting
+an enlarged native image. These texture packs add no polygons or HQ audio.
+**Original** mode needs no pack download.
+
+XD's **HD mode requires both packs**: XD supplies the textures and Colosseum
+supplies HD portraits for all 386 base species and Unown forms, adapted to XD's
+round frames. Clicking **Install** for XD installs both missing packs, reusing
+any version already installed. Unsupported extra forms keep their original portraits.
+Custom Shadow Lugia portraits match its normal/shiny colors at both
+resolutions, with violet square frames in Colosseum and round frames in XD.
+The DNA lab uses separate whole-body artwork with matching native/HD poses
+and the keypad's black outline.
+
+![Original and HD portraits for both Shadow Lugia appearances](docs/images/hd-custom-lugia-portraits.png)
+
+![Shared, versioned HD texture packs](docs/images/hd-packs.png)
+
+The Colosseum pack downloads about **0.72 GB**, XD about **3.30 GB**. The shared
+cache also holds runtime and locally extracted music resources when supported.
+Moving a game folder to another PC requires locating Dolphin and reinstalling
+its shared resources. [Game-folder guide](docs/GAME_FOLDERS.md).
 
 ## Choose what changes
 

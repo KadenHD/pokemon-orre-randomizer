@@ -4,13 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pokemon-orre-randomizer"
-version = "1.2.26"
+version = "2.0.0"
 description = "Offline randomizer for Pokémon Colosseum and Pokémon XD"
 readme = "README.md"
 requires-python = ">=3.12"
 license = "MIT"
 authors = [{name = "Pokémon Orre Randomizer contributors"}]
-dependencies = ["PySide6-Essentials>=6.8,<7"]
+dependencies = ["PySide6-Essentials>=6.8,<7", "Pillow>=13,<14"]
 
 [project.optional-dependencies]
 build = ["pyinstaller>=6.11,<7"]
@@ -30,6 +30,6 @@ include = ["orre_randomizer*"]
 include-package-data = false
 
 [tool.setuptools.package-data]
-orre_randomizer = ["windows_update.ps1", "assets/app/*.ico", "assets/app/*.png", "assets/app/*.json", "assets/app/*.md", "assets/game/*/*.png", "assets/game/*/*.wav", "assets/game/*/*.json", "assets/game/models/dark-lugia-colosseum-v1.pkx", "assets/game/*.json", "assets/game/*.md"]
+orre_randomizer = ["windows_update.ps1", "_native/*.dll", "_native/*.json", "_native/OrreLauncher.exe", "_native/*.so", "_native/*.dylib", "_native/OrreLauncher", "assets/app/*.ico", "assets/app/*.png", "assets/app/*.json", "assets/app/*.md", "assets/game/*/*.png", "assets/game/*/*.wav", "assets/game/*/*.json", "assets/game/models/dark-lugia-colosseum-v1.pkx", "assets/game/*.json", "assets/game/*.md"]
 
 

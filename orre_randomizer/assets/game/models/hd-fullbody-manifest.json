@@ -1,0 +1,2297 @@
+{
+  "schema": 1,
+  "kind": "native-mesh-render-with-pack-hd-textures",
+  "dimensions": [
+    256,
+    256
+  ],
+  "native_dimensions": [
+    64,
+    64
+  ],
+  "source": {
+    "pack": "xd-1.0",
+    "archives": [
+      "56bbf26551f26b7bdb1d0d7d4a6eb7073cf4f8fef72130648bd97abde8851cf2"
+    ],
+    "model": {
+      "game_id": "GXXP01",
+      "archive": "pkx_darklugia.fsys",
+      "member": "darklugia",
+      "original_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+      "colosseum_port_sha256": "8c2aefb914ea1aee9407418495edf318f21a52fe443d1b84b9de5dae69401364",
+      "shiny_port_sha256": "2525cf6af605706e1d89d70b84d7c3721f4dfbe1e7fae782849a1d44d55167d9"
+    },
+    "hd_art_revision": 2,
+    "material_recipes": [
+      {
+        "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+        "sha256": "6419709299c1ad42e75a82b84ccc67600cff5ec3fc0708d85d938245e28090c2",
+        "width": 128,
+        "height": 128,
+        "bytes": 16413,
+        "native_format": 14,
+        "hd_source": {
+          "kind": "upstream-hd-texture",
+          "pack": "xd-1.0",
+          "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+          "format": "PNG",
+          "mip_levels": 1,
+          "source_dimensions": [
+            128,
+            128
+          ],
+          "native_donor_key": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "retouch": null,
+          "source_scale": 4,
+          "output_scale": 4,
+          "resample": null,
+          "transform": {
+            "type": "identity"
+          },
+          "components": null
+        }
+      },
+      {
+        "file": "tex1_32x32_f135b3b243a3e441_14.png",
+        "sha256": "c3e02d76df8f1ff1028fee795437d4340c0d1e89bed3eb78104156af1402e502",
+        "width": 128,
+        "height": 128,
+        "bytes": 4671,
+        "native_format": 14,
+        "hd_source": {
+          "kind": "authored-hd-lugia-material",
+          "pack": "xd-1.0",
+          "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+          "format": "PNG",
+          "mip_levels": 1,
+          "source_dimensions": [
+            128,
+            128
+          ],
+          "native_donor_key": "tex1_32x32_f135b3b243a3e441_14.png",
+          "retouch": {
+            "kind": "authored-hd-lugia-material",
+            "hd_art_revision": 2,
+            "recipe_version": 1,
+            "reference": {
+              "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+              "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+              "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+              "width": 128,
+              "height": 128,
+              "source_scale": 4,
+              "format": "PNG",
+              "mip_levels": 1
+            },
+            "references": [
+              {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              {
+                "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                "width": 256,
+                "height": 256,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              }
+            ],
+            "palette": {
+              "ivory": {
+                "rgb": [
+                  241,
+                  240,
+                  244
+                ],
+                "pixel": [
+                  61,
+                  121
+                ],
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "quantile": 0.96
+              },
+              "neutral-mid": {
+                "rgb": [
+                  163,
+                  186,
+                  219
+                ],
+                "pixel": [
+                  69,
+                  9
+                ],
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "quantile": 0.35
+              },
+              "iris-red": {
+                "rgb": [
+                  236,
+                  42,
+                  42
+                ],
+                "pixel": [
+                  132,
+                  39
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.55
+              },
+              "iris-shadow": {
+                "rgb": [
+                  216,
+                  12,
+                  20
+                ],
+                "pixel": [
+                  145,
+                  62
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.12
+              },
+              "iris-light": {
+                "rgb": [
+                  243,
+                  88,
+                  92
+                ],
+                "pixel": [
+                  173,
+                  78
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.88
+              }
+            },
+            "native_uv_guide": "tex1_32x32_f135b3b243a3e441_14.png",
+            "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+            "material": {
+              "role": "reflection-environment",
+              "tobj_flags": "0x00040081",
+              "native_colors": "191933ff666680ff595973ff",
+              "projection": "HSD normal-vector reflection",
+              "specular_unchanged": true,
+              "alpha": "opaque native material retained"
+            },
+            "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+            "oral_tint": {
+              "native_hue": 0.92,
+              "source": "independent same-model HD iris palette"
+            },
+            "native_bitmap_resampled": false
+          },
+          "source_scale": 4,
+          "output_scale": 4,
+          "resample": null,
+          "transform": {
+            "type": "identity"
+          },
+          "components": null
+        }
+      },
+      {
+        "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+        "sha256": "ccb8ce1a23397e998478e705c41c48417ec8cdcf953ec032c8d54512ffaf8575",
+        "width": 256,
+        "height": 256,
+        "bytes": 65007,
+        "native_format": 9,
+        "hd_source": {
+          "kind": "upstream-hd-texture",
+          "pack": "xd-1.0",
+          "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+          "logical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+          "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+          "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+          "format": "PNG",
+          "mip_levels": 1,
+          "source_dimensions": [
+            256,
+            256
+          ],
+          "native_donor_key": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+          "retouch": null,
+          "source_scale": 4,
+          "output_scale": 4,
+          "resample": null,
+          "transform": {
+            "type": "identity"
+          },
+          "components": null
+        }
+      },
+      {
+        "file": "tex1_16x16_a70005786d19905c_14.png",
+        "sha256": "5a79a53fc21b2d338e5860606c2676ccf865686f87f13f09500e39551a9bd136",
+        "width": 64,
+        "height": 64,
+        "bytes": 1533,
+        "native_format": 14,
+        "hd_source": {
+          "kind": "authored-hd-lugia-material",
+          "pack": "xd-1.0",
+          "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+          "format": "PNG",
+          "mip_levels": 1,
+          "source_dimensions": [
+            128,
+            128
+          ],
+          "native_donor_key": "tex1_16x16_a70005786d19905c_14.png",
+          "retouch": {
+            "kind": "authored-hd-lugia-material",
+            "hd_art_revision": 2,
+            "recipe_version": 1,
+            "reference": {
+              "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+              "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+              "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+              "width": 128,
+              "height": 128,
+              "source_scale": 4,
+              "format": "PNG",
+              "mip_levels": 1
+            },
+            "references": [
+              {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              {
+                "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                "width": 256,
+                "height": 256,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              }
+            ],
+            "palette": {
+              "ivory": {
+                "rgb": [
+                  241,
+                  240,
+                  244
+                ],
+                "pixel": [
+                  61,
+                  121
+                ],
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "quantile": 0.96
+              },
+              "neutral-mid": {
+                "rgb": [
+                  163,
+                  186,
+                  219
+                ],
+                "pixel": [
+                  69,
+                  9
+                ],
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "quantile": 0.35
+              },
+              "iris-red": {
+                "rgb": [
+                  236,
+                  42,
+                  42
+                ],
+                "pixel": [
+                  132,
+                  39
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.55
+              },
+              "iris-shadow": {
+                "rgb": [
+                  216,
+                  12,
+                  20
+                ],
+                "pixel": [
+                  145,
+                  62
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.12
+              },
+              "iris-light": {
+                "rgb": [
+                  243,
+                  88,
+                  92
+                ],
+                "pixel": [
+                  173,
+                  78
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.88
+              }
+            },
+            "native_uv_guide": "tex1_16x16_a70005786d19905c_14.png",
+            "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+            "material": {
+              "role": "mouth-interior",
+              "tobj_flags": "0x00030010",
+              "native_colors": "808080ffffffffffffffffff",
+              "projection": "native UV0",
+              "specular_unchanged": true,
+              "alpha": "opaque native material retained"
+            },
+            "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+            "oral_tint": {
+              "native_hue": 0.92,
+              "source": "independent same-model HD iris palette"
+            },
+            "native_bitmap_resampled": false
+          },
+          "source_scale": 4,
+          "output_scale": 4,
+          "resample": null,
+          "transform": {
+            "type": "identity"
+          },
+          "components": null
+        }
+      },
+      {
+        "file": "tex1_16x16_50629643191a1a90_14.png",
+        "sha256": "b57feb97842c6d82665b5e94d21c39d12b8a748b970e022419869145b0e1e1b9",
+        "width": 64,
+        "height": 64,
+        "bytes": 4277,
+        "native_format": 14,
+        "hd_source": {
+          "kind": "authored-hd-lugia-material",
+          "pack": "xd-1.0",
+          "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+          "format": "PNG",
+          "mip_levels": 1,
+          "source_dimensions": [
+            128,
+            128
+          ],
+          "native_donor_key": "tex1_16x16_50629643191a1a90_14.png",
+          "retouch": {
+            "kind": "authored-hd-lugia-material",
+            "hd_art_revision": 2,
+            "recipe_version": 1,
+            "reference": {
+              "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+              "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+              "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+              "width": 128,
+              "height": 128,
+              "source_scale": 4,
+              "format": "PNG",
+              "mip_levels": 1
+            },
+            "references": [
+              {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              {
+                "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                "width": 256,
+                "height": 256,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              }
+            ],
+            "palette": {
+              "ivory": {
+                "rgb": [
+                  241,
+                  240,
+                  244
+                ],
+                "pixel": [
+                  61,
+                  121
+                ],
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "quantile": 0.96
+              },
+              "neutral-mid": {
+                "rgb": [
+                  163,
+                  186,
+                  219
+                ],
+                "pixel": [
+                  69,
+                  9
+                ],
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "quantile": 0.35
+              },
+              "iris-red": {
+                "rgb": [
+                  236,
+                  42,
+                  42
+                ],
+                "pixel": [
+                  132,
+                  39
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.55
+              },
+              "iris-shadow": {
+                "rgb": [
+                  216,
+                  12,
+                  20
+                ],
+                "pixel": [
+                  145,
+                  62
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.12
+              },
+              "iris-light": {
+                "rgb": [
+                  243,
+                  88,
+                  92
+                ],
+                "pixel": [
+                  173,
+                  78
+                ],
+                "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                "quantile": 0.88
+              }
+            },
+            "native_uv_guide": "tex1_16x16_50629643191a1a90_14.png",
+            "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+            "material": {
+              "role": "tongue-and-teeth",
+              "tobj_flags": "0x00030010",
+              "native_colors": "808080ffffffffff000000ff",
+              "projection": "native UV0",
+              "specular_unchanged": true,
+              "alpha": "opaque native material retained"
+            },
+            "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+            "oral_tint": {
+              "native_hue": 0.92,
+              "source": "independent same-model HD iris palette"
+            },
+            "native_bitmap_resampled": false
+          },
+          "source_scale": 4,
+          "output_scale": 4,
+          "resample": null,
+          "transform": {
+            "type": "identity"
+          },
+          "components": null
+        }
+      },
+      {
+        "file": "tex1_32x32_f6069745b908bc2e_14.png",
+        "sha256": "800652ebc2a05a30fd1af727950f2d97b4941427c8b6691a7c7c6ef7169f95ad",
+        "width": 128,
+        "height": 128,
+        "bytes": 4784,
+        "native_format": 14,
+        "hd_source": {
+          "kind": "upstream-hd-texture",
+          "pack": "xd-1.0",
+          "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+          "format": "PNG",
+          "mip_levels": 1,
+          "source_dimensions": [
+            128,
+            128
+          ],
+          "native_donor_key": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "retouch": null,
+          "source_scale": 4,
+          "output_scale": 4,
+          "resample": null,
+          "transform": {
+            "type": "shadow_lugia_belly",
+            "factors": [
+              0.18,
+              0.18,
+              0.2
+            ]
+          },
+          "components": null
+        }
+      }
+    ],
+    "hd_material_coverage": {
+      "total_native_materials": 5,
+      "exact_pack_materials": 2,
+      "authored_pack_derived": 3,
+      "derived_shiny_materials": 1,
+      "inherited_stock": []
+    },
+    "runtime_material_consumption": {
+      "schema": 1,
+      "method": "One-material differential Dolphin GPU render",
+      "qualification": "Each diagnostic changes only one replacement RGB, preserving its alpha and 4x dimensions. All other files, ISO, save state, camera and native target counter are identical. Each of five replacements visibly changes the GPU render in both variants. Diagnostic colours are never published.",
+      "dimensions_qualification": "Replacement PNG dimensions verified. Consumption is observed via GPU pixel differences, not inferred from filenames or preload. No claim of direct GPU allocation memory inspection.",
+      "normal_consumed": 5,
+      "shiny_consumed": 5,
+      "all_ten_positive": true,
+      "variants": {
+        "normal": [
+          {
+            "native_key": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "replacement_dimensions": [
+              128,
+              128
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "6419709299c1ad42e75a82b84ccc67600cff5ec3fc0708d85d938245e28090c2",
+            "diagnostic_hd_png_sha256": "74fa7b294e0be7f4e688c36c7c3524532584d866a2c4cb39dd35a58847d3aa0b",
+            "source_gpu_capture_sha256": "bf568dc789dc31efa82b6ca93e5dc16b6c704b649c4e7ba78c069f210a052cc4",
+            "diagnostic_gpu_capture_sha256": "e2dd037e45e4f7924e2fb86cc1fc5015eba9eeba8e9b20608927a49fc8d04136",
+            "native_target_counter": 85,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 14488,
+            "changed_rgb_bbox": [
+              49,
+              245,
+              662,
+              673
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          },
+          {
+            "native_key": "tex1_32x32_f135b3b243a3e441_14.png",
+            "replacement_dimensions": [
+              128,
+              128
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "c3e02d76df8f1ff1028fee795437d4340c0d1e89bed3eb78104156af1402e502",
+            "diagnostic_hd_png_sha256": "74fa7b294e0be7f4e688c36c7c3524532584d866a2c4cb39dd35a58847d3aa0b",
+            "source_gpu_capture_sha256": "bf568dc789dc31efa82b6ca93e5dc16b6c704b649c4e7ba78c069f210a052cc4",
+            "diagnostic_gpu_capture_sha256": "9c8580f332bba16cf75ed920d01733b54aafea9eb055e21d54a9a12e49ac54a2",
+            "native_target_counter": 85,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 111754,
+            "changed_rgb_bbox": [
+              33,
+              240,
+              680,
+              761
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          },
+          {
+            "native_key": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "replacement_dimensions": [
+              256,
+              256
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "ccb8ce1a23397e998478e705c41c48417ec8cdcf953ec032c8d54512ffaf8575",
+            "diagnostic_hd_png_sha256": "855b69ffc5351417ea45894e646fadc6e70f5c581daa7c89ac0339d2578721ee",
+            "source_gpu_capture_sha256": "bf568dc789dc31efa82b6ca93e5dc16b6c704b649c4e7ba78c069f210a052cc4",
+            "diagnostic_gpu_capture_sha256": "bfcafec54f0ccf1b8c53bb4d3b8475e8faeebf58a99248488088a647627255fe",
+            "native_target_counter": 85,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 315,
+            "changed_rgb_bbox": [
+              622,
+              277,
+              651,
+              298
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          },
+          {
+            "native_key": "tex1_16x16_a70005786d19905c_14.png",
+            "replacement_dimensions": [
+              64,
+              64
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "5a79a53fc21b2d338e5860606c2676ccf865686f87f13f09500e39551a9bd136",
+            "diagnostic_hd_png_sha256": "c53c8b7a88cfc8f7bceab66eedca1bf4d6efc34f6d2414d413d24cdb7f4d9a00",
+            "source_gpu_capture_sha256": "bf568dc789dc31efa82b6ca93e5dc16b6c704b649c4e7ba78c069f210a052cc4",
+            "diagnostic_gpu_capture_sha256": "bfeba4444d45528c01561fd22ff01ad49f5a8e0cf286cda81421bb803052d1ea",
+            "native_target_counter": 85,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 44,
+            "changed_rgb_bbox": [
+              642,
+              308,
+              663,
+              325
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          },
+          {
+            "native_key": "tex1_16x16_50629643191a1a90_14.png",
+            "replacement_dimensions": [
+              64,
+              64
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "b57feb97842c6d82665b5e94d21c39d12b8a748b970e022419869145b0e1e1b9",
+            "diagnostic_hd_png_sha256": "c53c8b7a88cfc8f7bceab66eedca1bf4d6efc34f6d2414d413d24cdb7f4d9a00",
+            "source_gpu_capture_sha256": "bf568dc789dc31efa82b6ca93e5dc16b6c704b649c4e7ba78c069f210a052cc4",
+            "diagnostic_gpu_capture_sha256": "9b382f360ab9f9eeb67a938c42ad559505dc29ab22df807b9a41387486402403",
+            "native_target_counter": 85,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 226,
+            "changed_rgb_bbox": [
+              634,
+              308,
+              673,
+              327
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          }
+        ],
+        "shiny": [
+          {
+            "native_key": "tex1_32x32_f6069745b908bc2e_14.png",
+            "replacement_dimensions": [
+              128,
+              128
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "800652ebc2a05a30fd1af727950f2d97b4941427c8b6691a7c7c6ef7169f95ad",
+            "diagnostic_hd_png_sha256": "74fa7b294e0be7f4e688c36c7c3524532584d866a2c4cb39dd35a58847d3aa0b",
+            "source_gpu_capture_sha256": "66c230bc290493c15030574b47c39b417668f16da571326470a03ba2aa612926",
+            "diagnostic_gpu_capture_sha256": "2b87844bae42ef7a81e500f394a8bbde00e19b9dd1cebf9766aff60f7f66659b",
+            "native_target_counter": 60,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 14489,
+            "changed_rgb_bbox": [
+              49,
+              245,
+              662,
+              673
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          },
+          {
+            "native_key": "tex1_32x32_f135b3b243a3e441_14.png",
+            "replacement_dimensions": [
+              128,
+              128
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "c3e02d76df8f1ff1028fee795437d4340c0d1e89bed3eb78104156af1402e502",
+            "diagnostic_hd_png_sha256": "74fa7b294e0be7f4e688c36c7c3524532584d866a2c4cb39dd35a58847d3aa0b",
+            "source_gpu_capture_sha256": "66c230bc290493c15030574b47c39b417668f16da571326470a03ba2aa612926",
+            "diagnostic_gpu_capture_sha256": "48092d4d21c509a6206b81a0c3e059f46943b425a959a47bca324f908e9a470d",
+            "native_target_counter": 60,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 111754,
+            "changed_rgb_bbox": [
+              33,
+              240,
+              680,
+              761
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          },
+          {
+            "native_key": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "replacement_dimensions": [
+              256,
+              256
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "ccb8ce1a23397e998478e705c41c48417ec8cdcf953ec032c8d54512ffaf8575",
+            "diagnostic_hd_png_sha256": "855b69ffc5351417ea45894e646fadc6e70f5c581daa7c89ac0339d2578721ee",
+            "source_gpu_capture_sha256": "66c230bc290493c15030574b47c39b417668f16da571326470a03ba2aa612926",
+            "diagnostic_gpu_capture_sha256": "b7c89b5b7c3451c5cac59e004001472048bd741b2721eee1b7d33cdb18bdb0fa",
+            "native_target_counter": 60,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 315,
+            "changed_rgb_bbox": [
+              622,
+              277,
+              651,
+              298
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          },
+          {
+            "native_key": "tex1_16x16_a70005786d19905c_14.png",
+            "replacement_dimensions": [
+              64,
+              64
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "5a79a53fc21b2d338e5860606c2676ccf865686f87f13f09500e39551a9bd136",
+            "diagnostic_hd_png_sha256": "c53c8b7a88cfc8f7bceab66eedca1bf4d6efc34f6d2414d413d24cdb7f4d9a00",
+            "source_gpu_capture_sha256": "66c230bc290493c15030574b47c39b417668f16da571326470a03ba2aa612926",
+            "diagnostic_gpu_capture_sha256": "ba22e2501b7456cd3a6d01ad86e78b197580439e82923d1e56aa6c27c67bd519",
+            "native_target_counter": 60,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 44,
+            "changed_rgb_bbox": [
+              642,
+              308,
+              663,
+              325
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          },
+          {
+            "native_key": "tex1_16x16_50629643191a1a90_14.png",
+            "replacement_dimensions": [
+              64,
+              64
+            ],
+            "replacement_scale": 4,
+            "final_hd_png_sha256": "b57feb97842c6d82665b5e94d21c39d12b8a748b970e022419869145b0e1e1b9",
+            "diagnostic_hd_png_sha256": "c53c8b7a88cfc8f7bceab66eedca1bf4d6efc34f6d2414d413d24cdb7f4d9a00",
+            "source_gpu_capture_sha256": "66c230bc290493c15030574b47c39b417668f16da571326470a03ba2aa612926",
+            "diagnostic_gpu_capture_sha256": "eff1d9c5b3ab3f8d24457db4ddb0aaaa62f0338e38c8989637bd50c52a430212",
+            "native_target_counter": 60,
+            "gpu_capture_dimensions": [
+              1024,
+              1024
+            ],
+            "changed_rgb_pixels": 226,
+            "changed_rgb_bbox": [
+              634,
+              308,
+              673,
+              327
+            ],
+            "alpha_byte_identical": true,
+            "consumption_observed": true
+          }
+        ]
+      }
+    }
+  },
+  "capture": "Two trueHD1024 GPU renders with exact86 shared native matrices, same native camera and complete5/5 independent pack materials.",
+  "conversion": "Shared normalized crop and placement; premultiplied RGBA BOX reduction to256. No native bitmap upscale, recolor, flip or stroke.",
+  "rights": "Game-derived geometry and upstream HD textures; separate from MIT. See THIRD_PARTY_NOTICES.md.",
+  "files": {
+    "dark-lugia-body-x4.png": {
+      "shiny": false,
+      "bytes": 25774,
+      "sha256": "4a139b0fd2e7948c68ed642e792670b133546d33eef8a4ec302e42ed2866d094",
+      "source_RGBA_sha256": "2c679db36b282821fc59ef58e904de18b393742e2287d9e2542de6662f87a812",
+      "source_capture_sha256": "a716c90f3f4d7686cb2b8caf47dc7e3732a808cc6b8bdc5f0ed3c65963a5cca4",
+      "source_dimensions": [
+        1024,
+        1024
+      ],
+      "source_alpha_bbox": [
+        48,
+        193,
+        793,
+        757
+      ],
+      "source_crop_box": [
+        48.0,
+        192.0,
+        796.0,
+        760.0
+      ],
+      "fitted_dimensions": [
+        240,
+        184
+      ],
+      "source_roi": [
+        48.0,
+        192.0,
+        796.0,
+        760.0
+      ],
+      "placement": [
+        8,
+        36
+      ],
+      "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+      "alpha_sha256": "53d46d4bb6f953a8c78b77b9410048a75b4ca1fb0e9b0497921f0907967df661",
+      "materials": [
+        {
+          "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "sha256": "6419709299c1ad42e75a82b84ccc67600cff5ec3fc0708d85d938245e28090c2",
+          "width": 128,
+          "height": 128,
+          "bytes": 16413,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "upstream-hd-texture",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "retouch": null,
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_32x32_f135b3b243a3e441_14.png",
+          "sha256": "c3e02d76df8f1ff1028fee795437d4340c0d1e89bed3eb78104156af1402e502",
+          "width": 128,
+          "height": 128,
+          "bytes": 4671,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "authored-hd-lugia-material",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_32x32_f135b3b243a3e441_14.png",
+            "retouch": {
+              "kind": "authored-hd-lugia-material",
+              "hd_art_revision": 2,
+              "recipe_version": 1,
+              "reference": {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              "references": [
+                {
+                  "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                  "width": 128,
+                  "height": 128,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                },
+                {
+                  "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                  "width": 256,
+                  "height": 256,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                }
+              ],
+              "palette": {
+                "ivory": {
+                  "rgb": [
+                    241,
+                    240,
+                    244
+                  ],
+                  "pixel": [
+                    61,
+                    121
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.96
+                },
+                "neutral-mid": {
+                  "rgb": [
+                    163,
+                    186,
+                    219
+                  ],
+                  "pixel": [
+                    69,
+                    9
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.35
+                },
+                "iris-red": {
+                  "rgb": [
+                    236,
+                    42,
+                    42
+                  ],
+                  "pixel": [
+                    132,
+                    39
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.55
+                },
+                "iris-shadow": {
+                  "rgb": [
+                    216,
+                    12,
+                    20
+                  ],
+                  "pixel": [
+                    145,
+                    62
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.12
+                },
+                "iris-light": {
+                  "rgb": [
+                    243,
+                    88,
+                    92
+                  ],
+                  "pixel": [
+                    173,
+                    78
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.88
+                }
+              },
+              "native_uv_guide": "tex1_32x32_f135b3b243a3e441_14.png",
+              "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+              "material": {
+                "role": "reflection-environment",
+                "tobj_flags": "0x00040081",
+                "native_colors": "191933ff666680ff595973ff",
+                "projection": "HSD normal-vector reflection",
+                "specular_unchanged": true,
+                "alpha": "opaque native material retained"
+              },
+              "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+              "oral_tint": {
+                "native_hue": 0.92,
+                "source": "independent same-model HD iris palette"
+              },
+              "native_bitmap_resampled": false
+            },
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+          "sha256": "ccb8ce1a23397e998478e705c41c48417ec8cdcf953ec032c8d54512ffaf8575",
+          "width": 256,
+          "height": 256,
+          "bytes": 65007,
+          "native_format": 9,
+          "hd_source": {
+            "kind": "upstream-hd-texture",
+            "pack": "xd-1.0",
+            "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "logical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              256,
+              256
+            ],
+            "native_donor_key": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "retouch": null,
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_16x16_a70005786d19905c_14.png",
+          "sha256": "5a79a53fc21b2d338e5860606c2676ccf865686f87f13f09500e39551a9bd136",
+          "width": 64,
+          "height": 64,
+          "bytes": 1533,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "authored-hd-lugia-material",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_16x16_a70005786d19905c_14.png",
+            "retouch": {
+              "kind": "authored-hd-lugia-material",
+              "hd_art_revision": 2,
+              "recipe_version": 1,
+              "reference": {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              "references": [
+                {
+                  "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                  "width": 128,
+                  "height": 128,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                },
+                {
+                  "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                  "width": 256,
+                  "height": 256,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                }
+              ],
+              "palette": {
+                "ivory": {
+                  "rgb": [
+                    241,
+                    240,
+                    244
+                  ],
+                  "pixel": [
+                    61,
+                    121
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.96
+                },
+                "neutral-mid": {
+                  "rgb": [
+                    163,
+                    186,
+                    219
+                  ],
+                  "pixel": [
+                    69,
+                    9
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.35
+                },
+                "iris-red": {
+                  "rgb": [
+                    236,
+                    42,
+                    42
+                  ],
+                  "pixel": [
+                    132,
+                    39
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.55
+                },
+                "iris-shadow": {
+                  "rgb": [
+                    216,
+                    12,
+                    20
+                  ],
+                  "pixel": [
+                    145,
+                    62
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.12
+                },
+                "iris-light": {
+                  "rgb": [
+                    243,
+                    88,
+                    92
+                  ],
+                  "pixel": [
+                    173,
+                    78
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.88
+                }
+              },
+              "native_uv_guide": "tex1_16x16_a70005786d19905c_14.png",
+              "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+              "material": {
+                "role": "mouth-interior",
+                "tobj_flags": "0x00030010",
+                "native_colors": "808080ffffffffffffffffff",
+                "projection": "native UV0",
+                "specular_unchanged": true,
+                "alpha": "opaque native material retained"
+              },
+              "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+              "oral_tint": {
+                "native_hue": 0.92,
+                "source": "independent same-model HD iris palette"
+              },
+              "native_bitmap_resampled": false
+            },
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_16x16_50629643191a1a90_14.png",
+          "sha256": "b57feb97842c6d82665b5e94d21c39d12b8a748b970e022419869145b0e1e1b9",
+          "width": 64,
+          "height": 64,
+          "bytes": 4277,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "authored-hd-lugia-material",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_16x16_50629643191a1a90_14.png",
+            "retouch": {
+              "kind": "authored-hd-lugia-material",
+              "hd_art_revision": 2,
+              "recipe_version": 1,
+              "reference": {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              "references": [
+                {
+                  "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                  "width": 128,
+                  "height": 128,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                },
+                {
+                  "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                  "width": 256,
+                  "height": 256,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                }
+              ],
+              "palette": {
+                "ivory": {
+                  "rgb": [
+                    241,
+                    240,
+                    244
+                  ],
+                  "pixel": [
+                    61,
+                    121
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.96
+                },
+                "neutral-mid": {
+                  "rgb": [
+                    163,
+                    186,
+                    219
+                  ],
+                  "pixel": [
+                    69,
+                    9
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.35
+                },
+                "iris-red": {
+                  "rgb": [
+                    236,
+                    42,
+                    42
+                  ],
+                  "pixel": [
+                    132,
+                    39
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.55
+                },
+                "iris-shadow": {
+                  "rgb": [
+                    216,
+                    12,
+                    20
+                  ],
+                  "pixel": [
+                    145,
+                    62
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.12
+                },
+                "iris-light": {
+                  "rgb": [
+                    243,
+                    88,
+                    92
+                  ],
+                  "pixel": [
+                    173,
+                    78
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.88
+                }
+              },
+              "native_uv_guide": "tex1_16x16_50629643191a1a90_14.png",
+              "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+              "material": {
+                "role": "tongue-and-teeth",
+                "tobj_flags": "0x00030010",
+                "native_colors": "808080ffffffffff000000ff",
+                "projection": "native UV0",
+                "specular_unchanged": true,
+                "alpha": "opaque native material retained"
+              },
+              "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+              "oral_tint": {
+                "native_hue": 0.92,
+                "source": "independent same-model HD iris palette"
+              },
+              "native_bitmap_resampled": false
+            },
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_32x32_f6069745b908bc2e_14.png",
+          "sha256": "800652ebc2a05a30fd1af727950f2d97b4941427c8b6691a7c7c6ef7169f95ad",
+          "width": 128,
+          "height": 128,
+          "bytes": 4784,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "upstream-hd-texture",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "retouch": null,
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "shadow_lugia_belly",
+              "factors": [
+                0.18,
+                0.18,
+                0.2
+              ]
+            },
+            "components": null
+          }
+        }
+      ]
+    },
+    "dark-lugia-shiny-body-x4.png": {
+      "shiny": true,
+      "bytes": 32500,
+      "sha256": "ad547c55cdc2ac7b3a9a4adc3550b9250e774aa362128ef85977a80788112adb",
+      "source_RGBA_sha256": "a5248fc22ddec1503d9cbd5f62ac9e15f26bc6b122e6492315a99bdd641d7829",
+      "source_capture_sha256": "2865a655b81b028c81378a87f4b74d1b4408eded7467843e947866a922dd0967",
+      "source_dimensions": [
+        1024,
+        1024
+      ],
+      "source_alpha_bbox": [
+        48,
+        193,
+        793,
+        757
+      ],
+      "source_crop_box": [
+        48.0,
+        192.0,
+        796.0,
+        760.0
+      ],
+      "fitted_dimensions": [
+        240,
+        184
+      ],
+      "source_roi": [
+        48.0,
+        192.0,
+        796.0,
+        760.0
+      ],
+      "placement": [
+        8,
+        36
+      ],
+      "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+      "alpha_sha256": "53d46d4bb6f953a8c78b77b9410048a75b4ca1fb0e9b0497921f0907967df661",
+      "materials": [
+        {
+          "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+          "sha256": "6419709299c1ad42e75a82b84ccc67600cff5ec3fc0708d85d938245e28090c2",
+          "width": 128,
+          "height": 128,
+          "bytes": 16413,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "upstream-hd-texture",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "retouch": null,
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_32x32_f135b3b243a3e441_14.png",
+          "sha256": "c3e02d76df8f1ff1028fee795437d4340c0d1e89bed3eb78104156af1402e502",
+          "width": 128,
+          "height": 128,
+          "bytes": 4671,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "authored-hd-lugia-material",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_32x32_f135b3b243a3e441_14.png",
+            "retouch": {
+              "kind": "authored-hd-lugia-material",
+              "hd_art_revision": 2,
+              "recipe_version": 1,
+              "reference": {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              "references": [
+                {
+                  "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                  "width": 128,
+                  "height": 128,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                },
+                {
+                  "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                  "width": 256,
+                  "height": 256,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                }
+              ],
+              "palette": {
+                "ivory": {
+                  "rgb": [
+                    241,
+                    240,
+                    244
+                  ],
+                  "pixel": [
+                    61,
+                    121
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.96
+                },
+                "neutral-mid": {
+                  "rgb": [
+                    163,
+                    186,
+                    219
+                  ],
+                  "pixel": [
+                    69,
+                    9
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.35
+                },
+                "iris-red": {
+                  "rgb": [
+                    236,
+                    42,
+                    42
+                  ],
+                  "pixel": [
+                    132,
+                    39
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.55
+                },
+                "iris-shadow": {
+                  "rgb": [
+                    216,
+                    12,
+                    20
+                  ],
+                  "pixel": [
+                    145,
+                    62
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.12
+                },
+                "iris-light": {
+                  "rgb": [
+                    243,
+                    88,
+                    92
+                  ],
+                  "pixel": [
+                    173,
+                    78
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.88
+                }
+              },
+              "native_uv_guide": "tex1_32x32_f135b3b243a3e441_14.png",
+              "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+              "material": {
+                "role": "reflection-environment",
+                "tobj_flags": "0x00040081",
+                "native_colors": "191933ff666680ff595973ff",
+                "projection": "HSD normal-vector reflection",
+                "specular_unchanged": true,
+                "alpha": "opaque native material retained"
+              },
+              "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+              "oral_tint": {
+                "native_hue": 0.92,
+                "source": "independent same-model HD iris palette"
+              },
+              "native_bitmap_resampled": false
+            },
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+          "sha256": "ccb8ce1a23397e998478e705c41c48417ec8cdcf953ec032c8d54512ffaf8575",
+          "width": 256,
+          "height": 256,
+          "bytes": 65007,
+          "native_format": 9,
+          "hd_source": {
+            "kind": "upstream-hd-texture",
+            "pack": "xd-1.0",
+            "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "logical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              256,
+              256
+            ],
+            "native_donor_key": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+            "retouch": null,
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_16x16_a70005786d19905c_14.png",
+          "sha256": "5a79a53fc21b2d338e5860606c2676ccf865686f87f13f09500e39551a9bd136",
+          "width": 64,
+          "height": 64,
+          "bytes": 1533,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "authored-hd-lugia-material",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_16x16_a70005786d19905c_14.png",
+            "retouch": {
+              "kind": "authored-hd-lugia-material",
+              "hd_art_revision": 2,
+              "recipe_version": 1,
+              "reference": {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              "references": [
+                {
+                  "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                  "width": 128,
+                  "height": 128,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                },
+                {
+                  "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                  "width": 256,
+                  "height": 256,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                }
+              ],
+              "palette": {
+                "ivory": {
+                  "rgb": [
+                    241,
+                    240,
+                    244
+                  ],
+                  "pixel": [
+                    61,
+                    121
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.96
+                },
+                "neutral-mid": {
+                  "rgb": [
+                    163,
+                    186,
+                    219
+                  ],
+                  "pixel": [
+                    69,
+                    9
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.35
+                },
+                "iris-red": {
+                  "rgb": [
+                    236,
+                    42,
+                    42
+                  ],
+                  "pixel": [
+                    132,
+                    39
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.55
+                },
+                "iris-shadow": {
+                  "rgb": [
+                    216,
+                    12,
+                    20
+                  ],
+                  "pixel": [
+                    145,
+                    62
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.12
+                },
+                "iris-light": {
+                  "rgb": [
+                    243,
+                    88,
+                    92
+                  ],
+                  "pixel": [
+                    173,
+                    78
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.88
+                }
+              },
+              "native_uv_guide": "tex1_16x16_a70005786d19905c_14.png",
+              "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+              "material": {
+                "role": "mouth-interior",
+                "tobj_flags": "0x00030010",
+                "native_colors": "808080ffffffffffffffffff",
+                "projection": "native UV0",
+                "specular_unchanged": true,
+                "alpha": "opaque native material retained"
+              },
+              "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+              "oral_tint": {
+                "native_hue": 0.92,
+                "source": "independent same-model HD iris palette"
+              },
+              "native_bitmap_resampled": false
+            },
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_16x16_50629643191a1a90_14.png",
+          "sha256": "b57feb97842c6d82665b5e94d21c39d12b8a748b970e022419869145b0e1e1b9",
+          "width": 64,
+          "height": 64,
+          "bytes": 4277,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "authored-hd-lugia-material",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_16x16_50629643191a1a90_14.png",
+            "retouch": {
+              "kind": "authored-hd-lugia-material",
+              "hd_art_revision": 2,
+              "recipe_version": 1,
+              "reference": {
+                "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                "width": 128,
+                "height": 128,
+                "source_scale": 4,
+                "format": "PNG",
+                "mip_levels": 1
+              },
+              "references": [
+                {
+                  "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+                  "width": 128,
+                  "height": 128,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                },
+                {
+                  "file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "sha256": "c51beb4240c25b5a6239df59144a86fdf8928f1172d13f9ffe857824769b1aa5",
+                  "width": 256,
+                  "height": 256,
+                  "source_scale": 4,
+                  "format": "PNG",
+                  "mip_levels": 1
+                }
+              ],
+              "palette": {
+                "ivory": {
+                  "rgb": [
+                    241,
+                    240,
+                    244
+                  ],
+                  "pixel": [
+                    61,
+                    121
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.96
+                },
+                "neutral-mid": {
+                  "rgb": [
+                    163,
+                    186,
+                    219
+                  ],
+                  "pixel": [
+                    69,
+                    9
+                  ],
+                  "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+                  "quantile": 0.35
+                },
+                "iris-red": {
+                  "rgb": [
+                    236,
+                    42,
+                    42
+                  ],
+                  "pixel": [
+                    132,
+                    39
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.55
+                },
+                "iris-shadow": {
+                  "rgb": [
+                    216,
+                    12,
+                    20
+                  ],
+                  "pixel": [
+                    145,
+                    62
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.12
+                },
+                "iris-light": {
+                  "rgb": [
+                    243,
+                    88,
+                    92
+                  ],
+                  "pixel": [
+                    173,
+                    78
+                  ],
+                  "physical_file": "tex1_64x64_830778f52c6de2c0_44fccd7f7f60660f_9.png",
+                  "quantile": 0.88
+                }
+              },
+              "native_uv_guide": "tex1_16x16_50629643191a1a90_14.png",
+              "native_model_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+              "material": {
+                "role": "tongue-and-teeth",
+                "tobj_flags": "0x00030010",
+                "native_colors": "808080ffffffffff000000ff",
+                "projection": "native UV0",
+                "specular_unchanged": true,
+                "alpha": "opaque native material retained"
+              },
+              "construction": "continuous environment/UV vector functions; no native pixel grid is enlarged",
+              "oral_tint": {
+                "native_hue": 0.92,
+                "source": "independent same-model HD iris palette"
+              },
+              "native_bitmap_resampled": false
+            },
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "identity"
+            },
+            "components": null
+          }
+        },
+        {
+          "file": "tex1_32x32_f6069745b908bc2e_14.png",
+          "sha256": "800652ebc2a05a30fd1af727950f2d97b4941427c8b6691a7c7c6ef7169f95ad",
+          "width": 128,
+          "height": 128,
+          "bytes": 4784,
+          "native_format": 14,
+          "hd_source": {
+            "kind": "upstream-hd-texture",
+            "pack": "xd-1.0",
+            "file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "logical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "physical_file": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "sha256": "023c0b407ca63a8ed95869cb643a857999d9e00ef120ad8efa48ea6318e6db91",
+            "format": "PNG",
+            "mip_levels": 1,
+            "source_dimensions": [
+              128,
+              128
+            ],
+            "native_donor_key": "tex1_32x32_afade9df5d7d12c3_14.png",
+            "retouch": null,
+            "source_scale": 4,
+            "output_scale": 4,
+            "resample": null,
+            "transform": {
+              "type": "shadow_lugia_belly",
+              "factors": [
+                0.18,
+                0.18,
+                0.2
+              ]
+            },
+            "components": null
+          }
+        }
+      ]
+    },
+    "dark-lugia-head-x4.png": {
+      "shiny": false,
+      "bytes": 15072,
+      "sha256": "cabfdb9d442ad70c23779a1e5a267f52348e3d7a47a02f5692269fa4f32ad3c8",
+      "dimensions": [
+        168,
+        168
+      ],
+      "native_dimensions": [
+        42,
+        42
+      ],
+      "source_capture_sha256": "bf568dc789dc31efa82b6ca93e5dc16b6c704b649c4e7ba78c069f210a052cc4",
+      "source_crop_box": [
+        496,
+        232,
+        688,
+        424
+      ],
+      "source_dimensions": [
+        1024,
+        1024
+      ],
+      "conversion": "Audited GPU head crop, reduced from 192 to 168 pixels; no native bitmap enlargement"
+    },
+    "dark-lugia-shiny-head-x4.png": {
+      "shiny": true,
+      "bytes": 16581,
+      "sha256": "dd7646297ca0f1ede8783b9976fe852c123bcf8f1b2ad97a7572cc8ee818b688",
+      "dimensions": [
+        168,
+        168
+      ],
+      "native_dimensions": [
+        42,
+        42
+      ],
+      "source_capture_sha256": "66c230bc290493c15030574b47c39b417668f16da571326470a03ba2aa612926",
+      "source_crop_box": [
+        496,
+        232,
+        688,
+        424
+      ],
+      "source_dimensions": [
+        1024,
+        1024
+      ],
+      "conversion": "Audited GPU head crop, reduced from 192 to 168 pixels; no native bitmap enlargement"
+    }
+  },
+  "same_pose_alpha_byte_identical": true,
+  "common_capture": {
+    "schema": 1,
+    "method": "Native HSD USER_DEF_MTX, all86 native mesh joint matrices shared across four independent GPU renders",
+    "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+    "matrix_count": 86,
+    "old_native_pose_replayed": false,
+    "canonical_pose_sha256": "27b0053c45873ccdde5573fcee7a09442f6e47c6e11bbf3b3a0ca9187029abce",
+    "canonical_root_srt": [
+      -0.0872664600610733,
+      1.0660446882247925,
+      0.0,
+      0.0,
+      1.0,
+      1.0,
+      1.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "canonical_wrapper_srt": [
+      0.0,
+      -1.4206980466842651,
+      0.0,
+      0.0,
+      1.5,
+      1.5,
+      1.5,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "root_matrix": "3ef7991ebd9c3c553f5f390600000000000000003f7f069e3db27eb500000000bf60134fbd2ca3033ef6a7eb00000000",
+    "wrapper_matrix": "3fb36b3dbdea5a80bf058a85000000003e045db13fbf44f63ca025d6000000003f04a6b2bd817a423fb3ff9700000000",
+    "camera": {
+      "method": "Unmodified native menuModelRender analyzer camera, no camera writes",
+      "direct_CObj_parameters_located": false,
+      "projection_correspondence": "Raw framebuffer silhouettes compared after exact4x area reduction",
+      "native_hd_silhouette_iou_threshold128": 0.9908068223055522
+    },
+    "crop_native256": [
+      12,
+      48,
+      199,
+      190
+    ],
+    "crop_normalized": [
+      0.046875,
+      0.1875,
+      0.77734375,
+      0.7421875
+    ],
+    "roi_normalized": [
+      0.046875,
+      0.1875,
+      0.77734375,
+      0.7421875
+    ],
+    "fitted_dimensions_native": [
+      60,
+      46
+    ],
+    "padding_native": [
+      2,
+      9
+    ],
+    "native_source_dimensions": [
+      256,
+      256
+    ],
+    "hd_source_dimensions": [
+      1024,
+      1024
+    ],
+    "fit_native64": [
+      60,
+      46
+    ],
+    "fit_hd256": [
+      240,
+      184
+    ],
+    "placement_native64": [
+      2,
+      9
+    ],
+    "placement_hd256": [
+      8,
+      36
+    ],
+    "fit_normalized": [
+      0.9375,
+      0.71875
+    ],
+    "placement_normalized": [
+      0.03125,
+      0.140625
+    ],
+    "normal_shiny_alpha_identical": true,
+    "source_material_parent_sha256": "2f5d467c15d2481cf0b6eba6b97f891c360dbb4e8775f50bba7351c36736da1a",
+    "captures": {
+      "native-normal": {
+        "raw_sha256": "35fd8ee4847ee2066923a3a2eeaac2e43b16de9536f8350d76465c53bfdc6665",
+        "rgba_sha256": "3561dfdda5425068a3dabbae08597bd7142cdbcfc984bb7b4e4798a5d93b974c",
+        "dimensions": [
+          256,
+          256
+        ],
+        "source_alpha_bbox": [
+          12,
+          48,
+          198,
+          189
+        ],
+        "alpha_sha256": "34a4f8f83c6864bffe20857d623b3281b59c3eaea3889a479ca8b414a2f04be0",
+        "probe_receipt_sha256": "bb2b774115d28a6a08c267ad07823e0ad420a84335cdb04036def1a90bd5946a",
+        "source_mode": "native",
+        "shiny": false,
+        "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+        "matrix_count": 86
+      },
+      "native-shiny": {
+        "raw_sha256": "ac2369b2cbae96599aaf67eebde14f2dea008acfa0d1ec5aef66e256ff93ad9f",
+        "rgba_sha256": "ef98114c6ed436513ff5ebd6a0f6d0ad7ed1ff57945c94e05a3d08e8572c8946",
+        "dimensions": [
+          256,
+          256
+        ],
+        "source_alpha_bbox": [
+          12,
+          48,
+          198,
+          189
+        ],
+        "alpha_sha256": "34a4f8f83c6864bffe20857d623b3281b59c3eaea3889a479ca8b414a2f04be0",
+        "probe_receipt_sha256": "954830cc3332ad3a7abd0d14bceb1725f68539447500dd3603d63b885114481e",
+        "source_mode": "native",
+        "shiny": true,
+        "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+        "matrix_count": 86
+      },
+      "hd-normal": {
+        "raw_sha256": "a716c90f3f4d7686cb2b8caf47dc7e3732a808cc6b8bdc5f0ed3c65963a5cca4",
+        "rgba_sha256": "2c679db36b282821fc59ef58e904de18b393742e2287d9e2542de6662f87a812",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "source_alpha_bbox": [
+          48,
+          193,
+          793,
+          757
+        ],
+        "alpha_sha256": "5df7369c4ed6dbc69c914c82b866e4a7309cf012c21fce27745e279f15cca7ab",
+        "probe_receipt_sha256": "0c9c8a97f89fed93395df71139d1236f65754130c07c2df599df3f4b177aace0",
+        "source_mode": "hd",
+        "shiny": false,
+        "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+        "matrix_count": 86
+      },
+      "hd-shiny": {
+        "raw_sha256": "2865a655b81b028c81378a87f4b74d1b4408eded7467843e947866a922dd0967",
+        "rgba_sha256": "a5248fc22ddec1503d9cbd5f62ac9e15f26bc6b122e6492315a99bdd641d7829",
+        "dimensions": [
+          1024,
+          1024
+        ],
+        "source_alpha_bbox": [
+          48,
+          193,
+          793,
+          757
+        ],
+        "alpha_sha256": "5df7369c4ed6dbc69c914c82b866e4a7309cf012c21fce27745e279f15cca7ab",
+        "probe_receipt_sha256": "160f33e9fee5762dc2297b9f4c1ff59c145120ba4971998a17125aa3a4e22b7e",
+        "source_mode": "hd",
+        "shiny": true,
+        "pose_signature_sha256": "937357b65c141e5750f7fb5718127a2f47d69993128535cd7fb8ee8f8ac61d71",
+        "matrix_count": 86
+      }
+    }
+  },
+  "review_only": false,
+  "paired_native": {
+    "manifest_sha256": "a3dfa5365bca6c1ab8ddae3bcb893d13cf73038b2f843663607782fc99a5e7d4",
+    "common_capture_sha256": "3272652ec61658acae12517a20e5e93453ab8313ffa9e341e6a8d1f4fc6a36b3",
+    "files": {
+      "dark-lugia-body.png": {
+        "sha256": "787f8f4f4659213d0ddb450e4b8f528139b327b0f5b3a2cbd9e60b63a1706c3f",
+        "source_capture_sha256": "35fd8ee4847ee2066923a3a2eeaac2e43b16de9536f8350d76465c53bfdc6665"
+      },
+      "dark-lugia-shiny-body.png": {
+        "sha256": "13e8ac8a11e2b58a04323d4d64edb75b08b5a69099245026cf554b1376ec0feb",
+        "source_capture_sha256": "ac2369b2cbae96599aaf67eebde14f2dea008acfa0d1ec5aef66e256ff93ad9f"
+      }
+    }
+  },
+  "retained_material_capture_evidence": {
+    "previous_manifest_sha256": "2f5d467c15d2481cf0b6eba6b97f891c360dbb4e8775f50bba7351c36736da1a",
+    "material_contract_sha256": "8873187772cf9143d83f2d15ce1ed128917ec17e35cf79155ae9eaa60f5fc739",
+    "scope": "Only body pose/capture/placement changed; material recipes, coverage and model remain identical. Earlier material and head capture receipts remain evidence for those unchanged inputs.",
+    "previous_capture": "Two trueHD1024 GPU renders with exact86 shared native matrices, same native camera and complete5/5 independent pack materials.",
+    "previous_conversion": "Shared normalized crop and placement; premultiplied RGBA BOX reduction to256. No native bitmap upscale, recolor, flip or stroke."
+  }
+}

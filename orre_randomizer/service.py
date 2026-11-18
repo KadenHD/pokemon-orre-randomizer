@@ -821,7 +821,7 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
               dolphin_tool: Path | None = None, progress: Progress | None = None,
               cancel: threading.Event | None = None, *, journal_language: str = "fr",
               prepared_patches: PreparedPatches | None = None,
-              xd_options: xd.XDOptions | None = None) -> dict:
+              xd_options: xd.XDOptions | None = None, postprocess=None) -> dict:
     progress = progress or (lambda percent, message: None)
     cancel = cancel or threading.Event()
     is_xd = xd_options is not None
@@ -888,6 +888,11 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
         timings["copy_and_patch"] = round(time.monotonic() - phase, 4)
         phase = time.monotonic()
         output_iso_hash = verify_patches(iso, pending_iso, patches, progress, cancel)
+        play_features = postprocess(iso, pending_iso, boot, {
+            **summary, "asset_options": asdict(xd_options if is_xd else options), "asset_seed": seed,
+        }) if postprocess is not None else None
+        if play_features is not None:
+            output_iso_hash = file_hash(pending_iso, cancel)
         timings["iso_verification"] = round(time.monotonic() - phase, 4)
         phase = time.monotonic()
         pending = pending_iso
@@ -920,6 +925,8 @@ def randomize(source: Path, destination: Path, seed: str, options: Options = Opt
                   "runtime_validation": "Technical verification only; full playthrough and balance are not certified."}
         if is_xd:
             report["game"] = "xd"
+        if play_features is not None:
+            report["play_features"] = play_features
         pending_report = work / "report.json"
         pending_journal = work / "journal.html"
         pending_journal.write_text(render_journal(report, journal_language), encoding="utf-8")

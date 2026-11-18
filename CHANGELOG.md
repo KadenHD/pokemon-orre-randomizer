@@ -1,5 +1,69 @@
 # Changelog
 
+## 2.0.0 - 2026-11-18
+
+- Align custom DNA body artwork at native and x4 resolution using one frozen
+  pose and common framing. Restore the keypad's black contour for new body
+  renders while preserving retail outlines, material colors and head portraits.
+  Use a fuller front view and larger custom placement without clipping the
+  body, bevel or duplicate numbers.
+- Keep Spinda's DNA body colors and spot diagram in sync with the saved
+  specimen in Original and HD modes, including older saves with another PID.
+  Reserve the runtime writers after the generated code so runs with several
+  Spinda samples cannot overlap their instruction blocks.
+- Require both pinned HD packs for XD: its own textures and Colosseum's
+  portraits. Install missing dependencies together, retain completed packs
+  on retry and check both packs before HD creation or launch. Keep Original
+  mode available without packs.
+- Reuse the Colosseum pack's x4 portraits for XD's 386 base species and Unown
+  forms, with verified texture mappings and circular framing. Keep unsupported
+  extra forms native. Use separate native/HD Shadow Lugia head renders with
+  its actual red eye and model materials, plus violet square/circular frames
+  shared by the app and generated native faces. Keep DNA whole-body art separate.
+- Retry brief Windows directory locks when publishing an immutable HD texture
+  view, preserving the installed pack and custom overlays.
+- Recover an already completed HD download after an interrupted publication.
+  Retain a truncated response for continuation instead of discarding its bytes.
+- Support fixed GitHub release assets below 2 GiB, with automatic reassembly
+  of the original XD archive. Verify each fragment and the full archive, and
+  resume interrupted transfers without downloading verified fragments again.
+- Complete Shadow Lugia's x4 materials in battle and its three field models,
+  including the shiny belly and separate cinematic eye layers. Keep native
+  geometry and animations; recapture bodies/portraits with full HD coverage
+  and rebuild older prepared caches automatically.
+
+- Pin the original community HD archives by Sephie and mikeyX, including
+  PNG/DDS donors and deterministic duplicate selection. Retrieve verified packs
+  from a release-configured HTTPS origin or distribution folder. Prepare both
+  archives for private storage or download them from the separate, frozen
+  GitHub pack release. Credit both authors in the manager, README and downloads.
+
+- Create a game folder with a small Rust launcher, generated ISO/GCM/RVZ,
+  reports, custom textures and a separate Dolphin profile. Keep ROM-only output
+  available. Detect Dolphin or let the player select it; never import saves
+  implicitly or replace an existing game folder.
+- Add a neutral shared HD manager with pinned upstream versions and SHA-256
+  verification, resumable downloads, cancellation and repair. Reuse textures
+  across runs without copying gigabytes into each folder. Keep custom native
+  models and add matching x4 texture overlays, including shiny variants.
+- Derive custom HD materials and portraits from the pinned HD packs instead
+  of filtering native bitmaps. Register separate pack-textured whole-body art,
+  preserve native assets, record donor provenance and block incomplete custom
+  HD preparation. Resolve cross-game pack dependencies for imported models.
+- Reopen each run independently of the randomizer. Keep its graphics, speed,
+  keyboard/XInput controls, memory card and save states together. Provide
+  100%/200% base speed and hold shortcuts for 200%/50% while the game has focus.
+- Enable the optional native-speed music companion for verified Europe
+  revision-0 images on Windows with the checked renderer recipe. Gameplay music
+  follows the host clock; effects, cries and prerecorded movie sound remain
+  native. Fall back to native audio when the helper cannot follow. Leave the
+  option disabled for unvalidated regions, revisions and renderer builds.
+- Match the GameCube's actual audio clock in the experimental companion and
+  preserve its resampling phase during same-session music reconstruction.
+- Share the same creation and launcher layouts across both game themes, with
+  all six interface languages and English generated filenames. Preserve the
+  source opening videos, original ROMs and personal Dolphin profiles.
+
 ## 1.2.26 - 2026-11-16
 
 - Integrate lossless RVZ conversion through a bundled Rust library. Remove

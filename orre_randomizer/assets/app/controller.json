@@ -1,0 +1,16 @@
+{
+  "source": "https://commons.wikimedia.org/wiki/File:GameCube_controller.png",
+  "authors": [
+    "Evan-Amos",
+    "Alphathon"
+  ],
+  "license": "CC-BY-SA-3.0",
+  "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+  "changes": "None. Displayed proportionally by Qt.",
+  "files": {
+    "controller.png": {
+      "bytes": 2308498,
+      "sha256": "9bf8d0c7ba77ba048c5912814b38b005b0b4ba84b9d38c9fdd9284cd220dea63"
+    }
+  }
+}

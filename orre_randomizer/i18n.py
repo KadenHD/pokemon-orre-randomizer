@@ -14,6 +14,7 @@ from .feature_i18n import TEXTS as FEATURE_TEXTS, OPTION_TEXTS as FEATURE_OPTION
 from .settings_i18n import TEXTS as SETTINGS_TEXTS
 from .xd_i18n import TEXTS as XD_TEXTS
 from .workspace_i18n import TEXTS as WORKSPACE_TEXTS
+from .play_i18n import TEXTS as PLAY_TEXTS
 
 LANGUAGES = {"fr": "Français", "en": "English", "de": "Deutsch",
              "es": "Español", "it": "Italiano", "ja": "日本語"}
@@ -64,6 +65,7 @@ for code, locale in (("en", en), ("de", de), ("es", es), ("it", it), ("ja", ja))
     locale.TEXTS.update(SETTINGS_TEXTS[code])
     locale.TEXTS.update(XD_TEXTS[code])
     locale.TEXTS.update(WORKSPACE_TEXTS[code])
+    locale.TEXTS.update(PLAY_TEXTS[code])
     locale.OPTION_TEXTS.update(FEATURE_OPTIONS[code])
 
 CATALOGS = {code: _catalog(locale.TEXTS, locale.OPTION_TEXTS)

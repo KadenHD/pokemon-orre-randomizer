@@ -231,6 +231,13 @@ class KnownPreviewGuiTests(unittest.TestCase):
             self.assertIsNone(pane.known_preview.result)
             self.assertTrue(all('details' not in row for row in pane.preview_rows()['shadows']))
 
+    def test_malformed_portrait_never_enters_automatic_image_plugin_detection(self):
+        with patch('orre_randomizer.gui.QPixmap') as image:
+            image.return_value.isNull.return_value = True
+            icon = self.window.preview_portrait({'portrait_png': b'partial-not-a-png'})
+            image.return_value.loadFromData.assert_not_called()
+            self.assertIs(icon, self.window.unknown_portrait)
+
     def test_missing_rom_stays_pending_without_error_or_worker(self):
         for xd in (False, True):
             pane = self.select(xd)

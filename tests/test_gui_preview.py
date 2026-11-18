@@ -49,6 +49,7 @@ class GuiPreviewTests(unittest.TestCase):
         settings = QSettings(str(Path(self.folder.name) / "preferences.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
         settings.setValue("interface/sounds", False)
+        settings.setValue("launcher/createFolder", False)  # ROM-only creation assertions.
         self.window = MainWindow(settings=settings, system_languages=["fr-FR"])
         self.window.source.setText(str(self.source))
         self.window.seed.setText("été-🌟")

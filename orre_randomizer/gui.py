@@ -15,6 +15,7 @@ from __future__ import annotations
 from pathlib import Path
 from dataclasses import asdict, fields, replace
 import sys
+import subprocess
 import threading
 import traceback
 
@@ -59,6 +60,8 @@ from .workspace_copy import (CATEGORY_HELP, COLOSSEUM_PRESET_NATIVE, CUSTOM_PRES
                              PRESET_EVOLUTIONS, PRESET_LEGENDARIES, PRESET_SHINIES, ROM_DESCRIPTION, ROM_USE_NOTICE, STEP_HELP)
 from .encounter_presentation import colosseum_gift_condition, colosseum_shadow_number
 from .ui_portraits import circular_portrait, unknown_portrait
+from .ui_game_folder import PlayFolderFields, show_packs
+from .play_folders import create_game_folder
 
 
 class Worker(QObject):
@@ -323,19 +326,34 @@ class MainWindow(QMainWindow):
         heading = self.label("Créez votre ROM")
         heading.setObjectName("section")
         output_layout.addWidget(heading)
+        self.rom_output_fields = QWidget()
+        rom_output_layout = QVBoxLayout(self.rom_output_fields)
+        rom_output_layout.setContentsMargins(0, 0, 0, 0)
+        output_layout.addWidget(self.rom_output_fields)
         self.destination, _ = file_field(
-            output_layout, self, "&Nouvelle ROM", "Nouvelle ROM",
+            rom_output_layout, self, "&Nouvelle ROM", "Nouvelle ROM",
             "Choisissez où enregistrer la nouvelle ROM", "Enregistrer sous…", self.choose_destination)
         self.destination.editingFinished.connect(self.sync_format)
         self.format = QComboBox()
         self.format.addItems(FORMATS)
         self.bind(self.format.setAccessibleName, "Format de sortie")
-        format_row = QHBoxLayout()
+        format_widget = QWidget()
+        format_row = QHBoxLayout(format_widget)
+        format_row.setContentsMargins(0, 0, 0, 0)
         format_row.addWidget(self.label("Format de sortie"))
         format_row.addWidget(self.format)
         format_row.addStretch(1)
-        output_layout.addLayout(format_row)
+        output_layout.addWidget(format_widget)
         self.format.currentTextChanged.connect(self.format_changed)
+        self.play_folder = PlayFolderFields(self, self, "colosseum")
+        self.output_heading = heading
+        self.bind(lambda fallback: self.output_heading.setText(self.text("Créez votre partie") if self.play_folder.enabled.isChecked() else fallback), "Créez votre ROM")
+        output_layout.addWidget(self.play_folder)
+        self.play_folder.attach_format(format_widget, output_layout)
+        self.play_folder.enabled.toggled.connect(lambda enabled: self.rom_output_fields.setVisible(not enabled))
+        self.rom_output_fields.setVisible(not self.play_folder.enabled.isChecked())
+        self.play_folder.enabled.toggled.connect(lambda enabled: self.output_heading.setText(self.text("Créez votre partie" if enabled else "Créez votre ROM")))
+        self.play_folder.enabled.toggled.connect(lambda enabled: self.create_button.setText(self.text("Créer le dossier" if enabled else "Créer la ROM" if self.current_options().has_changes else "Créer une copie à l’identique")))
         output_layout.addWidget(self.note("Un rapport avec la seed et les réglages sera enregistré à côté de la ROM."))
         self.review_toggle = QToolButton()
         self.bind(self.review_toggle.setText, "Réglages appliqués")
@@ -390,6 +408,10 @@ class MainWindow(QMainWindow):
         result_row.addWidget(self.open_folder)
         result_row.addWidget(self.open_report)
         result_row.addWidget(self.open_journal)
+        self.open_launcher = self.button("Ouvrir le lanceur")
+        self.open_launcher.clicked.connect(self.open_result_launcher)
+        self.open_launcher.hide()
+        result_row.addWidget(self.open_launcher)
         result_row.addStretch(1)
         output_layout.addLayout(result_row)
         footer.addStretch(1)
@@ -458,6 +480,9 @@ class MainWindow(QMainWindow):
         self.refresh_music_scene()
 
     def refresh_music_scene(self):
+        if any(process.poll() is None for process in getattr(self, "play_processes", ())):
+            self.music.stop()
+            return
         current = self.game_views.currentWidget()
         scene = "home" if current is self.home else "xd" if current is self.xd else "colosseum"
         self.music.set_track(self.music_tracks[scene])
@@ -1068,7 +1093,7 @@ class MainWindow(QMainWindow):
         self.rule_fields["trainer_level_multiplier"].setEnabled(not progressive)
         for name in ("early_level_multiplier", "mid_level_multiplier", "late_level_multiplier"):
             self.rule_fields[name].setEnabled(progressive)
-        self.create_button.setText(self.text("Créer la ROM" if self.current_options().has_changes
+        self.create_button.setText(self.text("Créer le dossier" if self.play_folder.enabled.isChecked() else "Créer la ROM" if self.current_options().has_changes
                                              else "Créer une copie à l’identique"))
         options = self.current_options()
         descriptions = PRESET_DESCRIPTIONS
@@ -1190,7 +1215,10 @@ class MainWindow(QMainWindow):
     def preview_portrait(self, row, *, xd=False):
         image = QPixmap()
         if row.get("portrait_png"):
-            image.loadFromData(row["portrait_png"])
+            # Portraits have a PNG-only contract. Do not probe unrelated image
+            # plugins on malformed/partial preview data while workers finish.
+            if row["portrait_png"].startswith(b"\x89PNG\r\n\x1a\n"):
+                image.loadFromData(row["portrait_png"], "PNG")
         elif not xd and not row.get('shiny') and (key := {197: "umbreon", 196: "espeon", 25: "pikachu"}.get(row.get("national_dex"))) in self.artwork:
             image.load(str(self.artwork[key]))
         if image.isNull():
@@ -1664,9 +1692,15 @@ class MainWindow(QMainWindow):
         self.invalidate_preview()
         source_text, dest_text = self.source.text().strip(), self.destination.text().strip()
         try:
-            if not source_text or not dest_text:
+            if not source_text or (not dest_text and not self.play_folder.enabled.isChecked()):
                 raise UserError("Choisissez la ROM d’origine et l’emplacement de la nouvelle ROM.")
-            source, destination, _ = validate_paths(Path(source_text), Path(dest_text), self.seed.text())
+            request = None
+            if self.play_folder.enabled.isChecked():
+                source = Path(source_text).expanduser().resolve()
+                request = self.play_folder.request(source, "." + self.format.currentText().lower(), self.seed.text())
+                destination = request.folder / "Game" / ("game." + self.format.currentText().lower())
+            else:
+                source, destination, _ = validate_paths(Path(source_text), Path(dest_text), self.seed.text())
             options = validate_options(self.current_options())
         except (UserError, OSError) as error:
             self.show_error(error, False)
@@ -1690,7 +1724,10 @@ class MainWindow(QMainWindow):
                          options=options,
                          dolphin_tool=None, prepared_patches=self.preview_plan)
         arguments["journal_language"] = self.language
-        self.start_worker(arguments, self.on_progress, self.succeeded, self.show_error)
+        if request is not None:
+            arguments["request"] = request
+        self.start_worker(arguments, self.on_progress, self.succeeded, self.show_error,
+                          task=create_game_folder if request is not None else None)
 
     def start_worker(self, arguments, on_progress, on_success, on_error, *, task=None, failure_message=None):
         self.cancel_event = threading.Event()
@@ -1721,6 +1758,7 @@ class MainWindow(QMainWindow):
         self.open_folder.show()
         self.open_report.show()
         self.open_journal.setVisible(bool(report.get("journal")))
+        self.open_launcher.setVisible(bool(report.get("play_folder")))
 
     @Slot(object, bool)
     def show_error(self, message, cancelled):
@@ -1766,8 +1804,43 @@ class MainWindow(QMainWindow):
         result = self.xd.result if self.game_views.currentWidget() is self.xd else self.result
         if result:
             path = Path(result["output"])
-            path = path.with_suffix(path.suffix + ".json") if report else path.parent
+            path = path.with_suffix(path.suffix + ".json") if report else Path(result["play_folder"]) if result.get("play_folder") else path.parent
             QDesktopServices.openUrl(QUrl.fromLocalFile(str(path)))
+
+    def choose_play_folder(self):
+        path, _ = QFileDialog.getOpenFileName(self, self.text("Ouvrir une partie…"), "", "Orre game (game.json)")
+        if path:
+            self.open_play_folder(Path(path))
+
+    def open_result_launcher(self):
+        result = self.xd.result if self.game_views.currentWidget() is self.xd else self.result
+        if result and result.get("play_folder"):
+            self.open_play_folder(Path(result["play_folder"]) / "game.json")
+
+    def open_play_folder(self, path):
+        from .play_folders import launcher_command
+        try:
+            command, working = launcher_command(path)
+            process = subprocess.Popen(command, cwd=working, stdin=subprocess.DEVNULL,
+                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
+                creationflags=0x08000000 if sys.platform == "win32" else 0)
+        except (UserError, OSError, ValueError) as error:
+            self.show_error(error, False)
+            return
+        if not hasattr(self, "play_processes"):
+            self.play_processes = []
+            self.play_poll = QTimer(self)
+            self.play_poll.setInterval(500)
+            self.play_poll.timeout.connect(self.poll_launchers)
+        self.play_processes.append(process)
+        self.music.stop()
+        self.play_poll.start()
+
+    def poll_launchers(self):
+        self.play_processes = [process for process in self.play_processes if process.poll() is None]
+        if not self.play_processes:
+            self.play_poll.stop()
+            self.refresh_music_scene()
 
     def show_journal(self):
         result = self.xd.result if self.game_views.currentWidget() is self.xd else self.result
@@ -1799,6 +1872,12 @@ class MainWindow(QMainWindow):
         dialog.show()
 
     def closeEvent(self, event):
+        pack_dialog = getattr(self, "pack_dialog", None)
+        if pack_dialog is not None and pack_dialog.thread is not None:
+            pack_dialog.close_parent_after_cancel = True
+            pack_dialog.close()
+            event.ignore()
+            return
         if self.home.updating and self.home.installer.state != "ready":
             event.ignore()
             return
@@ -1840,6 +1919,9 @@ def main() -> int:
     if sys.argv[1:2] == ["--diagnostics"]:
         from .diagnostics import main as diagnostics_main
         return diagnostics_main(sys.argv[2:])
+    if sys.argv[1:2] == ["--play-folder"] and len(sys.argv) == 3:
+        from .ui_play import main as play_main
+        return play_main(Path(sys.argv[2]))
     app = QApplication(sys.argv)
     app.setApplicationName(APP_NAME)
     app.setApplicationVersion(__version__)

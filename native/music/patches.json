@@ -1,0 +1,82 @@
+[
+  {
+    "path": "src/musyx/runtime/hw_pc.c",
+    "sha256": "402d852623790572c5eda899f86fb053ca0760ed0ad4599b2a4dc7462f89ce99",
+    "changes": [
+      {
+        "before": "static u8 resampleTablesInitialized = 0;\n\n",
+        "after": "static u8 resampleTablesInitialized = 0;\n/* Use the the same three four-tap SRC tables used by the DSP. */\nstatic s16 nativeSRC[3][128][4];\nstatic bool nativeSRCReady;\n/* Retail compatibility: original DSP consumes the signed envelope delta supplied by adsrHandle. */\nstatic bool orreNativeEnvelope;\n__declspec(dllexport) void orre_native_envelope(u32 enabled) { orreNativeEnvelope = enabled != 0; }\n__declspec(dllexport) int orre_set_native_src(const u8* raw, u32 size) {\n  if (!raw || size != 4096) return 0;\n  for (u32 i = 0; i < 3 * 128 * 4; ++i)\n    ((s16*)nativeSRC)[i] = (s16)((u16)raw[i*2] << 8 | raw[i*2+1]);\n  nativeSRCReady = true;\n  return 1;\n}\n\n"
+      },
+      {
+        "before": "\nstatic s32 mixRampChannel(s32 *dest, const s32 *src, int nSamples, s16 startVol, s16 endVol,\n                          u16 envStart, u16 envEnd, int frameOffset) {\n",
+        "after": "\n__declspec(dllexport) s32 orre_dsp_mix_sample(s32 sample, s32 envelope, u32 volume) {\n  s32 enveloped = clamp16((s32)((s64)sample * (s16)envelope >> 15));\n  return clamp16((s32)((s64)enveloped * (u16)volume >> 15));\n}\n\nstatic s32 mixRampChannel(s32 *dest, const s32 *src, int nSamples, u16 startVol, u16 endVol,\n                          u16 envStart, u16 envEnd, int frameOffset) {\n"
+      },
+      {
+        "before": "  for (int i = 0; i < nSamples; ++i) {\n    s32 env = envStart + ((s32)envEnd - envStart) * i / nSamples;\n    s32 vol = startVol + ((s32)endVol - startVol) * (frameOffset + i) / (s32)cycleFrames;\n",
+        "after": "  for (int i = 0; i < nSamples; ++i) {\n    s32 env = orreNativeEnvelope\n                  ? CLAMP((s32)envStart + (s32)((s64)(s16)envEnd * i * 32000 / salPCMixRate()), 0, 32767)\n                  : envStart + ((s32)envEnd - envStart) * i / nSamples;\n    s32 vol = startVol + ((s32)endVol - startVol) * (frameOffset + i) / (s32)cycleFrames;\n"
+      },
+      {
+        "before": "    s32 mixVol = (vol * env) >> 15;\n    contribution = (src[i] * mixVol) >> 15;\n    dest[i] += contribution;\n",
+        "after": "    s32 mixVol = (vol * env) >> 15;\n    contribution = orreNativeEnvelope ? orre_dsp_mix_sample(src[i],env,vol) : (src[i] * mixVol) >> 15;\n    dest[i] += contribution;\n"
+      },
+      {
+        "before": "      out[i] = older + (s32)((s64)(newer - older) * state->phase / 65536);\n    } else {\n",
+        "after": "      out[i] = older + (s32)((s64)(newer - older) * state->phase / 65536);\n    } else if (nativeSRCReady && voice->srcCoefSelect < 3) {\n      const s16* coefficients = nativeSRC[voice->srcCoefSelect][state->phase >> 9];\n      s64 value = 0;\n      for (u32 tap = 0; tap < 4; ++tap)\n        value += (s64)state->history[(state->historyIndex - 4 + tap) & (POLYPHASE_TAPS - 1)] * coefficients[tap];\n      out[i] = clamp16((s32)(value >> 15));\n    } else {\n"
+      },
+      {
+        "before": "            u16 adsrEnd = CLAMP(vp->adsr.currentVolume >> 16, 0, 0x7fff);\n\n",
+        "after": "            u16 adsrEnd = CLAMP(vp->adsr.currentVolume >> 16, 0, 0x7fff);\n            if (orreNativeEnvelope) adsrEnd = adsrDelta;\n\n"
+      },
+      {
+        "before": "        if (rate == 32000)\n          memcpy(adaptedWork[channel], legacyWork[channel], sizeof(legacyWork[channel]));\n        else\n          salPCConvertCycle(adaptedWork[channel], cycleFrames, rate, cycleTick, legacyWork[channel],\n                            160, 32000, cycleTick, effectHistory[st][bus][1][channel]);",
+        "after": "        if (rate == 32000) {\n          /* Retail consumes the AUX return prepared in the preceding IRQ.\n           * Keep the three-slot rotation: +1 is the ready return; +2 is\n           * this IRQ's callback result for the following IRQ. */\n          s32 *ready = (bus ? stp->auxB : stp->auxA)[(salAuxFrame + 1) % 3];\n          memcpy(adaptedWork[channel], ready + channel * SAL_SAMPLES_PER_FRAME,\n                 sizeof(legacyWork[channel]));\n          memcpy(work + channel * SAL_SAMPLES_PER_FRAME, legacyWork[channel],\n                 sizeof(legacyWork[channel]));\n        } else\n          salPCConvertCycle(adaptedWork[channel], cycleFrames, rate, cycleTick, legacyWork[channel],\n                            160, 32000, cycleTick, effectHistory[st][bus][1][channel]);"
+      }
+    ]
+  },
+  {
+    "path": "src/musyx/runtime/hw_pc_decode.c",
+    "sha256": "71984fc4f64f48b98cef98b5e96732ac55f1b8aaee168de78ee4962f7fdf544e",
+    "changes": [
+      {
+        "before": "#include <string.h>\n\n",
+        "after": "#include <string.h>\nextern void* orre_sample581_address;\nu32 orre_sample581_max_position;\nu32 orre_sample581_outside_requests;\n\n"
+      },
+      {
+        "before": "s16 salPCReadSample(MusyPCMReader *reader, const SAMPLE_INFO *sample, u8 streamLoopPS) {\n  if (reader->ended)\n",
+        "after": "s16 salPCReadSample(MusyPCMReader *reader, const SAMPLE_INFO *sample, u8 streamLoopPS) {\n  if (orre_sample581_address && sample->addr == orre_sample581_address) {\n    if (reader->position > orre_sample581_max_position) orre_sample581_max_position = reader->position;\n    if (reader->position >= sample->length) ++orre_sample581_outside_requests;\n  }\n  if (reader->ended)\n"
+      }
+    ]
+  },
+  {
+    "path": "src/musyx/runtime/hw_pc_samples.c",
+    "sha256": "fb2bbf0604712f664eed70b1a83e3cf6b477416d93a76d0f47764aa286b3fe9e",
+    "changes": [
+      {
+        "before": "static SDIR_TAB *uploading;\n\n",
+        "after": "static SDIR_TAB *uploading;\nu32 orre_sample581_reads;\nvoid* orre_sample581_address;\n\n"
+      },
+      {
+        "before": "s32 dataGetSample(u16 id, SAMPLE_INFO *sample) {\n  SDIR_TAB *owner;\n",
+        "after": "s32 dataGetSample(u16 id, SAMPLE_INFO *sample) {\n  if (id == 581) ++orre_sample581_reads;\n  SDIR_TAB *owner;\n"
+      },
+      {
+        "before": "  sample->addr = entry->addr;\n  sample->length = entry->header.length & 0xffffff;\n",
+        "after": "  sample->addr = entry->addr;\n  if (id == 581) orre_sample581_address = entry->addr;\n  sample->length = entry->header.length & 0xffffff;\n"
+      }
+    ]
+  },
+  {
+    "path": "src/musyx/runtime/StdReverb/reverb.c",
+    "sha256": "3c3d242bf8b0e17bbae052497208845d7d9d0d367e545cee7cd4b308c1efd8b6",
+    "changes": [
+      {
+        "before": "\nstatic f32 HandlePreDelay(_SND_REVHI_WORK *rv, s32 channel, f32 sample) {\n",
+        "after": "\n/* Retail reverb compatibility. Retail Colosseum stores the incremented\n * pointer through the delay allocation instead of the work structure. Keep\n * its effective one-sample delay without reproducing the stray memory write. */\nstatic bool orreRetailPreDelay;\n__declspec(dllexport) void orre_retail_predelay(u32 enabled) { orreRetailPreDelay = enabled != 0; }\n\nstatic f32 HandlePreDelay(_SND_REVHI_WORK *rv, s32 channel, f32 sample) {\n"
+      },
+      {
+        "before": "  }\n  rv->preDelayPtr[channel] = ptr;\n  return delayed;\n",
+        "after": "  }\n  if (!orreRetailPreDelay) rv->preDelayPtr[channel] = ptr;\n  return delayed;\n"
+      }
+    ]
+  }
+]

@@ -28,6 +28,7 @@ class GuiTests(unittest.TestCase):
         settings = QSettings(str(Path(self.preferences_dir.name) / "settings.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
         settings.setValue("interface/sounds", False)
+        settings.setValue("launcher/createFolder", False)  # Existing ROM-only workflow.
         self.window = MainWindow(settings=settings, system_languages=["fr-FR"])
 
     def pump_until(self, condition):

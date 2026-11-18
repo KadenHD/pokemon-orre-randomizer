@@ -8,29 +8,99 @@ import signal
 import subprocess
 import sys
 import tempfile
+import types
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME
 from scripts.release_media import documentation_media
+from scripts.build_desktop import REQUIRED_RUNTIME_MODULES, REQUIRED_IMAGE_DECODERS, RUNTIME_BUILD_RECORD
 
 FORBIDDEN = {".iso", ".rvz", ".gcm", ".fsys", ".dol", ".rel", ".raw", ".gci", ".sav"}
 SOURCE_ROOT = f"{REPOSITORY_NAME}/"
 BINARY_ROOT = f"{APP_EXECUTABLE}/_internal/"
-SOURCE_TEST_TIMEOUT = 600
+SOURCE_TEST_TIMEOUT = 13 * 60
+
+
+def reject_private_build_paths(payload: bytes, name: str):
+    lowered = payload.lower()
+    for directory in (ROOT, Path.home()):
+        for spelling in {str(directory), directory.as_posix()}:
+            for encoding in ("utf-8", "utf-16le"):
+                if spelling.encode(encoding).lower() in lowered:
+                    raise RuntimeError("Private build path in release file: " + name)
+
+
+def verify_frozen_code(executable: Path) -> dict:
+    """Read bytecode from our hashed executable without executing any module."""
+    from PyInstaller.archive.readers import CArchiveReader
+    archive = CArchiveReader(str(executable))
+    embedded = [name for name, entry in archive.toc.items() if entry[-1] == "z"]
+    if len(embedded) != 1:
+        raise RuntimeError("Expected one embedded Python module archive")
+    modules = archive.open_embedded_archive(embedded[0])
+    missing = (REQUIRED_RUNTIME_MODULES | REQUIRED_IMAGE_DECODERS) - set(modules.toc)
+    if missing:
+        raise RuntimeError("Missing frozen game-folder modules: " + ", ".join(sorted(missing)))
+    names = [name for name in modules.toc if name == "orre_randomizer" or name.startswith("orre_randomizer.")]
+    def inspect_code(code):
+        if not isinstance(code, types.CodeType):
+            return
+        if PureWindowsPath(code.co_filename).drive or PurePosixPath(code.co_filename).is_absolute():
+            raise RuntimeError("Absolute source path in frozen application bytecode")
+        for value in code.co_consts:
+            if isinstance(value, str):
+                reject_private_build_paths(value.encode("utf-8"), "frozen application bytecode")
+            elif isinstance(value, types.CodeType):
+                inspect_code(value)
+    for name in names:
+        inspect_code(modules.extract(name))
+    return {"application_modules": len(names), "required_runtime_modules": len(REQUIRED_RUNTIME_MODULES),
+            "required_image_decoders": len(REQUIRED_IMAGE_DECODERS),
+            "private_source_paths_absent": True}
+
+
+def verify_runtime_inputs(archive: zipfile.ZipFile, release: Path, manifest: dict):
+    source_names = [name for name in manifest if name.endswith("-source.zip")]
+    if len(source_names) != 1:
+        raise RuntimeError("Expected one corresponding source archive")
+    source_name = source_names[0]
+    source_copy = archive.read(f"{APP_EXECUTABLE}/" + source_name)
+    if hashlib.sha256(source_copy).hexdigest() != manifest[source_name]["sha256"]:
+        raise RuntimeError("The binary package contains a different source archive")
+    record = json.loads(archive.read(f"{APP_EXECUTABLE}/" + RUNTIME_BUILD_RECORD))
+    if record.get("schema") != 1 or not isinstance(record.get("files"), dict) or not record["files"]:
+        raise RuntimeError("Invalid runtime build input manifest")
+    binary_names = set(archive.namelist())
+    with zipfile.ZipFile(release / source_name) as sources:
+        for name, digest in record["files"].items():
+            if (not isinstance(name, str) or PureWindowsPath(name).drive or "\\" in name
+                    or PurePosixPath(name).is_absolute() or ".." in PurePosixPath(name).parts):
+                raise RuntimeError("Invalid runtime build input path")
+            if name.startswith("orre_randomizer/_native/"):
+                payload = archive.read(BINARY_ROOT + name)
+            else:
+                payload = sources.read(SOURCE_ROOT + name)
+            if hashlib.sha256(payload).hexdigest() != digest:
+                raise RuntimeError("Packaged runtime input differs from its source: " + name)
+            if BINARY_ROOT + name in binary_names and hashlib.sha256(archive.read(BINARY_ROOT + name)).hexdigest() != digest:
+                raise RuntimeError("Packaged runtime data differs from its source: " + name)
+    return {"runtime_inputs": len(record["files"]), "corresponding_source_archive_verified": True}
 
 
 def application_media_allowed(name: str, binary: bool) -> bool:
     prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/assets/app/"
-    allowed = {prefix + "icon.ico", prefix + "logo.png"}
+    allowed = {prefix + "icon.ico", prefix + "logo.png", prefix + "controller.png"}
     if not binary:
         allowed.add(prefix + "icon.png")
     return name in allowed
 
 
 def verify_source_tests(directory: Path) -> str:
-    runner = Path(__file__).resolve().with_name("run_tests.py")
+    runner = directory / "scripts/run_tests.py"
+    if not runner.is_file():
+        raise RuntimeError("The source archive is missing its test runner")
     command = [sys.executable, "-X", "utf8", str(runner)]
     print("Running tests from the extracted source archive.", flush=True)
     with subprocess.Popen(command, cwd=directory, stdout=subprocess.PIPE, stderr=subprocess.PIPE,
@@ -97,16 +167,30 @@ def main():
                         and not application_media_allowed(item.filename, binary)
                         and item.filename not in game_assets | doc_assets):
                     raise RuntimeError("Unlisted release media: " + item.filename)
+                if name.suffix.lower() in {".py", ".ps1", ".md", ".json", ".txt", ".toml", ".rs", ".c", ".spec", ".exe", ".dll", ".pyd"}:
+                    reject_private_build_paths(archive.read(item), item.filename)
             if archive.testzip() is not None:
                 raise RuntimeError("ZIP integrity check failed")
             helper_name = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/windows_update.ps1"
             if helper_name not in archive.namelist():
                 raise RuntimeError("Windows update helper is missing")
             if binary:
+                runtime_verification = verify_runtime_inputs(archive, release, manifest)
+                with tempfile.TemporaryDirectory(prefix="frozen-code-audit-", dir=ROOT / "build") as temporary:
+                    executable = Path(temporary) / f"{APP_EXECUTABLE}.exe"
+                    executable.write_bytes(archive.read(f"{APP_EXECUTABLE}/{APP_EXECUTABLE}.exe"))
+                    runtime_verification.update(verify_frozen_code(executable))
                 if BINARY_ROOT + "orre_randomizer/_native/orre_disc.dll" not in archive.namelist():
                     raise RuntimeError("The integrated disc converter is missing")
                 if f"{APP_EXECUTABLE}/licenses/disc/dependencies.json" not in archive.namelist():
                     raise RuntimeError("Disc converter dependency notices are missing")
+                for name in ("OrreLauncher.exe", "orre_musyx.dll", "orre_musyx.json"):
+                    if BINARY_ROOT + "orre_randomizer/_native/" + name not in archive.namelist():
+                        raise RuntimeError("The game-folder runtime is incomplete: " + name)
+                if f"{APP_EXECUTABLE}/licenses/music/musyx-CC0.txt" not in archive.namelist():
+                    raise RuntimeError("Music renderer notices are missing")
+                if f"{APP_EXECUTABLE}/licenses/images/Pillow-LICENSE.txt" not in archive.namelist():
+                    raise RuntimeError("HD image decoder notices are missing")
                 root = f"{APP_EXECUTABLE}/"
                 owned = json.loads(archive.read(root + "update-files.json"))
                 entries = [name[len(root):] for name in archive.namelist()]
@@ -115,7 +199,7 @@ def main():
                     raise RuntimeError("Portable update file manifest differs from the archive")
             app_prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/assets/app/"
             for asset_manifest_name, assets in (("provenance.json", ("icon.ico",) if binary else ("icon.ico", "icon.png")),
-                                     ("logo.json", ("logo.png",))):
+                                     ("logo.json", ("logo.png",)), ("controller.json", ("controller.png",))):
                 manifest_assets = json.loads(archive.read(app_prefix + asset_manifest_name))
                 for relative in assets:
                     payload = archive.read(app_prefix + relative)
@@ -139,6 +223,8 @@ def main():
                            "documentation_screenshots_verified": True,
                            "game_assets_included": True,
                            "interface_pack_at_runtime_location": True})
+            if binary:
+                checks[-1].update(runtime_verification)
             if filename.endswith("-source.zip"):
                 # A fresh owned directory, with paths verified above.
                 with tempfile.TemporaryDirectory(prefix="source-test-", dir=ROOT / "build") as temp:

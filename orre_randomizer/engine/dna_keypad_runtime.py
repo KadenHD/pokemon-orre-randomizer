@@ -9,7 +9,7 @@ from .colo_spinda_field import _LAYOUTS, _PARSE_SIGNATURE, _PARSE_WORD, _load_co
 from .dna_keypad import (
     DNA_KEYPAD_SPECIES, _ATLAS_DESCRIPTOR, _ATLAS_OFFSET, _ATLAS_SIGNATURE, _ATLAS_WIDTH,
     _BLOCK_BYTES, _BLOCK_SIZE, _KEYPAD_DAT_SIZE, _SPINDA_ART_RECT, _SPINDA_KEYPAD_MARKER,
-    _TILE_ORIGINS, _atlas_block_offset,
+    _TILE_ORIGINS, _atlas_block_offset, _BODY_ART_RECT, _CUSTOM_BODY_ART_RECT,
 )
 from .dna_lab import _emit_sample_pid
 from .dol_regions import dol_layout
@@ -23,6 +23,7 @@ from .spinda_runtime import spinda_face_writer
 
 _FACE_BYTES = _FACE_SIZE ** 2 * 2
 _ATLAS_BYTES = _ATLAS_WIDTH ** 2 // 2
+_PID_TABLE_MARKER = b"ORRE_SPND_DIAGRAM_PID_V1\0".ljust(32, b"\0")
 
 
 def _sample_offsets():
@@ -105,8 +106,9 @@ def _diagram_writer(address, face, stamp, recipe):
 def _keypad_hook(address, parser, chained, flush, invalidate, region, samples, pid, face, stamp, recipe):
     # Both writers use the same retail stamps as the hologram. The face is
     # generated in a dedicated arena buffer, outside the native parser stack.
-    face_writer = address + 0x800
-    diagram_writer = face_writer + 0xA00
+    # Resolve writer positions after emitting every sample. A fixed0x800
+    # reservation overflowed when many samples independently became Spinda.
+    writer_calls = []
     code = _Code(address)
     code.emit(0x28030000)
     code.conditional(0x41820000, "native")
@@ -132,17 +134,29 @@ def _keypad_hook(address, parser, chained, flush, invalidate, region, samples, p
     code.conditional(0x42000000, "clear")
     code.emit(0x38000000 | SPINDA, 0xB0010020, 0x38610020, 0x90610008)
     scratch_loads = []
+    record_loads = []
+    # A later independent-texture bridge consumes these exact already-resolved
+    # identities. They are transient arena data; no player/save data is written.
+    for old in samples:
+        record_loads.append((len(code.words), old))
+        code.emit(0, 0, 0x38000000, 0x900C0004)  # reset ready for this parse
     for old, sample in samples.items():
         _emit_sample_pid(code, region, old, sample, pid, f"skip_{old}")
+        record_loads.append((len(code.words), old))
+        code.emit(0, 0, 0x906C0008)  # keep the complete saved/seeded PID
         # Evaluate the resolved PID against the same owner as the hologram.
         code.emit(0x7C603A78, 0x540C843E, 0x7C006278, 0x5400043E, 0x38A00000, 0x28000008)
         code.conditional(0x40800000, f"color_{old}")
         code.emit(0x38A00001)
         code.label(f"color_{old}")
-        code.emit(0x90A10018, 0x7C641B78, 0x38A00000)
+        record_loads.append((len(code.words), old))
+        code.emit(0, 0)
+        code.emit(0x90AC000C, 0x38000001, 0x900C0004,
+                  0x90A10018, 0x7C641B78, 0x38A00000)
         scratch_loads.append((len(code.words), 3))
         code.emit(0, 0)
-        code.call(face_writer)
+        writer_calls.append((len(code.words), "face"))
+        code.emit(0)
 
         x, y = _TILE_ORIGINS[DNA_KEYPAD_SPECIES.index(old)]
         left, top, _ = _SPINDA_ART_RECT
@@ -150,7 +164,8 @@ def _keypad_hook(address, parser, chained, flush, invalidate, region, samples, p
         code.emit(0x8061000C, 0x7C636214, 0x80A10018)
         scratch_loads.append((len(code.words), 4))
         code.emit(0, 0)
-        code.call(diagram_writer)
+        writer_calls.append((len(code.words), "diagram"))
+        code.emit(0)
         code.label(f"skip_{old}")
 
     code.emit(0x8061000C, 0x38630000 | _ATLAS_OFFSET)
@@ -163,20 +178,57 @@ def _keypad_hook(address, parser, chained, flush, invalidate, region, samples, p
         code.emit(_PARSE_WORD)
     code.emit(branch(address + len(code.words) * 4, chained if chained is not None else parser + 4))
 
+    face_writer = (address + len(code.words) * 4 + 31) & ~31
     face_code = spinda_face_writer(face_writer, face, stamp, recipe)
+    diagram_writer = (face_writer + len(face_code) + 31) & ~31
     diagram_code = _diagram_writer(diagram_writer, face, stamp, recipe)
     scratch = (diagram_writer + len(diagram_code) + 31) & ~31
+    table = scratch + _FACE_BYTES
+    for index, old in record_loads:
+        record = table + 48 + list(samples).index(old) * 16
+        code.words[index:index + 2] = (0x3D800000 | record >> 16, 0x618C0000 | (record & 65535))
     for index, register in scratch_loads:
         code.words[index:index + 2] = (
             0x3C000000 | register << 21 | scratch >> 16,
             0x60000000 | register << 21 | register << 16 | (scratch & 0xFFFF),
         )
+    for index, writer in writer_calls:
+        target = face_writer if writer == "face" else diagram_writer
+        code.words[index] = branch(address + index * 4, target, link=True)
     payload = code.finish()
     if len(payload) > face_writer - address or len(face_code) > diagram_writer - face_writer:
         raise FormatError("DNA keypad hook overlaps its texture writers")
-    return (payload.ljust(face_writer - address, b"\0") + face_code).ljust(diagram_writer - address, b"\0") + (
+    result = (payload.ljust(face_writer - address, b"\0") + face_code).ljust(diagram_writer - address, b"\0") + (
         diagram_code.ljust(scratch - diagram_writer, b"\0") + bytes(_FACE_BYTES)
+        + _PID_TABLE_MARKER + struct.pack(">4I", len(samples), 0, 0, 0)
+        + b"".join(struct.pack(">HHIII", old, sample[0], 0, 0, 0) for old, sample in samples.items())
     )
+    return result + bytes(-len(result) % 32)
+
+
+def spinda_diagram_pid_records(dol: bytes) -> dict[int, dict]:
+    """Locate a unique qualified table emitted by our own text2 writer."""
+    section, size, ram = u32(dol, 8), u32(dol, 0x98), u32(dol, 0x50)
+    if not size:
+        return {}
+    if not section or section + size != len(dol) or not 0x80000000 < ram < 0x81700000:
+        raise FormatError("Invalid Spinda diagram PID arena")
+    first = dol.find(_PID_TABLE_MARKER, section)
+    if first < 0:
+        return {}
+    if dol.find(_PID_TABLE_MARKER, first + 1) >= 0 or first + 48 > len(dol):
+        raise FormatError("Ambiguous or truncated Spinda diagram PID table")
+    count, a, b, c = struct.unpack_from(">4I", dol, first + 32)
+    if not 1 <= count <= 9 or a or b or c or first + 48 + count * 16 > len(dol):
+        raise FormatError("Invalid Spinda diagram PID table header")
+    records = {}
+    for index in range(count):
+        at = first + 48 + index * 16
+        old, sid, ready, pid_value, shiny = struct.unpack_from(">HHIII", dol, at)
+        if old not in DNA_KEYPAD_SPECIES or old in records or not 1 <= sid <= 96 or ready or pid_value or shiny:
+            raise FormatError("Invalid compiled Spinda diagram PID record")
+        records[old] = {"address": ram + at - section, "shadow_id": sid}
+    return records
 
 
 def _apply_spinda_keypad_runtime(original, current, read_archive, samples, pid):
@@ -245,7 +297,9 @@ def _lugia_tiles(read_archive, appearances, samples):
     result = {}
     for old in samples:
         number = DNA_KEYPAD_SPECIES.index(old) + 1 if counts[249] > 1 else 0
-        result[old] = tuple(_tile_art(template, pixels, 64, 64, number) for pixels in variants)
+        result[old] = tuple(_tile_art(template, pixels, 64, 64, number,
+            rect=_CUSTOM_BODY_ART_RECT if variant < 2 else _BODY_ART_RECT)
+            for variant, pixels in enumerate(variants))
     return result
 
 

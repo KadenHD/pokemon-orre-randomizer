@@ -1,0 +1,468 @@
+{
+  "schema": 1,
+  "kind": "native-mesh-render-portrait",
+  "recipe_version": "native-mesh-head-roi230-v2-bg7",
+  "review_only": false,
+  "native_bitmap_upscaled_for_hd": false,
+  "source": {
+    "hd": {
+      "pack": "xd-1.0",
+      "archives": [
+        "56bbf26551f26b7bdb1d0d7d4a6eb7073cf4f8fef72130648bd97abde8851cf2"
+      ],
+      "material_manifest_sha256": "e32d10fd44d709510a68a5ff3d6956c914cf8c99ca28fe233ef673610db6b486"
+    },
+    "model": {
+      "game_id": "GXXP01",
+      "archive": "pkx_darklugia.fsys",
+      "member": "darklugia",
+      "original_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+      "colosseum_port_sha256": "8c2aefb914ea1aee9407418495edf318f21a52fe443d1b84b9de5dae69401364",
+      "shiny_port_sha256": "2525cf6af605706e1d89d70b84d7c3721f4dfbe1e7fae782849a1d44d55167d9"
+    },
+    "captures": {
+      "native-normal": {
+        "raw_sha256": "8daddd1f8b43258b615f1021951b079984856affafb5b9429c0bb4c6a0370a2e",
+        "raw_dimensions": [
+          256,
+          256
+        ],
+        "roi_rgba_sha256": "1bae41f0bd47bd4cb0ab35e83983fbc0d179a332560ff04f641db3ffe2b65927",
+        "roi_alpha_sha256": "f4473d223ebe86e182d65bb8cdc107187807c7db46306eb4b76e8bcb19ee13c2",
+        "source_mode": "native",
+        "shiny": false,
+        "base_model_source_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+        "variant_identity": "guarded actual CK3 shiny flag; baseline source hash is not the active mutable variant hash",
+        "roi_source_pixels": [
+          67.5,
+          52.5,
+          125.0,
+          110.0
+        ],
+        "root_srt": [
+          -0.0872664600610733,
+          1.0660446882247925,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "control_srt": [
+          0.0,
+          -2.0315632820129395,
+          0.0,
+          0.0,
+          3.0,
+          3.0,
+          3.0,
+          25.0,
+          -40.0,
+          0.0
+        ],
+        "probe_receipt_sha256": "d096b0008191197ef74feb8789f4f07df008b36fc6b6376ccdd3af5a32c64745",
+        "texture_input_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "animation_pose_sha256": "b63a2dffde04f4126de7818262c84dd0ad9a484e4e4a7942fe8799453694e36f",
+        "matrix_count": 86
+      },
+      "native-shiny": {
+        "raw_sha256": "87b902db259442eb2b00c738f3769aa5428fab1a9751799836861024612e92c0",
+        "raw_dimensions": [
+          256,
+          256
+        ],
+        "roi_rgba_sha256": "2411539e3a010522a9972ffab47d9dd374ecebd54b7a20a948a3804011e12cf7",
+        "roi_alpha_sha256": "f4473d223ebe86e182d65bb8cdc107187807c7db46306eb4b76e8bcb19ee13c2",
+        "source_mode": "native",
+        "shiny": true,
+        "base_model_source_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+        "variant_identity": "guarded actual CK3 shiny flag; baseline source hash is not the active mutable variant hash",
+        "roi_source_pixels": [
+          67.5,
+          52.5,
+          125.0,
+          110.0
+        ],
+        "root_srt": [
+          -0.0872664600610733,
+          1.0660446882247925,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "control_srt": [
+          0.0,
+          -2.0315632820129395,
+          0.0,
+          0.0,
+          3.0,
+          3.0,
+          3.0,
+          25.0,
+          -40.0,
+          0.0
+        ],
+        "probe_receipt_sha256": "f0731e0f35c90526a554731614e5ca05fe61c11102c4d7ccc479066f4c5bbe47",
+        "texture_input_manifest_sha256": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945",
+        "animation_pose_sha256": "b63a2dffde04f4126de7818262c84dd0ad9a484e4e4a7942fe8799453694e36f",
+        "matrix_count": 86
+      },
+      "hd-normal": {
+        "raw_sha256": "386f1ca512ea897ab884f6cded0258e4dc3cd97a4eb15850ab0b8210716549e8",
+        "raw_dimensions": [
+          1024,
+          1024
+        ],
+        "roi_rgba_sha256": "80020dcbfbb80a405b55422b99a889da72ec48b18434baab284815737f45f508",
+        "roi_alpha_sha256": "5067e25ea8e7716977b49d351bd00c7b6c65943379b8f12f1b58dc34e165a8b2",
+        "source_mode": "hd",
+        "shiny": false,
+        "base_model_source_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+        "variant_identity": "guarded actual CK3 shiny flag; baseline source hash is not the active mutable variant hash",
+        "roi_source_pixels": [
+          270.0,
+          210.0,
+          500.0,
+          440.0
+        ],
+        "root_srt": [
+          -0.0872664600610733,
+          1.0660446882247925,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "control_srt": [
+          0.0,
+          -2.0315632820129395,
+          0.0,
+          0.0,
+          3.0,
+          3.0,
+          3.0,
+          25.0,
+          -40.0,
+          0.0
+        ],
+        "probe_receipt_sha256": "890ca770f4869ea3df340d831c2fd72c50a57067f36f41a2fc5a91fd3a408dca",
+        "texture_input_manifest_sha256": "a9cd3864ff348da63dd5e6f7112d7d471de2e0a558a80daf9ad4a2d6c6d022e9",
+        "animation_pose_sha256": "b63a2dffde04f4126de7818262c84dd0ad9a484e4e4a7942fe8799453694e36f",
+        "matrix_count": 86
+      },
+      "hd-shiny": {
+        "raw_sha256": "f77f9c7abe16d22e226886ff01aae34fac0699d088c2966c0ecdc90dfce680c1",
+        "raw_dimensions": [
+          1024,
+          1024
+        ],
+        "roi_rgba_sha256": "6d0c56df80b3f90a9af0ffde46082b5349db756b84610d3be769ebf0c86daf79",
+        "roi_alpha_sha256": "5067e25ea8e7716977b49d351bd00c7b6c65943379b8f12f1b58dc34e165a8b2",
+        "source_mode": "hd",
+        "shiny": true,
+        "base_model_source_sha256": "0ad74f2e29f103dafb7dba945edc271a32bff11c3e8d3fcb9e079d092a548b8e",
+        "variant_identity": "guarded actual CK3 shiny flag; baseline source hash is not the active mutable variant hash",
+        "roi_source_pixels": [
+          270.0,
+          210.0,
+          500.0,
+          440.0
+        ],
+        "root_srt": [
+          -0.0872664600610733,
+          1.0660446882247925,
+          0.0,
+          0.0,
+          1.0,
+          1.0,
+          1.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "control_srt": [
+          0.0,
+          -2.0315632820129395,
+          0.0,
+          0.0,
+          3.0,
+          3.0,
+          3.0,
+          25.0,
+          -40.0,
+          0.0
+        ],
+        "probe_receipt_sha256": "99c770d989bc307ce2940049861f93ef3d7facc026e352eb8ced24136e878507",
+        "texture_input_manifest_sha256": "a9cd3864ff348da63dd5e6f7112d7d471de2e0a558a80daf9ad4a2d6c6d022e9",
+        "animation_pose_sha256": "b63a2dffde04f4126de7818262c84dd0ad9a484e4e4a7942fe8799453694e36f",
+        "matrix_count": 86
+      }
+    },
+    "pose_packet_sha256": "b0e94b69badcb942950f60cc5e8883747a283bbc2d65a85260627554abd41b47"
+  },
+  "conversion": {
+    "roi_normalized": [
+      0.263671875,
+      0.205078125,
+      0.48828125,
+      0.4296875
+    ],
+    "hd": {
+      "source_dimensions": [
+        1024,
+        1024
+      ],
+      "roi_source_pixels": [
+        270,
+        210,
+        500,
+        440
+      ],
+      "roi_dimensions": [
+        230,
+        230
+      ]
+    },
+    "native": {
+      "source_dimensions": [
+        256,
+        256
+      ],
+      "roi_source_pixels": [
+        67.5,
+        52.5,
+        125.0,
+        110.0
+      ],
+      "roi_dimensions": [
+        57.5,
+        57.5
+      ]
+    },
+    "resample": "Pillow RGBa premultiplied LANCZOS; no Pokemon recoloring",
+    "native_background_encoding": "XD shiny42 only: merge exclusive pure-background RGB5A3 shades; no foreground/AA changes",
+    "outputs": {
+      "native": "42x42 from native-material GPU raw",
+      "x4": "168x168 from independent HD-material GPU raw"
+    },
+    "background": "model_portraits.violet_backdrop; opaque square Colosseum/native round XD",
+    "artwork_padding": 0,
+    "transparent_rgb_zero": true,
+    "png_encoder": "artwork._png"
+  },
+  "pose_checks": {
+    "approved_root_control_srt_all_match": true,
+    "roi_alpha_identical_normal_shiny_per_resolution": true,
+    "complete_joint_pose_hash_identical_all_four": true
+  },
+  "files": {
+    "shadow-lugia-colosseum-normal-native.png": {
+      "game": "colosseum",
+      "shiny": false,
+      "scale": 1,
+      "dimensions": [
+        42,
+        42
+      ],
+      "bytes": 4455,
+      "sha256": "7929e73ae8005e36014c481f8a798f44e01a6837aa0960805f0be82dafe14982",
+      "rgba_sha256": "f25567a9d520517caf7dc02ad06727ad85c63a2cc01c3cfe35d461809a9de6ea",
+      "capture": "native-normal",
+      "rgb5a3_palette_words": 210,
+      "native_ci8_ready": null
+    },
+    "shadow-lugia-colosseum-normal-x4.png": {
+      "game": "colosseum",
+      "shiny": false,
+      "scale": 4,
+      "dimensions": [
+        168,
+        168
+      ],
+      "bytes": 31190,
+      "sha256": "e5728e791d1c36cc72583259741ecc77e01dca2018790cc6daadbf17bf5f860a",
+      "rgba_sha256": "c3b4e16653f6d72900bb7ceacbf341014eb4968c3e62c5fa9442a517d10cddc5",
+      "capture": "hd-normal",
+      "rgb5a3_palette_words": null,
+      "native_ci8_ready": null
+    },
+    "shadow-lugia-colosseum-shiny-native.png": {
+      "game": "colosseum",
+      "shiny": true,
+      "scale": 1,
+      "dimensions": [
+        42,
+        42
+      ],
+      "bytes": 4893,
+      "sha256": "dfce5aa806b6db0091eb688cc6182c1f25ac088c12a413983ef3330b33db69d3",
+      "rgba_sha256": "bb342193f9a3581d20f953cd5c3e23a84aaeb9b26ddd15394ea9a502b8bdb49f",
+      "capture": "native-shiny",
+      "rgb5a3_palette_words": 272,
+      "native_ci8_ready": null
+    },
+    "shadow-lugia-colosseum-shiny-x4.png": {
+      "game": "colosseum",
+      "shiny": true,
+      "scale": 4,
+      "dimensions": [
+        168,
+        168
+      ],
+      "bytes": 37394,
+      "sha256": "b83dac586a22de91f948b90b430f7c1332136d83b5d6a89bd2e0d0c0bfb1c702",
+      "rgba_sha256": "ad23b14adc71346803cb8f7756c89722408ec4cc62481cad1c3f21e09bba1c00",
+      "capture": "hd-shiny",
+      "rgb5a3_palette_words": null,
+      "native_ci8_ready": null
+    },
+    "shadow-lugia-xd-normal-native.png": {
+      "game": "xd",
+      "shiny": false,
+      "scale": 1,
+      "dimensions": [
+        42,
+        42
+      ],
+      "bytes": 4009,
+      "sha256": "a0a96440287fa4453ca4055fdf9eff6517bb01e730080062e51e7fe1aa8f151d",
+      "rgba_sha256": "ef912e96e463844506fbc1d172d6f471177ae972af22db706d054dfed3ad03d0",
+      "capture": "native-normal",
+      "rgb5a3_palette_words": 196,
+      "native_ci8_ready": true
+    },
+    "shadow-lugia-xd-normal-x4.png": {
+      "game": "xd",
+      "shiny": false,
+      "scale": 4,
+      "dimensions": [
+        168,
+        168
+      ],
+      "bytes": 28624,
+      "sha256": "41aff5f1e4adfc9cd89ddaf476c511cb090492e7df30cd4af132052b3a9ad3a5",
+      "rgba_sha256": "709c45a3cfba9743077325950cf6e30c8668b1eca0e9665e5c160ed63c695899",
+      "capture": "hd-normal",
+      "rgb5a3_palette_words": null,
+      "native_ci8_ready": null
+    },
+    "shadow-lugia-xd-shiny-native.png": {
+      "game": "xd",
+      "shiny": true,
+      "scale": 1,
+      "dimensions": [
+        42,
+        42
+      ],
+      "bytes": 4407,
+      "sha256": "c0ad6d520df774e84d9cdf4c8420345ae70b4cbe8981ac8eba1ad445d5d1ddcc",
+      "rgba_sha256": "6f5a21d6d5bc972e0e55e625fd54251908934b876970ffddb77d0ba1340594c9",
+      "capture": "native-shiny",
+      "rgb5a3_palette_words": 256,
+      "native_ci8_ready": true,
+      "native_background_palette_fit": {
+        "policy": "exclusive pure backdrop words only; resized source alpha0; no Pokemon/AA changes",
+        "palette_before": 263,
+        "palette_after": 256,
+        "words_removed": 7,
+        "changed_pixels": 16,
+        "max_abs_rgb_delta": 3,
+        "rgb_sse": 43,
+        "foreground_rgba_unchanged": true,
+        "foreground_including_aa_pixels": 1203,
+        "before_rgba_sha256": "4904f43008edd5a9f19871e7038d11e30ea39fb8dd2653f01242fcf90017345e",
+        "after_rgba_sha256": "6f5a21d6d5bc972e0e55e625fd54251908934b876970ffddb77d0ba1340594c9",
+        "merges": [
+          {
+            "source_word": "0xa48d",
+            "target_word": "0xa48c",
+            "pixels": 1,
+            "max_final_channel_delta": 1,
+            "additional_rgb_sse": 1
+          },
+          {
+            "source_word": "0xb0b1",
+            "target_word": "0xb4b1",
+            "pixels": 1,
+            "max_final_channel_delta": 1,
+            "additional_rgb_sse": 2
+          },
+          {
+            "source_word": "0x9c48",
+            "target_word": "0x9c49",
+            "pixels": 2,
+            "max_final_channel_delta": 1,
+            "additional_rgb_sse": 2
+          },
+          {
+            "source_word": "0xa86c",
+            "target_word": "0xa46c",
+            "pixels": 2,
+            "max_final_channel_delta": 1,
+            "additional_rgb_sse": 2
+          },
+          {
+            "source_word": "0x9c6a",
+            "target_word": "0x9c4a",
+            "pixels": 2,
+            "max_final_channel_delta": 1,
+            "additional_rgb_sse": 3
+          },
+          {
+            "source_word": "0x9c4a",
+            "target_word": "0x9c49",
+            "pixels": 6,
+            "max_final_channel_delta": 2,
+            "additional_rgb_sse": 8
+          },
+          {
+            "source_word": "0x9447",
+            "target_word": "0x9847",
+            "pixels": 4,
+            "max_final_channel_delta": 3,
+            "additional_rgb_sse": 25
+          }
+        ]
+      }
+    },
+    "shadow-lugia-xd-shiny-x4.png": {
+      "game": "xd",
+      "shiny": true,
+      "scale": 4,
+      "dimensions": [
+        168,
+        168
+      ],
+      "bytes": 34395,
+      "sha256": "f788e4674683fdf8d80f0d83f325cf7e7727266dc244e11b7d34b6bea0df0d63",
+      "rgba_sha256": "9b8d041916a35ee785ac4c7ad63665fe5862b431fa9e4b83c7235e7d24e00a2c",
+      "capture": "hd-shiny",
+      "rgb5a3_palette_words": null,
+      "native_ci8_ready": null
+    }
+  },
+  "warnings": [],
+  "visual_review": {
+    "accepted": true,
+    "framing": "Close-up selected by the user",
+    "eye": "Original model eye material, fully red with lighter red disk",
+    "foreground": "GPU model materials unchanged; no bitmap recolouring"
+  },
+  "native_encoder_validation": {
+    "normal": "26983a2c00a0363a7c6d02564e6bcda85a379fd44c042764a6a91dc4a324f9c4",
+    "shiny": "c412435040bd38cb48720953408be71cf6a0fe224b85ab589736e2c7a90d02c4",
+    "native_source_unchanged": true
+  }
+}

@@ -37,6 +37,7 @@ class GuiLanguageTests(unittest.TestCase):
         settings = QSettings(self.settings_path, QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
         settings.setValue("interface/sounds", False)
+        settings.setValue("launcher/createFolder", False)  # Existing ROM-only workflow.
         self.window = self.make_window(["fr-FR"])
 
     def make_window(self, tags):

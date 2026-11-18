@@ -76,6 +76,18 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
         settings.setValue("interface/sounds", False)
         window = MainWindow(settings=settings, system_languages=["fr-FR"])
         try:
+            data["game_folder_default"] = all(owner.play_folder.enabled.isChecked() for owner in (window, window.xd))
+            assert data["game_folder_default"]
+            # The older state matrix intentionally exercises the ROM-only workflow.
+            for owner in (window, window.xd):
+                owner.play_folder.enabled.setChecked(False)
+            from .native_music_render import renderer_path, load_renderer
+            native_launcher = Path(__file__).parent / "_native/OrreLauncher.exe"
+            data["game_folder_launcher_available"] = native_launcher.is_file()
+            data["native_music_renderer_available"] = renderer_path().is_file()
+            if data["frozen"]:
+                assert data["game_folder_launcher_available"] and data["native_music_renderer_available"]
+                load_renderer()
             assert not window.music_requested and not window.audio.enabled
             data["music_tracks"] = {scene: path.name for scene, path in window.music_tracks.items() if path is not None}
             data["music_available"] = "colosseum" in data["music_tracks"]

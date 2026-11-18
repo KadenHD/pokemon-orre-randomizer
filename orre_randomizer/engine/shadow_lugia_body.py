@@ -8,13 +8,14 @@ from pathlib import Path
 from ..artwork import ArtworkError, _png_pixels
 from ..model_artwork import validate_model_body
 from .analyze_game import FormatError
+from .dna_artwork import outline_dna_body
 
 
 _FILES = ("dark-lugia-body.png", "dark-lugia-shiny-body.png")
 
 
 def shadow_lugia_body_pixels(shiny: bool) -> bytes:
-    """Return transparent RGBA64x64 artwork, never a cropped battle portrait."""
+    """Return the whole body with the DNA keypad's black silhouette contour."""
     if type(shiny) is not bool:
         raise ValueError("the Shadow Lugia body variant must be a boolean")
     pack = Path(__file__).resolve().parents[1] / "assets" / "game" / "models"
@@ -33,6 +34,6 @@ def shadow_lugia_body_pixels(shiny: bool) -> bytes:
         raise FormatError("the native Shadow Lugia whole-body asset is unavailable") from error
     # A transparent margin keeps the complete native silhouette inside a tile.
     try:
-        return validate_model_body(pixels)
+        return validate_model_body(outline_dna_body(validate_model_body(pixels), 64))
     except ValueError as error:
         raise FormatError("the native Shadow Lugia whole-body silhouette is clipped") from error
