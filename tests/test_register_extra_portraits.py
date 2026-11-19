@@ -66,7 +66,8 @@ class RegisterExtraPortraitTests(unittest.TestCase):
 
             def fail_once(path, data):
                 nonlocal failed
-                if path == provenance and not failed:
+                # Windows runners may expose TEMP through a DOS 8.3 alias.
+                if path.resolve() == provenance.resolve() and not failed:
                     failed = True
                     raise OSError("simulated publication failure")
                 return actual_write(path, data)
