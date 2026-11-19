@@ -58,7 +58,8 @@ def main():
                        "APPDATA": str(work/"AppData"), "LOCALAPPDATA": str(work/"LocalAppData"),
                        "QT_QPA_PLATFORM": "offscreen"}
         diagnostic = work / "diagnostics.json"
-        result = subprocess.run([str(executable), "--diagnostics", str(diagnostic), "--screenshots"],
+        result = subprocess.run([str(executable), "--diagnostics", str(diagnostic), "--screenshots",
+                                 "--screenshot-scope", "smoke"],
                                 cwd=work/"unrelated working directory", env=environment,
                                 timeout=60, capture_output=True)
         if result.returncode != 0 or not diagnostic.is_file():
@@ -67,6 +68,10 @@ def main():
         data = json.loads(diagnostic.read_text("utf-8"))
         assert data["successful"] and data["frozen"] and data["codec"] == "rust-lzss-v1"
         assert data["unhandled_event_errors"] == []
+        assert data["automatic_update_check"] == {
+            "closed": True, "started": False, "reply_created": False, "timer_active": False}
+        assert data["screenshot_capture"] == {
+            "enabled": True, "scope": "smoke", "rendered": 474, "saved": 210, "rendered_without_png": 264}
         assert data["disc_converter"].startswith("nod-2.0.0-alpha.11-")
         assert data["application_icon_available"] and {16, 256} <= set(data["application_icon_sizes"])
         assert len(data["home_states"]) == 12

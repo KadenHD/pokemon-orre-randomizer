@@ -61,7 +61,9 @@ def check_form_materials() -> dict:
             "rom_opened": False, "external_packs_opened": False}
 
 
-def run_checks(report: Path, *, screenshots: bool = False) -> dict:
+def run_checks(report: Path, *, screenshots: bool = False, screenshot_scope: str = "all") -> dict:
+    if screenshot_scope not in {"all", "smoke"}:
+        raise ValueError("Unknown diagnostic screenshot scope")
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings, Qt, qVersion
     from PySide6.QtGui import QFont, QFontDatabase
     from PySide6.QtWidgets import QApplication, QScrollArea
@@ -99,6 +101,22 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
             "rom_opened": False, "personal_preferences_opened": False,
             "home_states": [], "states": [], "exclusion_states": [], "shiny_states": [], "preview_states": [],
             "consolidation_states": [], "xd_states": [], "xd_parity_states": []}
+    capture_counts = {"enabled": screenshots, "scope": screenshot_scope,
+                      "rendered": 0, "saved": 0, "rendered_without_png": 0}
+    data["screenshot_capture"] = capture_counts
+
+    def capture(widget, path, *, retained=True):
+        frame = widget.grab()
+        assert not frame.isNull()
+        capture_counts["rendered"] += 1
+        # CI only retains its main state matrix. Paint the remaining states as
+        # before, but avoid encoding PNGs that the smoke wrapper discards.
+        if screenshot_scope == "smoke" and not retained:
+            capture_counts["rendered_without_png"] += 1
+            return False
+        assert frame.save(str(path))
+        capture_counts["saved"] += 1
+        return True
     data["hd_text_font"] = None
     if images:
         from .hd_text_vectors import SOURCE as FONT_SOURCE, _sources
@@ -138,7 +156,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
         settings.setValue("interface/music", False)
         settings.setValue("interface/sounds", False)
         settings.setValue("launcher/shared", str(Path(folder) / "Shared"))
-        window = MainWindow(settings=settings, system_languages=["fr-FR"])
+        window = MainWindow(settings=settings, system_languages=["fr-FR"], allow_update_checks=False)
         try:
             data["game_folder_default"] = all(owner.play_folder.enabled.isChecked() for owner in (window, window.xd))
             assert data["game_folder_default"]
@@ -187,7 +205,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                     home = {"language": language, "width": width, "height": height}
                     if screenshots:
                         home["screenshot"] = f"home-{language}-{width}.png"
-                        assert window.grab().save(str(report.parent / home["screenshot"]))
+                        assert capture(window, report.parent / home["screenshot"])
                     window.open_xd.click()
                     assert window.music.path == window.music_tracks["xd"]
                     xd = window.xd
@@ -204,7 +222,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                         state = {"language": language, "width": width, "height": height, "step": step + 1}
                         if screenshots:
                             state["screenshot"] = f"xd-{language}-{width}-step{step + 1}.png"
-                            assert window.grab().save(str(report.parent / state["screenshot"]))
+                            assert capture(window, report.parent / state["screenshot"])
                         data["xd_states"].append(state)
                     xd.step = 1
                     xd.pages.setCurrentIndex(1)
@@ -216,8 +234,11 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                         assert window.rect().contains(xd.create_button.mapTo(window, xd.create_button.rect().center()))
                         state = {"language": language, "width": width, "height": height, "category": category}
                         if screenshots:
-                            state["screenshot"] = f"xd-parity-{language}-{width}-category{xd.rule_groups.index(category)}.png"
-                            assert window.grab().save(str(report.parent / state["screenshot"]))
+                            name = f"xd-parity-{language}-{width}-category{xd.rule_groups.index(category)}.png"
+                            if capture(window, report.parent / name, retained=False):
+                                state["screenshot"] = name
+                            else:
+                                state["rendered_without_png"] = True
                         data["xd_parity_states"].append(state)
                     xd.workspace_tabs.setCurrentIndex(1)
                     for tab, count in ((0, 1), (1, 83), (2, 7), (3, 9)):
@@ -231,8 +252,11 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                             assert xd.preview_details.viewport().height() >= 46
                         state = {"language": language, "width": width, "height": height, "tab": tab}
                         if screenshots:
-                            state["screenshot"] = f"xd-parity-{language}-{width}-tab{tab}.png"
-                            assert window.grab().save(str(report.parent / state["screenshot"]))
+                            name = f"xd-parity-{language}-{width}-tab{tab}.png"
+                            if capture(window, report.parent / name, retained=False):
+                                state["screenshot"] = name
+                            else:
+                                state["rendered_without_png"] = True
                         data["xd_parity_states"].append(state)
                     xd.encounter_tabs.setCurrentIndex(0)
                     xd.workspace_tabs.setCurrentIndex(0)
@@ -269,7 +293,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                             path = report.parent / name
                             if path.exists():
                                 raise FileExistsError(path)
-                            assert window.grab().save(str(path))
+                            assert capture(window, path)
                             state["screenshot"] = name
                         data["states"].append(state)
                     for kind, selected in (("species_set", (1, 133)), ("type_set", (10, 17))):
@@ -285,7 +309,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                             path = report.parent / name
                             if path.exists():
                                 raise FileExistsError(path)
-                            assert dialog.grab().save(str(path))
+                            assert capture(dialog, path)
                             state["screenshot"] = name
                         data["exclusion_states"].append(state)
                         dialog.close()
@@ -323,7 +347,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                             path = report.parent / name
                             if path.exists():
                                 raise FileExistsError(path)
-                            assert window.grab().save(str(path))
+                            assert capture(window, path)
                             state["screenshot"] = name
                         data["shiny_states"].append(state)
                     # Synthetic layout fixture only; diagnostics never opens a ROM.
@@ -385,7 +409,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                             path = report.parent / name
                             if path.exists():
                                 raise FileExistsError(path)
-                            assert window.grab().save(str(path))
+                            assert capture(window, path)
                             state["screenshot"] = name
                         data["preview_states"].append(state)
                     window.workspace_tabs.setCurrentIndex(0)
@@ -414,8 +438,10 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                         path = report.parent / name
                         if path.exists():
                             raise FileExistsError(path)
-                        assert window.grab().save(str(path))
-                        state["search_screenshot"] = name
+                        if capture(window, path, retained=False):
+                            state["search_screenshot"] = name
+                        else:
+                            state["rendered_without_png"] = True
                     selected = next(window.rule_results.item(index) for index in range(window.rule_results.count())
                         if window.rule_results.item(index).data(Qt.ItemDataRole.UserRole) == "custom_shinies")
                     window.open_rule_result(selected)
@@ -442,8 +468,10 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                         path = report.parent / name
                         if path.exists():
                             raise FileExistsError(path)
-                        assert window.grab().save(str(path))
-                        state["review_screenshot"] = name
+                        if capture(window, path, retained=False):
+                            state["review_screenshot"] = name
+                        else:
+                            state["rendered_without_png"] = True
                     window.set_options(replace(Options.none(), starter_umbreon_species=94,
                         starter_espeon_species=208, shiny_chance_percent=100))
                     assert window.text("Copie à l’identique : aucune donnée du jeu ne sera modifiée.") in window.review_details.text()
@@ -475,12 +503,20 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                              "private_empty_cache": True, "network_install_started": False}
                     if screenshots:
                         state["screenshot"] = f"hd-packs-{language}.png"
-                        assert dialog.grab().save(str(report.parent / state["screenshot"]))
+                        assert capture(dialog, report.parent / state["screenshot"])
                     data["pack_manager_states"].append(state)
                 finally:
                     dialog.close()
                     dialog.deleteLater()
                     QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+            data["automatic_update_check"] = {
+                "closed": window.update_checker.closed,
+                "started": window.update_checker.started,
+                "reply_created": window.update_checker.reply is not None,
+                "timer_active": window.update_checker.timeout.isActive(),
+            }
+            assert data["automatic_update_check"] == {
+                "closed": True, "started": False, "reply_created": False, "timer_active": False}
         finally:
             window.close()
             window.deleteLater()
@@ -493,6 +529,8 @@ def main(arguments=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("report", type=Path)
     parser.add_argument("--screenshots", action="store_true")
+    parser.add_argument("--screenshot-scope", choices=("all", "smoke"), default="all",
+                        help="Keep every PNG, or only the CI smoke evidence while still rendering every state")
     args = parser.parse_args(arguments)
     # Exclusive creation protects previous evidence. Use a new writable directory.
     try:
@@ -513,7 +551,7 @@ def main(arguments=None) -> int:
         # screen still looks valid. A frozen-app check must fail on them too.
         sys.excepthook = record_callback_error
         try:
-            result = run_checks(args.report, screenshots=args.screenshots)
+            result = run_checks(args.report, screenshots=args.screenshots, screenshot_scope=args.screenshot_scope)
             if callback_errors:
                 raise RuntimeError("UI callbacks failed: " + "; ".join(callback_errors))
         except Exception as error:

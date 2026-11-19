@@ -152,7 +152,8 @@ class ReportRomCheck(QThread):
 
 
 class MainWindow(QMainWindow):
-    def __init__(self, *, settings: QSettings | None = None, system_languages=None, start_on_home=False):
+    def __init__(self, *, settings: QSettings | None = None, system_languages=None, start_on_home=False,
+                 allow_update_checks=True):
         super().__init__()
         self.wheel_guard = DeliberateWheel(self)
         self.rule_visibility_timer = QTimer(self)
@@ -296,6 +297,8 @@ class MainWindow(QMainWindow):
         outer.addWidget(self.game_views, 1)
         self.home = self.build_home()
         self.update_checker = UpdateChecker(__version__, self)
+        if not allow_update_checks:
+            self.update_checker.close()
         self.update_checker.available.connect(self.home.show_update)
         self.game_views.addWidget(self.home)
         self.colosseum = QWidget()

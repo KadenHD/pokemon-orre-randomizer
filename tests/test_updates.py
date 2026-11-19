@@ -204,6 +204,31 @@ class UpdateQtTests(unittest.TestCase):
         self.assertIsNone(self.checker.reply)
         self.assertFalse(self.checker.timeout.isActive())
 
+    def test_window_checks_for_updates_by_default(self):
+        window = self.make_window()
+        self.manager.get.assert_called_once()
+        self.assertTrue(window.update_checker.started)
+        window.show_colosseum()
+        window.show_home()
+        self.app.processEvents()
+        self.manager.get.assert_called_once()
+
+    def test_window_can_disable_update_checks_before_the_first_home_render(self):
+        settings = QSettings(str(Path(self.folder.name) / "offline.ini"), QSettings.Format.IniFormat)
+        settings.setValue("interface/music", False)
+        settings.setValue("interface/sounds", False)
+        self.window = MainWindow(settings=settings, system_languages=["en-US"],
+                                 start_on_home=True, allow_update_checks=False)
+        for select in (self.window.show_colosseum, self.window.show_xd):
+            select()
+            self.window.show_home()
+            self.app.processEvents()
+        self.manager.get.assert_not_called()
+        self.assertFalse(self.window.update_checker.started)
+        self.assertTrue(self.window.update_checker.closed)
+        self.assertIsNone(self.window.update_checker.reply)
+        self.assertFalse(self.window.update_checker.timeout.isActive())
+
     def test_offline_malformed_rate_limited_and_oversized_responses_are_silent(self):
         for case in ("offline", "rate_limit", "malformed", "oversize"):
             reply = FakeReply()

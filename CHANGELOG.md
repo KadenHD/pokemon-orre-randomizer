@@ -28,6 +28,8 @@
   keep horizontal scrolling disabled.
 - Make offline reproduction of measured HD menu geometry independent of
   CPU-specific Qt rounding while retaining the exact reviewed artwork.
+- Keep packaged diagnostics offline. Preserve every UI check and render in
+  the Windows smoke test while only encoding the screenshots it retains.
 
 ## 2.0.2 - 2026-11-19
 

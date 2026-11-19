@@ -31,21 +31,40 @@ class DiagnosticTests(unittest.TestCase):
         self.app = QApplication.instance() or QApplication([])
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
-            with patch("orre_randomizer.resources.bundle_root", return_value=root/"missing-pack"):
-                report = run_checks(root/"diagnostics.json")
+            with patch("orre_randomizer.resources.bundle_root", return_value=root/"missing-pack"), \
+                 patch("orre_randomizer.ui_updates.QNetworkAccessManager.get",
+                       side_effect=AssertionError("Offline diagnostics must not issue HTTP requests")) as network:
+                report = run_checks(root/"diagnostics.json", screenshots=True, screenshot_scope="smoke")
+            network.assert_not_called()
             self.assertTrue(report["successful"])
             self.assertEqual(report["images"], [])
             self.assertEqual(report["sounds"], [])
             self.assertFalse(report["music_available"])
             self.assertFalse(report["rom_opened"])
             self.assertFalse(report["personal_preferences_opened"])
+            self.assertEqual(report["automatic_update_check"], {
+                "closed": True, "started": False, "reply_created": False, "timer_active": False})
+            self.assertEqual(report["screenshot_capture"], {
+                "enabled": True, "scope": "smoke", "rendered": 474, "saved": 210,
+                "rendered_without_png": 264})
             self.assertEqual(len(report["states"]), 48)
             self.assertEqual(len(report["exclusion_states"]), 24)
             self.assertEqual(len(report["consolidation_states"]), 12)
             self.assertTrue(all(state["effective_review"] and state["category_reset_isolated"]
                                 and not state["source_and_rng_used"] for state in report["consolidation_states"]))
             self.assertEqual({state["language"] for state in report["states"]}, {"fr", "en", "de", "es", "it", "ja"})
-            self.assertEqual(list(root.iterdir()), [])
+            self.assertEqual(len(list(root.glob("*.png"))), 210)
+            self.assertFalse(list(root.rglob("*.ini")))
+
+    def test_screenshot_cli_keeps_all_captures_by_default_and_smoke_is_explicit(self):
+        from orre_randomizer.diagnostics import main
+        for arguments, expected in ((["--screenshots"], "all"),
+                                    (["--screenshots", "--screenshot-scope", "smoke"], "smoke")):
+            with self.subTest(scope=expected), tempfile.TemporaryDirectory() as folder:
+                path = Path(folder) / "diagnostics.json"
+                with patch("orre_randomizer.diagnostics.run_checks", return_value={"successful": True}) as run:
+                    self.assertEqual(main([str(path), *arguments]), 0)
+                run.assert_called_once_with(path, screenshots=True, screenshot_scope=expected)
 
 
 if __name__ == "__main__":
