@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from tempfile import TemporaryDirectory
 import unittest
+from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 from PySide6.QtGui import QColor, QGuiApplication
@@ -53,7 +54,8 @@ class MenuSvgAuthoring(unittest.TestCase):
 
     def test_geometry_additions_reproduce_without_native_rasters_or_system_fonts(self):
         from scripts.build_hd_geometry_additions import reproduce
-        with TemporaryDirectory() as temporary:
+        with TemporaryDirectory() as temporary, patch("PIL.Image.Image.save",
+                side_effect=AssertionError("Reproduction must not depend on the platform PNG encoder")):
             receipt = reproduce(Path(temporary) / "new")
         self.assertEqual(len(receipt["outputs"]), 7)
         self.assertFalse(receipt["source_ROM_opened"])
@@ -61,6 +63,20 @@ class MenuSvgAuthoring(unittest.TestCase):
                             and not r["font_rendering_remaining"]
                             and r["raster_images_remaining"] == 0
                             for r in receipt["outputs"]))
+
+    def test_reproduction_rejects_a_single_wrong_pixel_before_canonical_png_publication(self):
+        from scripts.build_hd_geometry_additions import reproduce
+        original = render_background
+        def changed(*args, **kwargs):
+            image, metadata = original(*args, **kwargs)
+            image.setPixelColor(0, 0, QColor(255, 0, 255, 255))
+            return image, metadata
+        with TemporaryDirectory() as temporary, patch(
+                "orre_randomizer.hd_menu_svg.render_background", side_effect=changed):
+            output = Path(temporary) / "changed"
+            with self.assertRaisesRegex(ValueError, "Geometry pixels differ"):
+                reproduce(output)
+            self.assertEqual(list(output.iterdir()), [])
 
     def test_xd_command_panels_keep_their_translucent_centers_and_separate_cap(self):
         from orre_randomizer.hd_menu_catalog import menu_image, menu_recipes

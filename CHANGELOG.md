@@ -26,6 +26,10 @@
   coverage separately from the menus actually observed in Dolphin.
 - Extend muted Dolphin checks to USA and Japanese party menus, and German,
   Spanish and Italian field menus in both games, using copied QA cards.
+- Compare authored HD pixels exactly before publishing the authenticated PNG,
+  so offline reproduction is independent of platform PNG compression.
+- Require both Linux and Windows test jobs, as well as the packaged Windows
+  checks, before the release workflow can publish any downloads.
 
 ## 2.0.1 - 2026-11-19
 

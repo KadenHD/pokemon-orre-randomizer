@@ -74,6 +74,36 @@ def _base(record, pack_root):
     return result
 
 
+def _reviewed_png(record, rendered):
+    """Verify exact decoded pixels, then retain the authenticated PNG bytes.
+
+    PNG compressors can produce different byte streams across operating
+    systems without changing one pixel. Neither that variation nor a genuine
+    rendering difference may replace the reviewed distribution artwork.
+    """
+    from PIL import Image
+    from orre_randomizer.hd_menu_catalog import _asset_bytes
+
+    name = record["file"]
+    if Path(name).name != name or not name.endswith(".png"):
+        raise ValueError("Expected a flat Options artwork filename")
+    payload, digest = _asset_bytes("menu-atlases/" + name)
+    if digest != record["sha256"]:
+        raise ValueError("Options canonical PNG differs from its pinned source: " + record["target"])
+    with Image.open(BytesIO(payload)) as canonical:
+        expected = canonical.convert("RGBA")
+    actual = rendered.convert("RGBA")
+    expected_pixels, actual_pixels = expected.tobytes(), actual.tobytes()
+    expected_digest = hashlib.sha256(expected_pixels).hexdigest()
+    actual_digest = hashlib.sha256(actual_pixels).hexdigest()
+    if (list(expected.size) != record["dimensions"] or actual.size != expected.size
+            or actual_pixels != expected_pixels):
+        raise ValueError(f"Options RGBA differs for {record['target']}: "
+                         f"expected {expected.size} {expected_digest}; "
+                         f"got {actual.size} {actual_digest}")
+    return payload, actual_digest
+
+
 def reproduce(output: Path, *, pack_root: Path | None = None):
     from orre_randomizer.hd_menu_catalog import _asset
     packet, _ = _asset(SOURCE)
@@ -90,13 +120,12 @@ def reproduce(output: Path, *, pack_root: Path | None = None):
         if Path(name).name != name or not name.endswith(".png"):
             raise ValueError("Expected a flat Options artwork filename")
         image = compose(_base(record, pack_root), packet)
+        payload, rgba_digest = _reviewed_png(record, image)
         path = output / name
         with path.open("xb") as stream:
-            image.save(stream, format="PNG")
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
-        if digest != record["sha256"]:
-            raise ValueError("Options derivative differs from its reviewed output")
-        outputs.append({"target": record["target"], "sha256": digest,
+            stream.write(payload)
+        outputs.append({"target": record["target"], "sha256": record["sha256"],
+                        "rgba_sha256": rgba_digest,
                         "preserved_hd_rgba_sha256": record["preserved_hd_rgba_sha256"]})
     return {"outputs": outputs, "native_raster_used": False,
             "source_ROM_opened": False, "Dolphin_started": False}

@@ -64,8 +64,7 @@ class RenderMenuAtlases(unittest.TestCase):
         self.assertEqual(output.getpixel((4, 1023))[3], 0)
 
     def test_options_offline_recipe_reproduces_bundled_regional_donors_and_authenticates_them(self):
-        from io import BytesIO
-        from scripts.build_hd_options_stripes import SOURCE, _base, compose
+        from scripts.build_hd_options_stripes import SOURCE, _base, _reviewed_png, compose
         packet, digest = catalog._asset(SOURCE)
         self.assertFalse(packet["native_bitmap_upscaled_for_art"])
         self.assertEqual(len(packet["records"]), 7)
@@ -82,12 +81,33 @@ class RenderMenuAtlases(unittest.TestCase):
                 continue
             base = _base(row, None)
             output = compose(base, packet)
-            buffer = BytesIO()
-            output.save(buffer, format="PNG")
-            self.assertEqual(hashlib.sha256(buffer.getvalue()).hexdigest(), row["sha256"])
+            canonical, rgba_digest = _reviewed_png(row, output)
+            authenticated, _ = catalog._asset_bytes("menu-atlases/" + row["file"])
+            self.assertEqual(canonical, authenticated)
+            self.assertEqual(hashlib.sha256(canonical).hexdigest(), row["sha256"])
+            self.assertEqual(rgba_digest, hashlib.sha256(output.convert("RGBA").tobytes()).hexdigest())
             with patch.object(catalog, "_asset_bytes", return_value=(b"changed", "0" * 64)):
                 with self.assertRaisesRegex(ValueError, "pinned HD source"):
                     _base(row, None)
+
+    def test_options_canonical_publication_avoids_reencoding_and_rejects_real_rendering_drift(self):
+        from PIL import Image
+        from scripts.build_hd_options_stripes import SOURCE, _base, _reviewed_png, compose
+        packet, _ = catalog._asset(SOURCE)
+        row = next(r for r in packet["records"] if r["source"]["kind"] == "bundled-reviewed-HD")
+        output = compose(_base(row, None), packet)
+        with patch.object(Image.Image, "save", side_effect=AssertionError("Do not reencode the reviewed PNG")):
+            canonical, _ = _reviewed_png(row, output)
+        self.assertEqual(canonical, catalog._asset_bytes("menu-atlases/" + row["file"])[0])
+        changed = output.copy()
+        changed.putpixel((0, 0), (19, 34, 56, 78))
+        with self.assertRaisesRegex(ValueError, "Options RGBA differs.*expected.*got"):
+            _reviewed_png(row, changed)
+        with self.assertRaisesRegex(ValueError, "Options RGBA differs.*expected.*got"):
+            _reviewed_png(row, output.crop((0, 0, 32, 32)))
+        with patch.object(catalog, "_asset_bytes", return_value=(canonical, "0" * 64)):
+            with self.assertRaisesRegex(ValueError, "canonical PNG differs"):
+                _reviewed_png(row, output)
 
     def test_xd_europe_sheet_titles_leave_a_clear_row_before_the_info_sprite(self):
         rows = [row for row in catalog.menu_recipes("GXXP01").values()

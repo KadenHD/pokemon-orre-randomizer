@@ -66,8 +66,12 @@ a hosted Windows runner. The public runner uses the committed interface pack and
 
 Check that `pyproject.toml` and `orre_randomizer/__init__.py` declare the same
 version. Push a Git tag named `v<version>` on the release commit. The workflow checks
-the version, tests the public build, and publishes the Windows setup EXE, the
-portable Windows ZIP, the source ZIP, and `SHA256SUMS.json` for the ZIPs.
+the version and runs the reusable Linux/Windows test matrix alongside the
+Windows packaging checks. Publication requires both paths to pass, including
+the extracted source tests, packaged app diagnostics and installer smoke test.
+A failure on either operating system prevents publication. Successful runs
+publish the Windows setup EXE, portable Windows ZIP, source ZIP and
+`SHA256SUMS.json`.
 
 ```powershell
 $version = python -c "from orre_randomizer import __version__; print(__version__)"

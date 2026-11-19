@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+from io import BytesIO
 import json
 import os
 from pathlib import Path
@@ -23,7 +24,7 @@ SOURCES = {"geometry": SOURCE, "warnings": "menu-atlases/xd-warning-pages-source
 def reproduce(output: Path, *, source: str = SOURCE):
     from PySide6.QtGui import QGuiApplication
     from orre_randomizer.hd_menu_atlases import _pixel_bytes
-    from orre_randomizer.hd_menu_catalog import _asset
+    from orre_randomizer.hd_menu_catalog import _asset, _asset_bytes
     from orre_randomizer.hd_menu_svg import render_background
     from PIL import Image
 
@@ -47,13 +48,22 @@ def reproduce(output: Path, *, source: str = SOURCE):
             expected_sha256=hashlib.sha256(payload).hexdigest(),
             native_size=tuple(record["native_dimensions"]), remove_ids=())
         rendered = Image.frombytes("RGBA", (image.width(), image.height()), _pixel_bytes(image))
-        path = output / name
-        with path.open("xb") as stream:
-            rendered.save(stream, format="PNG")
-        digest = hashlib.sha256(path.read_bytes()).hexdigest()
+        approved, digest = _asset_bytes("menu-atlases/" + name)
         if digest != record["sha256"]:
-            raise ValueError("Geometry differs from the reviewed x4 output")
-        receipts.append({"target": record["target"], "sha256": digest, **metadata})
+            raise ValueError("Reviewed geometry PNG differs from its source record")
+        with Image.open(BytesIO(approved)) as reference:
+            expected_size, expected = reference.size, reference.convert("RGBA").tobytes()
+        actual = rendered.tobytes()
+        if rendered.size != expected_size or actual != expected:
+            raise ValueError("Geometry pixels differ from the reviewed x4 output for " + record["target"]
+                + ": expected " + hashlib.sha256(expected).hexdigest() + ", rendered " + hashlib.sha256(actual).hexdigest())
+        # PNG containers depend on the platform's encoder/zlib build. Prove
+        # exact rendered pixels first, then retain the authenticated canonical
+        # container so reproduction is byte-for-byte stable on every host.
+        with (output / name).open("xb") as stream:
+            stream.write(approved)
+        receipts.append({"target": record["target"], "sha256": digest,
+                         "rendered_rgba_sha256": hashlib.sha256(actual).hexdigest(), **metadata})
     return {"outputs": receipts, "source_ROM_opened": False,
             "native_raster_used": False, "Dolphin_started": False}
 
