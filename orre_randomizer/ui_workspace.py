@@ -418,6 +418,8 @@ class EncounterTable(QTreeWidget):
         self.row_layout_timer = QTimer(self)
         self.row_layout_timer.setSingleShot(True)
         self.row_layout_timer.timeout.connect(self.layout_rows)
+        self._laying_out_rows = False
+        self._row_layout_requested = False
         self.header().sectionResized.connect(self.schedule_row_layout)
         window.bind(self.setAccessibleName, accessible_name)
         window.bind(self.setAccessibleDescription,
@@ -436,24 +438,44 @@ class EncounterTable(QTreeWidget):
         self.schedule_row_layout()
 
     def schedule_row_layout(self, *_args):
-        self.row_layout_timer.start(0)
+        if self._laying_out_rows:
+            self._row_layout_requested = True
+        elif not self.row_layout_timer.isActive():
+            self.row_layout_timer.start(0)
 
     def layout_rows(self):
-        for index in range(self.topLevelItemCount()):
-            item = self.topLevelItem(index)
-            height = 54
-            # Shadow rows have only a short name and level. Measure wrapped
-            # text only for the few gift/Poké Spot rows with a context column.
-            for column in range(self.columnCount() if self.result_column == 2 else 0):
-                margin = 58 if column == self.result_column else 24
-                width = max(40, self.columnWidth(column)-margin)
-                document = QTextDocument()
-                document.setDefaultFont(self.font())
-                document.setDocumentMargin(0)
-                document.setPlainText(item.text(column))
-                document.setTextWidth(width)
-                height = max(height, round(document.size().height())+16)
-            item.setSizeHint(0, QSize(0, height))
+        if self._laying_out_rows:
+            self._row_layout_requested = True
+            return
+        # A direct call also consumes a previously queued pass. Updating a row
+        # can resize the viewport/header; allow one later pass for that geometry.
+        self.row_layout_timer.stop()
+        self._row_layout_requested = False
+        self._laying_out_rows = True
+        try:
+            for index in range(self.topLevelItemCount()):
+                item = self.topLevelItem(index)
+                height = 54
+                # Shadow rows have only a short name and level. Measure wrapped
+                # text only for the few gift/Poké Spot rows with a context column.
+                for column in range(self.columnCount() if self.result_column == 2 else 0):
+                    margin = 58 if column == self.result_column else 24
+                    width = max(40, self.columnWidth(column)-margin)
+                    document = QTextDocument()
+                    document.setDefaultFont(self.font())
+                    document.setDocumentMargin(0)
+                    document.setPlainText(item.text(column))
+                    document.setTextWidth(width)
+                    height = max(height, round(document.size().height())+16)
+                hint = QSize(0, height)
+                # An unchanged hint can still invalidate Qt's item/header
+                # geometry. Avoid feeding that invalidation into the zero timer.
+                if item.sizeHint(0) != hint:
+                    item.setSizeHint(0, hint)
+        finally:
+            self._laying_out_rows = False
+            if self._row_layout_requested:
+                self.schedule_row_layout()
 
     def resizeEvent(self, event):
         super().resizeEvent(event)

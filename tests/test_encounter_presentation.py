@@ -11,10 +11,11 @@ from orre_randomizer.i18n import translate, LANGUAGES
 from orre_randomizer.preview import BASE_SHADOWS, baseline_rows
 
 try:
-    from PySide6.QtCore import QBuffer, QIODevice, QPoint, QPointF, QSettings, Qt, QCoreApplication, QEvent
+    from PySide6.QtCore import QBuffer, QIODevice, QPoint, QPointF, QSettings, Qt, QCoreApplication, QEvent, QEventLoop
     from PySide6.QtGui import QPixmap, QColor, QWheelEvent
-    from PySide6.QtWidgets import QApplication, QAbstractItemView
+    from PySide6.QtWidgets import QApplication, QAbstractItemView, QTreeWidgetItem
     from orre_randomizer.gui import MainWindow
+    from orre_randomizer.ui_workspace import EncounterTable
 except ImportError:
     MainWindow = None
 
@@ -34,6 +35,94 @@ class DisplayNumberTests(unittest.TestCase):
             for source in (PLUSLE_CONDITION, HOOH_CONDITION, 'Conditions d’obtention', 'Lieu et fréquence'):
                 if language != 'fr':
                     self.assertNotEqual(text(source), source, (language, source))
+
+
+@unittest.skipIf(MainWindow is None, 'requires Qt')
+class EncounterLayoutTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.app = QApplication.instance() or QApplication([])
+
+    def setUp(self):
+        class Bindings:
+            def bind(self, setter, text):
+                setter(text)
+        self.tree = EncounterTable(Bindings(), 'Encounter fixture')
+        self.tree.setHeaderLabels(['Original', 'Replacement'])
+        self.tree.resize(700, 300)
+        self.tree.show()
+        self.drain()
+
+    def tearDown(self):
+        self.tree.close()
+        self.tree.deleteLater()
+        QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+
+    def drain(self):
+        # Bound each pump even if a regression perpetually queues zero timers.
+        for _ in range(12):
+            self.app.processEvents(QEventLoop.ProcessEventsFlag.AllEvents, 5)
+
+    def test_row_size_header_feedback_quiesces_and_context_reflows_on_resize(self):
+        tree = self.tree
+        tree.set_context_column('Conditions')
+        tree.setHeaderLabels(['Original', 'Conditions', 'Replacement'])
+        writes = []
+
+        class FeedbackItem(QTreeWidgetItem):
+            def setSizeHint(self, column, hint):
+                writes.append(hint.height())
+                super().setSizeHint(column, hint)
+                # Native styles can recalculate header geometry after a row
+                # size invalidation. Recreate that feedback on every write.
+                width = tree.columnWidth(column)
+                tree.header().sectionResized.emit(column, width, width)
+
+        item = FeedbackItem(tree, ['Plusle', 'A reward after defeating Miror B. and returning to the building. ' * 3,
+                                   'Castform - Lv. 13'])
+        tree.schedule_row_layout()
+        self.drain()
+        self.assertLess(len(writes), 6, 'Row/header feedback did not converge')
+        self.assertFalse(tree.row_layout_timer.isActive())
+        wide_height = item.sizeHint(0).height()
+        before = len(writes)
+        for _ in range(20):
+            tree.schedule_row_layout()
+            tree.layout_rows()
+        self.drain()
+        self.assertEqual(len(writes), before, 'Unchanged geometry must not invalidate rows again')
+
+        tree.resize(400, 300)
+        self.drain()
+        self.assertGreater(item.sizeHint(0).height(), wide_height)
+        self.assertFalse(tree.row_layout_timer.isActive())
+        tree.resize(700, 300)
+        self.drain()
+        self.assertEqual(item.sizeHint(0).height(), wide_height)
+        tree.set_context_column()
+        self.drain()
+        self.assertEqual(item.sizeHint(0).height(), 54)
+        self.assertFalse(tree.row_layout_timer.isActive())
+        self.assertEqual(tree.horizontalScrollBar().maximum(), 0)
+        self.assertEqual(tree.header().offset(), 0)
+
+    def test_reentrant_row_layout_defers_until_the_current_pass_finishes(self):
+        tree = self.tree
+        writes = []
+
+        class ReentrantItem(QTreeWidgetItem):
+            def setSizeHint(self, column, hint):
+                writes.append(hint.height())
+                if len(writes) == 1:
+                    tree.layout_rows()
+                super().setSizeHint(column, hint)
+
+        item = ReentrantItem(tree, ['Original', 'Replacement'])
+        tree.layout_rows()
+        self.drain()
+        self.assertEqual(writes, [54], 'A nested layout reentered the item update')
+        self.assertEqual(item.sizeHint(0).height(), 54)
+        self.assertFalse(tree.row_layout_timer.isActive())
 
 
 @unittest.skipIf(MainWindow is None, 'requires Qt')

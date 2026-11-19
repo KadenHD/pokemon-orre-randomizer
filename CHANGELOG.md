@@ -23,6 +23,9 @@
 - Stabilize the source-archive timeout regression on busy systems. Start its
   unchanged two-second deadline after the hanging test is ready, and verify
   that the worker process is terminated.
+- Prevent repeated row-size invalidations from keeping the encounter preview
+  busy. Coalesce layout requests, preserve wrapped conditions on resize and
+  keep horizontal scrolling disabled.
 
 ## 2.0.2 - 2026-11-19
 
