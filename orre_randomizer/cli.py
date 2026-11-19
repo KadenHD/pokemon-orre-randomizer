@@ -7,7 +7,8 @@ import sys
 
 from .engine.analyze_game import FormatError
 from .service import Options, UserError, randomize
-from .profiles import XD_SPOT_MIGRATION, load_profile
+from .profiles import ENGINE_MIGRATION, XD_SPOT_MIGRATION, load_profile
+from .i18n import translate
 from .xd import XDOptions
 
 
@@ -78,7 +79,9 @@ def main() -> int:
                 parser.error("--game xd requires --seed, --profile or --xd-copy")
             xd_options = (XDOptions.unchanged() if args.xd_copy else
                           replace(profile.options if profile else XDOptions(), **xd_overrides))
-            if profile and profile.xd_spot_migration and xd_options.randomize_poke_spots:
+            if profile and profile.engine_migration:
+                print(translate(ENGINE_MIGRATION, args.journal_language), file=sys.stderr)
+            elif profile and profile.xd_spot_migration and xd_options.randomize_poke_spots:
                 print(XD_SPOT_MIGRATION, file=sys.stderr)
             report = randomize(args.source, args.destination, seed,
                                dolphin_tool=args.dolphin_tool, progress=progress,
@@ -88,6 +91,8 @@ def main() -> int:
         if args.xd_copy or xd_overrides:
             parser.error("XD options require --game xd")
         profile = load_profile(args.profile) if args.profile else None
+        if profile and profile.engine_migration:
+            print(translate(ENGINE_MIGRATION, args.journal_language), file=sys.stderr)
         seed = args.seed if args.seed is not None else profile.seed if profile else None
         if seed is None:
             parser.error("saisissez --seed ou importez --profile")

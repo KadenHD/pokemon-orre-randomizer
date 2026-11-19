@@ -3,7 +3,7 @@
   "kind": "reviewed-extra-form-stock-materials",
   "review_only": false,
   "native_bitmap_resampled": false,
-  "portrait_registry_sha256": "1bf2dbf2c1352a660ffafaa27063666900d34d1f4c58d713033fe1926d424a2a",
+  "portrait_registry_sha256": "d8725a7c08068a3d9406e1bce8cac7a587331b209f3d4a881e681c967397ffbd",
   "qualification": "Same material PNG hashes as the reviewed native-form GPU portrait captures; stock battles replayed separately.",
   "records": [
     {

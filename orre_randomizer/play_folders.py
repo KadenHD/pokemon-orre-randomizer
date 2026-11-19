@@ -309,7 +309,7 @@ def missing_hd_packs(manifest):
     return [game for game in hd_game_requirements(manifest) if not store.installed(PACKS[game])]
 
 
-HD_CACHE_REVISION = 6
+HD_CACHE_REVISION = 7
 
 
 def _checked_cache_file(root, name, digest, cancel):
@@ -364,6 +364,7 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
     from .hd_hud import hud_recipes, prepare_hud_overlays
     from .hd_extra_portraits import prepare_extra_portrait_overlays
     from .hd_form_materials import material_recipes, prepare_form_materials
+    from .hd_castform_shinies import castform_shiny_recipes, prepare_castform_shiny_overlays
     from .hd_text_assets import MANIFEST as TEXT_MANIFEST, text_recipe, prepare_text_overlays
     from .resources import bundle_root
     cancel = cancel or threading.Event()
@@ -374,6 +375,13 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
         native = native_asset_manifest(root)
     except (OSError, ValueError) as error:
         raise UserError("Recréez ce dossier de partie pour préparer les nouveaux visuels HD.") from error
+    has_castform_shinies = bool(native.get("castform_shinies") or
+        any(row.get("role") in ("castform_battle", "castform_portrait") for row in native.get("resources", [])) or
+        any(row.get("castform_roles") for row in native.get("assets", [])))
+    castform_recipes = (castform_shiny_recipes(manifest["game_id"]) if has_castform_shinies else
+                        {"active": False, "files": [], "catalogue_sha256": None})
+    if has_castform_shinies and not castform_recipes["active"]:
+        raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.")
     required = hd_game_requirements({**manifest, "features": {"overlays": native}})
     store = PackStore(Path(manifest["shared"]))
     for game in required:
@@ -388,6 +396,8 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
     identity.update(json.dumps(hud_recipes(manifest["game_id"]), sort_keys=True,
                                separators=(",", ":")).encode("ascii"))
     identity.update(json.dumps(material_recipes(manifest["game_id"]), sort_keys=True,
+                               separators=(",", ":")).encode("ascii"))
+    identity.update(json.dumps(castform_recipes, sort_keys=True,
                                separators=(",", ":")).encode("ascii"))
     text_manifest = root / TEXT_MANIFEST
     text_feature = manifest.get("features", {}).get("text_hd_bridge")
@@ -460,18 +470,23 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
                 {game: store.location(PACKS[game]) for game in required}, stage)
             materials = prepare_form_materials(manifest["game_id"],
                 {game: store.location(PACKS[game]) for game in required}, stage)
+            castform = (prepare_castform_shiny_overlays(manifest["game_id"],
+                {game: store.location(PACKS[game]) for game in required}, stage) if has_castform_shinies else
+                {"game_id": manifest["game_id"], "active": False, "files": {}, "assets": [], "required_packs": []})
         except (OSError, ValueError) as error:
             raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.") from error
         result["extra_form_portraits"] = forms
         result["extra_form_materials"] = materials
+        result["castform_shiny_artwork"] = castform
         known = {item["file"]: item["sha256"] for item in result["files"]}
-        for name, digest in (*forms["files"].items(), *materials["files"].items()):
+        for name, digest in (*forms["files"].items(), *materials["files"].items(), *castform["files"].items()):
             if name in known:
                 if known[name] != digest:
                     raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.")
                 continue
             result["files"].append({"file": name, "sha256": digest,
-                                    "hd_source": {"kind": "catalogued-extra-form-material" if name in materials["files"]
+                                    "hd_source": {"kind": "custom-castform-shiny-artwork" if name in castform["files"]
+                                                  else "catalogued-extra-form-material" if name in materials["files"]
                                                   else "catalogued-extra-form-portrait"}})
             known[name] = digest
         if text_manifest.is_file():

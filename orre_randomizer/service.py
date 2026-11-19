@@ -74,7 +74,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "preserved-pokemon-properties-v25"
+ENGINE_VERSION = "castform-weather-portraits-v26"
 
 
 @dataclass(frozen=True, slots=True)
@@ -590,6 +590,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             common_replacements[mail_member["index"]] = mail_rel
             dol, mail_report["delivery"] = install_mail_hook(original_dol, dol)
             summary["postgame_shadow_lugia"]["mail"] = mail_report
+        if options.has_changes:
+            from .castform_weather import install_weather_appearances
+            dol, summary["castform_weather"] = install_weather_appearances(
+                original_dol, dol, region.game_id, archive, lugia_models)
+            summary["castform_portraits"] = summary["castform_weather"]["portraits"]
         progress(25, "Compression des données du jeu…")
         new_common = repack_fsys(common, common_replacements)[0] if common_replacements else common
         checkpoint(cancel)

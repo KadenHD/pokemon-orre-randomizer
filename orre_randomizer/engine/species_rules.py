@@ -20,6 +20,8 @@ STAT_OFFSETS = (0x85, 0x87, 0x89, 0x8B, 0x8D, 0x8F)
 VALID_TYPES = frozenset(range(18)) - {9}  # Mystery is not a real PAL species type.
 WONDER_GUARD = 25
 SHEDINJA_NATIONAL = 292
+FORECAST = 59
+CASTFORM_NATIONAL = 351
 LEGENDARY_NATIONAL = frozenset((144, 145, 146, 150, 151, 243, 244, 245, 249,
                                250, 251, 377, 378, 379, 380, 381, 382, 383,
                                384, 385, 386))
@@ -160,6 +162,8 @@ def apply_species_rules(original: bytes, current: bytes, seed: str, options,
     species was mono- or dual-type, and whether it had one or two abilities.
     Shedinja keeps its native types, abilities and one-HP mechanic: assigning
     Wonder Guard elsewhere could create an encounter without a weakness.
+    Castform keeps Forecast, which has no effect on other species and is
+    required for its weather forms. Only its ability is protected.
     """
     if len(original) != len(current):
         raise FormatError("species transform must preserve REL size")
@@ -173,7 +177,8 @@ def apply_species_rules(original: bytes, current: bytes, seed: str, options,
     families = (evolution_families(original, tables)[0] if
                 (do_types and type_family) or (do_abilities and ability_family) else {i: i for i in catalog})
     type_pool = sorted({value for row in catalog.values() for value in row["types"]})
-    ability_pool = sorted({value for row in catalog.values() for value in row["abilities"]} - {0, WONDER_GUARD})
+    ability_pool = sorted({value for row in catalog.values() for value in row["abilities"]}
+                          - {0, WONDER_GUARD, FORECAST})
     output, allowed, edits = bytearray(current), set(), []
     from ..preserved_pokemon import colosseum_species
     preserved = colosseum_species(original, tables, options)
@@ -191,7 +196,7 @@ def apply_species_rules(original: bytes, current: bytes, seed: str, options,
             new_types = first, second
             output[pos + 0x30:pos + 0x32] = bytes(new_types)
             allowed.update((pos + 0x30, pos + 0x31))
-        if do_abilities and not protected:
+        if do_abilities and not protected and row["national_dex"] != CASTFORM_NATIONAL:
             identifier = families[index] if ability_family else index
             first = _pick(seed, f"abilities:{identifier}:first", ability_pool)
             second = (_pick(seed, f"abilities:{identifier}:second", set(ability_pool) - {first} or {first})

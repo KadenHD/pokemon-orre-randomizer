@@ -74,6 +74,8 @@ class WrapperMachine:
                 self.cr = [bool(value & 0x80000000), 0 < value < 0x80000000, value == 0, False]
             elif op == 24:
                 self.reg[ra] = self.reg[rd] | immediate
+            elif op == 25:
+                self.reg[ra] = self.reg[rd] | (immediate << 16)
             elif op == 27:
                 self.reg[ra] = self.reg[rd] ^ (immediate << 16)
             elif op in (10, 11):
@@ -85,9 +87,9 @@ class WrapperMachine:
             elif op in (32, 34, 40):
                 width = {32: 4, 34: 1, 40: 2}[op]
                 self.reg[rd] = self.load(((self.reg[ra] if ra else 0) + signed) & MASK, width)
-            elif op in (36, 37, 44):
+            elif op in (36, 37, 38, 44):
                 address = ((self.reg[ra] if ra else 0) + signed) & MASK
-                self.store(address, self.reg[rd], 2 if op == 44 else 4)
+                self.store(address, self.reg[rd], {38: 1, 44: 2}.get(op, 4))
                 if op == 37:
                     self.reg[ra] = address
             elif op == 46:

@@ -623,6 +623,39 @@
         "license": "Public domain",
         "source": "https://commons.wikimedia.org/wiki/File:Nintendo-Game-Boy-Advance-Purple-FL.png"
       }
+    },
+    "castform-live-portraits.png": {
+      "bytes": 192344,
+      "sha256": "0467c4e3e799acf674261f97b3d9bab215c60daa8b415da68f424fed83f03e8b",
+      "kind": "artwork-comparison",
+      "language": "en",
+      "width": 880,
+      "height": 502,
+      "captured_in_version": "Unreleased",
+      "description": "Castform live weather-form HUD portraits in Colosseum and XD.",
+      "source": "Current registered HD atlas cells, from qualified native-mesh GPU captures with the pinned HD materials. English labels outside the artwork. Sunny cells use the wider reviewed crop at 80 percent model size; normal and shiny share the same crop. Native frames and texture orientation are retained. Runtime replays separately qualify the live HUD patch."
+    },
+    "castform-colosseum-weather-shinies.png": {
+      "bytes": 239562,
+      "sha256": "17f74aac5a2622b272d2aa239abc1b071c45894b94bb65643ce3a307406209e3",
+      "kind": "artwork-comparison",
+      "language": "en",
+      "width": 900,
+      "height": 760,
+      "captured_in_version": "Unreleased",
+      "description": "Native and x4 normal/shiny Castform weather portraits for colosseum.",
+      "source": "Original native normal cells and registered HD normal cells, beside source-qualified custom shiny mesh renders from an isolated muted Colosseum European viewer. Same camera and frozen joints, native paint and genuine HD source paint rendered separately. Target-specific square/round frames retained. Native battle routing is qualified separately."
+    },
+    "castform-xd-weather-shinies.png": {
+      "bytes": 218185,
+      "sha256": "415adb0dbb0e8c11d1b9b8200505f6d4b4a7eddabfd48e5769defe3624036818",
+      "kind": "artwork-comparison",
+      "language": "en",
+      "width": 900,
+      "height": 760,
+      "captured_in_version": "Unreleased",
+      "description": "Native and x4 normal/shiny Castform weather portraits for xd.",
+      "source": "Original native normal cells and registered HD normal cells, beside source-qualified custom shiny mesh renders from an isolated muted Colosseum European viewer. Same camera and frozen joints, native paint and genuine HD source paint rendered separately. Target-specific square/round frames retained. Native battle routing is qualified separately."
     }
   }
 }

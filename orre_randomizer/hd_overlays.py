@@ -52,6 +52,11 @@ _BLOCKS = {0: (8, 8, 32), 1: (8, 4, 32), 2: (8, 4, 32), 3: (4, 4, 32),
 _MAX_ARCHIVE = 64 * 1024 * 1024
 _MAX_MEMBER = 8 * 1024 * 1024
 _MAX_TEXTURES = 4096
+_CASTFORM_ARCHIVES = {"pkx_powalen_w.fsys": 0x7DA11E00,
+                      "pkx_powalen_f.fsys": 0x7DA21E00,
+                      "pkx_powalen_i.fsys": 0x7DA31E00}
+_CASTFORM_FACES = frozenset((0x7DA11200, 0x7DA21200, 0x7DA31200))
+_CASTFORM_ROLES = frozenset(("castform_battle", "castform_portrait"))
 _LUGIA_RECONSTRUCTED_MATERIALS = {
     "tex1_32x32_f135b3b243a3e441_14.png": (32, 0x6E50, 0x6EC0, 0x40081, "reflection-environment"),
     "tex1_16x16_a70005786d19905c_14.png": (16, 0x6F9C, 0x700C, 0x30010, "mouth-interior"),
@@ -298,7 +303,8 @@ def _dat_textures(dat: bytes) -> Iterator[_Texture]:
 def _disc_archives(iso: Path, *, is_xd: bool, include_pkx: bool = False,
                    extra_names: set[str] | None = None) -> Iterator[tuple[str, bytes]]:
     actors = _XD_ACTORS if is_xd else _COLO_ACTORS
-    selected = set(actors) | (extra_names or set()) | {"poke_face.fsys", "pkx_darklugia.fsys" if is_xd else "pkx_lugia.fsys"}
+    selected = set(actors) | set(_CASTFORM_ARCHIVES) | (extra_names or set()) | {
+        "poke_face.fsys", "pkx_darklugia.fsys" if is_xd else "pkx_lugia.fsys"}
     if not is_xd:
         selected.add("DNA_key.fsys")
     with iso.open("rb") as stream:
@@ -335,7 +341,11 @@ def _raw_member(archive: bytes, member: dict) -> bytes:
 
 def _selected(name: str, member: dict, is_xd: bool) -> str | None:
     ident = int(member["identifier_raw"], 16)
+    if _CASTFORM_ARCHIVES.get(name) == ident:
+        return "castform_battle"
     if name == "poke_face.fsys":
+        if ident in _CASTFORM_FACES:
+            return "castform_portrait"
         if ident in (0x7DF51200, 0x7DF61200, 0x7DF71200):
             return "portrait"
         from .hd_extra_portraits import is_extra_portrait_member, extra_portraits_registered
@@ -402,6 +412,62 @@ def _native_reference(folder: Path, pixels: bytes, width: int, height: int) -> d
     if not path.exists():
         _write(path, png)
     return {"file": relative, "sha256": digest, "width": width, "height": height}
+
+
+def _castform_game_id(source: Path, is_xd: bool) -> str:
+    from .hd_menu_catalog import SUPPORTED
+    with source.open("rb") as stream:
+        identity = stream.read(6).decode("ascii")
+    if identity not in SUPPORTED or not identity.startswith("GXX" if is_xd else "GC6"):
+        raise OverlayError("Custom Castform resource has an invalid regional disc identity.")
+    return identity
+
+
+def _castform_hd_origin(game_id, asset, pixels):
+    """Custom weather resources have no identity or constant-colour fallback."""
+    from .hd_castform_shinies import castform_shiny_origin, castform_shiny_recipes
+    from .hd_form_materials import material_recipes
+    role = "portrait" if "castform_portrait" in asset["castform_roles"] else "material"
+    size = asset["native"]["width"], asset["native"]["height"]
+    try:
+        if not castform_shiny_recipes(game_id)["active"]:
+            return None, "Registered custom Castform native/x4 catalogue is unavailable"
+        origin = castform_shiny_origin(game_id, asset["base_key"], size,
+            hashlib.sha256(pixels).hexdigest(), role=role)
+    except ValueError as error:
+        return None, str(error)
+    if origin is not None:
+        return origin, None
+    if role == "material":
+        row = material_recipes(game_id).get(asset["base_key"])
+        if row is not None and row["native_dimensions"] == list(size):
+            return {"game": row["pack"], "required_packs": [row["pack"]],
+                "native_source": "exact reviewed stock form-material texture key",
+                "transform": {"type": "castform-stock-material", "version": 1,
+                    "game_id": game_id, "native_key": asset["base_key"], "native_size": list(size)}}, None
+    return None, "No registered native/x4 pair for this custom Castform resource"
+
+
+def _render_castform_stock(origin, native_image):
+    from .hd_form_materials import material_recipes
+    from .hd_menu_catalog import _asset_bytes
+    from PySide6.QtGui import QImage
+    transform = origin.get("transform", {})
+    row = material_recipes(transform.get("game_id", "")).get(transform.get("native_key", ""))
+    size = [native_image.width(), native_image.height()]
+    if (transform.get("version") != 1 or row is None or row["native_dimensions"] != size
+            or transform.get("native_size") != size or origin.get("game") != row["pack"]):
+        raise ValueError("Captured Castform stock-material identity changed")
+    payload, digest = _asset_bytes("form-materials/" + row["file"])
+    if digest != row["sha256"] or len(payload) != row["bytes"]:
+        raise ValueError("Registered Castform stock-material PNG changed")
+    image = QImage.fromData(payload, "PNG")
+    if image.isNull() or [image.width(), image.height()] != [v * 4 for v in size]:
+        raise ValueError("Registered Castform stock material is not x4")
+    return payload, {"kind": "reviewed-stock-castform-material", "native_key": row["file"],
+        "catalogue_sha256": row["catalogue_sha256"], "sha256": digest,
+        "native_rgba_sha256": hashlib.sha256(bytes(native_image.constBits())).hexdigest(),
+        "native_bitmap_resampled": False}
 
 
 def _pkx_dat(raw: bytes, xd: bool) -> bytes:
@@ -835,7 +901,7 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
               "files": [], "texture_count": 0, "required_packs": [], "missing_assets": [],
               "limitations": [],
               "conditional_limitations": ["PID-specific Spinda DNA requires a registered HD spot-pattern recipe when selected."]}
-    assets, dna_recipes = {}, {}
+    assets, dna_recipes, castform_game = {}, {}, None
     try:
         _checkpoint(cancel)
         for archive_name, archive in _disc_archives(source, is_xd=is_xd):
@@ -850,9 +916,9 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                     continue
                 _checkpoint(cancel)
                 raw = _raw_member(archive, member)
-                if role in ("portrait", "retail_portrait", "retail_form"):
+                if role in ("portrait", "retail_portrait", "retail_form", "castform_portrait"):
                     textures = (_face(raw),)
-                elif role == "battle":
+                elif role in ("battle", "castform_battle"):
                     textures = _dat_textures(_pkx_dat(raw, is_xd))
                 elif role == "dna":
                     # The complete atlas preserves all nine full-body tiles,
@@ -885,6 +951,11 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                                             "native_format": texture.fmt, "base_key": _texture_key(texture)}
                         elif assets[name]["native"]["sha256"] != reference["sha256"]:
                             raise OverlayError("One Dolphin texture name has conflicting native palette interpretations.")
+                        if role in _CASTFORM_ROLES:
+                            castform_game = castform_game or _castform_game_id(source, is_xd)
+                            roles = assets[name].setdefault("castform_roles", [])
+                            if role not in roles:
+                                roles.append(role)
                         record["textures"].append(name)
                 report["resources"].append(record)
         _checkpoint(cancel)
@@ -898,7 +969,16 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
         portrait_reference = None
         for asset in assets.values():
             base = asset["base_key"]
-            if asset["role"] == "retail_form":
+            if asset.get("castform_roles"):
+                native_image = _load_reference(target, asset["native"])
+                asset["hd"], gap = _castform_hd_origin(castform_game, asset, bytes(native_image.constBits()))
+                if gap:
+                    report["missing_assets"].append({"file": asset["file"], "reason": gap})
+                # The custom route is explicit even when one white/grey texture
+                # also appeared in another captured resource earlier.
+                if "colosseum" not in report["required_packs"]:
+                    report["required_packs"].append("colosseum")
+            elif asset["role"] == "retail_form":
                 from .hd_extra_portraits import portrait_origin
                 asset["hd"] = portrait_origin(report["game"], base,
                     (asset["native"]["width"], asset["native"]["height"]))
@@ -945,7 +1025,7 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
             else:
                 asset["hd"] = None
                 report["missing_assets"].append({"file": asset["file"], "reason": "No registered pack-derived DNA composition"})
-            if asset["role"] in ("field", "battle"):
+            if not asset.get("castform_roles") and asset["role"] in ("field", "battle"):
                 native_image = _load_reference(target, asset["native"])
                 colors = bytes(native_image.constBits())
                 if colors == colors[:4] * (len(colors) // 4):
@@ -965,6 +1045,11 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
             report["assets"].append(asset)
         report["asset_count"] = len(assets)
         report["texture_count"] = len(assets)
+        if castform_game:
+            report["castform_shinies"] = {"version": 1, "game_id": castform_game,
+                "resources": sum(row["role"] in _CASTFORM_ROLES for row in report["resources"]),
+                "texture_keys": sorted(row["file"] for row in report["assets"] if row.get("castform_roles")),
+                "native_rgba_bound": True}
         if any(row["role"] == "retail_form" for row in report["resources"]):
             from .hd_extra_portraits import portrait_coverage_report
             report["additional_portraits"] = {**portrait_coverage_report(),
@@ -1568,6 +1653,11 @@ def prepare_hd_overlays(native_directory: Path, destination: Path, *, pack_roots
     report["files"], report["missing_assets"], report["inherited_stock"] = [], [], []
     report["limitations"] = _runtime_limitations(report["assets"])
     report["conditional_limitations"] = ["PID-specific Spinda DNA requires a registered HD spot-pattern recipe when selected."]
+    castform_roles = {}
+    for resource in report.get("resources", []):
+        if resource.get("role") in _CASTFORM_ROLES:
+            for key in resource.get("textures", []):
+                castform_roles.setdefault(key, set()).add(resource["role"])
     cache = {}
     for asset in report["assets"]:
         _checkpoint(cancel)
@@ -1578,6 +1668,24 @@ def prepare_hd_overlays(native_directory: Path, destination: Path, *, pack_roots
         if not origin:
             report["missing_assets"].append({"file": asset["file"], "reason": "No registered pack-derived HD asset"})
             continue
+        custom_roles = set(asset.get("castform_roles", [])) | castform_roles.get(asset["file"], set())
+        if asset.get("role") in _CASTFORM_ROLES:
+            custom_roles.add(asset["role"])
+        if custom_roles:
+            transform = origin.get("transform", {})
+            expected_game = report.get("castform_shinies", {}).get("game_id", transform.get("game_id"))
+            try:
+                from .hd_castform_shinies import castform_shiny_recipes
+                if (transform.get("type") not in ("custom-castform-shiny", "castform-stock-material")
+                        or transform.get("game_id") != expected_game
+                        or transform.get("native_key") != asset["base_key"]
+                        or ("castform_portrait" in custom_roles and (
+                            transform.get("type") != "custom-castform-shiny" or transform.get("role") != "portrait"))
+                        or not castform_shiny_recipes(expected_game)["active"]):
+                    raise ValueError("Custom Castform route or native/x4 catalogue is unavailable")
+            except ValueError as error:
+                report["missing_assets"].append({"file": asset["file"], "reason": str(error)})
+                continue
         if origin["transform"]["type"] == "constant-color":
             width, height = asset["native"]["width"] * 4, asset["native"]["height"] * 4
             png = _png((width, height), bytes(origin["transform"]["rgba"]) * (width * height))
@@ -1601,6 +1709,28 @@ def prepare_hd_overlays(native_directory: Path, destination: Path, *, pack_roots
             if marker.get("key") != pack.key or marker.get("archives") != [part.sha256 for part in pack.parts]:
                 raise OverlayError("HD donor pack does not match the pinned release.")
             cache[game] = folder
+        if origin["transform"]["type"] in ("custom-castform-shiny", "castform-stock-material"):
+            try:
+                native_image = _load_reference(root, asset["native"])
+                if origin["transform"]["type"] == "custom-castform-shiny":
+                    from .hd_castform_shinies import render_castform_shiny_overlay
+                    png, components = render_castform_shiny_overlay(origin,
+                        native_image=native_image, pack_roots=pack_roots)
+                else:
+                    png, components = _render_castform_stock(origin, native_image)
+            except (OSError, ValueError) as error:
+                report["missing_assets"].append({"file": asset["file"], "reason": str(error)})
+                continue
+            target.mkdir(parents=True, exist_ok=True)
+            _write(target / asset["file"], png)
+            report["files"].append({"file": asset["file"], "sha256": hashlib.sha256(png).hexdigest(),
+                "width": native_image.width() * 4, "height": native_image.height() * 4,
+                "bytes": len(png), "native_format": asset["native_format"],
+                "hd_source": {"kind": components["kind"], "pack": PACKS[game].key,
+                    "sha256": components["sha256"], "source_scale": 4, "output_scale": 4,
+                    "native_reference": asset["native"], "transform": origin["transform"],
+                    "components": components}})
+            continue
         if origin["transform"]["type"] == "captured-extra-portrait":
             from .hd_extra_portraits import render_extra_portrait
             try:

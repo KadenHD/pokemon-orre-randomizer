@@ -1289,12 +1289,12 @@
       "sha256": "8dc5ecb1785fd6db7b80a6eaad6ca1aaf851c7edb2f206181edd4460fd8e124b"
     },
     "models/extra-portraits/extra-portraits.json": {
-      "bytes": 1464445,
-      "sha256": "1bf2dbf2c1352a660ffafaa27063666900d34d1f4c58d713033fe1926d424a2a"
+      "bytes": 1465080,
+      "sha256": "d8725a7c08068a3d9406e1bce8cac7a587331b209f3d4a881e681c967397ffbd"
     },
     "models/extra-portraits/colosseum-form-385f-x4.png": {
-      "bytes": 79280,
-      "sha256": "3024cae8b7a3da4427aa686b2cc39f3aa03608df7b03f9847a7c124e95715d02"
+      "bytes": 100231,
+      "sha256": "e96db97d4ec36b287c75827a91d29a7eacd7db431244c1ea9ac89c1b23cb9806"
     },
     "models/extra-portraits/colosseum-form-385i-x4.png": {
       "bytes": 94709,
@@ -1305,8 +1305,8 @@
       "sha256": "4dd3bcb6ed98afefbe4b95879576e82e6d4853c4e43ded8bc9847bfc3a0b8324"
     },
     "models/extra-portraits/xd-form-385f-x4.png": {
-      "bytes": 66175,
-      "sha256": "8fcdf0bca25b8aecbd6598ccb8ffa540196d1d8818e9d46ae41cf9b662bc63cb"
+      "bytes": 87250,
+      "sha256": "669ce918f5454243631b16e4d585bfacb232845d6e7eff08a32228dfb11927ec"
     },
     "models/extra-portraits/xd-form-385i-x4.png": {
       "bytes": 83520,
@@ -1946,7 +1946,7 @@
     },
     "form-materials/catalog.json": {
       "bytes": 924856,
-      "sha256": "882305090508f4c8cd783d400bb02a2f442afd60ff377e27c1a8c8e445a19ff4"
+      "sha256": "dabc93f04e1e9f19e33df7099b184e9c1be9d7c91975c066c8bd3fa34a70790b"
     },
     "form-materials/tex1_128x128_1756f1f5d1967de8_14.png": {
       "bytes": 83683,
@@ -2151,6 +2151,138 @@
     "menu-atlases/options-stripes-tex1_640x256_366eb7523a1e8934_6.png": {
       "bytes": 311209,
       "sha256": "2255a3e26d67a3e843eb3b25ea19763a36e39fe53a286f29c796f67eebb955bb"
+    },
+    "castform-shinies/tex1_64x768_72079d85933e9fe9_14.png": {
+      "bytes": 36155,
+      "sha256": "5f2d8e9fef5ec9a43092176f8332c89c96c0325bf2171cac5171380a6727dc55"
+    },
+    "castform-shinies/tex1_128x720_2dd55ce8b8bd3fef_14.png": {
+      "bytes": 176008,
+      "sha256": "dd5c7296e2d278cf48929ac56deedef435142a8ef027bfebb31b4542d9c3d0d9"
+    },
+    "castform-shinies/tex1_4x4_0f39b9609f1dd57a_14.png": {
+      "bytes": 82,
+      "sha256": "f4ce95e24c6afead54b9d526576526258b1ea75ae228c65c4ef84081959fd5b3"
+    },
+    "castform-shinies/tex1_32x32_fca892c7108cd8b2_2.png": {
+      "bytes": 4953,
+      "sha256": "4d19f494ac419693d0ecab69282ce1ed6ff62ecbd0ec5a0927682932aae127ed"
+    },
+    "castform-shinies/tex1_64x64_365396ccc950f84d_14.png": {
+      "bytes": 43275,
+      "sha256": "7f46257e7737c2b04a8a4762747c7f8bc464f9d6ef2a572222f0c205d7ee3bf8"
+    },
+    "castform-shinies/tex1_64x768_a0ab8d337f59e7bd_14.png": {
+      "bytes": 35141,
+      "sha256": "ec7f3dd713c6ac58ab3d866ba8595e03581e12c277a9f089f517a0165d95677b"
+    },
+    "castform-shinies/tex1_128x720_966d538ce6c790cb_14.png": {
+      "bytes": 136235,
+      "sha256": "ff6e594cfff1dea960b49a8905e1f5bbd51bcbb7e5e9e6ded1d551074b204ad9"
+    },
+    "castform-shinies/tex1_4x4_dfbeef940f7e8e36_14.png": {
+      "bytes": 82,
+      "sha256": "226dfb971cfabe157b334eb2bfdb6e2817468f83ff76d8120c28203939a170f5"
+    },
+    "castform-shinies/tex1_64x64_cdddd905cb663e83_14.png": {
+      "bytes": 4916,
+      "sha256": "a34de6bf414318c4b2ee122832ebcc208fc5a09aa7b80ec5e7d96b9baa5a842b"
+    },
+    "castform-shinies/tex1_64x64_83332f08ad908e61_14.png": {
+      "bytes": 4672,
+      "sha256": "f5c033ca2a297c2340230791ac18b081ff92df105bbf7d09d8292c507514894e"
+    },
+    "castform-shinies/tex1_64x64_ac8a6ed6b721e4c7_14.png": {
+      "bytes": 7200,
+      "sha256": "db0a4857ed305089e4c9af5cc2aba83ced4742d62caea6a39b83a84e1cf7cca1"
+    },
+    "castform-shinies/tex1_4x4_7dd5d84662ce4103_14.png": {
+      "bytes": 83,
+      "sha256": "e23a0b23ffaac1d34478f9e98fd667df28eabcfc7ca33ab292ac53733764f1fe"
+    },
+    "castform-shinies/tex1_4x4_a767efcb4c67b834_14.png": {
+      "bytes": 82,
+      "sha256": "fe305eab1c2143955944fbe87958f4c79e92841e1c28a34e348331d61a93d396"
+    },
+    "castform-shinies/tex1_32x32_d02d8f2b3cb06251_2.png": {
+      "bytes": 4978,
+      "sha256": "54373f0a65e5ed8869ce45b115cdfeae21ccc5cf52aa7f02c5d8f59d318019a9"
+    },
+    "castform-shinies/tex1_64x64_983d77f6d7d6aa75_14.png": {
+      "bytes": 31874,
+      "sha256": "096706af0f1c46eb7b708eb98ba7cf6275ffef48c427cb60d375b38039b587ca"
+    },
+    "castform-shinies/tex1_64x768_dc3d1037c5561fda_14.png": {
+      "bytes": 35106,
+      "sha256": "fddd8b6cb08121060237144fcef31e70555c481171735d0e2e87adb0d06a4431"
+    },
+    "castform-shinies/tex1_128x720_e434d0d30cb9fd4b_14.png": {
+      "bytes": 130493,
+      "sha256": "11e2bec5f96129db3e6357f070767bd00b41ff7d50429bccc4a6aee12a39e1d8"
+    },
+    "castform-shinies/tex1_4x4_c1dd203259f7b1b5_14.png": {
+      "bytes": 82,
+      "sha256": "884974ec7a4a2aa755cd2a21537e80b967536532ce44bbc945bcda276b613b0a"
+    },
+    "castform-shinies/tex1_32x32_e9e558b39d2efe29_5.png": {
+      "bytes": 3270,
+      "sha256": "52ce05177efbf1657ee09cbd392c279839c0211608eb1fa29aefeb38fcc5c30a"
+    },
+    "castform-shinies/tex1_64x64_0018d79c4454fd96_14.png": {
+      "bytes": 28800,
+      "sha256": "2551a204061142fa13fb6928427112a9a2633458ae7daf761075e8ccb0627ce8"
+    },
+    "castform-shinies/colosseum-weather-f-x4.png": {
+      "bytes": 100520,
+      "sha256": "6f9db4b8e66cd0fa3f90d0b7e06fb5a151aff0439f8d8c4c179860fb633caa12"
+    },
+    "castform-shinies/colosseum-weather-f-native.png": {
+      "bytes": 5027,
+      "sha256": "f940de7079eb08dd0fc876fd2e4bfc48e7613a6ecf93944e24230548cbb1d246"
+    },
+    "castform-shinies/xd-weather-f-x4.png": {
+      "bytes": 87415,
+      "sha256": "99552734534185d59d1f1e8d4ddc435a4f6382de27fcad2a1be1e73b4cacebb8"
+    },
+    "castform-shinies/xd-weather-f-native.png": {
+      "bytes": 4396,
+      "sha256": "54207e132ce73ec3a4632edd856fcf6cc55b0c4fa7205b16056106f1fd929151"
+    },
+    "castform-shinies/colosseum-weather-w-x4.png": {
+      "bytes": 91948,
+      "sha256": "a473314aa2f79d1541f3e439f88888726b664fd440b8d98ef139e4fc1060cf1b"
+    },
+    "castform-shinies/colosseum-weather-w-native.png": {
+      "bytes": 4844,
+      "sha256": "79129d8d6c8f940ebe736680591b6d941fbedad7cfc9e8b12a69f3048655610b"
+    },
+    "castform-shinies/xd-weather-w-x4.png": {
+      "bytes": 83097,
+      "sha256": "3ffb209d589e3d4f14152d800139a0876addcf85930e9957738b36d7a72b6baa"
+    },
+    "castform-shinies/xd-weather-w-native.png": {
+      "bytes": 4417,
+      "sha256": "a5cce5d9602d6926a4012a5d6917aefde812b10b4806a2fc3d9abe664aba3da4"
+    },
+    "castform-shinies/colosseum-weather-i-x4.png": {
+      "bytes": 95629,
+      "sha256": "0232b2b976c399cb1ef32a57216e7bfdc4a0e95e7dc047df424de449e1ee6ba1"
+    },
+    "castform-shinies/colosseum-weather-i-native.png": {
+      "bytes": 5106,
+      "sha256": "96d9743091e5f06ed45b9eedd1b8575953e92b558113aea194848857663e086b"
+    },
+    "castform-shinies/xd-weather-i-x4.png": {
+      "bytes": 84337,
+      "sha256": "222bde02b9d2603526d1a333d6852c0bf3d21d70725f6b70ce3a40463bd5a19a"
+    },
+    "castform-shinies/xd-weather-i-native.png": {
+      "bytes": 4450,
+      "sha256": "0adf70de8bd02d0e02f33b534360a5bda4c8be445b3b21db7ecaaa20e4f79aae"
+    },
+    "castform-shinies/catalog.json": {
+      "bytes": 37134,
+      "sha256": "f0e69a230c92dc2d7bce3eb73e779d163df1999f393dd8ba695eb9d62bcb7930"
     }
   },
   "additional_sources": [

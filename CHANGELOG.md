@@ -1,5 +1,29 @@
 # Changelog
 
+## 2.0.3 - 2026-11-19
+
+- Keep Forecast on Castform and exclude it from other species' randomized
+  abilities in both games. Other Castform properties remain configurable.
+- Update Castform's battle HUD portrait from its currently loaded model, using
+  the native sun, rain, hail and normal artwork. Retain native shiny selection,
+  asynchronous loading and the existing Shadow Lugia portrait hooks.
+- Reduce the HD Sunny Form portrait's model size by 20% in both games. Reuse
+  the original GPU capture with an identical crop for normal and shiny cells;
+  preserve the native square/round frames and HUD orientation.
+- Add distinct modern shiny colors for Castform's Sunny, Rainy and Snowy forms
+  in both games, with color-only native models, genuine x4 materials and paired
+  native/HD portraits. Keep each specimen's native shiny decision, ordinary
+  resources, meshes, opacity and animations. Bind every added native texture
+  to its exact reviewed HD artwork and include it in immutable cache identities.
+- Refresh the linked stock-material catalogue atomically when portrait framing
+  changes. Reject inconsistent material recipes before publishing any artwork.
+- Version the new engines and warn when importing an older profile or creation
+  report. Preserve all explicit settings, including the option to retain the
+  original properties of Pokemon whose species is unchanged.
+- Stabilize the source-archive timeout regression on busy systems. Start its
+  unchanged two-second deadline after the hanging test is ready, and verify
+  that the worker process is terminated.
+
 ## 2.0.2 - 2026-11-19
 
 - Enable the 512x512 Spinda lab face on Japanese Colosseum with a compact,

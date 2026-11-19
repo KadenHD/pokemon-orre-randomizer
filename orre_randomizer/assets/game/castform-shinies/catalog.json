@@ -1,0 +1,1285 @@
+{
+  "schema": 1,
+  "kind": "castform-shiny-native-and-hd",
+  "review_only": false,
+  "palette": "modern official weather-form appearances",
+  "palette_reference": {
+    "10013-normal": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/10013.png",
+      "sha256": "a351364745cae76f291e5588cef489aee6870f6c58e54f664191072edee85723",
+      "usage": "Color reference only; reference pixels are not bundled"
+    },
+    "10013-shiny": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10013.png",
+      "sha256": "ccdf8671a6b54d7a11cbbb2c7d4cd044b50754dfb70e07acb47c377bf651a832",
+      "usage": "Color reference only; reference pixels are not bundled"
+    },
+    "10014-normal": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/10014.png",
+      "sha256": "32d75e8a3a12d052c0d780858273d1ae418a34e3d45eb98d50b6b2867bc688e6",
+      "usage": "Color reference only; reference pixels are not bundled"
+    },
+    "10014-shiny": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10014.png",
+      "sha256": "3000c025c3f7c0fc72b3cf54033348aee9b7a7d8413a2281e2a991d653be596e",
+      "usage": "Color reference only; reference pixels are not bundled"
+    },
+    "10015-normal": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/10015.png",
+      "sha256": "74b4e73bd5eef7418e09fabf391840781495491627a6c8aae8c77cbef40cf0a4",
+      "usage": "Color reference only; reference pixels are not bundled"
+    },
+    "10015-shiny": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/home/shiny/10015.png",
+      "sha256": "7d2679a5aace2c533bc6f160480c5b6d6ac975c7f650dc388682c65c6b74e8a2",
+      "usage": "Color reference only; reference pixels are not bundled"
+    }
+  },
+  "material_sources": {
+    "paint-40f62893d640adae28ad1d17": {
+      "pack": "colosseum",
+      "native_key": "tex1_64x768_53829cb37cd15609_14.png",
+      "physical_file": "tex1_64x768_53829cb37cd15609_14.dds",
+      "sha256": "40f62893d640adae28ad1d17008c602cfa9924e8067a900ccbe03c07d4cc91aa"
+    },
+    "paint-fe6d53179814ba7a01e65d36": {
+      "pack": "colosseum",
+      "native_key": "tex1_128x720_00a94bbc8ba34919_14.png",
+      "physical_file": "tex1_128x720_00a94bbc8ba34919_14.dds",
+      "sha256": "fe6d53179814ba7a01e65d36a490bf69efbed29d14d9e4089c3b42e13613c0a8"
+    },
+    "paint-888c56bcb9d12925af99673e": {
+      "pack": "colosseum",
+      "native_key": "tex1_4x4_4f8fa254a0cc939f_14.png",
+      "physical_file": "tex1_4x4_4f8fa254a0cc939f_14.dds",
+      "sha256": "888c56bcb9d12925af99673e1d935708addef10f23b56a070d7c250635d93cca"
+    },
+    "paint-fddfccf139a00b37b3186df8": {
+      "pack": "colosseum",
+      "native_key": "tex1_32x32_fca892c7108cd8b2_2.png",
+      "physical_file": "tex1_32x32_fca892c7108cd8b2_2.dds",
+      "sha256": "fddfccf139a00b37b3186df851e1500b71829991613255a87577a3f22ec9140a"
+    },
+    "paint-02978e27677bf5172a26dc12": {
+      "pack": "colosseum",
+      "native_key": "tex1_64x64_365396ccc950f84d_14.png",
+      "physical_file": "tex1_64x64_365396ccc950f84d_14.dds",
+      "sha256": "02978e27677bf5172a26dc12d9282915041f3ff2fe4e010892cbadc799c55f22"
+    }
+  },
+  "files": [
+    {
+      "role": "material",
+      "file": "tex1_64x768_72079d85933e9fe9_14.png",
+      "native_key": "tex1_64x768_72079d85933e9fe9_14.png",
+      "native_dimensions": [
+        64,
+        768
+      ],
+      "dimensions": [
+        256,
+        3072
+      ],
+      "native_rgba_sha256": "22e133f76c440bff8e57e3ffa2c80614b95643873c5778e573b8f1e1d4acdbca",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 36155,
+      "sha256": "5f2d8e9fef5ec9a43092176f8332c89c96c0325bf2171cac5171380a6727dc55",
+      "material_sources": [
+        "paint-40f62893d640adae28ad1d17"
+      ],
+      "form": "f",
+      "semantic_role": "mask",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_128x720_2dd55ce8b8bd3fef_14.png",
+      "native_key": "tex1_128x720_2dd55ce8b8bd3fef_14.png",
+      "native_dimensions": [
+        128,
+        720
+      ],
+      "dimensions": [
+        512,
+        2880
+      ],
+      "native_rgba_sha256": "16a4f408f91eb4c91e4388b279980c4102adcfc0b34d49c6076a47cf94fe8d36",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 176008,
+      "sha256": "dd5c7296e2d278cf48929ac56deedef435142a8ef027bfebb31b4542d9c3d0d9",
+      "material_sources": [
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "form": "f",
+      "semantic_role": "face",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_4x4_0f39b9609f1dd57a_14.png",
+      "native_key": "tex1_4x4_0f39b9609f1dd57a_14.png",
+      "native_dimensions": [
+        4,
+        4
+      ],
+      "dimensions": [
+        16,
+        16
+      ],
+      "native_rgba_sha256": "9c5cd2ac3355a113ecdc70104670ef44a0670fe99c03d9d833fbe4f92b021b17",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 82,
+      "sha256": "f4ce95e24c6afead54b9d526576526258b1ea75ae228c65c4ef84081959fd5b3",
+      "material_sources": [
+        "paint-888c56bcb9d12925af99673e"
+      ],
+      "form": "f",
+      "semantic_role": "head-flat",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_32x32_fca892c7108cd8b2_2.png",
+      "native_key": "tex1_32x32_fca892c7108cd8b2_2.png",
+      "native_dimensions": [
+        32,
+        32
+      ],
+      "dimensions": [
+        128,
+        128
+      ],
+      "native_rgba_sha256": "f86fad15cdc5ccc5e97353d2c6c28966de1af383a6e5e2614d099bd369984a57",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 4953,
+      "sha256": "4d19f494ac419693d0ecab69282ce1ed6ff62ecbd0ec5a0927682932aae127ed",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "f",
+      "semantic_role": "unchanged-native-material",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_64x64_365396ccc950f84d_14.png",
+      "native_key": "tex1_64x64_365396ccc950f84d_14.png",
+      "native_dimensions": [
+        64,
+        64
+      ],
+      "dimensions": [
+        256,
+        256
+      ],
+      "native_rgba_sha256": "da8322c136213bd2d2644d2449755384a7de8eedfa9e364e7471839c9c3f4cac",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 43275,
+      "sha256": "7f46257e7737c2b04a8a4762747c7f8bc464f9d6ef2a572222f0c205d7ee3bf8",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12"
+      ],
+      "form": "f",
+      "semantic_role": "unchanged-native-material",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_64x768_a0ab8d337f59e7bd_14.png",
+      "native_key": "tex1_64x768_a0ab8d337f59e7bd_14.png",
+      "native_dimensions": [
+        64,
+        768
+      ],
+      "dimensions": [
+        256,
+        3072
+      ],
+      "native_rgba_sha256": "4870bc40044eae061dc6738438adb13453af9b374a8c1fa9601ccb3e99ea5eaf",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 35141,
+      "sha256": "ec7f3dd713c6ac58ab3d866ba8595e03581e12c277a9f089f517a0165d95677b",
+      "material_sources": [
+        "paint-40f62893d640adae28ad1d17"
+      ],
+      "form": "w",
+      "semantic_role": "mask",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_128x720_966d538ce6c790cb_14.png",
+      "native_key": "tex1_128x720_966d538ce6c790cb_14.png",
+      "native_dimensions": [
+        128,
+        720
+      ],
+      "dimensions": [
+        512,
+        2880
+      ],
+      "native_rgba_sha256": "bb7f7f283afa224a5b6bf5104f277cc4bdce3711626461b1a0bea5390742a076",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 136235,
+      "sha256": "ff6e594cfff1dea960b49a8905e1f5bbd51bcbb7e5e9e6ded1d551074b204ad9",
+      "material_sources": [
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "form": "w",
+      "semantic_role": "face",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_4x4_dfbeef940f7e8e36_14.png",
+      "native_key": "tex1_4x4_dfbeef940f7e8e36_14.png",
+      "native_dimensions": [
+        4,
+        4
+      ],
+      "dimensions": [
+        16,
+        16
+      ],
+      "native_rgba_sha256": "44d8e368093ba49ac3bf817106f8846715c9fda8ad586aa87636b4ee158e775f",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 82,
+      "sha256": "226dfb971cfabe157b334eb2bfdb6e2817468f83ff76d8120c28203939a170f5",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "w",
+      "semantic_role": "head-flat",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_64x64_cdddd905cb663e83_14.png",
+      "native_key": "tex1_64x64_cdddd905cb663e83_14.png",
+      "native_dimensions": [
+        64,
+        64
+      ],
+      "dimensions": [
+        256,
+        256
+      ],
+      "native_rgba_sha256": "23b059d5fa3a023d1302b58bb904fa8aa59a7955f4d051da56ec215fe1d82f9b",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 4916,
+      "sha256": "a34de6bf414318c4b2ee122832ebcc208fc5a09aa7b80ec5e7d96b9baa5a842b",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "w",
+      "semantic_role": "cloud",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_64x64_83332f08ad908e61_14.png",
+      "native_key": "tex1_64x64_83332f08ad908e61_14.png",
+      "native_dimensions": [
+        64,
+        64
+      ],
+      "dimensions": [
+        256,
+        256
+      ],
+      "native_rgba_sha256": "d760f55a9b2423299db1983ca8b0990014469124d7ec9a751864d453ce610ad4",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 4672,
+      "sha256": "f5c033ca2a297c2340230791ac18b081ff92df105bbf7d09d8292c507514894e",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "w",
+      "semantic_role": "cloud",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_64x64_ac8a6ed6b721e4c7_14.png",
+      "native_key": "tex1_64x64_ac8a6ed6b721e4c7_14.png",
+      "native_dimensions": [
+        64,
+        64
+      ],
+      "dimensions": [
+        256,
+        256
+      ],
+      "native_rgba_sha256": "54721ecb04b288871f9a061caf240970884b91f6be2b7ff0be2581c01b73dfa0",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 7200,
+      "sha256": "db0a4857ed305089e4c9af5cc2aba83ced4742d62caea6a39b83a84e1cf7cca1",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "w",
+      "semantic_role": "cloud",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_4x4_7dd5d84662ce4103_14.png",
+      "native_key": "tex1_4x4_7dd5d84662ce4103_14.png",
+      "native_dimensions": [
+        4,
+        4
+      ],
+      "dimensions": [
+        16,
+        16
+      ],
+      "native_rgba_sha256": "0deaa55bd2c07af26f2d5711f4c4bcd20290649e3939dbcd3ef392fb25cb0d41",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 83,
+      "sha256": "e23a0b23ffaac1d34478f9e98fd667df28eabcfc7ca33ab292ac53733764f1fe",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "w",
+      "semantic_role": "cloud",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_4x4_a767efcb4c67b834_14.png",
+      "native_key": "tex1_4x4_a767efcb4c67b834_14.png",
+      "native_dimensions": [
+        4,
+        4
+      ],
+      "dimensions": [
+        16,
+        16
+      ],
+      "native_rgba_sha256": "74323dc77dc5779d9f06fb329abbaad5c2bfb61675d37bfe2c223b49454ed542",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 82,
+      "sha256": "fe305eab1c2143955944fbe87958f4c79e92841e1c28a34e348331d61a93d396",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "w",
+      "semantic_role": "cloud",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_32x32_d02d8f2b3cb06251_2.png",
+      "native_key": "tex1_32x32_d02d8f2b3cb06251_2.png",
+      "native_dimensions": [
+        32,
+        32
+      ],
+      "dimensions": [
+        128,
+        128
+      ],
+      "native_rgba_sha256": "e5c440af24658907bdd0da6198ab6f151a208e008e4f9ad733c3bda7243849ed",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 4978,
+      "sha256": "54373f0a65e5ed8869ce45b115cdfeae21ccc5cf52aa7f02c5d8f59d318019a9",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "w",
+      "semantic_role": "unchanged-native-material",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_64x64_983d77f6d7d6aa75_14.png",
+      "native_key": "tex1_64x64_983d77f6d7d6aa75_14.png",
+      "native_dimensions": [
+        64,
+        64
+      ],
+      "dimensions": [
+        256,
+        256
+      ],
+      "native_rgba_sha256": "2227c0c3ea4d5a81ded2b514c5fd6db9829e061924c72b2bf425adcb521b2a3b",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 31874,
+      "sha256": "096706af0f1c46eb7b708eb98ba7cf6275ffef48c427cb60d375b38039b587ca",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12"
+      ],
+      "form": "w",
+      "semantic_role": "unchanged-native-material",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_64x768_dc3d1037c5561fda_14.png",
+      "native_key": "tex1_64x768_dc3d1037c5561fda_14.png",
+      "native_dimensions": [
+        64,
+        768
+      ],
+      "dimensions": [
+        256,
+        3072
+      ],
+      "native_rgba_sha256": "8f8a617b0666f512cac9ec0ab5813ffb0190dee7be16250641d6739dc34295e7",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 35106,
+      "sha256": "fddd8b6cb08121060237144fcef31e70555c481171735d0e2e87adb0d06a4431",
+      "material_sources": [
+        "paint-40f62893d640adae28ad1d17"
+      ],
+      "form": "i",
+      "semantic_role": "mask",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_128x720_e434d0d30cb9fd4b_14.png",
+      "native_key": "tex1_128x720_e434d0d30cb9fd4b_14.png",
+      "native_dimensions": [
+        128,
+        720
+      ],
+      "dimensions": [
+        512,
+        2880
+      ],
+      "native_rgba_sha256": "bbbf04bc9878afd5956bb47b37540ccb3e2ef75f5d0c6ae9fb404097a95aef3b",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 130493,
+      "sha256": "11e2bec5f96129db3e6357f070767bd00b41ff7d50429bccc4a6aee12a39e1d8",
+      "material_sources": [
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "form": "i",
+      "semantic_role": "face",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_4x4_c1dd203259f7b1b5_14.png",
+      "native_key": "tex1_4x4_c1dd203259f7b1b5_14.png",
+      "native_dimensions": [
+        4,
+        4
+      ],
+      "dimensions": [
+        16,
+        16
+      ],
+      "native_rgba_sha256": "e3e9ad8c8ccecc709ad8a809b47fa2a12965b003cf1497abe81ccff67300ed4e",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 82,
+      "sha256": "884974ec7a4a2aa755cd2a21537e80b967536532ce44bbc945bcda276b613b0a",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "i",
+      "semantic_role": "head-flat",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_32x32_e9e558b39d2efe29_5.png",
+      "native_key": "tex1_32x32_e9e558b39d2efe29_5.png",
+      "native_dimensions": [
+        32,
+        32
+      ],
+      "dimensions": [
+        128,
+        128
+      ],
+      "native_rgba_sha256": "1b30a0acb96d111d09d41c5f9360f3cfdd807b4ed7536cf049a24aa823b20333",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 3270,
+      "sha256": "52ce05177efbf1657ee09cbd392c279839c0211608eb1fa29aefeb38fcc5c30a",
+      "material_sources": [
+        "paint-fddfccf139a00b37b3186df8"
+      ],
+      "form": "i",
+      "semantic_role": "unchanged-native-material",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "material",
+      "file": "tex1_64x64_0018d79c4454fd96_14.png",
+      "native_key": "tex1_64x64_0018d79c4454fd96_14.png",
+      "native_dimensions": [
+        64,
+        64
+      ],
+      "dimensions": [
+        256,
+        256
+      ],
+      "native_rgba_sha256": "3877b0b83b7e0778e8f1bab5a742877d6838dd113844a88e449e27d7ea166c04",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01",
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 28800,
+      "sha256": "2551a204061142fa13fb6928427112a9a2633458ae7daf761075e8ccb0627ce8",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12"
+      ],
+      "form": "i",
+      "semantic_role": "unchanged-native-material",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "portrait",
+      "file": "colosseum-weather-f-x4.png",
+      "native_key": "tex1_42x84_d307aa92bb1cdf4b_6.png",
+      "native_dimensions": [
+        42,
+        84
+      ],
+      "dimensions": [
+        168,
+        336
+      ],
+      "native_rgba_sha256": "259ab6fde8206094f208c6f9e5bb2e05c03c8930cfae82bcd692471c56c7ef78",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 100520,
+      "sha256": "6f9db4b8e66cd0fa3f90d0b7e06fb5a151aff0439f8d8c4c179860fb633caa12",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12",
+        "paint-40f62893d640adae28ad1d17",
+        "paint-888c56bcb9d12925af99673e",
+        "paint-fddfccf139a00b37b3186df8",
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "normal_cell_preserved": true,
+      "form": "f",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "portrait",
+      "file": "xd-weather-f-x4.png",
+      "native_key": "tex1_42x84_44a95546a2af62de_5.png",
+      "native_dimensions": [
+        42,
+        84
+      ],
+      "dimensions": [
+        168,
+        336
+      ],
+      "native_rgba_sha256": "bf6090b6e26afb559513156aef45bda53aab556371921693c88a281e6075f6eb",
+      "game_ids": [
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 87415,
+      "sha256": "99552734534185d59d1f1e8d4ddc435a4f6382de27fcad2a1be1e73b4cacebb8",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12",
+        "paint-40f62893d640adae28ad1d17",
+        "paint-888c56bcb9d12925af99673e",
+        "paint-fddfccf139a00b37b3186df8",
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "normal_cell_preserved": true,
+      "form": "f",
+      "native_bitmap_resampled": false,
+      "native_encoding": {
+        "format": "RGB5A3",
+        "gx_format": 5,
+        "atlas_bytes": 7520,
+        "image_extent_bytes": 7520,
+        "resource_bytes": 8032,
+        "tail_padding_zero_bytes": 512,
+        "native_cache_slot_bytes": 8032,
+        "normal_rgb_exact": true,
+        "alpha_exact": true,
+        "shiny_rgb_quantization": "nearest native 5-bit RGB, independent GX roundtrip checked",
+        "shiny_rgb_max_error": 4,
+        "authored_capture_PNG_unchanged": true
+      }
+    },
+    {
+      "role": "portrait",
+      "file": "colosseum-weather-w-x4.png",
+      "native_key": "tex1_42x84_f27e62c574917b45_6.png",
+      "native_dimensions": [
+        42,
+        84
+      ],
+      "dimensions": [
+        168,
+        336
+      ],
+      "native_rgba_sha256": "3d8e101350dee14a77dde611106688e995871b4a964ab1358e46838ce8474056",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 91948,
+      "sha256": "a473314aa2f79d1541f3e439f88888726b664fd440b8d98ef139e4fc1060cf1b",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12",
+        "paint-40f62893d640adae28ad1d17",
+        "paint-fddfccf139a00b37b3186df8",
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "normal_cell_preserved": true,
+      "form": "w",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "portrait",
+      "file": "xd-weather-w-x4.png",
+      "native_key": "tex1_42x84_b6e27a44eb36e8dd_5.png",
+      "native_dimensions": [
+        42,
+        84
+      ],
+      "dimensions": [
+        168,
+        336
+      ],
+      "native_rgba_sha256": "b475430d5e518a247e2f12b1cfa468617570ed7be33c5e72425d626a44d4ea67",
+      "game_ids": [
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 83097,
+      "sha256": "3ffb209d589e3d4f14152d800139a0876addcf85930e9957738b36d7a72b6baa",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12",
+        "paint-40f62893d640adae28ad1d17",
+        "paint-fddfccf139a00b37b3186df8",
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "normal_cell_preserved": true,
+      "form": "w",
+      "native_bitmap_resampled": false,
+      "native_encoding": {
+        "format": "RGB5A3",
+        "gx_format": 5,
+        "atlas_bytes": 7520,
+        "image_extent_bytes": 7520,
+        "resource_bytes": 8032,
+        "tail_padding_zero_bytes": 512,
+        "native_cache_slot_bytes": 8032,
+        "normal_rgb_exact": true,
+        "alpha_exact": true,
+        "shiny_rgb_quantization": "nearest native 5-bit RGB, independent GX roundtrip checked",
+        "shiny_rgb_max_error": 4,
+        "authored_capture_PNG_unchanged": true
+      }
+    },
+    {
+      "role": "portrait",
+      "file": "colosseum-weather-i-x4.png",
+      "native_key": "tex1_42x84_496ba3def91e4923_6.png",
+      "native_dimensions": [
+        42,
+        84
+      ],
+      "dimensions": [
+        168,
+        336
+      ],
+      "native_rgba_sha256": "637e3d59f4ea7d5e088271031059792b82286408c57f668cf8de5f2cf376f92a",
+      "game_ids": [
+        "GC6P01",
+        "GC6E01",
+        "GC6J01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 95629,
+      "sha256": "0232b2b976c399cb1ef32a57216e7bfdc4a0e95e7dc047df424de449e1ee6ba1",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12",
+        "paint-40f62893d640adae28ad1d17",
+        "paint-fddfccf139a00b37b3186df8",
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "normal_cell_preserved": true,
+      "form": "i",
+      "native_bitmap_resampled": false
+    },
+    {
+      "role": "portrait",
+      "file": "xd-weather-i-x4.png",
+      "native_key": "tex1_42x84_582bb391b98a6d48_5.png",
+      "native_dimensions": [
+        42,
+        84
+      ],
+      "dimensions": [
+        168,
+        336
+      ],
+      "native_rgba_sha256": "2ae85544ad39844eb4f37a75f02168ad7b51477f4a86e6fc6ef37092badf5742",
+      "game_ids": [
+        "GXXP01",
+        "GXXE01",
+        "GXXJ01"
+      ],
+      "required_pack": "colosseum",
+      "bytes": 84337,
+      "sha256": "222bde02b9d2603526d1a333d6852c0bf3d21d70725f6b70ce3a40463bd5a19a",
+      "material_sources": [
+        "paint-02978e27677bf5172a26dc12",
+        "paint-40f62893d640adae28ad1d17",
+        "paint-fddfccf139a00b37b3186df8",
+        "paint-fe6d53179814ba7a01e65d36"
+      ],
+      "normal_cell_preserved": true,
+      "form": "i",
+      "native_bitmap_resampled": false,
+      "native_encoding": {
+        "format": "RGB5A3",
+        "gx_format": 5,
+        "atlas_bytes": 7520,
+        "image_extent_bytes": 7520,
+        "resource_bytes": 8032,
+        "tail_padding_zero_bytes": 512,
+        "native_cache_slot_bytes": 8032,
+        "normal_rgb_exact": true,
+        "alpha_exact": true,
+        "shiny_rgb_quantization": "nearest native 5-bit RGB, independent GX roundtrip checked",
+        "shiny_rgb_max_error": 4,
+        "authored_capture_PNG_unchanged": true
+      }
+    }
+  ],
+  "source_models": {
+    "colosseum/415": {
+      "source_sha256": "f70cda7cba9f2a132652fb910ac11d5662557dc77d39214f3ce99aed8a7d482b",
+      "sha256": "97b4eaeb7c492948cbb85d6a15e94934df409fa36d74b38fbd7eb0ea10acd53d",
+      "dat_sha256": "6b41a1b518b4664f6215bd7179a8457d3355af0c50c0411d268654cb41a980af",
+      "palette": {
+        "head": [
+          174,
+          30,
+          73
+        ],
+        "mask": [
+          247,
+          151,
+          137
+        ],
+        "source_head": [
+          252,
+          70,
+          3
+        ],
+        "source_mask": [
+          250,
+          223,
+          121
+        ],
+        "cloud": [
+          227,
+          182,
+          214
+        ]
+      },
+      "geometry_animation_uv_footer_unchanged": true,
+      "native_texture_alpha_unchanged": true
+    },
+    "colosseum/414": {
+      "source_sha256": "56dc626b5aafaf63558568f29a2d41846c4d3699d9147bb37ba6556045da5372",
+      "sha256": "823b76e9dbc40ab094680dca613a083d5f1ccd4607050188bd364f578ccc4ea4",
+      "dat_sha256": "2004d94fd39a31c5538085923bec4eeaa9b199fefb7b0393d041928a824e06cc",
+      "palette": {
+        "head": [
+          21,
+          139,
+          143
+        ],
+        "mask": [
+          133,
+          226,
+          70
+        ],
+        "source_head": [
+          0,
+          119,
+          213
+        ],
+        "source_mask": [
+          188,
+          215,
+          236
+        ],
+        "cloud": [
+          120,
+          157,
+          178
+        ]
+      },
+      "geometry_animation_uv_footer_unchanged": true,
+      "native_texture_alpha_unchanged": true
+    },
+    "colosseum/416": {
+      "source_sha256": "fad5ec994c69ba35c1c2fbbdb01b6f0148f943df6a905035682402c9cb416809",
+      "sha256": "0cad81b3a22c3ab5ae379f4e1adf35838865d1d24c8b6473f83491d567bae38b",
+      "dat_sha256": "1aab2d24ebc23368be0bd213fe27e957f3b0d977ec62c7d6f89a6bef3b0f8c9d",
+      "palette": {
+        "head": [
+          66,
+          88,
+          194
+        ],
+        "mask": [
+          229,
+          234,
+          111
+        ],
+        "source_head": [
+          133,
+          128,
+          217
+        ],
+        "source_mask": [
+          173,
+          173,
+          220
+        ]
+      },
+      "geometry_animation_uv_footer_unchanged": true,
+      "native_texture_alpha_unchanged": true
+    },
+    "xd/415": {
+      "source_sha256": "a3ac41da46d8229e1008b133a1fea59e906cb1e9f6ad1221cc9e9ce8a752c1ac",
+      "sha256": "837ec9e315c31b5b9d2e2eeff8d149534156c8f197976fbafa6cf0f5c454c2d2",
+      "dat_sha256": "c2aeb78761a08d92bf7e4d5a3d3819cd6f32e299c2690efcc6ed5257845c20fa",
+      "palette": {
+        "head": [
+          174,
+          30,
+          73
+        ],
+        "mask": [
+          247,
+          151,
+          137
+        ],
+        "source_head": [
+          252,
+          70,
+          3
+        ],
+        "source_mask": [
+          250,
+          223,
+          121
+        ],
+        "cloud": [
+          227,
+          182,
+          214
+        ]
+      },
+      "geometry_animation_uv_footer_unchanged": true,
+      "native_texture_alpha_unchanged": true
+    },
+    "xd/414": {
+      "source_sha256": "8e67ca400c2019463a06faecb55811552e7ab36c244ac6d8a0cc55421a6b77f8",
+      "sha256": "923937e9853c9c5928d6bb97a3ff77bec5bd59c92d8c96732f8c1993c9180173",
+      "dat_sha256": "4b76310a3f230d470e604a31b1e32a7f7413670e5685d5c8b5f9b178359f7927",
+      "palette": {
+        "head": [
+          21,
+          139,
+          143
+        ],
+        "mask": [
+          133,
+          226,
+          70
+        ],
+        "source_head": [
+          0,
+          119,
+          213
+        ],
+        "source_mask": [
+          188,
+          215,
+          236
+        ],
+        "cloud": [
+          120,
+          157,
+          178
+        ]
+      },
+      "geometry_animation_uv_footer_unchanged": true,
+      "native_texture_alpha_unchanged": true
+    },
+    "xd/416": {
+      "source_sha256": "9fb6693498c7961becf94c34784b6317621740ce3a97efef202d9ef3bd30db8a",
+      "sha256": "e30bbf70c7fd888c47603f0d7c04eb8213bca1af85ec6a2de399c1137f12c99e",
+      "dat_sha256": "e0dee2bed85f22c842cbb029c680bd7c6f221d59e330d48c04b4f3d567b18dd3",
+      "palette": {
+        "head": [
+          66,
+          88,
+          194
+        ],
+        "mask": [
+          229,
+          234,
+          111
+        ],
+        "source_head": [
+          133,
+          128,
+          217
+        ],
+        "source_mask": [
+          173,
+          173,
+          220
+        ]
+      },
+      "geometry_animation_uv_footer_unchanged": true,
+      "native_texture_alpha_unchanged": true
+    }
+  },
+  "faces": {
+    "colosseum/415": {
+      "native_file": "colosseum-weather-f-native.png",
+      "native_dimensions": [
+        42,
+        42
+      ],
+      "native_bytes": 5027,
+      "native_sha256": "f940de7079eb08dd0fc876fd2e4bfc48e7613a6ecf93944e24230548cbb1d246",
+      "source_crop": [
+        411,
+        366,
+        661,
+        616
+      ],
+      "normal_cell_preserved": true,
+      "pose_signature_sha256": "8dfcc42335bb6e65eccf995e0b2799dce79864f9e8458348ec55ed344de8cf78",
+      "render_source_game": "colosseum",
+      "native_render_sha256": "84318bdd764724f89a4cf70870f4a860f67d0cb3a8918889f9a64758627f371b",
+      "hd_render_sha256": "3ce3e42752f6360039e8b74e2512d52e9f2942ff1d640cfa6d642926910f1c3f"
+    },
+    "xd/415": {
+      "native_file": "xd-weather-f-native.png",
+      "native_dimensions": [
+        42,
+        42
+      ],
+      "native_bytes": 4396,
+      "native_sha256": "54207e132ce73ec3a4632edd856fcf6cc55b0c4fa7205b16056106f1fd929151",
+      "source_crop": [
+        411,
+        366,
+        661,
+        616
+      ],
+      "normal_cell_preserved": true,
+      "pose_signature_sha256": "8dfcc42335bb6e65eccf995e0b2799dce79864f9e8458348ec55ed344de8cf78",
+      "render_source_game": "colosseum",
+      "native_render_sha256": "84318bdd764724f89a4cf70870f4a860f67d0cb3a8918889f9a64758627f371b",
+      "hd_render_sha256": "3ce3e42752f6360039e8b74e2512d52e9f2942ff1d640cfa6d642926910f1c3f",
+      "native_encoding": {
+        "format": "RGB5A3",
+        "gx_format": 5,
+        "atlas_bytes": 7520,
+        "image_extent_bytes": 7520,
+        "resource_bytes": 8032,
+        "tail_padding_zero_bytes": 512,
+        "native_cache_slot_bytes": 8032,
+        "normal_rgb_exact": true,
+        "alpha_exact": true,
+        "shiny_rgb_quantization": "nearest native 5-bit RGB, independent GX roundtrip checked",
+        "shiny_rgb_max_error": 4,
+        "authored_capture_PNG_unchanged": true
+      }
+    },
+    "colosseum/414": {
+      "native_file": "colosseum-weather-w-native.png",
+      "native_dimensions": [
+        42,
+        42
+      ],
+      "native_bytes": 4844,
+      "native_sha256": "79129d8d6c8f940ebe736680591b6d941fbedad7cfc9e8b12a69f3048655610b",
+      "source_crop": [
+        366,
+        447,
+        606,
+        687
+      ],
+      "normal_cell_preserved": true,
+      "pose_signature_sha256": "e4b4e390877c44f34943df4a3feac20c66d4b4633177a1bd27663ff540f72ed7",
+      "render_source_game": "colosseum",
+      "native_render_sha256": "5247f75c33697121d9a9b6bc0bc86772bac7a7ecee7953fb9fdca28610780584",
+      "hd_render_sha256": "1f14729113c68998464399a7f3e2cb7ac4a57f4dfe3d4c0c13fc5514ab7b417d"
+    },
+    "xd/414": {
+      "native_file": "xd-weather-w-native.png",
+      "native_dimensions": [
+        42,
+        42
+      ],
+      "native_bytes": 4417,
+      "native_sha256": "a5cce5d9602d6926a4012a5d6917aefde812b10b4806a2fc3d9abe664aba3da4",
+      "source_crop": [
+        366,
+        447,
+        606,
+        687
+      ],
+      "normal_cell_preserved": true,
+      "pose_signature_sha256": "e4b4e390877c44f34943df4a3feac20c66d4b4633177a1bd27663ff540f72ed7",
+      "render_source_game": "colosseum",
+      "native_render_sha256": "5247f75c33697121d9a9b6bc0bc86772bac7a7ecee7953fb9fdca28610780584",
+      "hd_render_sha256": "1f14729113c68998464399a7f3e2cb7ac4a57f4dfe3d4c0c13fc5514ab7b417d",
+      "native_encoding": {
+        "format": "RGB5A3",
+        "gx_format": 5,
+        "atlas_bytes": 7520,
+        "image_extent_bytes": 7520,
+        "resource_bytes": 8032,
+        "tail_padding_zero_bytes": 512,
+        "native_cache_slot_bytes": 8032,
+        "normal_rgb_exact": true,
+        "alpha_exact": true,
+        "shiny_rgb_quantization": "nearest native 5-bit RGB, independent GX roundtrip checked",
+        "shiny_rgb_max_error": 4,
+        "authored_capture_PNG_unchanged": true
+      }
+    },
+    "colosseum/416": {
+      "native_file": "colosseum-weather-i-native.png",
+      "native_dimensions": [
+        42,
+        42
+      ],
+      "native_bytes": 5106,
+      "native_sha256": "96d9743091e5f06ed45b9eedd1b8575953e92b558113aea194848857663e086b",
+      "source_crop": [
+        350,
+        414,
+        630,
+        694
+      ],
+      "normal_cell_preserved": true,
+      "pose_signature_sha256": "6891b804b068e47c4cf5285e7b9bc712216ce3144eb999a5633fdd974457b180",
+      "render_source_game": "colosseum",
+      "native_render_sha256": "0a7794f5e23323f76b05d2fbe570b8b167ffb38cdded82ffc45186c2b68f4f61",
+      "hd_render_sha256": "400618ec8dc49a53198cc837561ff17dbbcd1eb0911afb5809ee2debaf5a0d86"
+    },
+    "xd/416": {
+      "native_file": "xd-weather-i-native.png",
+      "native_dimensions": [
+        42,
+        42
+      ],
+      "native_bytes": 4450,
+      "native_sha256": "0adf70de8bd02d0e02f33b534360a5bda4c8be445b3b21db7ecaaa20e4f79aae",
+      "source_crop": [
+        350,
+        414,
+        630,
+        694
+      ],
+      "normal_cell_preserved": true,
+      "pose_signature_sha256": "6891b804b068e47c4cf5285e7b9bc712216ce3144eb999a5633fdd974457b180",
+      "render_source_game": "colosseum",
+      "native_render_sha256": "0a7794f5e23323f76b05d2fbe570b8b167ffb38cdded82ffc45186c2b68f4f61",
+      "hd_render_sha256": "400618ec8dc49a53198cc837561ff17dbbcd1eb0911afb5809ee2debaf5a0d86",
+      "native_encoding": {
+        "format": "RGB5A3",
+        "gx_format": 5,
+        "atlas_bytes": 7520,
+        "image_extent_bytes": 7520,
+        "resource_bytes": 8032,
+        "tail_padding_zero_bytes": 512,
+        "native_cache_slot_bytes": 8032,
+        "normal_rgb_exact": true,
+        "alpha_exact": true,
+        "shiny_rgb_quantization": "nearest native 5-bit RGB, independent GX roundtrip checked",
+        "shiny_rgb_max_error": 4,
+        "authored_capture_PNG_unchanged": true
+      }
+    }
+  },
+  "render_policy": "Original source mesh, camera and frozen pose; native paint and genuine x4 source paint captured separately. No recoloring of finished portrait pixels.",
+  "normal_assets_unchanged": true,
+  "saved_identity_unchanged": true
+}

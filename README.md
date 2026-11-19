@@ -120,7 +120,22 @@ round frames. Clicking **Install** for XD installs both missing packs, reusing
 any version already installed. Castform's weather forms and XD's additional
 Deoxys forms also have paired normal/shiny x4 portraits. Their 43 reviewed HD
 material textures now apply to the stock models too, with each game's native
-meshes and animations. Original mode keeps the native artwork.
+meshes and animations. Original mode uses native-resolution artwork.
+New randomized ROMs also update Castform's battle portrait to match its visible
+weather form, in both Original and HD modes. Castform keeps Forecast, and the
+ability is excluded from other species' randomized abilities.
+
+Shiny Castform also gains the modern Sunny, Rainy and Snowy colors, with
+matching native and x4 portraits. Each specimen's own shiny status selects the
+appearance throughout its weather changes. The original meshes and animations
+are retained; create a new randomized ROM to install these additional resources.
+
+| Colosseum | XD |
+| --- | --- |
+| ![Native and HD Castform weather appearances in Colosseum](docs/images/castform-colosseum-weather-shinies.png) | ![Native and HD Castform weather appearances in XD](docs/images/castform-xd-weather-shinies.png) |
+
+![Castform's sun, rain and hail battle portraits in Colosseum and XD](docs/images/castform-live-portraits.png)
+
 Custom Shadow Lugia portraits match its normal/shiny colors at both
 resolutions, with violet square frames in Colosseum and round frames in XD.
 The DNA lab uses separate whole-body artwork with matching native/HD poses

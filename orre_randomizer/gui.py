@@ -30,7 +30,7 @@ from . import APP_NAME, __version__
 from .engine.analyze_game import FormatError
 from .disc_images import FORMATS, SUFFIXES, RAW_SUFFIXES
 from .service import Cancelled, Options, UserError, randomize, validate_options, validate_paths, check_header
-from .profiles import load_creation_report, load_profile, save_profile, validate_seed
+from .profiles import ENGINE_MIGRATION, load_creation_report, load_profile, save_profile, validate_seed
 from .preferences import application_preferences
 from .presets import recommended_preset, species_preset
 from .preview import baseline_rows, preview_starters, report_rom_matches, ROULETTE_SPECIES
@@ -1514,7 +1514,10 @@ class MainWindow(QMainWindow):
         self.seed.setText(profile.seed)
         self.creation_report = None
         self.schedule_report_rom_check()
-        self.set_status("Profil chargé : {name}.", name=path.name)
+        if profile.engine_migration:
+            self.set_status(ENGINE_MIGRATION)
+        else:
+            self.set_status("Profil chargé : {name}.", name=path.name)
 
     def import_creation_report(self, path: Path):
         if self.busy:
@@ -1532,7 +1535,8 @@ class MainWindow(QMainWindow):
         self.seed.setText(report.profile.seed)
         self.creation_report = report
         self.schedule_report_rom_check()
-        self.set_status("Seed et réglages repris depuis le rapport.")
+        self.set_status(ENGINE_MIGRATION if report.profile.engine_migration else
+                        "Seed et réglages repris depuis le rapport.")
 
     def choose_creation_report(self):
         if self.home.updating:

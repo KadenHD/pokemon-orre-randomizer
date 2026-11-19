@@ -7,7 +7,9 @@ import struct
 from .engine.analyze_game import FormatError, check_range, u32
 from .engine.gameplay_rules import choose_moves, damaging, pick
 from .engine.inspect_tables import u16
-from .engine.species_rules import SHEDINJA_NATIONAL, VALID_TYPES, WONDER_GUARD, _redistribute
+from .engine.species_rules import (
+    CASTFORM_NATIONAL, FORECAST, SHEDINJA_NATIONAL, VALID_TYPES, WONDER_GUARD, _redistribute,
+)
 from .engine.tm_rules import ORIGINAL_HM_MOVES, ORIGINAL_TM_MOVES, UNSAFE_OFFENSE
 
 
@@ -167,14 +169,14 @@ def _learnset(rel, output, seed, index, species, move_catalog, options):
 
 
 def patch_species_gameplay(rel, symbols, seed, species, families, options, *, preserve_species=(), selected_species=None):
-    """Apply optional type, ability, base-stat and level-up move rules in place in the REL layout."""
+    """Apply optional species rules, retaining Castform's exclusive Forecast ability."""
     report = {"version": VERSION, "types_changed": 0, "abilities_changed": 0,
               "base_stats_changed": 0, "learnset_moves_changed": 0}
     if not (options.randomize_types or options.randomize_abilities or options.randomize_stats
             or options.randomize_learnsets):
         return rel, report
     catalog = _species_catalog(rel, symbols, species)
-    ability_pool = {value for row in catalog.values() for value in row["abilities"]} - {0, WONDER_GUARD}
+    ability_pool = {value for row in catalog.values() for value in row["abilities"]} - {0, WONDER_GUARD, FORECAST}
     output = bytearray(rel)
     for index, row in catalog.items():
         if index in preserve_species or selected_species is not None and index not in selected_species:
@@ -188,7 +190,7 @@ def patch_species_gameplay(rel, symbols, seed, species, families, options, *, pr
                       if len(set(row["types"])) == 2 else first)
             output[pos + 0x30:pos + 0x32] = bytes((first, second))
             report["types_changed"] += (first, second) != row["types"]
-        if options.randomize_abilities and not shedinja:
+        if options.randomize_abilities and not shedinja and row["national_dex"] != CASTFORM_NATIONAL:
             key = f"abilities:{families[index] if options.abilities_family_consistent else index}"
             first = _draw(seed, f"{key}:primary", ability_pool)
             second = _draw(seed, f"{key}:secondary", ability_pool - {first}) if row["abilities"][1] else 0

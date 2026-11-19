@@ -1,8 +1,10 @@
 """Release media must match the explicit interface-pack allowlist."""
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
+import signal
 import tempfile
 import time
 import unittest
@@ -98,18 +100,84 @@ class PublicDistributionTests(unittest.TestCase):
             for name in ("run_tests.py", "test_processes.py"):
                 shutil.copyfile(build_desktop.ROOT / "scripts" / name, scripts / name)
             (tests / "test_hanging.py").write_text(
+                "import json, os, sys, time\n"
+                "from pathlib import Path\n"
                 "from threading import Event\n"
                 "from unittest import TestCase\n"
+                # Discovery can be slower than the intentionally short hang
+                # deadline. Exercise that case independently of machine load.
+                "time.sleep(2.1)\n"
                 "class HangingTest(TestCase):\n"
                 "    def test_waits_forever(self):\n"
+                "        Path('worker-ready.tmp').write_text(json.dumps({'pid': os.getpid(), 'argv': sys.argv}))\n"
+                "        os.replace('worker-ready.tmp', 'worker-ready.json')\n"
                 "        Event().wait()\n",
                 encoding="utf-8",
             )
-            with patch.object(verify_release, "SOURCE_TEST_TIMEOUT", 2):
-                started = time.monotonic()
-                with self.assertRaisesRegex(RuntimeError, r"(?s)exceeded 2 seconds.*test_waits_forever"):
-                    verify_release.verify_source_tests(root)
-                self.assertLess(time.monotonic() - started, 7, "A worker kept the timeout's pipes open")
+            real_popen = verify_release.subprocess.Popen
+            ready = root / "worker-ready.json"
+            worker_handle = None
+            if os.name == "nt":
+                import ctypes
+                from ctypes import wintypes
+                kernel32 = ctypes.WinDLL("kernel32", use_last_error=True)
+                kernel32.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+                kernel32.OpenProcess.restype = wintypes.HANDLE
+                kernel32.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+                kernel32.WaitForSingleObject.restype = wintypes.DWORD
+                kernel32.CloseHandle.argtypes = [wintypes.HANDLE]
+                kernel32.CloseHandle.restype = wintypes.BOOL
+
+            def start_ready_worker(*args, **kwargs):
+                nonlocal worker_handle, hang_started
+                process = real_popen(*args, **kwargs)
+                try:
+                    startup_deadline = time.monotonic() + 10
+                    while not ready.is_file():
+                        self.assertIsNone(process.poll(), "The source runner exited before its test method started")
+                        self.assertLess(time.monotonic(), startup_deadline,
+                                        "The hanging fixture did not reach its test method within 10 seconds")
+                        time.sleep(.01)
+                    worker = json.loads(ready.read_text("utf-8"))
+                    self.assertNotEqual(worker["pid"], process.pid)
+                    # Windows virtualenv redirectors add an intermediate PID;
+                    # verify the real worker invocation rather than its parent.
+                    self.assertEqual(worker["argv"][1:3], ["--worker", "test_hanging.py"],
+                                     "The marker must come from the isolated test worker")
+                    if os.name == "nt":
+                        # Hold this exact process identity across termination;
+                        # checking a PID afterward could observe a reused PID.
+                        worker_handle = kernel32.OpenProcess(0x00100000, False, worker["pid"])
+                        self.assertTrue(worker_handle, "Cannot observe the fixture worker's termination")
+                        self.assertEqual(kernel32.WaitForSingleObject(worker_handle, 0), 258,
+                                         "The fixture worker must still be running before the hang deadline")
+                    hang_started = time.monotonic()
+                    return process
+                except BaseException:
+                    # Popen's context manager has not taken ownership yet.
+                    if os.name == "nt":
+                        process.kill()
+                    else:
+                        os.killpg(process.pid, signal.SIGKILL)
+                    process.communicate(timeout=5)
+                    raise
+
+            hang_started = None
+            try:
+                with patch.object(verify_release, "SOURCE_TEST_TIMEOUT", 2), \
+                        patch.object(verify_release.subprocess, "Popen", side_effect=start_ready_worker):
+                    with self.assertRaisesRegex(RuntimeError, r"(?s)exceeded 2 seconds.*test_waits_forever"):
+                        verify_release.verify_source_tests(root)
+                self.assertIsNotNone(hang_started)
+                if os.name == "nt":
+                    # Job termination can close the inherited pipes just before
+                    # the worker's process object becomes signaled.
+                    self.assertEqual(kernel32.WaitForSingleObject(worker_handle, 1000), 0,
+                                     "The timed-out isolated worker was not terminated")
+                self.assertLess(time.monotonic() - hang_started, 7, "A worker kept the timeout's pipes open")
+            finally:
+                if worker_handle:
+                    kernel32.CloseHandle(worker_handle)
 
     def test_public_media_exception_is_limited_to_exact_application_branding(self):
         for binary, prefix in ((False, f"{REPOSITORY_NAME}/"), (True, f"{APP_EXECUTABLE}/_internal/")):

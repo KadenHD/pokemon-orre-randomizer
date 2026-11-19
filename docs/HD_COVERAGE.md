@@ -88,6 +88,23 @@ Movies are excluded, and the six QA-image hashes remain unchanged.
 
 ## Corrections
 
+- **Castform battle portraits:** new randomized ROMs select the portrait from
+  the currently loaded battle model in both games. Ordinary specimens retain
+  their retail resources. Shiny specimens select separate authored models and
+  portraits using the modern weather-form colors. The
+  normal/shiny atlas row follows the specimen's native face selection. The
+  loader requests a missing texture asynchronously and keeps the original
+  portrait visible until it is ready. Forecast remains on Castform and is
+  excluded from other species' randomized abilities. Weather suppression and
+  the return to normal use the loaded model, rather than assuming that global
+  weather always determines a Pokemon's appearance.
+  The HD Sunny Form portrait uses a wider crop from the same GPU render, with
+  the visible model at 80% of its previous size. Normal and shiny cells use the
+  same crop; native frames and image orientation remain unchanged.
+  Every added native material and portrait has an exact-key x4 counterpart.
+  Native/HD preparation validates decoded native RGBA and source-paint hashes;
+  an unknown or missing route blocks HD readiness. The stock 43-material and
+  nine-retail-portrait catalogues retain their identities.
 - **Colosseum Options stripes:** the five European layouts, USA and Japan
   retain their native two-pixel stripe geometry without the compressed HD
   donor's ragged alpha edges. Each derivative keeps every donor RGBA pixel
@@ -174,6 +191,7 @@ Movies are excluded, and the six QA-image hashes remain unchanged.
 | Imported names outside the resident alphabet | Japanese characters in a European or USA game | Uses native glyph fallback. The regional Latin corpus is deliberately bounded to preserve game memory. |
 | Unusual adjacent Latin accents | Narrow accented letters repeated together, especially foreign names on Japanese fonts | The game's original advances are retained; some accent marks can touch. The shared proportions do not replace the game's spacing with the donor font's own advances. |
 | Egg and auxiliary portraits | When the UI requests an image outside the registered species/form routes | Retains native art. The audit identified an egg atlas and a Bulbasaur-like placeholder, but did not establish their runtime use. |
+| Castform portraits in older or unchanged ROMs | A ROM predates the live HUD patch, or was created with no randomization or gameplay changes | Keeps the native portrait behavior. Updating the launcher alone does not add the patch; create a new randomized ROM to install it. |
 | Unmapped stock materials | Their exact texture identity has no verified donor | Retains native art. An unused resource in the inventory does not establish a visible, Pokemon-wide HD gap. |
 | Spinda hologram face | Direct ROM launch, an unavailable companion, or an older folder without the native bridge | Retains the native 128x128 face. New Europe, USA and Japan revision-0 Colosseum folders support a 512x512 face through the Windows launcher. |
 | Prerecorded movies | Opening and other video files | Keeps the original video. Texture packs do not increase its resolution. |
@@ -189,8 +207,10 @@ portraits in XD have reviewed normal/shiny renders, common poses and paired
 crops. Their exact native keys and immutable artwork hashes are checked at
 preparation. Original mode retains the source portraits. The authoring tools
 also record the rendering and material versions; no native portrait RGB is
-enlarged into the x4 artwork. Gen3 weather forms retain their shared native
-normal/shiny colors. The same 43 reviewed material PNGs now cover the stock
+enlarged into the x4 artwork. Retail Gen3 weather atlases retain their original
+shared palette. Newly created randomized ROMs add separate rare resources with
+modern colors, preserving the ordinary materials and per-specimen identity.
+The same 43 reviewed material PNGs cover the stock
 weather models in both games and the additional Deoxys forms in XD, under
 their observed regional native keys. This changes neither native meshes nor
 animation and does not add forms absent from a game's native mechanics.
@@ -305,3 +325,52 @@ a peak working set of 1.32 GiB and peak sampled private bytes of 1.64 GiB.
 These are Dolphin process measurements, not GameCube heap or GPU-memory bounds.
 All six QA-image hashes and the source-card hashes remain unchanged. The
 original movie archives are neither replaced nor re-encoded.
+
+Castform's live HUD patch has separate European Dolphin replays in both games,
+using artificial weather teams on copied QA cards. HD captures show sun, rain
+and hail portraits matching the loaded models in Colosseum singles and XD
+doubles. Original-mode captures also show the changing native artwork. The XD
+replay returns from a weather form to the normal model and all four normal HUD
+portraits after Sandstorm. The Colosseum replay captures its normal model during
+that reset, before the opponent changes the weather again.
+The patch retains native draw arguments and HUD orientation. Colosseum mirrors
+the player's portrait as in the original renderer; HD texture orientation is
+unchanged. The portrait artwork board shows the registered texture orientation;
+the renderer still applies each side's original UVs.
+
+All six revision-0 executables pass guarded offline installation, including
+composition with the Shadow Lugia portrait hooks. Executed PowerPC-wrapper
+tests cover normal/shiny atlas selection, loading already in progress, missing
+textures, invalid battle pointers and fallback to the original draw call.
+These checks do not replace regional gameplay replays. The earlier retail-only
+replays preceded the additional modern shiny weather colors. The copied source
+cards and input images remain unchanged, and
+the original opening videos are retained.
+
+The new weather artwork has a separate source-qualified European Colosseum
+viewer replay for each form in native and HD paint. Original meshes, cameras
+and frozen joint poses are retained. The shiny portrait cells come from actual
+GPU renders, not a recolored finished bitmap. Native eyes still blink; the
+static Snowy portrait uses its captured open-eye frame. Those viewer aliases
+qualify artwork, separately from the native battle resource/cache selection.
+
+The appended portraits retain each game's native frame. Colosseum uses its
+RGBA8 atlas. XD uses RGB5A3 within its fixed 8,032-byte face-cache slot, with
+zero padding through the native copy boundary. Its original normal cell and
+both circular alpha masks remain exact; the new shiny cell rounds to the
+native color precision. The HD portrait keeps the full-color x4 render.
+
+Separate European story-battle replays now qualify all three modern shiny
+weather forms in both games, in Original and HD modes. Each copied party has
+one normal and one shiny Castform together. Read-only native-cache inspection
+confirms distinct model resources for every pair and exact source DATs after
+relocation is removed. Original-mode GPU dumps match all six registered face
+atlases pixel for pixel. The corrected XD captures retain both complete
+circular cells, with no truncated or missing shiny portrait.
+
+The HD replays also let hail expire: the normal Castform returns to gray and
+the shiny one to pink, with matching normal-form portraits. Colosseum then
+changes back to sunshine without losing either specimen's identity. These
+checks preserve the native PIDs, original meshes and animations. They use
+muted isolated Dolphin profiles and copied QA cards; they do not certify every
+regional battle or modify existing user ROMs and saves.

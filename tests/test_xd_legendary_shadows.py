@@ -158,6 +158,9 @@ class XDNativeLegendaryShadowsTests(unittest.TestCase):
                 with self.subTest(moves=options.randomize_trainer_moves, seed=seed):
                     _, summary = xd.build_patches(self.iso, self.boot, seed,
                         options, lambda *_args: None, threading.Event())
+                    self.assertEqual(summary['castform_portraits']['game_id'], 'GXXP01')
+                    self.assertTrue(summary['castform_portraits']['native_async_loading'])
+                    self.assertTrue(summary['castform_portraits']['save_data_unchanged'])
                     self.assertTrue(summary['poke_spot_shinies']['enabled'])
                     self.assertEqual(summary['poke_spot_shinies']['chance_percent'], 5.0)
                     self.assertEqual(len(summary['poke_spot_shinies']['hooks']), 5)

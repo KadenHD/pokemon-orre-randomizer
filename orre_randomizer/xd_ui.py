@@ -15,7 +15,7 @@ from PySide6.QtWidgets import (
 
 from .i18n import Message
 from .locales.selection_names import SPECIES_NAMES
-from .profiles import XD_SPOT_MIGRATION, load_creation_report, load_profile, save_profile, validate_seed
+from .profiles import ENGINE_MIGRATION, XD_SPOT_MIGRATION, load_creation_report, load_profile, save_profile, validate_seed
 from .disc_images import FORMATS, SUFFIXES, RAW_SUFFIXES
 from .service import UserError, check_header, validate_paths
 from .ui_icons import CATEGORY_SYMBOLS
@@ -509,6 +509,9 @@ class XDWorkspace(QWidget):
         self.seed.setText(profile.seed)
         self.creation_report = identity
         self.window.schedule_report_rom_check(owner=self)
+        if profile.engine_migration:
+            self.set_status(ENGINE_MIGRATION)
+            return
         if profile.xd_spot_migration:
             self.set_status(XD_SPOT_MIGRATION)
             return

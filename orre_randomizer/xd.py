@@ -47,7 +47,7 @@ from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITE
                        validate_tutorial_matchup)
 from .xd_unown_form import patch_xd_unown_form
 
-VERSION = "xd-preserved-pokemon-properties-v14"
+VERSION = "xd-castform-weather-portraits-v15"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -897,6 +897,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     if include_details:
         summary["detail_catalog"] = detail_catalog(new_rel, dol, symbols, region.game_id, edges, move_randomizer)
     story_families = defaultdict(list)
+    if has_changes:
+        from .castform_weather import install_weather_appearances
+        dol, summary["castform_weather"] = install_weather_appearances(
+            original_dol, dol, region.game_id, read_archive, gift_updates)
+        summary["castform_portraits"] = summary["castform_weather"]["portraits"]
     story_families[families[summary["starter"]["species"]]].append("starter")
     for row in summary["decks"]["Story"]["shadows"]:
         story_families[families[row["species"]]].append(f"shadow:{row['shadow_id']}")

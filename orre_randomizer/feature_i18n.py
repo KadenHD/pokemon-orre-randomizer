@@ -69,6 +69,12 @@ OPTION_ROWS = {
 }
 
 ROWS = [
+ ("Réglages chargés avec un moteur plus récent. Le tirage peut changer. Pour retrouver la même partie, utilisez l’ancienne version du randomizer.",
+  "Settings loaded with a newer engine. Results may differ. Use the previous randomizer version to reproduce the same run.",
+  "Einstellungen mit einer neueren Engine geladen. Die Ergebnisse können abweichen. Verwende die frühere Randomizer-Version, um denselben Spieldurchlauf zu reproduzieren.",
+  "Ajustes cargados con un motor más reciente. Los resultados pueden cambiar. Usa la versión anterior del randomizer para reproducir la misma partida.",
+  "Impostazioni caricate con un motore più recente. I risultati possono cambiare. Usa la versione precedente del randomizer per riprodurre la stessa partita.",
+  "新しいエンジンで設定を読み込みました。抽選結果が変わる場合があります。同じプレイを再現するには、以前のバージョンを使用してください。"),
  ("Réutilisation du calcul de l’aperçu…", "Reusing the preview calculation…", "Vorschauberechnung wird wiederverwendet…", "Reutilizando el cálculo de la vista previa…", "Riutilizzo del calcolo dell’anteprima…", "プレビューの計算結果を再利用しています…"),
  ("Choisissez un Pokémon de la liste pour {label}.", "Choose a Pokémon from the list for {label}.", "Wähle für {label} ein Pokémon aus der Liste.", "Elige un Pokémon de la lista para {label}.", "Scegli un Pokémon dall’elenco per {label}.", "「{label}」のポケモンを一覧から選んでください。"),
  ("Tirage avec la seed", "Draw with the seed", "Mit Seed auslosen", "Sortear con la semilla", "Estrai con il seed", "シードで抽選"),
