@@ -55,8 +55,21 @@ def reproduce(output: Path, *, source: str = SOURCE):
             expected_size, expected = reference.size, reference.convert("RGBA").tobytes()
         actual = rendered.tobytes()
         if rendered.size != expected_size or actual != expected:
+            delta = {"dimensions": [list(expected_size), list(rendered.size)]}
+            if rendered.size == expected_size:
+                from PIL import ImageChops
+                from itertools import islice
+                reference = Image.frombytes("RGBA", expected_size, expected)
+                diff = ImageChops.difference(reference, rendered)
+                delta["max_channel_delta"] = [extreme[1] for extreme in diff.getextrema()]
+                delta["changed_pixels"] = sum(any(pixel) for pixel in diff.get_flattened_data())
+                delta["sample_pixels"] = list(islice(({"xy": [i % rendered.width, i // rendered.width],
+                    "expected": list(expected[i * 4:i * 4 + 4]), "rendered": list(actual[i * 4:i * 4 + 4])}
+                    for i in range(rendered.width * rendered.height)
+                    if expected[i * 4:i * 4 + 4] != actual[i * 4:i * 4 + 4]), 16))
             raise ValueError("Geometry pixels differ from the reviewed x4 output for " + record["target"]
-                + ": expected " + hashlib.sha256(expected).hexdigest() + ", rendered " + hashlib.sha256(actual).hexdigest())
+                + ": expected " + hashlib.sha256(expected).hexdigest() + ", rendered " + hashlib.sha256(actual).hexdigest()
+                + "; " + json.dumps(delta))
         # PNG containers depend on the platform's encoder/zlib build. Prove
         # exact rendered pixels first, then retain the authenticated canonical
         # container so reproduction is byte-for-byte stable on every host.
