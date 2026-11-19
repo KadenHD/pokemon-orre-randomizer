@@ -20,8 +20,38 @@ ALLOWED = frozenset(("svg", "g", "defs", "path", "rect", "circle", "ellipse", "l
 _URL = re.compile(r"url\(\s*['\"]?([^)'\"]+)", re.IGNORECASE)
 
 
+def _opaque_flat_canvas(root, native_size):
+    """Prove a fast render never needs to unpremultiply translucent pixels."""
+    nodes = list(root)
+    if set(root.attrib) != {"viewBox"} or not nodes:
+        return False
+    background = nodes[0]
+    if (background.tag != "{" + SVG + "}rect"
+            or set(background.attrib) != {"width", "height", "fill"}):
+        return False
+    try:
+        if (float(background.get("width")), float(background.get("height"))) != native_size:
+            return False
+    except ValueError:
+        return False
+    shapes = {"path", "rect", "circle", "ellipse", "line", "polygon", "polyline"}
+    attributes = {"d", "x", "y", "width", "height", "cx", "cy", "r", "rx", "ry",
+                  "x1", "y1", "x2", "y2", "points", "fill", "fill-rule", "stroke", "stroke-width"}
+    def solid(value):
+        return value in ("black", "white") or bool(re.fullmatch(r"#[0-9a-fA-F]{3}(?:[0-9a-fA-F]{3})?", value))
+    if not solid(background.get("fill")):
+        return False
+    # Groups/masks/gradients can create their own transparent intermediates,
+    # even above an opaque background. Keep those on the scalar path.
+    return all(not list(node) and node.tag.split("}")[-1] in shapes
+               and not set(node.attrib) - attributes
+               and all(value == "none" or solid(value) for key, value in node.attrib.items()
+                       if key in ("fill", "stroke")) for node in nodes)
+
+
 def render_background(payload: bytes, *, expected_sha256: str,
-                      native_size: tuple[int, int], remove_ids: tuple[str, ...]):
+                      native_size: tuple[int, int], remove_ids: tuple[str, ...],
+                      scalar_alpha: bool = False):
     """Render x4 original author geometry after removing declared guide nodes."""
     if (not isinstance(payload, bytes) or not 1 <= len(payload) <= 12 * 1024 * 1024
             or hashlib.sha256(payload).hexdigest() != expected_sha256
@@ -89,8 +119,19 @@ def render_background(payload: bytes, *, expected_sha256: str,
     output = QImage(native_size[0] * 4, native_size[1] * 4, QImage.Format.Format_RGBA8888)
     output.fill(0)
     painter = QPainter(output)
+    opaque_canvas = scalar_alpha and _opaque_flat_canvas(root, native_size)
     try:
-        renderer.render(painter, QRectF(0, 0, output.width(), output.height()))
+        bounds = QRectF(0, 0, output.width(), output.height())
+        if not scalar_alpha or opaque_canvas:
+            renderer.render(painter, bounds)
+        else:
+            # Qt's four-pixel SIMD stores use CPU-dependent reciprocal rounding
+            # for straight alpha (QTBUG-150796). Spans shorter than four pixels
+            # use the scalar conversion while retaining the same SVG geometry,
+            # gradients, alpha coverage and canvas transform on every host.
+            for x in range(0, output.width(), 3):
+                painter.setClipRect(QRectF(x, 0, min(3, output.width() - x), output.height()))
+                renderer.render(painter, bounds)
     finally:
         painter.end()
     return output, {"kind": "real-author-svg-background", "version": 1,
@@ -99,4 +140,6 @@ def render_background(payload: bytes, *, expected_sha256: str,
         "sanitized_svg_sha256": hashlib.sha256(vectors).hexdigest(),
         "sanitized_vector_elements": sum(1 for _ in root.iter()),
         "native_bitmap_resampled": False, "raster_images_remaining": 0,
-        "font_rendering_remaining": False, "qt_version": qVersion()}
+        "font_rendering_remaining": False, "qt_version": qVersion(),
+        "rasterization": ("opaque-flat-canvas" if opaque_canvas else "scalar-alpha-spans")
+                         if scalar_alpha else "native-qt"}

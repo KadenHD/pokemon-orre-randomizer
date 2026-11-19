@@ -26,6 +26,8 @@
 - Prevent repeated row-size invalidations from keeping the encounter preview
   busy. Coalesce layout requests, preserve wrapped conditions on resize and
   keep horizontal scrolling disabled.
+- Make offline reproduction of measured HD menu geometry independent of
+  CPU-specific Qt rounding while retaining the exact reviewed artwork.
 
 ## 2.0.2 - 2026-11-19
 

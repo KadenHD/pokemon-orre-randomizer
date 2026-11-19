@@ -63,6 +63,50 @@ class MenuSvgAuthoring(unittest.TestCase):
                             and not r["font_rendering_remaining"]
                             and r["raster_images_remaining"] == 0
                             for r in receipt["outputs"]))
+        self.assertTrue(all(r["rasterization"] == "scalar-alpha-spans" for r in receipt["outputs"]))
+
+    def test_translucent_edges_use_scalar_spans_without_gaps_or_overlap(self):
+        from PySide6.QtSvg import QSvgRenderer
+        clips = []
+        class ObservedRenderer:
+            def __init__(self, payload):
+                self.native = QSvgRenderer(payload)
+            def isValid(self):
+                return self.native.isValid()
+            def render(self, painter, bounds):
+                # Qt's reciprocal SIMD store starts at four pixels. Exercise
+                # the real rasterizer but reject that host-dependent path.
+                if not painter.hasClipping() or not 0 < painter.clipBoundingRect().width() <= 3:
+                    raise AssertionError("A translucent span can reach Qt's SIMD conversion")
+                clips.append(painter.clipBoundingRect())
+                self.native.render(painter, bounds)
+
+        source = b'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 4">
+          <rect width="8" height="4" fill="#808080" fill-opacity="0.023529411764705882"/>
+        </svg>'''
+        with patch("orre_randomizer.hd_menu_svg.QSvgRenderer", ObservedRenderer):
+            image, receipt = self.render(source, remove_ids=(), scalar_alpha=True)
+        self.assertEqual(receipt["rasterization"], "scalar-alpha-spans")
+        self.assertEqual([(int(r.x()), int(r.y()), int(r.width()), int(r.height())) for r in clips],
+                         [(x, 0, min(3, 32-x), 16) for x in range(0, 32, 3)])
+        self.assertTrue(all(image.pixelColor(x, y) == QColor(128, 128, 128, 6)
+                            for y in range(16) for x in range(32)))
+
+    def test_fast_authoring_requires_an_opaque_flat_canvas_without_intermediates(self):
+        flat = b'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 4">
+          <rect width="8" height="4" fill="black"/>
+          <path d="M1 1H7V3H1Z" fill="white"/>
+        </svg>'''
+        image, receipt = self.render(flat, remove_ids=(), scalar_alpha=True)
+        self.assertEqual(receipt["rasterization"], "opaque-flat-canvas")
+        self.assertEqual(image.pixelColor(0, 0), QColor(0, 0, 0, 255))
+        self.assertEqual(image.pixelColor(8, 8), QColor(255, 255, 255, 255))
+        grouped = flat.replace(b'<path ', b'<g opacity=".5"><path ').replace(b'</svg>', b'</g></svg>')
+        for source in (grouped,
+                       flat.replace(b'viewBox=', b'opacity=".5" viewBox='),
+                       flat.replace(b'fill="black"', b'fill="black" fill-opacity=".5"')):
+            _, receipt = self.render(source, remove_ids=(), scalar_alpha=True)
+            self.assertEqual(receipt["rasterization"], "scalar-alpha-spans")
 
     def test_reproduction_rejects_a_single_wrong_pixel_before_canonical_png_publication(self):
         from scripts.build_hd_geometry_additions import reproduce

@@ -46,7 +46,7 @@ def reproduce(output: Path, *, source: str = SOURCE):
         payload = record["svg"].encode("utf8")
         image, metadata = render_background(payload,
             expected_sha256=hashlib.sha256(payload).hexdigest(),
-            native_size=tuple(record["native_dimensions"]), remove_ids=())
+            native_size=tuple(record["native_dimensions"]), remove_ids=(), scalar_alpha=True)
         rendered = Image.frombytes("RGBA", (image.width(), image.height()), _pixel_bytes(image))
         approved, digest = _asset_bytes("menu-atlases/" + name)
         if digest != record["sha256"]:
