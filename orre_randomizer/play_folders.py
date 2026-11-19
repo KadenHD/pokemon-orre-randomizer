@@ -363,6 +363,7 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
     from .hd_overlays import VERSION, OverlayError, native_asset_manifest, prepare_hd_overlays
     from .hd_hud import hud_recipes, prepare_hud_overlays
     from .hd_extra_portraits import prepare_extra_portrait_overlays
+    from .hd_form_materials import material_recipes, prepare_form_materials
     from .hd_text_assets import MANIFEST as TEXT_MANIFEST, text_recipe, prepare_text_overlays
     from .resources import bundle_root
     cancel = cancel or threading.Event()
@@ -385,6 +386,8 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
     identity = hashlib.sha256((root / "orre-overlays-v2.json").read_bytes())
     identity.update(f"{__version__}:{VERSION}:{HD_CACHE_REVISION}".encode())
     identity.update(json.dumps(hud_recipes(manifest["game_id"]), sort_keys=True,
+                               separators=(",", ":")).encode("ascii"))
+    identity.update(json.dumps(material_recipes(manifest["game_id"]), sort_keys=True,
                                separators=(",", ":")).encode("ascii"))
     text_manifest = root / TEXT_MANIFEST
     text_feature = manifest.get("features", {}).get("text_hd_bridge")
@@ -455,17 +458,22 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
         try:
             forms = prepare_extra_portrait_overlays(manifest["game_id"],
                 {game: store.location(PACKS[game]) for game in required}, stage)
+            materials = prepare_form_materials(manifest["game_id"],
+                {game: store.location(PACKS[game]) for game in required}, stage)
         except (OSError, ValueError) as error:
             raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.") from error
         result["extra_form_portraits"] = forms
+        result["extra_form_materials"] = materials
         known = {item["file"]: item["sha256"] for item in result["files"]}
-        for name, digest in forms["files"].items():
+        for name, digest in (*forms["files"].items(), *materials["files"].items()):
             if name in known:
                 if known[name] != digest:
                     raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.")
                 continue
             result["files"].append({"file": name, "sha256": digest,
-                                    "hd_source": {"kind": "catalogued-extra-form-portrait"}})
+                                    "hd_source": {"kind": "catalogued-extra-form-material" if name in materials["files"]
+                                                  else "catalogued-extra-form-portrait"}})
+            known[name] = digest
         if text_manifest.is_file():
             checkpoint(cancel)
             try:
@@ -541,19 +549,34 @@ def _prepare_extras(source_iso, output_iso, boot, stage, shared, progress, cance
         bridge.update(update_staged_disc(output_iso, modified, {"DNA_key.fsys": keypad}))
         asset_context["dna_hd_layout"] = layout
         features["dna_hd_tiles"] = bridge
-        if spinda_samples:
-            from .engine.dna_spinda_face_hd import face_runtime_validated, patch_spinda_face_bridge
-            game_id = boot[:6].decode("ascii")
-            # Qualification covers the native hooks and their memory reservation,
-            # not just the host companion. Unqualified discs retain native faces.
-            if face_runtime_validated(game_id, boot[7]):
-                modified, metadata = patch_spinda_face_bridge(original_dol, read_executable(output_iso),
-                                                              game_id=game_id, revision=boot[7])
-                checkpoint(cancel)
-                metadata.update(update_staged_disc(output_iso, modified))
-                features["spinda_face"] = metadata
     progress(79, "Préparation des textures personnalisées…")
     features["text_hd_bridge"] = _prepare_text_hd(source_iso, output_iso, stage, boot[:6].decode("ascii"), cancel)
+    game_id = boot[:6].decode("ascii")
+    from .engine.play_music_bridge import SUPPORTED_GAME_IDS, patch_music_bridge
+    if game_id in SUPPORTED_GAME_IDS:
+        from .native_music_resources import prepare_music_assets
+        from .engine.regions import region_for_boot
+        from .xd import region_for_boot as xd_region
+        region = (xd_region if game_id.startswith("GXX") else region_for_boot)(boot)
+        with source_iso.open("rb") as source:
+            source.seek(struct.unpack_from(">I", boot, 0x420)[0])
+            original_dol = source.read(region.dol_size)
+        modified, metadata = patch_music_bridge(original_dol, read_executable(output_iso), game_id)
+        metadata.update(update_staged_disc(output_iso, modified))
+        assets = shared / "AudioBanks" / (game_id + "-" + metadata["source_dol_sha256"][:16])
+        checkpoint(cancel)
+        prepare_music_assets(source_iso, assets, game_id=game_id, cancel=cancel)
+        features["music"] = dict(metadata, assets=str(assets.resolve()))
+    # Keep the face bridge last: Japan reserves its pixel bank beyond the
+    # loaded DOL. Later executable additions must not occupy that bank.
+    if spinda_samples:
+        from .engine.dna_spinda_face_hd import face_runtime_validated, patch_spinda_face_bridge
+        if face_runtime_validated(game_id, boot[7]):
+            modified, metadata = patch_spinda_face_bridge(original_dol, read_executable(output_iso),
+                                                          game_id=game_id, revision=boot[7])
+            checkpoint(cancel)
+            metadata.update(update_staged_disc(output_iso, modified))
+            features["spinda_face"] = metadata
     try:
         overlays = capture_native_assets(output_iso, stage / "Textures", is_xd=boot[:3] == b"GXX",
             reference_iso=source_iso, asset_context=asset_context, cancel=cancel)
@@ -574,22 +597,6 @@ def _prepare_extras(source_iso, output_iso, boot, stage, shared, progress, cance
             "game_id": boot[:6].decode("ascii"),
             "shared": str(shared), "features": features}, cancel=cancel)
         features["overlays"].update(hd_ready=True, hd_count=hd["texture_count"])
-    game_id = boot[:6].decode("ascii")
-    from .engine.play_music_bridge import SUPPORTED_GAME_IDS, patch_music_bridge
-    if game_id in SUPPORTED_GAME_IDS:
-        from .native_music_resources import prepare_music_assets
-        from .engine.regions import region_for_boot
-        from .xd import region_for_boot as xd_region
-        region = (xd_region if game_id.startswith("GXX") else region_for_boot)(boot)
-        with source_iso.open("rb") as source:
-            source.seek(struct.unpack_from(">I", boot, 0x420)[0])
-            original_dol = source.read(region.dol_size)
-        modified, metadata = patch_music_bridge(original_dol, read_executable(output_iso), game_id)
-        metadata.update(update_staged_disc(output_iso, modified))
-        assets = shared / "AudioBanks" / (game_id + "-" + metadata["source_dol_sha256"][:16])
-        checkpoint(cancel)
-        prepare_music_assets(source_iso, assets, game_id=game_id, cancel=cancel)
-        features["music"] = dict(metadata, assets=str(assets.resolve()))
     return features
 
 

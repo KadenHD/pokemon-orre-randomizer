@@ -78,7 +78,7 @@ PATCHABLE_GAME_IDS = tuple(_PROFILES)
 # EU/USA revision0: owned Dolphin2609b, full pack, dual core/internal3x,
 # two native PID/colour variants, actual512-square dumps and native recovery.
 # JP retains its native face: the extra arena reservation stalls its lab load.
-VALIDATED_GAME_IDS = frozenset(("GC6P01", "GC6E01"))
+VALIDATED_GAME_IDS = frozenset(("GC6P01", "GC6E01", "GC6J01"))
 
 
 def bridge_profile(game_id="GC6P01", revision=0):
@@ -146,7 +146,7 @@ def _finish(c, trampoline):
     return c.finish()
 
 
-def _factory_stub(address, control, profile):
+def _factory_stub(address, control, profile, *, guard_reuse=True):
     c = _Code(address)
     _prologue(c)
     c.emit(0x90A10008)  # original pattern/PID, no shiny guess
@@ -170,7 +170,22 @@ def _factory_stub(address, control, profile):
     c.emit(_cmp(7, 0)); c.conditional(0x40820000, "serial")
     c.emit(0x38E00001)
     c.label("serial")
-    c.emit(_st(7, 12, 88), 0x70E00007, 0x54002036, 0x398C0080,
+    c.emit(_st(7, 12, 88))
+    if guard_reuse:
+        # Native texture allocation may reuse a previous face's pixel pointer.
+        # Retire every older match before publishing its new PID/epoch; the
+        # setup search must never bind a new face to the first stale ring slot.
+        _load(c, 4, control + 128)
+        c.emit(0x38A00008)
+        c.label("retire_reused_pixels")
+        c.emit(_lw(0, 4, 4), _eq(0, 6))
+        c.conditional(0x40820000, "next_registry_slot")
+        c.emit(0x38000000, _st(0, 4, 0))
+        c.label("next_registry_slot")
+        c.emit(0x38840010, 0x38A5FFFF, _cmp(5, 0))
+        c.conditional(0x40820000, "retire_reused_pixels")
+        c.emit(0x7C0004AC)
+    c.emit(0x70E00007, 0x54002036, 0x398C0080,
            0x7D8C0214, 0x38000000, _st(0, 12, 0), _st(6, 12, 4),
            _lw(4, 1, 8), _st(4, 12, 8), _st(3, 12, 12),
            0x7C0004AC, _st(7, 12, 0))
@@ -180,6 +195,9 @@ def _factory_stub(address, control, profile):
 
 
 def _setup_stub(address, control, buffers, profile):
+    if len(buffers) not in (1, 2):
+        raise FormatError("Spinda face requires one or two fenced pixel banks")
+    maximum_bank = len(buffers) - 1
     c = _Code(address)
     _prologue(c)
     c.emit(_mr(31, 3), 0x3BC00000)  # head TObj, saved native ImageDesc
@@ -235,7 +253,7 @@ def _setup_stub(address, control, buffers, profile):
     # A lease fallback releases the active bank but keeps the last complete
     # packet and its acknowledgement. Reaccept that packet after recovery;
     # an already active packet must not repeat the GPU fence every draw.
-    c.emit(_lw(6, 29, 20), _cmp(6, 1))
+    c.emit(_lw(6, 29, 20), _cmp(6, maximum_bank))
     c.conditional(0x40810000, "active")  # ble: an active bank already exists
     c.label("validate_ready")
     # Always acknowledge a rejected old publication; otherwise a new request
@@ -244,12 +262,14 @@ def _setup_stub(address, control, buffers, profile):
         c.emit(_lw(6, 29, offset), _eq(6, register)); c.conditional(0x40820000, "reject")
     c.emit(_eq(5, 26)); c.conditional(0x40820000, "reject")
     c.emit(_lw(6, 29, 28), _eq(24, 6)); c.conditional(0x40820000, "reject")
-    c.emit(_lw(23, 29, 52), _cmp(23, 1)); c.conditional(0x41810000, "reject")
+    c.emit(_lw(23, 29, 52), _cmp(23, maximum_bank)); c.conditional(0x41810000, "reject")
     c.emit(_lw(6, 29, 20), _eq(23, 6)); c.conditional(0x41820000, "reject")
     c.emit(_lw(6, 29, 72), _eq(5, 6)); c.conditional(0x40820000, "reject")
     c.call(profile["draw_done"])
-    _load(c, 3, buffers[0]); c.emit(_cmp(23, 0)); c.conditional(0x41820000, "invalidate")
-    _load(c, 3, buffers[1])
+    _load(c, 3, buffers[0])
+    if len(buffers) == 2:
+        c.emit(_cmp(23, 0)); c.conditional(0x41820000, "invalidate")
+        _load(c, 3, buffers[1])
     c.label("invalidate")
     _load(c, 4, BUFFER_BYTES)
     c.call(profile["dc_invalidate"])
@@ -259,14 +279,14 @@ def _setup_stub(address, control, buffers, profile):
     c.emit(0x7C0004AC, _st(24, 29, 76))
     c.label("active")
     c.emit(_lw(5, 29, 24), _eq(5, 26)); c.conditional(0x40820000, "native")
-    c.emit(_lw(5, 29, 20), _cmp(5, 1)); c.conditional(0x41810000, "native")
-    # Two immutable descriptors, each 32-byte aligned. Only this TObj's pointer
+    c.emit(_lw(5, 29, 20), _cmp(5, maximum_bank)); c.conditional(0x41810000, "native")
+    # Immutable descriptors, each 32-byte aligned. Only this TObj's pointer
     # changes, and only for the original HSD_TObjSetup call below.
     c.emit(0x54A52834, 0x38DD0100, 0x7CA62A14, _mr(30, 28), _st(5, 31, 0x58),
            _lw(5, 29, 84), 0x38A50001, _st(5, 29, 84))
     c.jump("native")
     c.label("fallback")
-    c.emit(_lw(5, 29, 20), _cmp(5, 1)); c.conditional(0x41810000, "fallback_ack")
+    c.emit(_lw(5, 29, 20), _cmp(5, maximum_bank)); c.conditional(0x41810000, "fallback_ack")
     c.call(profile["draw_done"])
     c.emit(0x38A0FFFF, _st(5, 29, 20), 0x38A00000, _st(5, 29, 24),
            _lw(5, 29, 80), 0x38A50001, _st(5, 29, 80))
@@ -326,9 +346,10 @@ def patch_spinda_face_bridge(original: bytes, current: bytes, game_id="GC6P01", 
     factory_address = profile["base"] + len(code)
     dummy_factory = _factory_stub(factory_address, 0, profile)
     setup_address = factory_address + len(dummy_factory)
-    dummy_setup = _setup_stub(setup_address, 0, (0, 0), profile)
+    bank_count = 1 if game_id == "GC6J01" else 2
+    dummy_setup = _setup_stub(setup_address, 0, (0,) * bank_count, profile)
     control = setup_address + len(dummy_setup)
-    buffers = (control + CONTROL_BYTES, control + CONTROL_BYTES + BUFFER_BYTES)
+    buffers = tuple(control + CONTROL_BYTES + index * BUFFER_BYTES for index in range(bank_count))
     code.extend(_factory_stub(factory_address, control, profile))
     code.extend(_setup_stub(setup_address, control, buffers, profile))
     header = bytearray(CONTROL_BYTES)
@@ -337,8 +358,15 @@ def patch_spinda_face_bridge(original: bytes, current: bytes, game_id="GC6P01", 
     for index, buffer in enumerate(buffers):
         struct.pack_into(">IHHIIff", header, DESCRIPTOR_OFFSET + index * 32, buffer, HD_SIZE, HD_SIZE, 4, 0, 0., 0.)
     code.extend(header)
-    code.extend(bytes(BUFFER_BYTES * 2))
-    end = profile["base"] + len(code)
+    # Japan's apploader also bounds loaded section addresses. Pixel banks need
+    # an arena reservation, not file-backed zeroes: the companion writes a
+    # complete inactive bank before the native code can publish it. Install
+    # this bridge last when using the reservation-only layout.
+    embedded_banks = game_id != "GC6J01"
+    load_end = profile["base"] + len(code)
+    if embedded_banks:
+        code.extend(bytes(BUFFER_BYTES * bank_count))
+    end = load_end + BUFFER_BYTES * bank_count
     if end >= 0x81700000 or end % 32:
         raise FormatError("Spinda bridge exceeds the supported native arena")
     code[:32] = _arena_guard(end, profile["arena_store"])
@@ -356,6 +384,8 @@ def patch_spinda_face_bridge(original: bytes, current: bytes, game_id="GC6P01", 
     parse_dol(bytes(output))
     metadata = {**profile, "contract": CONTRACT, "bridge_abi": ABI, "control": control,
                 "control_bytes": CONTROL_BYTES, "buffers": list(buffers), "buffer_bytes": BUFFER_BYTES,
+                "pixel_banks_in_executable": embedded_banks, "pixel_banks_begin": load_end,
+                "buffer_count": bank_count, "registry_reuse_guard": True,
                 "registry_count": REGISTRY_COUNT, "native_texture_maps": 5, "hd_texture_maps": 5,
                 "native_width": 128, "hd_width": 512, "lease_vi_ticks": LEASE_TICKS,
                 "hooks": hooks, "section_offset": section_offset, "section_bytes": len(code),

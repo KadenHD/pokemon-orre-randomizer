@@ -42,6 +42,78 @@ def fixture():
 
 
 class RenderMenuAtlases(unittest.TestCase):
+    def test_options_stripes_keep_the_reviewed_hd_pixels_outside_the_measured_band(self):
+        from PIL import Image
+        from scripts.build_hd_options_stripes import SOURCE, compose
+        packet, _ = catalog._asset(SOURCE)
+        donor = Image.new("RGBA", (2560, 1024), (42, 77, 138, 91))
+        output = compose(donor, packet)
+        self.assertEqual(output.crop((0, 0, 2560, 800)).tobytes(),
+                         donor.crop((0, 0, 2560, 800)).tobytes())
+        self.assertEqual(donor.getpixel((4, 800)), (42, 77, 138, 91))
+        self.assertEqual(set(output.crop((0, 800, 2560, 1024)).getchannel("A").get_flattened_data()), {0, 255})
+        for index in range(14):
+            top = (200 + index * 4) * 4
+            right = (1 + (627, 615, 615)[index % 3]) * 4
+            for y in (top, top + 7):
+                self.assertEqual(output.getpixel((3, y))[3], 0)
+                self.assertEqual(output.getpixel((4, y))[3], 255)
+                self.assertEqual(output.getpixel((right - 1, y))[3], 255)
+                self.assertEqual(output.getpixel((right, y))[3], 0)
+            self.assertEqual(output.getpixel((4, top + 8))[3], 0)
+        self.assertEqual(output.getpixel((4, 1023))[3], 0)
+
+    def test_options_offline_recipe_reproduces_bundled_regional_donors_and_authenticates_them(self):
+        from io import BytesIO
+        from scripts.build_hd_options_stripes import SOURCE, _base, compose
+        packet, digest = catalog._asset(SOURCE)
+        self.assertFalse(packet["native_bitmap_upscaled_for_art"])
+        self.assertEqual(len(packet["records"]), 7)
+        self.assertEqual(packet["replacement_bounds"], [0, 200, 640, 256])
+        for game_id in ("GC6P01", "GC6E01", "GC6J01"):
+            recipes = catalog.menu_recipes(game_id)
+            rows = [r for r in packet["records"] if game_id in r["game_ids"]]
+            self.assertEqual(len(rows), 5 if game_id == "GC6P01" else 1)
+            for row in rows:
+                self.assertEqual(recipes[row["target"]]["source_sha256"], row["sha256"])
+                self.assertEqual(recipes[row["target"]]["transform"]["author_source"]["manifest_sha256"], digest)
+        for row in packet["records"]:
+            if row["source"]["kind"] != "bundled-reviewed-HD":
+                continue
+            base = _base(row, None)
+            output = compose(base, packet)
+            buffer = BytesIO()
+            output.save(buffer, format="PNG")
+            self.assertEqual(hashlib.sha256(buffer.getvalue()).hexdigest(), row["sha256"])
+            with patch.object(catalog, "_asset_bytes", return_value=(b"changed", "0" * 64)):
+                with self.assertRaisesRegex(ValueError, "pinned HD source"):
+                    _base(row, None)
+
+    def test_xd_europe_sheet_titles_leave_a_clear_row_before_the_info_sprite(self):
+        rows = [row for row in catalog.menu_recipes("GXXP01").values()
+                if row["transform"]["family"] == "xd-pokemon-sheet"]
+        self.assertEqual({r["transform"]["language"] for r in rows}, {"en", "fr", "de", "es", "it"})
+        for row in rows:
+            recipe = row["transform"]
+            titles = [label for label in recipe["labels"] if label.get("font_family") == "latin_bold"]
+            self.assertLessEqual(titles[1]["bounds"][3], 318)
+            self.assertGreaterEqual(titles[2]["bounds"][1], 319)
+            source = catalog.menu_image(row["bundled_donor"], tuple(row["source_native_dimensions"]))
+            donor_alpha = art._pixel_bytes(source.image)[3::4]
+            for y in range(287 * 4, 292 * 4):
+                self.assertFalse(any(donor_alpha[y * source.image.width():
+                                                y * source.image.width() + 309 * 4]))
+            image, _ = art.render_menu_atlas(source.image, recipe, source_metadata=source.metadata)
+            # Both neighboring quads sample their upper edge with filtering.
+            # The original captionless donor also left four rows of a title
+            # just above STATUS; correcting the label alone cannot erase it.
+            alpha = art._pixel_bytes(image)[3::4]
+            # The Spanish title legitimately starts with an acute at row290.
+            for top, bottom in ((287, 290), (318, 319)):
+                for y in range(top * 4, bottom * 4):
+                    self.assertFalse(any(alpha[y * image.width():y * image.width() + 309 * 4]),
+                                     (recipe["language"], y))
+
     def test_menu_fill_ramp_preserves_native_axis_and_rejects_invalid_stops(self):
         _, recipe = fixture()
         recipe.update(type="menu_atlas_vector_text", labels=[{

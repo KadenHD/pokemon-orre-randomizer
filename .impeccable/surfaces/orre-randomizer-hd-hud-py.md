@@ -39,3 +39,29 @@ Check the actual texture sampler as well as source pixels: the HD-only local
 profile uses linear filtering to avoid native point-sampling stair steps on x4
 captions. Original mode restores native filtering. Test sprite boundaries in
 the emulator rather than inferring their appearance from the source atlas.
+
+Small menu geometry retains each native sprite canvas, circular silhouette,
+transparent cutout and translucent panel. New SVG artwork uses measured paths
+and analytic gradients, with a separately pinned recipe and x4 PNG. Treat Qt's
+one-step opacity quantization separately from an accidental opaque fill. Keep
+source qualification distinct from proof that a sprite appeared in a replay.
+
+Measure adjacent atlas captions within separate native text bands. An accent
+from the next heading must not enlarge the previous word's bounds. Retain a
+transparent sampling gutter at sprite boundaries and verify it with the actual
+linear-filter profile. Inspect the captionless donor itself for leftover ink;
+correct label bounds alone cannot erase remnants in that background. Preserve
+legitimate accents when testing the clear sampling rows.
+Startup health notices retain the original wording and
+line layout in each playable locale; indexed RGB565 resources need explicit
+identities alongside the usual RGB5A3 banks.
+
+Stock weather/Deoxys material replacements share the exact reviewed PNG hashes
+used for the paired portrait captures. Keep their regional native texture keys
+and Original-mode materials intact. A prepared cache proves exact asset delivery;
+it does not prove a weather transformation was observed in a battle replay.
+
+Colosseum Options retains its native striped background. Clean only the
+qualified two-pixel rectangles in y200..255; preserve every donor RGBA pixel
+outside that band. Do not erase the original stripe design to hide compressed
+alpha artifacts.

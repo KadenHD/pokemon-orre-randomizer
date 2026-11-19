@@ -1,0 +1,438 @@
+{
+  "schema": 1,
+  "kind": "measured-options-scanline-band-on-pinned-HD",
+  "review_only": false,
+  "native_bitmap_upscaled_for_art": false,
+  "native_dimensions": [
+    640,
+    256
+  ],
+  "replacement_bounds": [
+    0,
+    200,
+    640,
+    256
+  ],
+  "native_band_RGBA_sha256": "d01147fe8ff8cd83cb5366254e00778accf1b42cfa513aaa81309f00270e31c9",
+  "native_geometry": [
+    {
+      "x": 1,
+      "y": 200,
+      "width": 627,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 204,
+      "width": 615,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 208,
+      "width": 615,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 212,
+      "width": 627,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 216,
+      "width": 615,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 220,
+      "width": 615,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 224,
+      "width": 627,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 228,
+      "width": 615,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 232,
+      "width": 615,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 236,
+      "width": 627,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 240,
+      "width": 615,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 244,
+      "width": 615,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 248,
+      "width": 627,
+      "height": 2
+    },
+    {
+      "x": 1,
+      "y": 252,
+      "width": 615,
+      "height": 2
+    }
+  ],
+  "gradient_greyscale_anchors": [
+    [
+      1,
+      0
+    ],
+    [
+      8,
+      1
+    ],
+    [
+      16,
+      3
+    ],
+    [
+      32,
+      7
+    ],
+    [
+      64,
+      16
+    ],
+    [
+      96,
+      27
+    ],
+    [
+      128,
+      39
+    ],
+    [
+      192,
+      67
+    ],
+    [
+      256,
+      98
+    ],
+    [
+      320,
+      130
+    ],
+    [
+      384,
+      163
+    ],
+    [
+      448,
+      193
+    ],
+    [
+      512,
+      220
+    ],
+    [
+      576,
+      242
+    ],
+    [
+      615,
+      252
+    ],
+    [
+      628,
+      255
+    ]
+  ],
+  "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"640\" height=\"256\" viewBox=\"0 0 640 256\"><defs><linearGradient id=\"scanline\" gradientUnits=\"userSpaceOnUse\" x1=\"1\" y1=\"0\" x2=\"628\" y2=\"0\"><stop offset=\"0.0000000000\" stop-color=\"rgb(0,0,0)\"/><stop offset=\"0.0111642743\" stop-color=\"rgb(1,1,1)\"/><stop offset=\"0.0239234450\" stop-color=\"rgb(3,3,3)\"/><stop offset=\"0.0494417863\" stop-color=\"rgb(7,7,7)\"/><stop offset=\"0.1004784689\" stop-color=\"rgb(16,16,16)\"/><stop offset=\"0.1515151515\" stop-color=\"rgb(27,27,27)\"/><stop offset=\"0.2025518341\" stop-color=\"rgb(39,39,39)\"/><stop offset=\"0.3046251994\" stop-color=\"rgb(67,67,67)\"/><stop offset=\"0.4066985646\" stop-color=\"rgb(98,98,98)\"/><stop offset=\"0.5087719298\" stop-color=\"rgb(130,130,130)\"/><stop offset=\"0.6108452951\" stop-color=\"rgb(163,163,163)\"/><stop offset=\"0.7129186603\" stop-color=\"rgb(193,193,193)\"/><stop offset=\"0.8149920255\" stop-color=\"rgb(220,220,220)\"/><stop offset=\"0.9170653907\" stop-color=\"rgb(242,242,242)\"/><stop offset=\"0.9792663477\" stop-color=\"rgb(252,252,252)\"/><stop offset=\"1.0000000000\" stop-color=\"rgb(255,255,255)\"/></linearGradient></defs><rect x=\"1\" y=\"200\" width=\"627\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"204\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"208\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"212\" width=\"627\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"216\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"220\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"224\" width=\"627\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"228\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"232\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"236\" width=\"627\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"240\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"244\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"248\" width=\"627\" height=\"2\" fill=\"url(#scanline)\"/><rect x=\"1\" y=\"252\" width=\"615\" height=\"2\" fill=\"url(#scanline)\"/></svg>",
+  "svg_sha256": "2d415f9bbeaf8f9a093f3ef28d32c1876d358411796aa17cd6a08b28eb88baaa",
+  "construction": "Measured native rectangles and an analytic gradient; all donor pixels outside rows200-255 retained unchanged. No native pixels enlarged.",
+  "artwork_credit": "Orre contributors; original game UI: Nintendo, The Pokemon Company and Genius Sonority. Unchanged HD source pixels: Colosseum 2.00 pack and credited prior Orre derivatives.",
+  "files": {
+    "options-stripes-tex1_640x256_acdf7bcecf6a6cda_6.png": {
+      "sha256": "e1168fca879d53f9f0b653c0db2c2f70b44eae43b765f3632b9dfec87e7a205d",
+      "dimensions": [
+        2560,
+        1024
+      ]
+    },
+    "options-stripes-tex1_640x256_7efde0b216c5ae8e_6.png": {
+      "sha256": "deb50444c81d4d68b8be8f657382f6612d4486b8c36f35724d4b026c36fb60c3",
+      "dimensions": [
+        2560,
+        1024
+      ]
+    },
+    "options-stripes-tex1_640x256_176e45e0658cd1d5_6.png": {
+      "sha256": "6a096513cf72c1a13a231426418262c0100abf0ddcbe8f8a4859d633275aef0f",
+      "dimensions": [
+        2560,
+        1024
+      ]
+    },
+    "options-stripes-tex1_640x256_9940c6126f457cb3_6.png": {
+      "sha256": "74f604b46332987b08d8fd5567cf0cd41a6a6b0f29be3a31886169c9044f1c4c",
+      "dimensions": [
+        2560,
+        1024
+      ]
+    },
+    "options-stripes-tex1_640x256_5d492a003b137851_6.png": {
+      "sha256": "db0a757e7a9e99865de861f5d4f7245bdbc9bb02027a893dd27535f445d4a069",
+      "dimensions": [
+        2560,
+        1024
+      ]
+    },
+    "options-stripes-tex1_640x256_9aafa27f10780d44_6.png": {
+      "sha256": "b14e3b7b79b80db7a57b44482a59c3b6861a83767046e69c7130aa435af416a8",
+      "dimensions": [
+        2560,
+        1024
+      ]
+    },
+    "options-stripes-tex1_640x256_366eb7523a1e8934_6.png": {
+      "sha256": "2255a3e26d67a3e843eb3b25ea19763a36e39fe53a286f29c796f67eebb955bb",
+      "dimensions": [
+        2560,
+        1024
+      ]
+    }
+  },
+  "records": [
+    {
+      "target": "tex1_640x256_acdf7bcecf6a6cda_6.png",
+      "file": "options-stripes-tex1_640x256_acdf7bcecf6a6cda_6.png",
+      "sha256": "e1168fca879d53f9f0b653c0db2c2f70b44eae43b765f3632b9dfec87e7a205d",
+      "dimensions": [
+        2560,
+        1024
+      ],
+      "source": {
+        "kind": "pinned-upstream-HD",
+        "game": "colosseum",
+        "file": "tex1_640x256_acdf7bcecf6a6cda_6.dds",
+        "sha256": "6091d4515a4ee237fb57533591cbab6e588f8741d0b0a06dd58989be28fc6c8d"
+      },
+      "preserved_hd_rgba_sha256": "2cd3fc5966cf9b27eb3b937e74218d650b6f2c07baaee19cd9f07df574e00e62",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "native_guide": {
+        "archive": "topmenu.fsys",
+        "member": "menu_031",
+        "member_sha256": "a25db815ef765865b4988e677d3fb04a027d2f9084c39f9fc81b6a698a4a2d40",
+        "rgba_sha256": "865ad265cf284153a25898014cdbe46726593e90d87c5966756d1b7c92329a06"
+      }
+    },
+    {
+      "target": "tex1_640x256_7efde0b216c5ae8e_6.png",
+      "file": "options-stripes-tex1_640x256_7efde0b216c5ae8e_6.png",
+      "sha256": "deb50444c81d4d68b8be8f657382f6612d4486b8c36f35724d4b026c36fb60c3",
+      "dimensions": [
+        2560,
+        1024
+      ],
+      "source": {
+        "kind": "pinned-upstream-HD",
+        "game": "colosseum",
+        "file": "tex1_640x256_7efde0b216c5ae8e_6.dds",
+        "sha256": "d31fcb19ebc8f77cdda7fe2e47264b2ffd423df78ae6595e5062c145cb8895cc"
+      },
+      "preserved_hd_rgba_sha256": "be5823f5a8e977aef4bdd231358f86e96fc1278232e2dd72234f4e98781ee64f",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "native_guide": {
+        "archive": "topmenu_fr.fsys",
+        "member": "menu_031",
+        "member_sha256": "b4c989eef83445676577f859fb6bb20137ba9164069869c12cd9b482a0ec29ed",
+        "rgba_sha256": "f9b329444ee04b3526b7b7d38994d10826fda50ff88c20dd12aabee310652c56"
+      }
+    },
+    {
+      "target": "tex1_640x256_176e45e0658cd1d5_6.png",
+      "file": "options-stripes-tex1_640x256_176e45e0658cd1d5_6.png",
+      "sha256": "6a096513cf72c1a13a231426418262c0100abf0ddcbe8f8a4859d633275aef0f",
+      "dimensions": [
+        2560,
+        1024
+      ],
+      "source": {
+        "kind": "pinned-upstream-HD",
+        "game": "colosseum",
+        "file": "tex1_640x256_176e45e0658cd1d5_6.dds",
+        "sha256": "7a7c670f0f46f37065db741f70142648baeafe3c23d272554b9659ec432bcc6a"
+      },
+      "preserved_hd_rgba_sha256": "529a56d6b32d816d368f4429a49d12fda1971a39b94937f27384c96ae729b859",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "native_guide": {
+        "archive": "topmenu_ge.fsys",
+        "member": "menu_031",
+        "member_sha256": "3917cac6a82a0d7133bd63a735c6fbd931b541f6e96cc9dbe9edf46ae45cc8e0",
+        "rgba_sha256": "5ccf55bc451a1806d10f8e5423130ae9a08bea2a6b176599996f6bbf96410f82"
+      }
+    },
+    {
+      "target": "tex1_640x256_9940c6126f457cb3_6.png",
+      "file": "options-stripes-tex1_640x256_9940c6126f457cb3_6.png",
+      "sha256": "74f604b46332987b08d8fd5567cf0cd41a6a6b0f29be3a31886169c9044f1c4c",
+      "dimensions": [
+        2560,
+        1024
+      ],
+      "source": {
+        "kind": "pinned-upstream-HD",
+        "game": "colosseum",
+        "file": "tex1_640x256_9940c6126f457cb3_6.dds",
+        "sha256": "9760ee4ef21449cd61a6217f2bdc7789eeab4089b7265cbd708c3b81c8e679bf"
+      },
+      "preserved_hd_rgba_sha256": "ee5576c8ebb529bfb829fa9f1636af85ae957358a02f9e9099b27eb0378765d1",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "native_guide": {
+        "archive": "topmenu_it.fsys",
+        "member": "menu_031",
+        "member_sha256": "f795fdd118ab6a49d5b8158022aee49a88cb6dad3244b4b83fed768436a4886b",
+        "rgba_sha256": "1ff3c54f56dcd5ffd1be773456cf1db8a60263143b742130785d45b047898d51"
+      }
+    },
+    {
+      "target": "tex1_640x256_5d492a003b137851_6.png",
+      "file": "options-stripes-tex1_640x256_5d492a003b137851_6.png",
+      "sha256": "db0a757e7a9e99865de861f5d4f7245bdbc9bb02027a893dd27535f445d4a069",
+      "dimensions": [
+        2560,
+        1024
+      ],
+      "source": {
+        "kind": "pinned-upstream-HD",
+        "game": "colosseum",
+        "file": "tex1_640x256_5d492a003b137851_6.dds",
+        "sha256": "283196fe83fb3f713cd8e0a9000078c2da882617fa3adb93e6c883acf4445994"
+      },
+      "preserved_hd_rgba_sha256": "9ceff8a9d35edf3b3b259271a55b885f5ce468243c0dea01c60f08d7ad537ad3",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "native_guide": {
+        "archive": "topmenu_sp.fsys",
+        "member": "menu_031",
+        "member_sha256": "77fa039a3870c65f75a055ebc059915ec13ed33404960450e1caa37e019ab094",
+        "rgba_sha256": "a7246042e91b8d7366515f459b3c3b77c4b1a2d7ca6704995de75610a123b6c8"
+      }
+    },
+    {
+      "target": "tex1_640x256_9aafa27f10780d44_6.png",
+      "file": "options-stripes-tex1_640x256_9aafa27f10780d44_6.png",
+      "sha256": "b14e3b7b79b80db7a57b44482a59c3b6861a83767046e69c7130aa435af416a8",
+      "dimensions": [
+        2560,
+        1024
+      ],
+      "source": {
+        "kind": "bundled-reviewed-HD",
+        "file": "menu-atlases/tex1_640x256_9aafa27f10780d44_6-x4.png",
+        "sha256": "177d2a848e82e2ec77493a68e0e345f0092b85a363f92f99049a07a7299916b9",
+        "prior_authoring": {
+          "kind": "five-regional-solo-menu-derivatives",
+          "native_bitmap_resampled": false,
+          "manifest": "menu-atlases/solo-menu-source.json",
+          "manifest_sha256": "a3bf132c3c85c5bcb3c9a655cc074d2113a4ad6522d23d7587f7ab64c55922be",
+          "artwork_file": "tex1_640x256_9aafa27f10780d44_6-x4.png",
+          "native_runtime_scene_proven": false,
+          "source": {
+            "kind": "pack",
+            "game": "colosseum",
+            "file": "tex1_640x256_acdf7bcecf6a6cda_6.dds",
+            "sha256": "6091d4515a4ee237fb57533591cbab6e588f8741d0b0a06dd58989be28fc6c8d",
+            "native_key": "tex1_640x256_acdf7bcecf6a6cda_6.png"
+          },
+          "components": [],
+          "source_recipe_target": "tex1_640x256_9aafa27f10780d44_6.png",
+          "scope": "original solo/options menu"
+        }
+      },
+      "preserved_hd_rgba_sha256": "4f96df8823fa443b40052b015bd50b8e22b17b879592731a2bfab5f722b2e50e",
+      "game_ids": [
+        "GC6E01",
+        "GXXE01",
+        "GXXJ01",
+        "GXXP01"
+      ],
+      "native_guide": {
+        "archive": "topmenu.fsys",
+        "member": "menu_031",
+        "member_sha256": "2da723d01c0487251d90b69cb34d8bd8edb7a81a4170d28e38cab88e2da40534",
+        "rgba_sha256": "b043deda440e5c514986e41a6e141612ccae7dcf054f41725c52cf66ee8ef124"
+      }
+    },
+    {
+      "target": "tex1_640x256_366eb7523a1e8934_6.png",
+      "file": "options-stripes-tex1_640x256_366eb7523a1e8934_6.png",
+      "sha256": "2255a3e26d67a3e843eb3b25ea19763a36e39fe53a286f29c796f67eebb955bb",
+      "dimensions": [
+        2560,
+        1024
+      ],
+      "source": {
+        "kind": "bundled-reviewed-HD",
+        "file": "menu-atlases/tex1_640x256_366eb7523a1e8934_6-x4.png",
+        "sha256": "a97fad2337432be0c0315d870600282bb04939aea37903e453c8a13885ef5098",
+        "prior_authoring": {
+          "kind": "five-regional-solo-menu-derivatives",
+          "native_bitmap_resampled": false,
+          "manifest": "menu-atlases/solo-menu-source.json",
+          "manifest_sha256": "a3bf132c3c85c5bcb3c9a655cc074d2113a4ad6522d23d7587f7ab64c55922be",
+          "artwork_file": "tex1_640x256_366eb7523a1e8934_6-x4.png",
+          "native_runtime_scene_proven": false,
+          "source": {
+            "kind": "pack",
+            "game": "colosseum",
+            "file": "tex1_640x256_acdf7bcecf6a6cda_6.dds",
+            "sha256": "6091d4515a4ee237fb57533591cbab6e588f8741d0b0a06dd58989be28fc6c8d",
+            "native_key": "tex1_640x256_acdf7bcecf6a6cda_6.png"
+          },
+          "components": [],
+          "source_recipe_target": "tex1_640x256_366eb7523a1e8934_6.png",
+          "scope": "original solo/options menu"
+        }
+      },
+      "preserved_hd_rgba_sha256": "0a3abd0604f648b323c3fda6a58068906614c5fb7dfc2625982c5e251259d524",
+      "game_ids": [
+        "GC6J01"
+      ],
+      "native_guide": {
+        "archive": "topmenu.fsys",
+        "member": "menu_031",
+        "member_sha256": "4937b55b684db872deecb0f3db5c3421276b2b599c4769c7837c26274232c474",
+        "rgba_sha256": "e663b90c2d4b83bc64b2d9f89b8181d6a90941ebf197bc0fb5e93eb677609070"
+      }
+    }
+  ]
+}

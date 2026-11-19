@@ -33,6 +33,7 @@ REQUIRED_RUNTIME_MODULES = frozenset((
     "orre_randomizer.hd_text_layout",
     "orre_randomizer.hd_spinda_face", "orre_randomizer.engine.dna_spinda_face_hd",
     "orre_randomizer.hd_extra_portraits", "orre_randomizer.hd_extra_portrait_catalog",
+    "orre_randomizer.hd_form_materials",
     "orre_randomizer.engine.dna_hd_tiles", "orre_randomizer.engine.dna_spinda_hd",
     "orre_randomizer.engine.spinda_diagram",
 ))

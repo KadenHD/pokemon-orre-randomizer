@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-18T23:14:13.071775Z",
+  "generatedAt": "2026-11-19T10:41:31.734604Z",
   "title": "Design System: Pokémon Orre Randomizer",
   "extensions": {
     "colorMeta": {
@@ -567,7 +567,10 @@
         "orre_randomizer/hd_hud.py",
         "orre_randomizer/hd_text_vectors.py",
         "orre_randomizer/hd_menu_catalog.py",
-        "orre_randomizer/hd_menu_atlases.py"
+        "orre_randomizer/hd_menu_atlases.py",
+        "orre_randomizer/hd_form_materials.py",
+        "orre_randomizer/engine/dna_spinda_face_hd.py",
+        "orre_randomizer/hd_spinda_face.py"
       ],
       "font": "Noto Sans JP",
       "weight": 700,
@@ -575,7 +578,11 @@
       "originalMode": "Native samples; prerecorded movies unchanged",
       "coverage": "Separate exact source coverage from actual rendered Dolphin witnesses",
       "hardware": "Authentic source photographs or verified models; retain silhouette, controls and uniform scale",
-      "captureReview": "Inspect critical small labels in unscaled crops and compare original captured pixels before reporting missing or clipped artwork."
+      "captureReview": "Inspect critical small labels in unscaled crops and compare original captured pixels before reporting missing or clipped artwork.",
+      "menuGeometry": "228 reviewed atlas recipes, 328 regional PNG outputs; preserve native sprite canvases, alpha cutouts, caption gutters, adjacent accents and Colosseum Options stripe geometry",
+      "formMaterials": "43 reviewed x4 PNGs shared with portrait captures; 15 stock weather textures per Colosseum region, 43 weather/Deoxys textures per XD region; native meshes and Original mode unchanged",
+      "spindaFace": "512x512 native-filtered face on qualified Windows launcher folders for GC6P01/GC6E01/GC6J01; match PID and shiny palette, retire reused pixel registrations, fence before every bank reuse",
+      "runtimeScope": "Actual captured routes and synthetic protocol tests are recorded separately; no assertion that every scene or language line was played"
     },
     "neutralSurfaces": {
       "platform": "PySide6 QWidget",

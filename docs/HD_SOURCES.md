@@ -112,6 +112,41 @@ P-AD emblem, is redrawn as vectors from measured native circles and line widths.
 These are authored derivatives, identified separately from upstream HD pixels.
 No enlarged native raster is used as replacement lettering or vector artwork.
 
+Seven further small menu resources use measured vector paths and analytic
+gradients: Colosseum battle-menu frames and indicators in XD's common, battle,
+hologram, name-entry and simulator menus. Original sprite geometry and colors
+come from the games; the x4 drawing is newly authored by Orre contributors.
+The question-mark outline uses the already credited captured font geometry.
+This adds no replacement geometry or animation to the 3D models.
+
+[`build_hd_geometry_additions.py`](../scripts/build_hd_geometry_additions.py)
+reproduces the registered PNGs from `geometry-additions-source.json` with no
+ROM, native PNG, system font or network access. Its output hashes, native
+resource identities and x4 dimensions are pinned. Semi-transparent SVG fills
+can differ from the native alpha by one 8-bit step after Qt composition.
+Original mode continues to use the game's own textures.
+
+[`build_hd_options_stripes.py`](../scripts/build_hd_options_stripes.py)
+reproduces the Options background correction for all seven Colosseum locale
+layouts. `options-stripes-source.json` records the shared native rectangle
+geometry and exact x4 donor hashes. The authored band preserves the native
+two-pixel stripes and gradients without the compressed donor's irregular alpha
+edges. Every donor RGBA pixel outside native y200..255 remains unchanged.
+
+The same tool's `--source warnings` mode reproduces five European XD health
+notices from separately pinned paths in `xd-warning-pages-source.json`. Original
+wording, per-line ink bounds, colors and the printed historical URL are retained.
+The warning triangle is measured geometry. The source records the original
+CI4/RGB565 member identities; no native raster supplies the high-resolution
+lettering. The notices use the already credited Bahnschrift outline typography.
+Western XD end cards retain their native regional logos and artwork until
+equivalent high-resolution sources are qualified.
+
+The European XD sheet donor clears the original title remnants as well as
+the main lettering. Locale recipes separately measure adjacent title bands,
+retaining their accents and a transparent sampling gutter. All RGBA pixels
+outside the registered heading region remain those of the pinned HD donor.
+
 The catalogue records native member and decoded-image hashes, applicable game
 IDs, donor hashes, vector data and renderer revision. Preparation authenticates
 the data and publishes these files with the other immutable custom overlays.
@@ -170,8 +205,14 @@ normal/shiny poses and crops, and the native square or circular frame. Gen3
 Castform weather forms retain their original shared normal/shiny colors.
 Original mode keeps the native portraits. The
 [capture procedure](../scripts/EXTRA_PORTRAIT_CAPTURE.md) and authoring tools
-record the source hashes, poses, material recipes and framing; these portrait
-renders do not expand the upstream packs' stock 3D material coverage.
+record the source hashes, poses, material recipes and framing. Orre also
+registers the same 43 reviewed material PNGs for the stock models: 15 weather
+textures in all three Colosseum regions and all 43 textures in all three XD
+regions. These files retain exactly the hashes recorded by the GPU portrait
+captures. They supplement the pinned packs without modifying their files or
+the native meshes, animation and shiny palette handling. The separate
+`form-materials/catalog.json` records their regional keys and source recipes;
+changing it creates a new immutable game-folder cache.
 XD's HD mode requires the pinned Colosseum pack as well as XD's own pack.
 The manager installs missing dependencies together; creation and launch check
 both packs even when an older folder has no recorded portrait dependencies.

@@ -29,6 +29,11 @@ class HdGameFolderTests(unittest.TestCase):
         forms = patch("orre_randomizer.hd_extra_portraits.prepare_extra_portrait_overlays",
                       return_value={"files": {}, "assets": [], "active": False})
         self.forms = forms.start(); self.addCleanup(forms.stop)
+        materials = patch("orre_randomizer.hd_form_materials.prepare_form_materials",
+                          return_value={"files": {}, "assets": [], "active": False})
+        self.materials = materials.start(); self.addCleanup(materials.stop)
+        recipes = patch("orre_randomizer.hd_form_materials.material_recipes", return_value={})
+        self.material_recipes = recipes.start(); self.addCleanup(recipes.stop)
 
     @unittest.skipUnless(os.name == "nt", "Windows directory sharing")
     def test_temporary_cache_publication_lock_retries_without_discarding_completed_art(self):
@@ -202,6 +207,31 @@ class HdGameFolderTests(unittest.TestCase):
         self.assertEqual(render.call_count, 2)
         self.assertEqual(source.read_bytes(), before)
         self.assertTrue(Path(previous["directory"]).is_dir())
+
+    def test_revised_form_materials_do_not_reuse_older_prepared_art(self):
+        for pack in PACKS.values():
+            location = self.root / "Shared/TexturePacks" / pack.key
+            location.mkdir(parents=True)
+            (location / "installed.json").write_text('{}')
+
+        def prepared(_native, destination, **_kwargs):
+            destination.mkdir(parents=True)
+            return {"schema": 2, "hd_ready": True, "texture_count": 0, "files": []}
+
+        with patch("orre_randomizer.hd_overlays.native_asset_manifest", return_value=self.plan), \
+             patch.object(PackStore, "installed", return_value=True), \
+             patch("orre_randomizer.hd_hud.hud_recipes", return_value={}), \
+             patch("orre_randomizer.hd_hud.prepare_hud_overlays", return_value={"files": {}, "assets": []}), \
+             patch("orre_randomizer.hd_overlays.prepare_hd_overlays", side_effect=prepared) as render:
+            self.material_recipes.return_value = {"model": {"catalogue_sha256": "first"}}
+            first = prepare_custom_hd(self.folder, self.data)
+            self.material_recipes.return_value = {"model": {"catalogue_sha256": "second"}}
+            second = prepare_custom_hd(self.folder, self.data)
+            again = prepare_custom_hd(self.folder, self.data)
+        self.assertNotEqual(first["directory"], second["directory"])
+        self.assertEqual(second["directory"], again["directory"])
+        self.assertEqual(render.call_count, 2)
+        self.assertTrue(Path(first["directory"]).is_dir())
 
     def test_revised_portrait_registry_does_not_reuse_older_prepared_art(self):
         packs = self.root / "Shared/TexturePacks"

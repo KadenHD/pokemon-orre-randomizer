@@ -36,10 +36,10 @@ def assets(directory):
     return face, stamp, paint
 
 
-def metadata():
-    original, profile = fixture()
-    with patch.dict(b._PROFILE, profile):
-        _, result = b.patch_spinda_face_bridge(original, original)
+def metadata(game_id="GC6P01"):
+    original, profile = fixture(game_id)
+    with patch.dict(b._PROFILES[game_id], profile):
+        _, result = b.patch_spinda_face_bridge(original, original, game_id)
     # A synthetic source still validates against its own pinned test profile.
     return profile, result
 
@@ -206,6 +206,61 @@ class BankOwnershipTests(unittest.TestCase):
                 mutate(damaged)
                 with self.assertRaises(ValueError):
                     h.validate_metadata(damaged)
+
+    def test_japanese_bank_requires_the_compact_layout_and_live_allocator_reservation(self):
+        profile, info = metadata("GC6J01")
+        with patch.dict(b._PROFILES["GC6J01"], profile):
+            h.validate_metadata(info)
+            damaged = dict(info, pixel_banks_in_executable=True)
+            with self.assertRaisesRegex(ValueError, "compact reservation"):
+                h.validate_metadata(damaged)
+        memory = object.__new__(h.OwnedFaceMemory)
+        memory.metadata = info
+        contents = {0x80000000: b"GC6J01\0\0", 0x80464060: struct.pack(">I", info["reserved_end"]),
+                    info["control"]: struct.pack(">II", b.MAGIC, b.ABI)}
+        from orre_randomizer.engine.gift_move_hooks import branch, _arena_guard
+        contents[info["base"]] = _arena_guard(info["reserved_end"], info["arena_store"])
+        contents[info["arena_setter"]] = struct.pack(">I", branch(info["arena_setter"], info["base"]))
+        for hook in info["hooks"]:
+            contents[hook["address"]] = struct.pack(">I", branch(hook["address"], hook["stub_address"]))
+        contents[info["control"] + 256] = struct.pack(">IHHIIff", info["buffers"][0], 512, 512, 4, 0, 0., 0.)
+        memory.read = lambda address, size: contents[address][:size]
+        memory.verify_contract()
+        for value in (info["reserved_end"] - 32, 0x81800000, 0x10):
+            contents[0x80464060] = struct.pack(">I", value)
+            with self.assertRaisesRegex(h.FaceContractLost, "reservation was lost"):
+                memory.verify_contract()
+        contents[0x80464060] = struct.pack(">I", info["reserved_end"])
+        for address in (info["base"], info["arena_setter"]):
+            original = contents[address]
+            contents[address] = b'\xff' + original[1:]
+            with self.assertRaisesRegex(h.FaceContractLost, "guard ownership"):
+                memory.verify_contract()
+            contents[address] = original
+        memory.snapshot = lambda: {"active_bank": b.NONE, "ready_serial": 1, "ack_serial": 1}
+        memory._copy = lambda *a: self.fail("An absent second bank must never be written")
+        with self.assertRaises(ValueError):
+            memory.bank(1, bytes(b.BUFFER_BYTES))
+
+    def test_older_european_folder_keeps_its_original_wrapper_contract(self):
+        original, profile = fixture()
+        factory = b._factory_stub
+        with patch.dict(b._PROFILE, profile), patch.object(b, "_factory_stub",
+                side_effect=lambda at, control, p: factory(at, control, p, guard_reuse=False)):
+            _, info = b.patch_spinda_face_bridge(original, original)
+        info.pop("registry_reuse_guard")
+        memory = object.__new__(h.OwnedFaceMemory)
+        memory.metadata = info
+        contents = {0x80000000: b"GC6P01\0\0", info["control"]: struct.pack(">II", b.MAGIC, b.ABI)}
+        from orre_randomizer.engine.gift_move_hooks import branch
+        for hook in info["hooks"]:
+            contents[hook["address"]] = struct.pack(">I", branch(hook["address"], hook["stub_address"]))
+            contents[hook["stub_address"]] = (factory(hook["stub_address"], info["control"], info, guard_reuse=False)
+                if hook["kind"] == "factory" else b._setup_stub(hook["stub_address"], info["control"], info["buffers"], info))
+        for index, address in enumerate(info["buffers"]):
+            contents[info["control"] + 256 + index * 32] = struct.pack(">IHHIIff", address, 512, 512, 4, 0, 0., 0.)
+        memory.read = lambda address, size: contents[address][:size]
+        memory.verify_contract(full=True)
 
     def test_mapping_writes_reject_active_or_unacknowledged_bank_and_native_fields(self):
         memory = object.__new__(h.OwnedFaceMemory)
@@ -393,12 +448,17 @@ class BankOwnershipTests(unittest.TestCase):
         self.assertEqual(session.stats["published"], 2)
 
     def test_real_native_stub_acknowledges_withdrawal_before_startup_or_rewind_reuses_a_bank(self):
-        for active, rewind in ((False, False), (True, False), (True, True)):
-            with self.subTest(active=active, rewind=rewind):
-                profile, info = metadata()
-                cpu, origin, control, buffers, native = machine()
-                tobj, desc, pixels = set_request(cpu, control)
+        cases = (("GC6P01", False, False, False), ("GC6P01", True, False, False),
+                 ("GC6P01", True, True, False), ("GC6P01", True, False, True),
+                 ("GC6J01", False, False, False), ("GC6J01", True, False, False),
+                 ("GC6J01", True, True, False), ("GC6J01", True, False, True))
+        for game_id, active, rewind, next_pid in cases:
+            with self.subTest(game_id=game_id, active=active, rewind=rewind, next_pid=next_pid):
+                profile, info = metadata(game_id)
+                cpu, origin, control, buffers, native = machine(game_id=game_id, bank_count=len(info['buffers']))
+                tobj, desc, pixels = set_request(cpu, control, profile=native)
                 for name, value in {'request_serial': 1, 'request_epoch': 1,
+                        'request_counter': 1,
                         'request_pixels': pixels, 'request_pid': 0x12345678,
                         'ready_bank': 1 if active else 0, 'ready_epoch': 1,
                         'ready_pixels': pixels, 'ready_pid': 0x12345678,
@@ -428,10 +488,13 @@ class BankOwnershipTests(unittest.TestCase):
                         # No native draw between enabled0/commit0/token writes:
                         # this is the interleaving that previously deadlocked.
                         if name == 'enabled' and value == 1:
-                            assert cpu.read(control + b.FIELDS['active_bank']) == b.NONE or self.commits
-                            assert cpu.read(control + b.FIELDS['ack_serial']) == cpu.read(control + b.FIELDS['ready_serial'])
+                            assert cpu.read(control + b.FIELDS['active_bank']) == b.NONE or self.commits, 'unreleased bank on enable'
+                            assert (cpu.read(control + b.FIELDS['ack_serial']) == cpu.read(control + b.FIELDS['ready_serial'])
+                                    or (self.commits and cpu.read(control + b.FIELDS['ready_commit']))), 'unacknowledged enable'
                         self.log.append((name, value))
                         cpu.write(control + b.FIELDS[name], value)
+                        if name == 'enabled' and value == 1 and self.commits:
+                            self.draw()
                         if name == 'ready_commit' and value:
                             self.commits += 1
                             self.draw()
@@ -441,10 +504,12 @@ class BankOwnershipTests(unittest.TestCase):
                                 # Restore an in-flight publication with the
                                 # same identity, after bank switch/before ack.
                                 cpu.write(control + b.FIELDS['ack_serial'], 0)
+                            if next_pid and self.commits == 1:
+                                set_request(cpu, control, epoch=2, pid=0x87654321, profile=native)
                     def bank(self, index, raw):
-                        assert cpu.read(control + b.FIELDS['active_bank']) == b.NONE
-                        assert cpu.read(control + b.FIELDS['ack_serial']) == cpu.read(control + b.FIELDS['ready_serial'])
-                        assert cpu.read(control + b.FIELDS['ready_commit']) == 0
+                        assert cpu.read(control + b.FIELDS['active_bank']) != index, 'active bank write'
+                        assert cpu.read(control + b.FIELDS['ack_serial']) == cpu.read(control + b.FIELDS['ready_serial']), 'unacknowledged bank write'
+                        assert cpu.read(control + b.FIELDS['ready_commit']) == 0, 'committed bank write'
                         self.log.append(('bank', index))
                     def close(self): self.closed = True
                 memory = Memory()
@@ -452,11 +517,11 @@ class BankOwnershipTests(unittest.TestCase):
                     def __init__(self, *args): pass
                     def validate_native(self, *args): pass
                     def render(self, pid): return bytes(b.BUFFER_BYTES)
-                with patch.dict(b._PROFILE, profile):
+                with patch.dict(b._PROFILES[game_id], profile):
                     session = h.SpindaFaceSession(Process(), Path('unused'), info,
                         memory_factory=lambda *a: memory, assets_factory=Assets, allow_unvalidated=True).start()
                     deadline = time.monotonic() + 2
-                    wanted = 2 if rewind else 1
+                    wanted = 2 if rewind or next_pid else 1
                     while session.stats['published'] < wanted and session.error is None and time.monotonic() < deadline:
                         time.sleep(.005)
                     session.stop()
@@ -465,8 +530,12 @@ class BankOwnershipTests(unittest.TestCase):
                 self.assertTrue(memory.closed)
                 first_enable = memory.log.index(('enabled', 1))
                 self.assertTrue(any(name == 'native_disabled_ack' for name, value in memory.log[:first_enable]))
-                self.assertEqual(cpu.read(control + b.FIELDS['ack_serial']), 1)
-                self.assertEqual(cpu.read(control + b.FIELDS['active_bank']), 0)
+                self.assertEqual(cpu.read(control + b.FIELDS['ack_serial']), 2 if next_pid else 1)
+                self.assertEqual(cpu.read(control + b.FIELDS['active_bank']),
+                                 1 if next_pid and len(buffers) == 2 else 0)
+                if next_pid:
+                    self.assertEqual(cpu.read(control + b.FIELDS['active_epoch']), 2)
+                    self.assertEqual(cpu.read(control + b.FIELDS['ready_pid']), 0x87654321)
                 if active:
                     self.assertTrue(any(call[0] == native['draw_done'] for call in cpu.calls))
 

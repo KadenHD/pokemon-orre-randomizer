@@ -44,6 +44,23 @@ def check_menu_artwork() -> dict:
             "external_packs_opened": False, "rom_opened": False}
 
 
+def check_form_materials() -> dict:
+    """Verify the entire bundled stock-material catalogue without a ROM or pack."""
+    from PySide6.QtGui import QImage
+    from .hd_form_materials import material_recipes
+    from .hd_menu_catalog import SUPPORTED, _asset_bytes
+    regional = {game: material_recipes(game) for game in sorted(SUPPORTED)}
+    rows = {key: row for recipes in regional.values() for key, row in recipes.items()}
+    for name, row in rows.items():
+        payload, digest = _asset_bytes("form-materials/" + name)
+        image = QImage.fromData(payload, "PNG")
+        if (digest != row["sha256"] or image.isNull()
+                or [image.width(), image.height()] != row["dimensions"]):
+            raise ValueError("Packaged stock form material differs from its reviewed source")
+    return {"checked_images": len(rows), "regional_counts": {g: len(r) for g, r in regional.items()},
+            "rom_opened": False, "external_packs_opened": False}
+
+
 def run_checks(report: Path, *, screenshots: bool = False) -> dict:
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings, Qt, qVersion
     from PySide6.QtGui import QFont, QFontDatabase
@@ -93,6 +110,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
         data["hd_text_font"] = {"verified_donor_and_license": True, "sample_rendered": True,
                                 "recipe": FONT_SOURCE["recipe"], "rasterizer": FONT_SOURCE["rasterizer"]}
         data["hd_menu_artwork"] = check_menu_artwork()
+        data["hd_form_materials"] = check_form_materials()
     data["disc_converter"] = None
     if disc_images.library_path().is_file():
         import threading

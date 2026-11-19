@@ -105,8 +105,9 @@ an enlarged native image. These texture packs add no polygons or HQ audio.
 **Original** mode needs no pack download.
 
 HD mode adds localized type and status labels, battle controls, Pokémon sheets,
-title menus and P-AD captions alongside the texture packs. XD's VS illustrations use the
-game's character models and authentic hardware photos. New game folders also
+title menus, European XD health notices and P-AD captions alongside the
+texture packs. XD's VS illustrations use the game's character models and
+authentic hardware photos. New game folders also
 support sharp vector lettering without changing dialogue layout.
 Coverage varies by region and language, and some artwork remains native;
 see [HD coverage and limitations](docs/HD_COVERAGE.md).
@@ -117,8 +118,9 @@ XD's **HD mode requires both packs**: XD supplies the textures and Colosseum
 supplies HD portraits for all 386 base species and Unown forms, adapted to XD's
 round frames. Clicking **Install** for XD installs both missing packs, reusing
 any version already installed. Castform's weather forms and XD's additional
-Deoxys forms also have paired normal/shiny x4 portraits. These portrait additions
-do not replace missing stock 3D textures in the upstream packs.
+Deoxys forms also have paired normal/shiny x4 portraits. Their 43 reviewed HD
+material textures now apply to the stock models too, with each game's native
+meshes and animations. Original mode keeps the native artwork.
 Custom Shadow Lugia portraits match its normal/shiny colors at both
 resolutions, with violet square frames in Colosseum and round frames in XD.
 The DNA lab uses separate whole-body artwork with matching native/HD poses

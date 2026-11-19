@@ -233,13 +233,20 @@ def validate_metadata(metadata):
     if any(metadata.get(k) != value for k, value in p.items()):
         raise ValueError("Spinda face bridge fixed profile differs")
     control, end = metadata.get("control"), metadata.get("reserved_end")
+    count = 1 if p["game_id"] == "GC6J01" else 2
+    if count == 1 and metadata.get("pixel_banks_in_executable") is not False:
+        raise ValueError("Japanese Spinda face requires the qualified compact reservation")
     if (type(control) is not int or type(end) is not int or control % 32
             or not p["base"] + 32 <= control < end < 0x81700000
             or metadata.get("contract") != bridge.CONTRACT or metadata.get("bridge_abi") != bridge.ABI
-            or metadata.get("buffers") != [control + 512, control + 512 + bridge.BUFFER_BYTES]
-            or end != control + 512 + bridge.BUFFER_BYTES * 2
+            or metadata.get("buffers") != [control + 512 + i * bridge.BUFFER_BYTES for i in range(count)]
+            or end != control + 512 + bridge.BUFFER_BYTES * count
             or metadata.get("control_bytes") != 512 or metadata.get("buffer_bytes") != bridge.BUFFER_BYTES):
         raise ValueError("Spinda face bridge arena differs")
+    if metadata.get("pixel_banks_in_executable") is False:
+        if (p["game_id"] != "GC6J01" or metadata.get("pixel_banks_begin") != control + 512
+                or metadata.get("section_bytes") != control + 512 - p["base"]):
+            raise ValueError("Spinda face unloaded bank reservation differs")
     hooks = metadata.get("hooks", [])
     if [row.get("kind") for row in hooks] != ["factory", "setup"]:
         raise ValueError("Spinda face hook list differs")
@@ -301,6 +308,17 @@ class OwnedFaceMemory:
         """
         from .engine.gift_move_hooks import branch
         m = self.metadata
+        if m.get("pixel_banks_in_executable") is False:
+            from .engine.gift_move_hooks import _arena_guard
+            if (self.word(m["arena_setter"]) != branch(m["arena_setter"], m["base"])
+                    or self.read(m["base"], 32) != _arena_guard(m["reserved_end"], m["arena_store"])):
+                raise FaceContractLost("Spinda face allocator guard ownership was lost")
+            # Verified JP startup sets r13=0x8046bf00; native OSSetArenaLo's
+            # stw r3,-0x7ea0(r13) owns this word. Check the effective allocator
+            # boundary, as well as the wrapper/descriptor ownership below.
+            arena_low = self.word(0x80464060)
+            if not m["reserved_end"] <= arena_low < 0x81800000:
+                raise FaceContractLost("Spinda face pixel-bank reservation was lost: " + hex(arena_low))
         if self.read(0x80000000, 8) != m["game_id"].encode("ascii") + b"\0\0" or self.read(m["control"], 8) != struct.pack(">II", bridge.MAGIC, bridge.ABI):
             raise FaceContractLost("Spinda face game/mailbox ownership was lost")
         for hook in m["hooks"]:
@@ -308,7 +326,8 @@ class OwnedFaceMemory:
                 raise FaceContractLost("Spinda face native hook ownership was lost")
             if full:
                 if hook["kind"] == "factory":
-                    expected = bridge._factory_stub(hook["stub_address"], m["control"], m)
+                    expected = bridge._factory_stub(hook["stub_address"], m["control"], m,
+                        guard_reuse=m.get("registry_reuse_guard", False))
                 else:
                     expected = bridge._setup_stub(hook["stub_address"], m["control"], m["buffers"], m)
                 if self.read(hook["stub_address"], len(expected)) != expected:
@@ -350,7 +369,8 @@ class OwnedFaceMemory:
         self._copy(self.metadata["control"] + offset, struct.pack(">I", value))
 
     def bank(self, index, pixels):
-        if type(index) is not int or index not in (0, 1) or len(pixels) != bridge.BUFFER_BYTES:
+        if (type(index) is not int or not 0 <= index < len(self.metadata["buffers"])
+                or len(pixels) != bridge.BUFFER_BYTES):
             raise ValueError("Spinda face write is outside the exact inactive bank")
         self.verify_contract(full=True)
         # Keep the transfer bounded between ownership checks. A valid restored
@@ -480,7 +500,15 @@ class SpindaFaceSession:
                     if tuple(current[name] for name in ("request_serial", "request_epoch", "request_pixels", "request_pid")) != identity:
                         self.stats["stale_requests"] += 1
                         continue
-                    bank = 1 if current["active_bank"] == 0 else 0
+                    single = len(self.metadata["buffers"]) == 1
+                    if single and current["active_bank"] == 0:
+                        if not self._withdraw(memory):
+                            return
+                        current = memory.snapshot()
+                        if tuple(current[name] for name in ("request_serial", "request_epoch", "request_pixels", "request_pid")) != identity:
+                            self.stats["stale_requests"] += 1
+                            continue
+                    bank = 0 if single else (1 if current["active_bank"] == 0 else 0)
                     memory.put("ready_commit", 0)
                     memory.bank(bank, pixels)
                     memory.verify_contract(full=True)
@@ -489,6 +517,8 @@ class SpindaFaceSession:
                         memory.put(name, value)
                     memory.put("heartbeat", memory.word(self.metadata["vi"]))
                     memory.put("ready_commit", identity[1])
+                    if single:
+                        memory.put("enabled", 1)
                     last = identity
                     self.stats["published"] += 1
                 self.stopped.wait(.01)

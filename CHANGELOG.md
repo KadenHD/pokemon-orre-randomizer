@@ -1,6 +1,31 @@
 # Changelog
 
-## Unreleased
+## 2.0.2 - 2026-11-19
+
+- Enable the 512x512 Spinda lab face on Japanese Colosseum with a compact,
+  fenced 512 KiB reservation. Validate two saved PIDs, shiny and ordinary,
+  exact GPU texture output, native fallback and recovery in the same process.
+- Fix a stale Spinda lab pattern when the game recycles a face texture's
+  memory address. Retire the previous PID registration before publishing the
+  new one; retain the wrapper contract for older European and USA folders.
+- Install the 43 reviewed x4 weather and Deoxys material textures on the stock
+  models as well as the additional portraits. Keep each regional native key,
+  shiny palette, mesh and animation; keep Original mode unchanged.
+- Include the form-material registry in immutable cache identities, reject
+  altered or conflicting artwork and preserve installed source packs.
+- Add seven x4 vector menu resources for Colosseum battle-menu frames and XD
+  indicators, command-panel transparency, name entry and hologram shading.
+  Bundle their offline authoring recipes and provenance checks.
+- Recreate the five European XD health notices with their original wording
+  and line layout, using vector lettering and a measured warning symbol.
+- Fix European XD sheet headings sampling letters from the adjacent title
+  and remove caption remnants from the shared HD background.
+- Clean the Options background stripes in all seven Colosseum locale layouts.
+  Retain the native rectangles and every HD donor pixel outside the stripe band.
+- Extend six-region menu preparation to 328 checked PNGs. Document source
+  coverage separately from the menus actually observed in Dolphin.
+- Extend muted Dolphin checks to USA and Japanese party menus, and German,
+  Spanish and Italian field menus in both games, using copied QA cards.
 
 ## 2.0.1 - 2026-11-19
 

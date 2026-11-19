@@ -65,6 +65,7 @@ def portrait_coverage_report() -> dict:
     return {"texture_atlases": 9, "weather_atlases_per_game": 3, "xd_deoxys_forms": 3,
             "registered": extra_portraits_registered(), "scope": "portrait atlases only",
             "stock_3d_materials_installed": False,
+            "stock_3d_materials_catalogued_separately": True,
             "normal_and_shiny": True, "native_rom_changed": False,
             "castform_weather_shiny": "Gen3 native weather colours shared with normal",
             "publication_policy": "reviewed native-mesh captures with complete HD material provenance"}

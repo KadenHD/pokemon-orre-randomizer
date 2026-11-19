@@ -44,17 +44,72 @@ The visual review also checks words inside resources initially classified as
 icons or illustrations, including the Japanese main menu, START and VS sprites.
 An archive or category name alone does not establish that it contains no text.
 
-The completed November 19 pass registers 211 menu atlases. Preparation of all
-six regional variants produces 297 PNGs, each compared against its approved
+The extended November 19 pass registers 228 menu atlases. Preparation of all
+six regional variants produces 328 PNGs, each compared against its approved
 or pinned reference. No identified player-menu label atlas remains unmatched
 in this selected inventory. This is source coverage, not a replay of every
-menu. Forty-five other identities still lack a qualified replacement: model
+menu. Thirty-eight other identities still lack a qualified replacement: model
 materials, illustrations and photographs, icons or geometry, effects, debug
-controls and the Genius Sonority startup wordmark. Their remaining limits are
-listed below.
+controls and the Genius Sonority startup wordmark. This count describes the
+original 616-key menu sample. The wider archive pass also adds five European
+XD health-notice pages outside that sample. It identifies other stock-material
+gaps, described separately below.
+
+## Wider archive inventory
+
+The follow-up reads every non-movie FSYS archive in the six existing generated
+revision-0 QA images. It inspects bounded flat GX textures, HSD model DATs and
+PKX models, retaining duplicate archive references separately from unique keys.
+These are QA-image inventories, not original-disc or visible-screen completion
+percentages. Other native resource kinds and runtime-generated textures retain
+their separate qualification requirements.
+
+| QA game / region | Non-movie archives read | Parsed unique texture keys | No exact key in the prepared overlays or either pack |
+| --- | ---: | ---: | ---: |
+| Colosseum Europe | 1,981 | 6,248 | 253 |
+| Colosseum USA | 1,852 | 6,144 | 254 |
+| Colosseum Japan | 1,852 | 6,144 | 260 |
+| XD Europe | 2,583 | 6,708 | 360 |
+| XD USA | 2,512 | 6,631 | 347 |
+| XD Japan | 2,475 | 6,604 | 353 |
+
+These existing QA-image inventories are reconciled against the current validated
+overlay caches, retaining the pinned-pack matches. The 15 weather-material keys
+per Colosseum region and 43 weather/Deoxys keys per XD region are now covered;
+no previously registered overlay key was lost. This reconciliation adds no
+new claim about which stock forms appeared in gameplay.
+
+The counts include stock trainers, auxiliary models, maps, effects and inactive
+resources. A missing exact key is a triage candidate: optional mipmap-name
+aliases and dynamic contracts need separate inspection. Presence of a file
+alone establishes neither visibility nor artistic quality. All selected-layout
+members parse after accounting for RGB565 as well as RGB5A3 palette banks.
+Movies are excluded, and the six QA-image hashes remain unchanged.
 
 ## Corrections
 
+- **Colosseum Options stripes:** the five European layouts, USA and Japan
+  retain their native two-pixel stripe geometry without the compressed HD
+  donor's ragged alpha edges. Each derivative keeps every donor RGBA pixel
+  outside the native y200..255 band unchanged.
+- **European XD notices:** all five original health-notice pages have x4
+  vector replacements. Each retains its own original wording, line positions,
+  warning symbol and historical printed URL. The CI4/RGB565 native identities
+  are recorded explicitly; these pages were outside the earlier menu filter.
+- **European XD sheet headings:** native ink measurements now exclude the
+  accent from the adjacent heading. A clear row separates the Status and Info
+  sprites, preventing the former heading from appearing above the latter
+  with linear filtering. Remaining title pixels are also removed from the
+  shared captionless donor above Status. The five languages retain their
+  original UV layout, accents and genuine HD frame pixels.
+- **Additional menu geometry:** seven original identities now have measured
+  x4 vector replacements: Colosseum's battle-menu separator and tall storage
+  frame, plus XD's unknown-species marker, battle-panel mask, hologram sheen,
+  name-entry computer symbol and simulator indicator. Native sprite canvases,
+  transparent holes and translucent panels are retained. The sheen is a new
+  analytic gradient, not an enlarged native texture. These are source-qualified
+  derivatives; preparation does not establish that every sprite is visible in
+  the replayed routes.
 - **Missing shared materials:** the launcher can use exact missing keys from
   an already-required companion pack. The game pack wins over its companion;
   custom overlays win over both. Source installations are unchanged and old
@@ -113,14 +168,14 @@ listed below.
 | --- | --- | --- |
 | Other localized UI atlases | When a screen uses a key absent from both selected packs and the registered derivatives | Uses the original texture. Only registered identities are replaced; adding one atlas does not cover unrelated screens. |
 | Genius Sonority startup wordmark | No verified x4 donor is available in either pinned pack | Keeps the original logo. A smaller web image does not establish an HD replacement. |
+| Western XD end cards | Localized game logos have no qualified x4 counterpart in the selected sources | Keeps the original localized artwork and lettering. These static end cards are separate from the unchanged movie files. |
 | Unqualified bonus, card-reader and debug screens | Their resource exists on disc but its playable route or exact sprite usage has not been established | Uses only registered replacements; other keys remain native. Finding or uploading an atlas does not prove that every cell is displayed. |
 | Generated text in older game folders | The ROM was created before the static glyph-page bridge | Retains native text. Recreate a game folder with the same source, seed and complete settings to add the bridge; updating the launcher cannot rewrite an existing ROM. |
 | Imported names outside the resident alphabet | Japanese characters in a European or USA game | Uses native glyph fallback. The regional Latin corpus is deliberately bounded to preserve game memory. |
 | Unusual adjacent Latin accents | Narrow accented letters repeated together, especially foreign names on Japanese fonts | The game's original advances are retained; some accent marks can touch. The shared proportions do not replace the game's spacing with the donor font's own advances. |
-| Extra-form 3D materials | A weather or Deoxys form uses a material absent from the upstream packs | Keeps the pack's existing 3D coverage. The nine new portrait atlases are separate rendered artwork, not a stock 3D texture expansion. |
 | Egg and auxiliary portraits | When the UI requests an image outside the registered species/form routes | Retains native art. The audit identified an egg atlas and a Bulbasaur-like placeholder, but did not establish their runtime use. |
 | Unmapped stock materials | Their exact texture identity has no verified donor | Retains native art. An unused resource in the inventory does not establish a visible, Pokemon-wide HD gap. |
-| Spinda hologram face | Japanese Colosseum, direct ROM launch, or an unavailable companion | Retains the native 128x128 face. The Windows launcher can provide a 512x512 face on qualified Europe/USA revision-0 folders; the separate HD body and spot diagram remain available on Japan. |
+| Spinda hologram face | Direct ROM launch, an unavailable companion, or an older folder without the native bridge | Retains the native 128x128 face. New Europe, USA and Japan revision-0 Colosseum folders support a 512x512 face through the Windows launcher. |
 | Prerecorded movies | Opening and other video files | Keeps the original video. Texture packs do not increase its resolution. |
 | Geometry, animation and HQ audio | All HD mode usage | These packs add no polygons, replacement animation or high-quality audio banks. |
 | Direct ROM launch | Opening an ISO, RVZ or GCM outside the configured launcher | Native custom models remain in the ROM; external HD files require Dolphin's matching texture profile. |
@@ -135,19 +190,29 @@ crops. Their exact native keys and immutable artwork hashes are checked at
 preparation. Original mode retains the source portraits. The authoring tools
 also record the rendering and material versions; no native portrait RGB is
 enlarged into the x4 artwork. Gen3 weather forms retain their shared native
-normal/shiny colors.
+normal/shiny colors. The same 43 reviewed material PNGs now cover the stock
+weather models in both games and the additional Deoxys forms in XD, under
+their observed regional native keys. This changes neither native meshes nor
+animation and does not add forms absent from a game's native mechanics.
 
-Spinda's dynamic face is enabled only for Europe/USA revision-0 Colosseum on
-Windows. Checks cover two saved PIDs, exact GPU output, native fallback and a
-restart within the same Dolphin process. The native five-map material chain,
-shiny palette handling and blue filter are retained. Two fenced texture banks
-reserve 1 MiB in the game; the host cache is bounded to eight faces (4 MiB).
+Spinda's dynamic face is enabled for Europe, USA and Japan revision-0 Colosseum
+on Windows. Checks cover two saved PIDs, exact GPU output, native fallback and
+a restart within the same Dolphin process. The native five-map material chain,
+shiny palette handling and blue filter are retained. Europe and USA use two
+fenced texture banks (1 MiB); Japan uses a compact single bank (512 KiB),
+released by the native GPU fence before the host writes another face. The host
+cache is bounded to eight faces (4 MiB).
 
-The Japanese combined fixture froze during loading even with its face hooks
-restored to native instructions while retaining that reservation. A new real
-creation without the face reservation passes the same saved route. Japan is
-therefore excluded from both hook installation and companion activation; its
-face stays native. A donor lookup or plausible image does not qualify an adapter.
+The Japanese combined creation now loads with the generated-text bridge and
+HD materials together. Its two successive saved samples display the correct
+shiny and ordinary appearances, different PIDs and exact 512x512 GPU textures.
+Stopping and restarting the companion restores the same second face. The native
+registry also retires old entries when a face allocation reuses a pixel pointer,
+preventing the previous sample's pattern from being selected again.
+
+Older Europe/USA folders retain their original wrapper contract. Recreate a
+game folder to install the new native registry fix or the Japanese bridge;
+updating the application alone does not rewrite an existing ROM.
 
 ## Runtime qualification
 
@@ -209,3 +274,34 @@ This is an observed battle/menu witness, not a replay of every battle type.
 These checks use private Dolphin profiles, copied QA cards and **No Audio
 Output**, with input hashes checked afterwards. They do not certify every
 battle, scene, region or language.
+
+The November 19 extension adds these observed HD routes:
+
+| Edition | Captured screens |
+| --- | --- |
+| Colosseum USA / English | Party, summary, stats, P-AD, Snag List, mail and bag |
+| XD USA / English | Party, summary, stats, P-AD, Snag List, mail and bag |
+| Colosseum Japan / Japanese | Party, summary, stats, P-AD, Snag List, mail and bag |
+| XD Japan / Japanese | P-AD, Snag List, mail and bag; party and summary repeated after the nurse's scripted movement |
+| Both European games / German, Spanish, Italian | Party, summary, stats, P-AD, Snag List, mail and bag |
+| XD Europe / English | Native startup sequence and the new health-notice replacement |
+
+No load freeze or visible missing generated glyph was observed on these routes.
+The Colosseum Japanese replay recorded 3,952 native calls with zero-area
+geometry and no nonzero-area fallback. Other listed replays recorded none.
+These counters describe the captured text, not every line on each disc.
+Early USA load-confirmation and Japanese nurse-lock captures are diagnostics;
+only their successful subsequent menu replays qualify the party screens.
+
+The final European XD background cleanup has separate French and Spanish
+summary replays. Full-size captures retain the title accents without the old
+strips of lettering above the heading. All five European recipes also pass
+rendered gutter and unchanged-frame checks. A final English XD Quick Battle
+reaches active moves with the new translucent command mask, localized badges,
+HP/level labels, ability and item labels and controller symbols displayed.
+
+Read-only host-process memory sampling on the Japanese XD party route recorded
+a peak working set of 1.32 GiB and peak sampled private bytes of 1.64 GiB.
+These are Dolphin process measurements, not GameCube heap or GPU-memory bounds.
+All six QA-image hashes and the source-card hashes remain unchanged. The
+original movie archives are neither replaced nor re-encoded.

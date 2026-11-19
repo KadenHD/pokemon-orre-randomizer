@@ -82,10 +82,10 @@ def fixture(game_id="GC6P01"):
     return bytes(raw), profile
 
 
-def machine(kind="setup", game_id="GC6P01"):
+def machine(kind="setup", game_id="GC6P01", bank_count=2):
     p = b.bridge_profile(game_id)
     origin, control = 0x80500000, 0x80510000
-    buffers = (control + 512, control + 512 + b.BUFFER_BYTES)
+    buffers = tuple(control + 512 + index * b.BUFFER_BYTES for index in range(bank_count))
     m = PPC()
     payload = b._setup_stub(origin, control, buffers, p) if kind == "setup" else b._factory_stub(origin, control, p)
     m.load_code(origin, payload)
@@ -128,6 +128,20 @@ def set_request(m, c, epoch=1, pid=0x12345678, profile=None):
 
 
 class CompositionTests(unittest.TestCase):
+    def test_japanese_pixel_banks_are_reserved_beyond_loaded_sections(self):
+        original, profile = fixture("GC6J01")
+        with patch.dict(b._PROFILES["GC6J01"], profile):
+            result, info = b.patch_spinda_face_bridge(original, original, "GC6J01")
+        layout = parse_dol(result)
+        load_end = max(s["ram_address"] + s["size"] for s in layout["sections"])
+        self.assertFalse(info["pixel_banks_in_executable"])
+        self.assertEqual(load_end, info["buffers"][0])
+        self.assertEqual(len(info["buffers"]), 1)
+        self.assertEqual(info["reserved_end"], load_end + b.BUFFER_BYTES)
+        self.assertEqual(len(result), info["section_offset"] + info["section_bytes"])
+        self.assertEqual(result[info["section_offset"]:info["section_offset"] + 32],
+                         _arena_guard(info["reserved_end"], profile["arena_store"]))
+
     def test_all_three_exact_profiles_patch_and_unvalidated_regions_are_explicit(self):
         for game in b.PATCHABLE_GAME_IDS:
             original, profile = fixture(game)
@@ -139,7 +153,7 @@ class CompositionTests(unittest.TestCase):
             self.assertEqual(result[0x400:0x408], original[0x400:0x408])
         self.assertTrue(b.face_runtime_validated("GC6P01"))
         self.assertTrue(b.face_runtime_validated("GC6E01"))
-        self.assertFalse(b.face_runtime_validated("GC6J01"))
+        self.assertTrue(b.face_runtime_validated("GC6J01"))
         for game, revision in (("GXXP01", 0), ("GC6P01", 1), ("GC6P01", True)):
             with self.assertRaises(FormatError):
                 b.bridge_profile(game, revision)
