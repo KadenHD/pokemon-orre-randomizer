@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.0.3 - 2026-11-19
+## 2.0.4 - 2026-11-19
 
 - Keep Forecast on Castform and exclude it from other species' randomized
   abilities in both games. Other Castform properties remain configurable.
@@ -26,10 +26,18 @@
 - Prevent repeated row-size invalidations from keeping the encounter preview
   busy. Coalesce layout requests, preserve wrapped conditions on resize and
   keep horizontal scrolling disabled.
-- Make offline reproduction of measured HD menu geometry independent of
-  CPU-specific Qt rounding while retaining the exact reviewed artwork.
+- Render measured HD menu geometry through premultiplied pixels and integer
+  alpha conversion. Remove CPU-dependent reciprocal rounding and verify the
+  complete output against the reviewed artwork.
 - Keep packaged diagnostics offline. Preserve every UI check and render in
   the Windows smoke test while only encoding the screenshots it retains.
+- Require successful independent main-branch tests for the exact release
+  commit before publishing Windows downloads.
+
+## 2.0.3 - 2026-11-19
+
+- Withdrawn after a Windows check exposed CPU-dependent offline HD menu
+  reproduction. Replaced by 2.0.4.
 
 ## 2.0.2 - 2026-11-19
 

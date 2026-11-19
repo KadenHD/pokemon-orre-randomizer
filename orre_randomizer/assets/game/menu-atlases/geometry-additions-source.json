@@ -34,7 +34,7 @@
       "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged",
       "renderer": {
         "kind": "real-author-svg-background",
-        "version": 1,
+        "version": 2,
         "source_sha256": "d214cf74dad28aef01acf8c49779d1e9770f2cbdf68e1b32472ac645f168dc2e",
         "native_dimensions": [
           7,
@@ -48,7 +48,10 @@
         "native_bitmap_resampled": false,
         "raster_images_remaining": 0,
         "font_rendering_remaining": false,
-        "qt_version": "6.11.2"
+        "qt_version": "6.11.2",
+        "rasterization": "integer-premultiplied-alpha",
+        "alpha_conversion": "rgba8888-pm-integer-half-up-v1",
+        "premultiplied_rgba_sha256": "0d71ac17b0ea0623c267675b7aa267e0a6a975551c6667ef80327f89c6ecb160"
       },
       "runtime_validated": false
     },
@@ -60,7 +63,7 @@
       ],
       "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 150 356\"><defs>\n<linearGradient id=\"panel\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\" gradientUnits=\"objectBoundingBox\"><stop stop-color=\"#737373\"/><stop offset=\".4\" stop-color=\"#4a4a4a\"/><stop offset=\"1\" stop-color=\"#393939\"/></linearGradient>\n<linearGradient id=\"blue\"><stop stop-color=\"#14202d\"/><stop offset=\".22\" stop-color=\"#21314a\"/><stop offset=\"1\" stop-color=\"#21314a\"/></linearGradient>\n</defs><defs><linearGradient id=\"cap\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop stop-color=\"#050506\"/><stop offset=\"1\" stop-color=\"#181827\"/></linearGradient></defs>\n<path d=\"M28 5A23 23 0 0 0 5 28V330A23 23 0 0 0 28 353H82A23 23 0 0 0 105 330V31A23 23 0 0 0 82 8H40A23 23 0 0 0 28 5Z M33 49H78A22 22 0 0 1 99 70V326A17 17 0 0 1 82 343H28A17 17 0 0 1 11 326V70A22 22 0 0 1 33 49Z\" fill=\"#b5b5b5\" fill-rule=\"evenodd\" stroke=\"#888888\" stroke-width=\"1\"/>\n<path d=\"M47 13H82A14 14 0 0 1 82 41H46A22 22 0 0 0 47 13Z\" fill=\"url(#cap)\"/>\n<circle cx=\"29\" cy=\"25\" r=\"15\" fill=\"#101019\"/><circle cx=\"29\" cy=\"25\" r=\"9\" fill=\"#92929a\"/><circle cx=\"29\" cy=\"25\" r=\"6\" fill=\"#101019\"/><path d=\"M13 25H21 M37 25H45\" stroke=\"#92929a\" stroke-width=\"3\"/>\n<path d=\"M148 10H135A20 20 0 0 0 115 30V286A20 20 0 0 0 135 306H148Z\" fill=\"url(#blue)\"/>\n<path d=\"M110 319H128L119 328Z M110 347H128L119 338Z\" fill=\"#5db2cb\" stroke=\"#8bbac8\" stroke-width=\".8\"/>\n<path d=\"M134 319H146V343H134Z\" fill=\"#342c30\"/></svg>",
       "file": "geometry-tex1_150x356_1f21f2def4957c68_5.png",
-      "sha256": "c9b90757f76bd5effc182059098f8e0e678b77713c6b23d2eb9729e6f623798e",
+      "sha256": "38c06fe697b021677cb39759e82531f0b0fb312d49da864485990b9b4eec782f",
       "game_ids": [
         "GC6E01",
         "GC6J01",
@@ -83,7 +86,7 @@
       "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged",
       "renderer": {
         "kind": "real-author-svg-background",
-        "version": 1,
+        "version": 2,
         "source_sha256": "2cac6e75928f208b2a66592f5e5fca335c7bd6ad6b58248837bd67a93c525f5b",
         "native_dimensions": [
           150,
@@ -97,7 +100,10 @@
         "native_bitmap_resampled": false,
         "raster_images_remaining": 0,
         "font_rendering_remaining": false,
-        "qt_version": "6.11.2"
+        "qt_version": "6.11.2",
+        "rasterization": "integer-premultiplied-alpha",
+        "alpha_conversion": "rgba8888-pm-integer-half-up-v1",
+        "premultiplied_rgba_sha256": "573a994a766c5dde1fc36b6b4bf923fb464eabab8639b00a4d433e2c1b61de02"
       },
       "runtime_validated": false
     },
@@ -109,7 +115,7 @@
       ],
       "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><defs>\n<linearGradient id=\"panel\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\" gradientUnits=\"objectBoundingBox\"><stop stop-color=\"#737373\"/><stop offset=\".4\" stop-color=\"#4a4a4a\"/><stop offset=\"1\" stop-color=\"#393939\"/></linearGradient>\n<linearGradient id=\"blue\"><stop stop-color=\"#14202d\"/><stop offset=\".22\" stop-color=\"#21314a\"/><stop offset=\"1\" stop-color=\"#21314a\"/></linearGradient>\n</defs><circle cx=\"32\" cy=\"32\" r=\"24\" fill=\"#555555\" fill-opacity=\".714\"/><path d=\"M 28.26493 39.15736 C 28.26493 37.78195 28.49170 36.59735 28.94524 35.60358 C 29.39878 34.60981 29.95599 33.73171 30.61687 32.96929 C 31.27775 32.20686 31.93876 31.49203 32.59988 30.82479 C 33.26101 30.15756 33.81822 29.45983 34.27151 28.73160 C 34.72481 28.00338 34.95146 27.16917 34.95146 26.22899 L 34.95146 26.20938 C 34.95146 25.28402 34.69247 24.56592 34.17449 24.05509 C 33.65650 23.54426 32.93168 23.28885 32.00000 23.28885 C 31.07767 23.28885 30.35813 23.57019 29.84138 24.13286 C 29.32463 24.69553 29.06035 25.49205 29.04854 26.52242 L 29.04854 26.53614 L 22.50000 26.53614 L 22.50000 26.51588 C 22.61806 23.80643 23.50436 21.70975 25.15889 20.22585 C 26.81343 18.74195 29.08544 18.00000 31.97491 18.00000 C 34.99868 18.00000 37.34214 18.66364 39.00528 19.99092 C 40.66843 21.31819 41.50000 23.19366 41.50000 25.61730 L 41.50000 25.63756 C 41.50000 26.72675 41.33484 27.68664 41.00452 28.51725 C 40.67421 29.34786 40.24379 30.10005 39.71326 30.77382 C 39.18274 31.44759 38.62540 32.09086 38.04126 32.70363 C 37.45712 33.31641 36.89991 33.93593 36.36963 34.56221 C 35.83935 35.18849 35.40893 35.87261 35.07837 36.61456 C 34.74781 37.35651 34.58252 38.20411 34.58252 39.15736 L 28.26493 39.15736 M 28.28781 48.00000 L 28.28781 42.40400 L 34.60614 42.40400 L 34.60614 48.00000 L 28.28781 48.00000\" fill=\"white\" fill-opacity=\".714\"/></svg>",
       "file": "geometry-tex1_64x64_b0ae7e7c04406d86_6373c39a87ff6ec0_8.png",
-      "sha256": "8f61ad3f0409358b47c67453078eda43428a8cfabc1afd00487be63ddc373330",
+      "sha256": "bb00b17c7afbf814f0c21f3786148de61e7b2f1e3e5180f0c43550b992ba4cb4",
       "game_ids": [
         "GXXE01",
         "GXXJ01",
@@ -132,7 +138,7 @@
       "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged",
       "renderer": {
         "kind": "real-author-svg-background",
-        "version": 1,
+        "version": 2,
         "source_sha256": "760770c7b6e6b68eb19fbac31cae4c791a0e189f62e3a2ee1d17fc57159ec84a",
         "native_dimensions": [
           64,
@@ -146,7 +152,10 @@
         "native_bitmap_resampled": false,
         "raster_images_remaining": 0,
         "font_rendering_remaining": false,
-        "qt_version": "6.11.2"
+        "qt_version": "6.11.2",
+        "rasterization": "integer-premultiplied-alpha",
+        "alpha_conversion": "rgba8888-pm-integer-half-up-v1",
+        "premultiplied_rgba_sha256": "df095086c08d667c446e73654aceeae3de7b4001b99eb828f6cef79157772b50"
       },
       "runtime_validated": false
     },
@@ -181,7 +190,7 @@
       "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged",
       "renderer": {
         "kind": "real-author-svg-background",
-        "version": 1,
+        "version": 2,
         "source_sha256": "38c279c5d6d68bffb21e29e7e30be9a8cc4f240a9b272d5015b74866ad7178d7",
         "native_dimensions": [
           112,
@@ -195,7 +204,10 @@
         "native_bitmap_resampled": false,
         "raster_images_remaining": 0,
         "font_rendering_remaining": false,
-        "qt_version": "6.11.2"
+        "qt_version": "6.11.2",
+        "rasterization": "integer-premultiplied-alpha",
+        "alpha_conversion": "rgba8888-pm-integer-half-up-v1",
+        "premultiplied_rgba_sha256": "d1a7a42b59a2d54962e9c6514493a580763dcf4b63c65b6cc45cd3d196fe3358"
       },
       "runtime_validated": false
     },
@@ -207,7 +219,7 @@
       ],
       "svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" viewBox=\"0 0 64 64\"><defs>\n<linearGradient id=\"panel\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\" gradientUnits=\"objectBoundingBox\"><stop stop-color=\"#737373\"/><stop offset=\".4\" stop-color=\"#4a4a4a\"/><stop offset=\"1\" stop-color=\"#393939\"/></linearGradient>\n<linearGradient id=\"blue\"><stop stop-color=\"#14202d\"/><stop offset=\".22\" stop-color=\"#21314a\"/><stop offset=\"1\" stop-color=\"#21314a\"/></linearGradient>\n</defs><defs><linearGradient id=\"shine\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop stop-color=\"#000\"/><stop offset=\".25\" stop-color=\"#393839\"/><stop offset=\".5\" stop-color=\"#f7ffff\"/><stop offset=\".75\" stop-color=\"#393839\"/><stop offset=\"1\" stop-color=\"#000\"/></linearGradient></defs><rect width=\"64\" height=\"64\" fill=\"url(#shine)\"/></svg>",
       "file": "geometry-tex1_64x64_025c52e407c05b04_14.png",
-      "sha256": "f0fd944107c4d6c9325dcde52a67d83d5dc7d5b204fed93f2e3b71d42683c160",
+      "sha256": "c72d7ef3e7c2f0a2c5fedb84832edd98b8d181e1b82fdf71dc53b20acf29c617",
       "game_ids": [
         "GXXE01",
         "GXXJ01",
@@ -230,7 +242,7 @@
       "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged",
       "renderer": {
         "kind": "real-author-svg-background",
-        "version": 1,
+        "version": 2,
         "source_sha256": "78c1ac8ec038e3878cbdad4f5e1988d49942a2fa32b4b284bb279b30b804fdf2",
         "native_dimensions": [
           64,
@@ -244,7 +256,10 @@
         "native_bitmap_resampled": false,
         "raster_images_remaining": 0,
         "font_rendering_remaining": false,
-        "qt_version": "6.11.2"
+        "qt_version": "6.11.2",
+        "rasterization": "integer-premultiplied-alpha",
+        "alpha_conversion": "rgba8888-pm-integer-half-up-v1",
+        "premultiplied_rgba_sha256": "e87842ab554d6d1923199b437c6f3b477bcc8576d3b4dae994a45b45cba898c6"
       },
       "runtime_validated": false
     },
@@ -279,7 +294,7 @@
       "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged",
       "renderer": {
         "kind": "real-author-svg-background",
-        "version": 1,
+        "version": 2,
         "source_sha256": "b11ad3f175836b95a27b53a9a010e6c3aaa615e21e04156a1822712a5f7623ab",
         "native_dimensions": [
           37,
@@ -293,7 +308,10 @@
         "native_bitmap_resampled": false,
         "raster_images_remaining": 0,
         "font_rendering_remaining": false,
-        "qt_version": "6.11.2"
+        "qt_version": "6.11.2",
+        "rasterization": "integer-premultiplied-alpha",
+        "alpha_conversion": "rgba8888-pm-integer-half-up-v1",
+        "premultiplied_rgba_sha256": "53b8292a521005bfa3f8d01b1b2743b5870fbadab1a044c901440277f9a18f73"
       },
       "runtime_validated": false
     },
@@ -328,7 +346,7 @@
       "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged",
       "renderer": {
         "kind": "real-author-svg-background",
-        "version": 1,
+        "version": 2,
         "source_sha256": "7f77518e406aab6eb1062922aeab4116d7585eb3b5379a5d2a476692426ec123",
         "native_dimensions": [
           76,
@@ -342,7 +360,10 @@
         "native_bitmap_resampled": false,
         "raster_images_remaining": 0,
         "font_rendering_remaining": false,
-        "qt_version": "6.11.2"
+        "qt_version": "6.11.2",
+        "rasterization": "integer-premultiplied-alpha",
+        "alpha_conversion": "rgba8888-pm-integer-half-up-v1",
+        "premultiplied_rgba_sha256": "9fdf081663c132e011af3fe3fead8920478ac52a8ee2b5814e18da145d7ed353"
       },
       "runtime_validated": false
     }
@@ -356,14 +377,14 @@
       ]
     },
     "geometry-tex1_150x356_1f21f2def4957c68_5.png": {
-      "sha256": "c9b90757f76bd5effc182059098f8e0e678b77713c6b23d2eb9729e6f623798e",
+      "sha256": "38c06fe697b021677cb39759e82531f0b0fb312d49da864485990b9b4eec782f",
       "dimensions": [
         600,
         1424
       ]
     },
     "geometry-tex1_64x64_b0ae7e7c04406d86_6373c39a87ff6ec0_8.png": {
-      "sha256": "8f61ad3f0409358b47c67453078eda43428a8cfabc1afd00487be63ddc373330",
+      "sha256": "bb00b17c7afbf814f0c21f3786148de61e7b2f1e3e5180f0c43550b992ba4cb4",
       "dimensions": [
         256,
         256
@@ -377,7 +398,7 @@
       ]
     },
     "geometry-tex1_64x64_025c52e407c05b04_14.png": {
-      "sha256": "f0fd944107c4d6c9325dcde52a67d83d5dc7d5b204fed93f2e3b71d42683c160",
+      "sha256": "c72d7ef3e7c2f0a2c5fedb84832edd98b8d181e1b82fdf71dc53b20acf29c617",
       "dimensions": [
         256,
         256

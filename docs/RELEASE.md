@@ -58,6 +58,9 @@ Choose a new report path in a writable directory. A successful diagnostic exits
 with code zero. `smoke_desktop.py` extracts the ZIP into a new path with spaces and
 accents, removes Python and developer tools from `PATH`, changes the working directory,
 and isolates AppData and Temp. It writes the report and screenshots under `build/`.
+Diagnostics disable automatic update requests. The smoke wrapper renders all
+474 screenshot states and saves the 210 PNGs it retains; ordinary
+`--screenshots` diagnostics still save every capture.
 
 Run **Package Windows release** manually on GitHub Actions for test artifacts from
 a hosted Windows runner. The public runner uses the committed interface pack and no ROM.
@@ -65,13 +68,18 @@ a hosted Windows runner. The public runner uses the committed interface pack and
 ## Publish a release
 
 Check that `pyproject.toml` and `orre_randomizer/__init__.py` declare the same
-version. Push a Git tag named `v<version>` on the release commit. The workflow checks
+version. Push the release commit to `main` and wait for both independent
+**Tests** jobs to succeed. Then push a Git tag named `v<version>` on that commit. The workflow checks
 the version and runs the reusable Linux/Windows test matrix alongside the
 Windows packaging checks. Publication requires both paths to pass, including
 the extracted source tests, packaged app diagnostics and installer smoke test.
 A failure on either operating system prevents publication. Successful runs
 publish the Windows setup EXE, portable Windows ZIP, source ZIP and
 `SHA256SUMS.json`.
+Before publication, a separate API gate also requires the latest independent
+`tests.yml` push run on `main` to have succeeded for the checked-out commit.
+Tag workflow tests alone cannot authorize a release when that run is missing,
+pending or failed. The gate waits at most 120 seconds for a pending result.
 
 ```powershell
 $version = python -c "from orre_randomizer import __version__; print(__version__)"

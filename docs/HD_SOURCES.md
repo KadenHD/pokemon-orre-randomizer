@@ -124,6 +124,9 @@ reproduces the registered PNGs from `geometry-additions-source.json` with no
 ROM, native PNG, system font or network access. Its output hashes, native
 resource identities and x4 dimensions are pinned. Semi-transparent SVG fills
 can differ from the native alpha by one 8-bit step after Qt composition.
+The renderer reads premultiplied RGBA directly and uses integer rounding to
+convert it to straight alpha, avoiding CPU-dependent reciprocal conversion.
+Reproduction checks every decoded pixel before writing the authenticated PNG.
 Original mode continues to use the game's own textures.
 
 [`build_hd_options_stripes.py`](../scripts/build_hd_options_stripes.py)

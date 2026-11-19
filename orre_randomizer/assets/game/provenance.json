@@ -1330,7 +1330,7 @@
     },
     "menu-atlases/catalog.json": {
       "bytes": 1393343,
-      "sha256": "0b1bc48d07431daa14b932bdae577a4bc2e222958d2dac2cbdc8c3d326c2ad65"
+      "sha256": "dada659a7356b3b30a8717fd9eafd29a0bddb8580cf4283ca7c54d9d3e3827b2"
     },
     "menu-atlases/vector-outlines.json": {
       "bytes": 585480,
@@ -1889,28 +1889,28 @@
       "sha256": "3d4f692702f3c2278cea6d5823c6d3c3959fbc69b093a8e53fd36cfd5e1df823"
     },
     "menu-atlases/geometry-additions-source.json": {
-      "bytes": 22101,
-      "sha256": "1ad6982f2a197f6905bc1c335e327ff2e6cca0e05d0ccc531785e4f6dfe315cf"
+      "bytes": 23662,
+      "sha256": "c1bdafcdfc888c51fbbcf20c0e48736cddd27f49c505433561eb883f13c559be"
     },
     "menu-atlases/geometry-tex1_7x330_1abb664ba028bed1_6.png": {
       "bytes": 1686,
       "sha256": "5c5498226f37bfc07399302b1abaf39f4fdbfb79fd18bab337a8ae7b2f47a73d"
     },
     "menu-atlases/geometry-tex1_150x356_1f21f2def4957c68_5.png": {
-      "bytes": 29396,
-      "sha256": "c9b90757f76bd5effc182059098f8e0e678b77713c6b23d2eb9729e6f623798e"
+      "bytes": 29595,
+      "sha256": "38c06fe697b021677cb39759e82531f0b0fb312d49da864485990b9b4eec782f"
     },
     "menu-atlases/geometry-tex1_64x64_b0ae7e7c04406d86_6373c39a87ff6ec0_8.png": {
-      "bytes": 6789,
-      "sha256": "8f61ad3f0409358b47c67453078eda43428a8cfabc1afd00487be63ddc373330"
+      "bytes": 6791,
+      "sha256": "bb00b17c7afbf814f0c21f3786148de61e7b2f1e3e5180f0c43550b992ba4cb4"
     },
     "menu-atlases/geometry-tex1_112x74_c0a04eab9ac90631_50d5715452d09e56_8.png": {
       "bytes": 5054,
       "sha256": "6aa8403118e8b97d23629fda264bb2257e738d9d939bde34b95427beefb24afb"
     },
     "menu-atlases/geometry-tex1_64x64_025c52e407c05b04_14.png": {
-      "bytes": 968,
-      "sha256": "f0fd944107c4d6c9325dcde52a67d83d5dc7d5b204fed93f2e3b71d42683c160"
+      "bytes": 969,
+      "sha256": "c72d7ef3e7c2f0a2c5fedb84832edd98b8d181e1b82fdf71dc53b20acf29c617"
     },
     "menu-atlases/geometry-tex1_37x51_d5571c50cb67af1f_530ce0a300750bc1_8.png": {
       "bytes": 1279,

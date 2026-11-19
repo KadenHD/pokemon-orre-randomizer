@@ -7,8 +7,8 @@ import unittest
 from unittest.mock import patch
 
 os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
-from PySide6.QtGui import QColor, QGuiApplication
-from orre_randomizer.hd_menu_svg import render_background
+from PySide6.QtGui import QColor, QGuiApplication, QImage
+from orre_randomizer.hd_menu_svg import _integer_straight_alpha, render_background
 
 
 class MenuSvgAuthoring(unittest.TestCase):
@@ -63,62 +63,96 @@ class MenuSvgAuthoring(unittest.TestCase):
                             and not r["font_rendering_remaining"]
                             and r["raster_images_remaining"] == 0
                             for r in receipt["outputs"]))
-        self.assertTrue(all(r["rasterization"] == "scalar-alpha-spans" for r in receipt["outputs"]))
+        self.assertTrue(all(r["rasterization"] == "integer-premultiplied-alpha"
+                            and r["alpha_conversion"] == "rgba8888-pm-integer-half-up-v1"
+                            for r in receipt["outputs"]))
 
-    def test_translucent_edges_use_scalar_spans_without_gaps_or_overlap(self):
+    def test_translucent_art_is_painted_premultiplied_and_exported_without_qt_unpremultiply(self):
         from PySide6.QtSvg import QSvgRenderer
-        clips = []
+        formats = []
         class ObservedRenderer:
             def __init__(self, payload):
                 self.native = QSvgRenderer(payload)
             def isValid(self):
                 return self.native.isValid()
             def render(self, painter, bounds):
-                # Qt's reciprocal SIMD store starts at four pixels. Exercise
-                # the real rasterizer but reject that host-dependent path.
-                if not painter.hasClipping() or not 0 < painter.clipBoundingRect().width() <= 3:
-                    raise AssertionError("A translucent span can reach Qt's SIMD conversion")
-                clips.append(painter.clipBoundingRect())
+                formats.append(painter.device().format())
                 self.native.render(painter, bounds)
 
         source = b'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 4">
           <rect width="8" height="4" fill="#808080" fill-opacity="0.023529411764705882"/>
         </svg>'''
-        with patch("orre_randomizer.hd_menu_svg.QSvgRenderer", ObservedRenderer):
-            image, receipt = self.render(source, remove_ids=(), scalar_alpha=True)
-        self.assertEqual(receipt["rasterization"], "scalar-alpha-spans")
-        self.assertEqual([(int(r.x()), int(r.y()), int(r.width()), int(r.height())) for r in clips],
-                         [(x, 0, min(3, 32-x), 16) for x in range(0, 32, 3)])
+        with patch("orre_randomizer.hd_menu_svg.QSvgRenderer", ObservedRenderer), patch.object(
+                QImage, "convertToFormat", side_effect=AssertionError("Qt straight-alpha conversion is forbidden")):
+            image, receipt = self.render(source, remove_ids=(), integer_alpha=True)
+        self.assertEqual(receipt["rasterization"], "integer-premultiplied-alpha")
+        self.assertEqual(formats, [QImage.Format.Format_RGBA8888_Premultiplied])
+        self.assertEqual(image.format(), QImage.Format.Format_RGBA8888)
         self.assertTrue(all(image.pixelColor(x, y) == QColor(128, 128, 128, 6)
                             for y in range(16) for x in range(32)))
 
-    def test_fast_authoring_requires_an_opaque_flat_canvas_without_intermediates(self):
+    def test_integer_alpha_rounds_every_valid_premultiplied_byte_pair_exactly(self):
+        # Covers every alpha, the problematic 127.5 ties, full opacity, and
+        # transparent RGB cleanup without consulting Qt's inverse conversion.
+        pairs = [(value, alpha) for alpha in range(256) for value in range(alpha + 1)]
+        pairs.extend([(255, 0)])
+        raw = bytes(value for channel, alpha in pairs for value in (channel, channel, channel, alpha))
+        image = QImage(raw, len(pairs), 1, len(raw), QImage.Format.Format_RGBA8888_Premultiplied)
+        output = _integer_straight_alpha(image)
+        actual = bytes(output.constBits())[:output.sizeInBytes()]
+        expected = bytearray()
+        for value, alpha in pairs:
+            # Independent divmod formulation explicitly resolves a half tie up.
+            quotient, remainder = divmod(value * 255, alpha or 1)
+            straight = min(255, quotient + (2 * remainder >= alpha)) if alpha else 0
+            expected.extend((straight, straight, straight, alpha))
+        self.assertEqual(actual, bytes(expected))
+        for index, (value, alpha) in enumerate(pairs[:-1]):
+            self.assertEqual((actual[index * 4] * alpha + 127) // 255, value)
+        with self.assertRaisesRegex(ValueError, "premultiplied"):
+            _integer_straight_alpha(output)
+
+    def test_integer_authoring_keeps_opaque_and_grouped_art_on_the_same_math_contract(self):
         flat = b'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 4">
           <rect width="8" height="4" fill="black"/>
           <path d="M1 1H7V3H1Z" fill="white"/>
         </svg>'''
-        image, receipt = self.render(flat, remove_ids=(), scalar_alpha=True)
-        self.assertEqual(receipt["rasterization"], "opaque-flat-canvas")
+        image, receipt = self.render(flat, remove_ids=(), integer_alpha=True)
+        self.assertEqual(receipt["rasterization"], "integer-premultiplied-alpha")
         self.assertEqual(image.pixelColor(0, 0), QColor(0, 0, 0, 255))
         self.assertEqual(image.pixelColor(8, 8), QColor(255, 255, 255, 255))
         grouped = flat.replace(b'<path ', b'<g opacity=".5"><path ').replace(b'</svg>', b'</g></svg>')
         for source in (grouped,
                        flat.replace(b'viewBox=', b'opacity=".5" viewBox='),
                        flat.replace(b'fill="black"', b'fill="black" fill-opacity=".5"')):
-            _, receipt = self.render(source, remove_ids=(), scalar_alpha=True)
-            self.assertEqual(receipt["rasterization"], "scalar-alpha-spans")
+            _, receipt = self.render(source, remove_ids=(), integer_alpha=True)
+            self.assertEqual(receipt["rasterization"], "integer-premultiplied-alpha")
 
     def test_reproduction_rejects_a_single_wrong_pixel_before_canonical_png_publication(self):
         from scripts.build_hd_geometry_additions import reproduce
         original = render_background
+        for wrong in (QColor(255, 0, 255, 255), QColor(18, 18, 18, 1)):
+            def changed(*args, **kwargs):
+                image, metadata = original(*args, **kwargs)
+                image.setPixelColor(0, 0, wrong)
+                return image, metadata
+            with self.subTest(wrong=wrong), TemporaryDirectory() as temporary, patch(
+                    "orre_randomizer.hd_menu_svg.render_background", side_effect=changed):
+                output = Path(temporary) / "changed"
+                with self.assertRaisesRegex(ValueError, "Geometry pixels differ"):
+                    reproduce(output)
+                self.assertEqual(list(output.iterdir()), [])
+
+    def test_reproduction_checks_the_native_premultiplied_identity_before_publication(self):
+        from scripts.build_hd_geometry_additions import reproduce
+        original = render_background
         def changed(*args, **kwargs):
             image, metadata = original(*args, **kwargs)
-            image.setPixelColor(0, 0, QColor(255, 0, 255, 255))
-            return image, metadata
+            return image, dict(metadata, premultiplied_rgba_sha256="0" * 64)
         with TemporaryDirectory() as temporary, patch(
                 "orre_randomizer.hd_menu_svg.render_background", side_effect=changed):
             output = Path(temporary) / "changed"
-            with self.assertRaisesRegex(ValueError, "Geometry pixels differ"):
+            with self.assertRaisesRegex(ValueError, "premultiplied pixels differ"):
                 reproduce(output)
             self.assertEqual(list(output.iterdir()), [])
 

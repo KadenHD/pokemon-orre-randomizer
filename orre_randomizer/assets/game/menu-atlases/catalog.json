@@ -46774,7 +46774,7 @@
           "kind": "measured-vector-geometry-and-analytic-gradients",
           "native_bitmap_resampled": false,
           "manifest": "menu-atlases/geometry-additions-source.json",
-          "manifest_sha256": "1ad6982f2a197f6905bc1c335e327ff2e6cca0e05d0ccc531785e4f6dfe315cf",
+          "manifest_sha256": "c1bdafcdfc888c51fbbcf20c0e48736cddd27f49c505433561eb883f13c559be",
           "artwork_file": "geometry-tex1_7x330_1abb664ba028bed1_6.png",
           "runtime_validated": false,
           "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged"
@@ -46792,7 +46792,7 @@
       "game": "colosseum",
       "file": null,
       "bundled_donor": "menu-atlases/geometry-tex1_150x356_1f21f2def4957c68_5.png",
-      "source_sha256": "c9b90757f76bd5effc182059098f8e0e678b77713c6b23d2eb9729e6f623798e",
+      "source_sha256": "38c06fe697b021677cb39759e82531f0b0fb312d49da864485990b9b4eec782f",
       "source_native_dimensions": [
         150,
         356
@@ -46817,7 +46817,7 @@
           "kind": "measured-vector-geometry-and-analytic-gradients",
           "native_bitmap_resampled": false,
           "manifest": "menu-atlases/geometry-additions-source.json",
-          "manifest_sha256": "1ad6982f2a197f6905bc1c335e327ff2e6cca0e05d0ccc531785e4f6dfe315cf",
+          "manifest_sha256": "c1bdafcdfc888c51fbbcf20c0e48736cddd27f49c505433561eb883f13c559be",
           "artwork_file": "geometry-tex1_150x356_1f21f2def4957c68_5.png",
           "runtime_validated": false,
           "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged"
@@ -46835,7 +46835,7 @@
       "game": "xd",
       "file": null,
       "bundled_donor": "menu-atlases/geometry-tex1_64x64_b0ae7e7c04406d86_6373c39a87ff6ec0_8.png",
-      "source_sha256": "8f61ad3f0409358b47c67453078eda43428a8cfabc1afd00487be63ddc373330",
+      "source_sha256": "bb00b17c7afbf814f0c21f3786148de61e7b2f1e3e5180f0c43550b992ba4cb4",
       "source_native_dimensions": [
         64,
         64
@@ -46860,7 +46860,7 @@
           "kind": "measured-vector-geometry-and-analytic-gradients",
           "native_bitmap_resampled": false,
           "manifest": "menu-atlases/geometry-additions-source.json",
-          "manifest_sha256": "1ad6982f2a197f6905bc1c335e327ff2e6cca0e05d0ccc531785e4f6dfe315cf",
+          "manifest_sha256": "c1bdafcdfc888c51fbbcf20c0e48736cddd27f49c505433561eb883f13c559be",
           "artwork_file": "geometry-tex1_64x64_b0ae7e7c04406d86_6373c39a87ff6ec0_8.png",
           "runtime_validated": false,
           "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged"
@@ -46903,7 +46903,7 @@
           "kind": "measured-vector-geometry-and-analytic-gradients",
           "native_bitmap_resampled": false,
           "manifest": "menu-atlases/geometry-additions-source.json",
-          "manifest_sha256": "1ad6982f2a197f6905bc1c335e327ff2e6cca0e05d0ccc531785e4f6dfe315cf",
+          "manifest_sha256": "c1bdafcdfc888c51fbbcf20c0e48736cddd27f49c505433561eb883f13c559be",
           "artwork_file": "geometry-tex1_112x74_c0a04eab9ac90631_50d5715452d09e56_8.png",
           "runtime_validated": false,
           "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged"
@@ -46921,7 +46921,7 @@
       "game": "xd",
       "file": null,
       "bundled_donor": "menu-atlases/geometry-tex1_64x64_025c52e407c05b04_14.png",
-      "source_sha256": "f0fd944107c4d6c9325dcde52a67d83d5dc7d5b204fed93f2e3b71d42683c160",
+      "source_sha256": "c72d7ef3e7c2f0a2c5fedb84832edd98b8d181e1b82fdf71dc53b20acf29c617",
       "source_native_dimensions": [
         64,
         64
@@ -46946,7 +46946,7 @@
           "kind": "measured-vector-geometry-and-analytic-gradients",
           "native_bitmap_resampled": false,
           "manifest": "menu-atlases/geometry-additions-source.json",
-          "manifest_sha256": "1ad6982f2a197f6905bc1c335e327ff2e6cca0e05d0ccc531785e4f6dfe315cf",
+          "manifest_sha256": "c1bdafcdfc888c51fbbcf20c0e48736cddd27f49c505433561eb883f13c559be",
           "artwork_file": "geometry-tex1_64x64_025c52e407c05b04_14.png",
           "runtime_validated": false,
           "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged"
@@ -46989,7 +46989,7 @@
           "kind": "measured-vector-geometry-and-analytic-gradients",
           "native_bitmap_resampled": false,
           "manifest": "menu-atlases/geometry-additions-source.json",
-          "manifest_sha256": "1ad6982f2a197f6905bc1c335e327ff2e6cca0e05d0ccc531785e4f6dfe315cf",
+          "manifest_sha256": "c1bdafcdfc888c51fbbcf20c0e48736cddd27f49c505433561eb883f13c559be",
           "artwork_file": "geometry-tex1_37x51_d5571c50cb67af1f_530ce0a300750bc1_8.png",
           "runtime_validated": false,
           "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged"
@@ -47032,7 +47032,7 @@
           "kind": "measured-vector-geometry-and-analytic-gradients",
           "native_bitmap_resampled": false,
           "manifest": "menu-atlases/geometry-additions-source.json",
-          "manifest_sha256": "1ad6982f2a197f6905bc1c335e327ff2e6cca0e05d0ccc531785e4f6dfe315cf",
+          "manifest_sha256": "c1bdafcdfc888c51fbbcf20c0e48736cddd27f49c505433561eb883f13c559be",
           "artwork_file": "geometry-tex1_76x50_6af1f548334643b8_5309a2f406419d01_9.png",
           "runtime_validated": false,
           "construction": "measured native sprite geometry; vector paths and analytic gradients, no native pixels enlarged"

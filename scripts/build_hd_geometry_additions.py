@@ -46,7 +46,7 @@ def reproduce(output: Path, *, source: str = SOURCE):
         payload = record["svg"].encode("utf8")
         image, metadata = render_background(payload,
             expected_sha256=hashlib.sha256(payload).hexdigest(),
-            native_size=tuple(record["native_dimensions"]), remove_ids=(), scalar_alpha=True)
+            native_size=tuple(record["native_dimensions"]), remove_ids=(), integer_alpha=True)
         rendered = Image.frombytes("RGBA", (image.width(), image.height()), _pixel_bytes(image))
         approved, digest = _asset_bytes("menu-atlases/" + name)
         if digest != record["sha256"]:
@@ -54,6 +54,10 @@ def reproduce(output: Path, *, source: str = SOURCE):
         with Image.open(BytesIO(approved)) as reference:
             expected_size, expected = reference.size, reference.convert("RGBA").tobytes()
         actual = rendered.tobytes()
+        if source == SOURCE and (record.get("renderer", {}).get("alpha_conversion")
+                != metadata["alpha_conversion"] or record["renderer"].get("premultiplied_rgba_sha256")
+                != metadata["premultiplied_rgba_sha256"]):
+            raise ValueError("Geometry premultiplied pixels differ from their reviewed native render")
         if rendered.size != expected_size or actual != expected:
             delta = {"dimensions": [list(expected_size), list(rendered.size)]}
             if rendered.size == expected_size:

@@ -62,9 +62,21 @@ jobs:
     if: github.event_name == 'push' && github.ref_type == 'tag'
     needs: [tests, windows]
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     permissions:
       contents: write
+      actions: read
     steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Require independent main CI for this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          release_sha="$(git rev-parse HEAD)"
+          python3 scripts/check_release_ci.py --sha "$release_sha"
       - uses: actions/download-artifact@v7
         with:
           name: orre-randomizer-windows
