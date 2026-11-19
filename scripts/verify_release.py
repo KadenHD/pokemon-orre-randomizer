@@ -14,7 +14,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME
-from scripts.release_media import documentation_media
+from scripts.release_media import (BINGO_AUTHORING_ROOT, bingo_authoring_media,
+                                  documentation_media, game_asset_name_allowed)
 from scripts.build_desktop import REQUIRED_RUNTIME_MODULES, REQUIRED_IMAGE_DECODERS, RUNTIME_BUILD_RECORD
 
 FORBIDDEN = {".iso", ".rvz", ".gcm", ".fsys", ".dol", ".rel", ".raw", ".gci", ".sav"}
@@ -149,6 +150,9 @@ def main():
             doc_prefix = (f"{APP_EXECUTABLE}/" if binary else SOURCE_ROOT) + "docs/images/"
             doc_assets = {doc_prefix + name for name in documentation_media(
                 lambda name: archive.read(doc_prefix + name))}
+            authoring_prefix = SOURCE_ROOT + BINGO_AUTHORING_ROOT
+            authoring_assets = (set() if binary else {authoring_prefix + name
+                for name in bingo_authoring_media(lambda name: archive.read(authoring_prefix + name))})
             for item in archive.infolist():
                 name = Path(item.filename)
                 if (PurePosixPath(item.filename).is_absolute() or PureWindowsPath(item.filename).drive or
@@ -165,7 +169,7 @@ def main():
                     raise RuntimeError("Unlisted interface asset: " + item.filename)
                 if (name.suffix.lower() in {".wav", ".png", ".jpg", ".jpeg", ".gif", ".mp3", ".ogg", ".flac", ".ico", ".pkx"}
                         and not application_media_allowed(item.filename, binary)
-                        and item.filename not in game_assets | doc_assets):
+                        and item.filename not in game_assets | doc_assets | authoring_assets):
                     raise RuntimeError("Unlisted release media: " + item.filename)
                 if name.suffix.lower() in {".py", ".ps1", ".md", ".json", ".txt", ".toml", ".rs", ".c", ".spec", ".exe", ".dll", ".pyd"}:
                     reject_private_build_paths(archive.read(item), item.filename)
@@ -208,10 +212,7 @@ def main():
                             hashlib.sha256(payload).hexdigest() != expected_asset["sha256"]):
                         raise RuntimeError("Invalid application asset: " + relative)
             for relative, record in pack["files"].items():
-                if (PureWindowsPath(relative).drive or "\\" in relative or Path(relative).is_absolute()
-                        or ".." in Path(relative).parts or
-                        (Path(relative).suffix not in {".png", ".wav", ".json", ".md"}
-                         and relative != "models/dark-lugia-colosseum-v1.pkx")):
+                if not game_asset_name_allowed(relative):
                     raise RuntimeError("Unsafe interface asset name")
                 payload = archive.read(prefix + relative)
                 if len(payload) != record["bytes"] or hashlib.sha256(payload).hexdigest() != record["sha256"]:

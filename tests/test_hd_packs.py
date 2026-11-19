@@ -75,6 +75,57 @@ class Packs(unittest.TestCase):
         self.assertTrue(base.samefile(target / base.name))
         self.assertEqual(self.store.texture_view(pack, "GC6P01", overlays), load)
 
+    def local_texture_pack(self, game, textures):
+        archive = self.root / (game + ".zip")
+        with zipfile.ZipFile(archive, "w") as output:
+            for name, payload in textures.items():
+                output.writestr(name, payload)
+        payload = archive.read_bytes()
+        pack = Pack(game, "fixture", sum(map(len, textures.values())),
+                    (Part("", hashlib.sha256(payload).hexdigest(), len(payload)),))
+        self.store.install(pack, local_archives=(archive,))
+        return pack, archive
+
+    def test_dependency_fills_missing_keys_without_replacing_game_or_custom_art(self):
+        primary, _ = self.local_texture_pack("xd", {
+            "tex1_4x4_a_14.png": PNG + b"primary-a", "tex1_4x4_b_14.png": PNG + b"primary-b"})
+        fallback, _ = self.local_texture_pack("colosseum", {
+            "tex1_4x4_m_a_14.dds": DDS + b"fallback-a",
+            "tex1_4x4_b_14.dds": DDS + b"fallback-b", "tex1_4x4_c_14.dds": DDS + b"fallback-c"})
+        custom = self.root / "custom"; custom.mkdir()
+        (custom / "tex1_4x4_a_14.png").write_bytes(PNG + b"custom-a")
+        load = self.store.texture_view(primary, "GXXP01", custom, fallback_packs=(fallback,))
+        target = load / "Textures/GXXP01"
+        self.assertEqual({p.name for p in target.iterdir()},
+                         {"tex1_4x4_a_14.png", "tex1_4x4_b_14.png", "tex1_4x4_c_14.dds"})
+        self.assertEqual((target / "tex1_4x4_a_14.png").read_bytes(), PNG + b"custom-a")
+        self.assertTrue((target / "tex1_4x4_b_14.png").samefile(
+            self.store.location(primary) / "Textures/tex1_4x4_b_14.png"))
+        self.assertTrue((target / "tex1_4x4_c_14.dds").samefile(
+            self.store.location(fallback) / "Textures/tex1_4x4_c_14.dds"))
+        record = json.loads((load.parent / "complete.json").read_text("utf-8"))
+        self.assertEqual(record["stock_files_by_pack"], {primary.key: 1, fallback.key: 1})
+
+    def test_repairing_a_dependency_changes_the_view_and_preserves_its_old_files(self):
+        primary, _ = self.local_texture_pack("xd", {"tex1_4x4_a_6.png": PNG})
+        fallback, archive = self.local_texture_pack("colosseum", {"tex1_4x4_b_6.png": PNG + b"other"})
+        old = self.store.texture_view(primary, "GXXP01", fallback_packs=(fallback,))
+        self.store.install(fallback, force=True, local_archives=(archive,))
+        new = self.store.texture_view(primary, "GXXP01", fallback_packs=(fallback,))
+        self.assertNotEqual(old, new)
+        self.assertEqual((old / "Textures/GXXP01/tex1_4x4_b_6.png").read_bytes(), PNG + b"other")
+        self.assertEqual((new / "Textures/GXXP01/tex1_4x4_b_6.png").read_bytes(), PNG + b"other")
+
+    def test_missing_dependency_cannot_reuse_an_older_view_or_trigger_a_download(self):
+        primary, _ = self.local_texture_pack("xd", {"tex1_4x4_a_6.png": PNG})
+        fallback, _ = self.local_texture_pack("colosseum", {"tex1_4x4_b_6.png": PNG})
+        old = self.store.texture_view(primary, "GXXP01", fallback_packs=(fallback,))
+        (self.store.location(fallback) / "installed.json").unlink()
+        with patch.object(self.store, "_download", side_effect=AssertionError("No implicit download")):
+            with self.assertRaises(UserError):
+                self.store.texture_view(primary, "GXXP01", fallback_packs=(fallback,))
+        self.assertTrue((old / "Textures/GXXP01/tex1_4x4_b_6.png").is_file())
+
     def test_partial_download_with_wrong_hash_is_not_installed(self):
         part = Part("https://example.invalid/pinned.zip", "0" * 64, 3)
         class Response(io.BytesIO):

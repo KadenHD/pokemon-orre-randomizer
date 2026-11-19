@@ -66,6 +66,7 @@ def main():
                                (diagnostic.read_text("utf-8") if diagnostic.is_file() else "No report"))
         data = json.loads(diagnostic.read_text("utf-8"))
         assert data["successful"] and data["frozen"] and data["codec"] == "rust-lzss-v1"
+        assert data["unhandled_event_errors"] == []
         assert data["disc_converter"].startswith("nod-2.0.0-alpha.11-")
         assert data["application_icon_available"] and {16, 256} <= set(data["application_icon_sizes"])
         assert len(data["home_states"]) == 12
@@ -74,16 +75,26 @@ def main():
         assert len(data["exclusion_states"]) == 24
         assert len(data["shiny_states"]) == 60
         assert len(data["preview_states"]) == 24
+        assert len(data["pack_manager_states"]) == 6
+        assert all(state["private_empty_cache"] and not state["network_install_started"]
+                   for state in data["pack_manager_states"])
         assert {state["language"] for state in data["states"]} == {"fr", "en", "de", "es", "it", "ja"}
         assert not data["rom_opened"] and not data["personal_preferences_opened"]
         assert len(data["images"]) == 5 and len(data["sounds"]) == 3 and data["music_available"]
+        assert data["hd_text_font"]["verified_donor_and_license"] and data["hd_text_font"]["sample_rendered"]
+        assert data["hd_text_font"]["rasterizer"]["pillow"] == "13.0.0"
+        assert set(data["hd_menu_artwork"]["regional_recipe_counts"]) == {
+            "GC6E01", "GC6P01", "GC6J01", "GXXE01", "GXXP01", "GXXJ01"}
+        assert data["hd_menu_artwork"]["rendered_methods"]
+        assert not data["hd_menu_artwork"]["external_packs_opened"]
+        assert not data["hd_menu_artwork"]["rom_opened"]
         assert data["game_cursor_available"] and data["application_logo_available"]
         assert data["home_logo_dimensions"] == {"colosseum": [1280, 543], "xd": [1280, 565]}
         assert data["music_tracks"] == {"home": "pyrite.wav", "colosseum": "title.wav", "xd": "xd-title.wav"}
         assert not any((work/"AppData").rglob("*.ini"))
         evidence = args.report.with_suffix("")
         evidence.mkdir()
-        state_keys = ("home_states", "xd_states", "states", "exclusion_states", "shiny_states", "preview_states")
+        state_keys = ("home_states", "xd_states", "states", "exclusion_states", "shiny_states", "preview_states", "pack_manager_states")
         for key in state_keys:
             for state in data[key]:
                 if "screenshot" in state:

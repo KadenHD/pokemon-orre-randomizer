@@ -1,0 +1,944 @@
+{
+  "schema": 1,
+  "kind": "source-mesh-front-portraits",
+  "review_only": false,
+  "models": [
+    {
+      "visual_guide": "red-bandana-girl",
+      "proposed_identity": "may-rs",
+      "identity_status": "confirmed by source costume and direct rendered comparison",
+      "source": {
+        "game_id": "GC6P01",
+        "archive": "pkx_agb_f_a1.fsys",
+        "archive_sha256": "8718dc780485b37c6819bebe4fb63d7b250f3b888d413e1bc9f6bf5057b6c068",
+        "archive_bytes": 109984,
+        "disc_offset": 983315504,
+        "member": "agb_f_a1",
+        "member_identifier": "0x06fa1e00",
+        "raw_sha256": "85a64c199b63b960355d66d37d232014d5741e6bd21e57775c76c812cfed4d72",
+        "DAT_sha256": "cc2ade5a0bbde53d83105053505fb2bd24a193c9a4551f71edddf9ccde43255e",
+        "declared_DAT_sha256": "1a96f57366b4ed2cec3f64dcb16b1e171c7286ff3277cca27e8c5831528bd904",
+        "raw_bytes": 189696,
+        "kind": "PKX_TRAINER"
+      },
+      "file": "models/may-rs.pkx",
+      "material_map": {
+        "21736:0": {
+          "native_key": "tex1_256x256_a689cf9b8b0366c9_14.png",
+          "native_dimensions": [
+            256,
+            256
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "21896:0": {
+          "native_key": "tex1_128x128_83f1f1c3cea3ade9_14.png",
+          "native_dimensions": [
+            128,
+            128
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        }
+      }
+    },
+    {
+      "visual_guide": "red-cap-boy",
+      "proposed_identity": "red-frlg",
+      "identity_status": "confirmed by source costume and direct rendered comparison",
+      "source": {
+        "game_id": "GXXP01",
+        "archive": "people_archive.fsys",
+        "archive_sha256": "3da4a673c0b720db7a349c1d1dbca47110e08c6a269dace4ac913d446e75fa75",
+        "archive_bytes": 29523136,
+        "disc_offset": 527213056,
+        "member": "gba_fl_m_0100",
+        "member_identifier": "0x19340400",
+        "raw_sha256": "9d4194fac358ce4e572793659988e7d81eb7fdc1b95675c19dd2d89d2325036c",
+        "DAT_sha256": "9d4194fac358ce4e572793659988e7d81eb7fdc1b95675c19dd2d89d2325036c",
+        "declared_DAT_sha256": "9d4194fac358ce4e572793659988e7d81eb7fdc1b95675c19dd2d89d2325036c",
+        "raw_bytes": 201075,
+        "kind": "DAT_MODEL"
+      },
+      "file": "models/red-frlg.dat",
+      "material_map": {
+        "111944:0": {
+          "native_key": "tex1_64x128_803014d46156c22f_14.png",
+          "native_dimensions": [
+            64,
+            128
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "113160:0": {
+          "native_key": "tex1_256x256_88f63a235b09c0d5_14.png",
+          "native_dimensions": [
+            256,
+            256
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "118544:0": {
+          "native_key": "tex1_48x72_f2b86bb150221bd5_14.png",
+          "native_dimensions": [
+            48,
+            72
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "118660:0": {
+          "native_key": "tex1_48x72_4cf9dade7d3ea502_14.png",
+          "native_dimensions": [
+            48,
+            72
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "119012:119036": {
+          "native_key": "tex1_32x56_73f9d19a5c510415_b258008b8640df26_9.png",
+          "native_dimensions": [
+            32,
+            56
+          ],
+          "native_format": 9,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        }
+      },
+      "authored_shoulder_FK": {
+        "native_bone_indices": [
+          17,
+          32
+        ],
+        "armature_Y_degrees": [
+          70,
+          -70
+        ],
+        "mute_arm_IK_only": true,
+        "source_mesh_UV_materials_unchanged": true
+      }
+    },
+    {
+      "visual_guide": "black-red-cap-boy",
+      "proposed_identity": "brendan-rs",
+      "identity_status": "confirmed by source costume and direct rendered comparison",
+      "source": {
+        "game_id": "GC6P01",
+        "archive": "pkx_agb_m_a1.fsys",
+        "archive_sha256": "c18b53d3e9e67530cebd6b18ca20cb30c6814bd20b55c0b2dbfdc5c39e6d2785",
+        "archive_bytes": 96064,
+        "disc_offset": 983425488,
+        "member": "agb_m_a1",
+        "member_identifier": "0x06fb1e00",
+        "raw_sha256": "9af38f5a1b0b487c802bcfbaddc00fd8fe8d21875bc1dd0d4df551568fad777c",
+        "DAT_sha256": "eabcafa561eadeb9dc4b7a99fb730ac0321158fb3b8542958a931697bb30ea64",
+        "declared_DAT_sha256": "e53bede6d905ef197e34f681e028ce73e69dde8c967577394bc48369ef5ef939",
+        "raw_bytes": 175616,
+        "kind": "PKX_TRAINER"
+      },
+      "file": "models/brendan-rs.pkx",
+      "material_map": {
+        "19352:0": {
+          "native_key": "tex1_128x128_ae40c87c40b509a1_14.png",
+          "native_dimensions": [
+            128,
+            128
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "19544:0": {
+          "native_key": "tex1_256x256_56a9822a341df035_14.png",
+          "native_dimensions": [
+            256,
+            256
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        }
+      }
+    },
+    {
+      "visual_guide": "wes",
+      "proposed_identity": "wes",
+      "identity_status": "confirmed by source costume and direct rendered comparison",
+      "source": {
+        "game_id": "GC6P01",
+        "archive": "pkx_ken_a1.fsys",
+        "archive_sha256": "fc49f3711bcf218e6ff2b3fa855af79603e90a36b81c6c1dfda63fc8f7bdb7a8",
+        "archive_bytes": 172800,
+        "disc_offset": 1012767760,
+        "member": "ken_a1",
+        "member_identifier": "0x030c1e00",
+        "raw_sha256": "9b5cff3e2789cf82d4baef92de38ce21f04cedb3a1c8323b618aab5577f91b21",
+        "DAT_sha256": "feb77499b7d92c87ac71678a3a53d4f8317e7679eec5e85e7a173902550d557f",
+        "declared_DAT_sha256": "ed27ed42bdf858c1316adc7d546cd2588c184af2cdd02bb86bd09623b2817e23",
+        "raw_bytes": 287744,
+        "kind": "PKX_TRAINER"
+      },
+      "file": "models/wes-ken.pkx",
+      "material_map": {
+        "28304:0": {
+          "native_key": "tex1_128x128_b4508a7d7698f4c5_14.png",
+          "native_dimensions": [
+            128,
+            128
+          ],
+          "native_format": 14,
+          "HD": {
+            "pack": "colosseum-2.00",
+            "physical_file": "tex1_128x128_b4508a7d7698f4c5_14.dds",
+            "sha256": "6eb2ced870b88d9b89298e3ee8bcd3998f458c05bfc7c9e4237aa2cd82f23487",
+            "width": 512,
+            "height": 512,
+            "source_scale": 4,
+            "format": "DDS",
+            "mip_levels": 1,
+            "render_file": "HD-textures/tex1_128x128_b4508a7d7698f4c5_14.png",
+            "render_sha256": "874394b0af3d66289fdf99dea27a8007fce5072e1f7f52f1d6675e0a40442137"
+          },
+          "retained_native_without_bitmap_enlargement": false
+        },
+        "28656:0": {
+          "native_key": "tex1_32x16_80ee12561d933614_14.png",
+          "native_dimensions": [
+            32,
+            16
+          ],
+          "native_format": 14,
+          "HD": {
+            "pack": "colosseum-2.00",
+            "physical_file": "tex1_32x16_80ee12561d933614_14.dds",
+            "sha256": "03045ba1e1bd0c7e4a7695ba835506c626b4820595c35b8fd9e4d6cf99c57e66",
+            "width": 128,
+            "height": 64,
+            "source_scale": 4,
+            "format": "DDS",
+            "mip_levels": 1,
+            "render_file": "HD-textures/tex1_32x16_80ee12561d933614_14.png",
+            "render_sha256": "c74109c2d598569953cc3cf430bd3823f0d12e67aad09041625b10218585a56b"
+          },
+          "retained_native_without_bitmap_enlargement": false
+        },
+        "28816:0": {
+          "native_key": "tex1_128x256_376f2d73f1244235_14.png",
+          "native_dimensions": [
+            128,
+            256
+          ],
+          "native_format": 14,
+          "HD": {
+            "pack": "colosseum-2.00",
+            "physical_file": "tex1_128x256_376f2d73f1244235_14.dds",
+            "sha256": "94ec737f5f84e4d3d179bcae93813f889151256d945f95b8e3ccbfbd538ec828",
+            "width": 512,
+            "height": 1024,
+            "source_scale": 4,
+            "format": "DDS",
+            "mip_levels": 1,
+            "render_file": "HD-textures/tex1_128x256_376f2d73f1244235_14.png",
+            "render_sha256": "84ae82d1e3ff62cca6c5fcaa46f5f0f2a0f34eb5c4451c68d98f283ae76e11b5"
+          },
+          "retained_native_without_bitmap_enlargement": false
+        },
+        "28976:0": {
+          "native_key": "tex1_256x256_05c4191900542357_14.png",
+          "native_dimensions": [
+            256,
+            256
+          ],
+          "native_format": 14,
+          "HD": {
+            "pack": "colosseum-2.00",
+            "physical_file": "tex1_256x256_05c4191900542357_14.dds",
+            "sha256": "0a5ff6d065458c376f27c5d4b93e5feadf950ee92a1b66b27330d60841b83881",
+            "width": 1024,
+            "height": 1024,
+            "source_scale": 4,
+            "format": "DDS",
+            "mip_levels": 1,
+            "render_file": "HD-textures/tex1_256x256_05c4191900542357_14.png",
+            "render_sha256": "7c55fa8003326b674171933494bb61c7b3744a85640444c506f3990787b9b5a9"
+          },
+          "retained_native_without_bitmap_enlargement": false
+        }
+      }
+    },
+    {
+      "visual_guide": "white-cap-girl",
+      "proposed_identity": "leaf-frlg",
+      "identity_status": "confirmed by source costume and direct rendered comparison",
+      "source": {
+        "game_id": "GXXP01",
+        "archive": "people_archive.fsys",
+        "archive_sha256": "3da4a673c0b720db7a349c1d1dbca47110e08c6a269dace4ac913d446e75fa75",
+        "archive_bytes": 29523136,
+        "disc_offset": 527213056,
+        "member": "gba_fl_f_0100",
+        "member_identifier": "0x19330400",
+        "raw_sha256": "5fa963476cde27850f72650cf5f022479f0639d0c3f50cafa96333f253d62310",
+        "DAT_sha256": "5fa963476cde27850f72650cf5f022479f0639d0c3f50cafa96333f253d62310",
+        "declared_DAT_sha256": "5fa963476cde27850f72650cf5f022479f0639d0c3f50cafa96333f253d62310",
+        "raw_bytes": 223051,
+        "kind": "DAT_MODEL"
+      },
+      "file": "models/leaf-frlg.dat",
+      "material_map": {
+        "109288:0": {
+          "native_key": "tex1_64x128_e871f1f48ea0a510_14.png",
+          "native_dimensions": [
+            64,
+            128
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "110996:111020": {
+          "native_key": "tex1_32x96_7b60f6f081910384_45d1fcece5528263_9.png",
+          "native_dimensions": [
+            32,
+            96
+          ],
+          "native_format": 9,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "111868:0": {
+          "native_key": "tex1_48x72_60272e003d80b367_14.png",
+          "native_dimensions": [
+            48,
+            72
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "111984:0": {
+          "native_key": "tex1_48x72_4cf9dade7d3ea502_14.png",
+          "native_dimensions": [
+            48,
+            72
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        },
+        "114756:0": {
+          "native_key": "tex1_256x256_ee31ed47779efdff_14.png",
+          "native_dimensions": [
+            256,
+            256
+          ],
+          "native_format": 14,
+          "HD": null,
+          "retained_native_without_bitmap_enlargement": true
+        }
+      },
+      "authored_shoulder_FK": {
+        "native_bone_indices": [
+          19,
+          39
+        ],
+        "armature_Y_degrees": [
+          70,
+          -70
+        ],
+        "mute_arm_IK_only": true,
+        "source_mesh_UV_materials_unchanged": true
+      }
+    }
+  ],
+  "no_Emerald_models_used": true,
+  "native_bitmap_upscaled_for_HD": false,
+  "guide_metadata": {
+    "records": [
+      {
+        "identity_visual": "wes",
+        "menu_056_index_left_to_right": 3,
+        "menu_055_order": "top-left",
+        "files": [
+          {
+            "file": "wes-large-native-guide.png",
+            "source_native_key": "tex1_650x254_275cada060c5a128_6.png",
+            "source_box": [
+              402,
+              0,
+              532,
+              110
+            ],
+            "source_RGBA_sha256": "01fa83e3805833b39fd9e0e4e87cbcf1c07c48bda6952a3d25ccf3c42e378155",
+            "PNG_sha256": "5fa1242642d210e353adb9001b35fe560f627abf91539dd2b3448c76607ad4bc",
+            "dimensions": [
+              130,
+              110
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          },
+          {
+            "file": "wes-small-native-guide.png",
+            "source_native_key": "tex1_308x403_72898d618ee11c9f_5.png",
+            "source_box": [
+              16,
+              169,
+              96,
+              243
+            ],
+            "source_RGBA_sha256": "0688f0ad93ed38236f4b81c92d7922ad879281f3f48c07c6d640f8700f70b687",
+            "PNG_sha256": "d1f5dcd99a7a2cf00360765495cbdaf984db8105a805c1b2de16cbc773f73883",
+            "dimensions": [
+              80,
+              74
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          }
+        ]
+      },
+      {
+        "identity_visual": "black-red-cap-boy",
+        "menu_056_index_left_to_right": 1,
+        "menu_055_order": "lower-left",
+        "files": [
+          {
+            "file": "black-red-cap-boy-large-native-guide.png",
+            "source_native_key": "tex1_650x254_275cada060c5a128_6.png",
+            "source_box": [
+              132,
+              0,
+              258,
+              110
+            ],
+            "source_RGBA_sha256": "01fa83e3805833b39fd9e0e4e87cbcf1c07c48bda6952a3d25ccf3c42e378155",
+            "PNG_sha256": "f87477b056886abd5caed9e0f2c8c6f7f85c9108a5c0a46d958ad97b85ec3070",
+            "dimensions": [
+              126,
+              110
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          },
+          {
+            "file": "black-red-cap-boy-small-native-guide.png",
+            "source_native_key": "tex1_308x403_72898d618ee11c9f_5.png",
+            "source_box": [
+              16,
+              244,
+              90,
+              317
+            ],
+            "source_RGBA_sha256": "0688f0ad93ed38236f4b81c92d7922ad879281f3f48c07c6d640f8700f70b687",
+            "PNG_sha256": "a3913820ea987b2c83c74dbc95985c2c3b26e0a4f38f6012f45bd8c2e44f03b8",
+            "dimensions": [
+              74,
+              73
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          }
+        ]
+      },
+      {
+        "identity_visual": "red-bandana-girl",
+        "menu_056_index_left_to_right": 0,
+        "menu_055_order": "lower-middle",
+        "files": [
+          {
+            "file": "red-bandana-girl-large-native-guide.png",
+            "source_native_key": "tex1_650x254_275cada060c5a128_6.png",
+            "source_box": [
+              0,
+              0,
+              130,
+              110
+            ],
+            "source_RGBA_sha256": "01fa83e3805833b39fd9e0e4e87cbcf1c07c48bda6952a3d25ccf3c42e378155",
+            "PNG_sha256": "488382f5cc09536c2d7118a8169ea236e23d152cdfaefa0e5c6d65c00b6e9ee2",
+            "dimensions": [
+              130,
+              110
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          },
+          {
+            "file": "red-bandana-girl-small-native-guide.png",
+            "source_native_key": "tex1_308x403_72898d618ee11c9f_5.png",
+            "source_box": [
+              96,
+              245,
+              178,
+              316
+            ],
+            "source_RGBA_sha256": "0688f0ad93ed38236f4b81c92d7922ad879281f3f48c07c6d640f8700f70b687",
+            "PNG_sha256": "8d1a69facfc43937c89355dddbe3036c743ebfad8240aeb6c298d60e53335763",
+            "dimensions": [
+              82,
+              71
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          }
+        ]
+      },
+      {
+        "identity_visual": "red-cap-boy",
+        "menu_056_index_left_to_right": 2,
+        "menu_055_order": "top-right",
+        "files": [
+          {
+            "file": "red-cap-boy-large-native-guide.png",
+            "source_native_key": "tex1_650x254_275cada060c5a128_6.png",
+            "source_box": [
+              264,
+              0,
+              392,
+              110
+            ],
+            "source_RGBA_sha256": "01fa83e3805833b39fd9e0e4e87cbcf1c07c48bda6952a3d25ccf3c42e378155",
+            "PNG_sha256": "833ce973a89283faf93f895fa5809301895c8857ea4a3bb4aafe20f2c37522ba",
+            "dimensions": [
+              128,
+              110
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          },
+          {
+            "file": "red-cap-boy-small-native-guide.png",
+            "source_native_key": "tex1_308x403_72898d618ee11c9f_5.png",
+            "source_box": [
+              180,
+              169,
+              258,
+              243
+            ],
+            "source_RGBA_sha256": "0688f0ad93ed38236f4b81c92d7922ad879281f3f48c07c6d640f8700f70b687",
+            "PNG_sha256": "d9ff0a3e50ccfaaa598583c0b412b7a577a7bdac82347ce20813010f6bd32445",
+            "dimensions": [
+              78,
+              74
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          }
+        ]
+      },
+      {
+        "identity_visual": "white-cap-girl",
+        "menu_056_index_left_to_right": 4,
+        "menu_055_order": "top-middle",
+        "files": [
+          {
+            "file": "white-cap-girl-large-native-guide.png",
+            "source_native_key": "tex1_650x254_275cada060c5a128_6.png",
+            "source_box": [
+              532,
+              0,
+              650,
+              110
+            ],
+            "source_RGBA_sha256": "01fa83e3805833b39fd9e0e4e87cbcf1c07c48bda6952a3d25ccf3c42e378155",
+            "PNG_sha256": "2b3d21445f0cbbc528e31d95f7cfc12a31a64c87967495442dd0aa467e2c676a",
+            "dimensions": [
+              118,
+              110
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          },
+          {
+            "file": "white-cap-girl-small-native-guide.png",
+            "source_native_key": "tex1_308x403_72898d618ee11c9f_5.png",
+            "source_box": [
+              101,
+              170,
+              171,
+              242
+            ],
+            "source_RGBA_sha256": "0688f0ad93ed38236f4b81c92d7922ad879281f3f48c07c6d640f8700f70b687",
+            "PNG_sha256": "8d4c236ba407291c1843bb4e20689a1a27622b7a3a7e5b3497cdf9eacfca245c",
+            "dimensions": [
+              70,
+              72
+            ],
+            "role": "original diagnostic pose/alpha guide only; never HD art"
+          }
+        ]
+      }
+    ]
+  },
+  "addon": {
+    "version": "3.1.0",
+    "license": "GPL-3.0-or-later",
+    "python_sources_sha256": {
+      "__init__.py": "0fd1c248fd3981365fbae33db2e2934b2d74b89f320f249c0199dcb2a3230f15",
+      "__main__.py": "61c1a5aa6f3c2c5a91a8bcb18bb8c22fdaa546100aa930f186ffc79ae2c2a537",
+      "BlenderPlugin.py": "d9be16bc3c9ae207e2eeae942bcaeb43b9bacc410d926da8ba0a6eade1d85927",
+      "CommandLineInterface.py": "d2f0efa173963bd7b275bd507cb09e3f8b82c3552881548e3012cedb192c5ebe",
+      "conftest.py": "7f775ca4dae4c84cbef2dfe2d9af9a7a0a691f1149cce98b1f01c11c2f18eb08",
+      "exporter/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exporter/exporter.py": "b77bf8ec93f0bb12647bb8f4c8eaa06520b8918205dd5335e4316d95723bd9bb",
+      "exporter/phases/compose/compose.py": "83db8be9ab9c6ceaa8d1b0a4c7a55eade3deeff98cf5b1f95cd55caf2e570991",
+      "exporter/phases/compose/helpers/animations.py": "4a31ffac39442e66265dfc004b1c5dd646b781c15a14736151f4518159559213",
+      "exporter/phases/compose/helpers/bones.py": "a77fdcb9c9ac6c2356abe5ad8b58ad8b74f103e6e919099ce97427f076e12c63",
+      "exporter/phases/compose/helpers/cameras.py": "f3141db92f36a19292010f917c675292a009115f1b2e01b1cb8d9089cc2621b6",
+      "exporter/phases/compose/helpers/constraints.py": "a55a225c1d063d8aa11d35d8ba1ebaa6c5c170c84780fd5073c88ba1061a7102",
+      "exporter/phases/compose/helpers/fog.py": "aab784d9896996bca927956392c4db3eecbad1e7bd56783f95570feba45e5c86",
+      "exporter/phases/compose/helpers/lights.py": "8165d25fae0702b6b718a6ff60df444206a035de660ea04b69575748475df7f6",
+      "exporter/phases/compose/helpers/material_animations.py": "ac6f590d10bbe2de5c6d8ba914e998d101e6a0c45bf231dcf63290351a64ae6c",
+      "exporter/phases/compose/helpers/materials.py": "764a46553a1841dcbbf239cd310ccf66f104bb48bdb6738fd4129fff537b3b1e",
+      "exporter/phases/compose/helpers/meshes.py": "5ad9ec5f5fc0bff349e4509872d63989957e576d9f24e08a726569e9b616049a",
+      "exporter/phases/compose/helpers/particles.py": "bf2f19ef74d9b5b2d33b5961598008e4c095bcedcba44bd7dc65c7b5928397db",
+      "exporter/phases/compose/helpers/scale.py": "9223974a22e92e17da3ea2fc5c91d1aa7565f5a9bb527438f8e6f4f8c0b366db",
+      "exporter/phases/compose/helpers/stripify.py": "49200d40528ecab06259fa193965fb59f135af6006444eaec4b012337801e6e6",
+      "exporter/phases/describe/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exporter/phases/describe/describe.py": "8112ff625486d6773a4ea4bf3054d54941d493087ef64ea567cc0b2cfb969931",
+      "exporter/phases/describe/helpers/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exporter/phases/describe/helpers/animations.py": "69fed1290e764527c9202ef3b01a018c44212099421ac2a4e3116d12d826ffea",
+      "exporter/phases/describe/helpers/animations_decode.py": "04e43f954f1f3f4a88a85c1d828b951c7c85bca4e1764f1de3b8d6d05295a52f",
+      "exporter/phases/describe/helpers/armature.py": "a410168f76d0ce3b1f79177b1a5f7b68104aee6020bbc9c3bfeb2f1cf2bb1f80",
+      "exporter/phases/describe/helpers/cameras.py": "cfb35c9391c8c290a4d7429939faab1165fc5e8a6298a3bf9a3dc7014a89682b",
+      "exporter/phases/describe/helpers/constraints.py": "d127ae49c8a8ab682365ad345bfba1556521cc69c967eaeb41b44d09b6878d17",
+      "exporter/phases/describe/helpers/lights.py": "f4fcfd985bc4edf4a9c296a026678a9bcca54a216318a867cde1aa3597dc5f64",
+      "exporter/phases/describe/helpers/material_animations_decode.py": "34f133e0ce666e643e5a4a5dd5671e8a22d73c652def65b39345df99fbe36fbb",
+      "exporter/phases/describe/helpers/materials.py": "4b423d02b44d72a40e965f126d882996c9a34ec20425028fae97aeb0241b17f6",
+      "exporter/phases/describe/helpers/materials_decode.py": "09753f5bf121a8ee38783c5dc3a2391e472fa47cad79a3dbc95a4a1e94347d2f",
+      "exporter/phases/describe/helpers/meshes.py": "3596e0250fe38734e2721f06ded34804a7933ebf46ac6434a4a512f81e43facf",
+      "exporter/phases/describe/helpers/scene.py": "639699b8f1077059bfe6a4ec40ef7fb8c1cc48b19f273154b5fc0c753ee255b1",
+      "exporter/phases/describe_blender/describe_blender.py": "976c026ec54b51f2f17aea918813b6c07967de4e8df75b15ea33d1e5e799d3eb",
+      "exporter/phases/describe_blender/helpers/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exporter/phases/describe_blender/helpers/animations.py": "5a95fcb6063dc773558186ce0d6f64dbe7ebf780f76baaaf85c7872f0dd603e8",
+      "exporter/phases/describe_blender/helpers/cameras.py": "040de6a1defede6ac299a270dd4622a3cf1e96a05053fcfb274300bfc3058b7c",
+      "exporter/phases/describe_blender/helpers/constraints.py": "cf76844a97e18d219af5e3938eb5511d22a26d21efdb9f635de5ca17f8569c3e",
+      "exporter/phases/describe_blender/helpers/lights.py": "5b3bd614f828333934b68a05d81dd4873cdb28fac1c9fea9628a08178748de58",
+      "exporter/phases/describe_blender/helpers/material_animations.py": "fc91ebded363cd723d7403572ae15f5ec9dff8b002ff80d0817f78858128a21c",
+      "exporter/phases/describe_blender/helpers/materials.py": "e523ff3a668d077900abc6a0975a199c1161a72b49b989ea0e3f20d81217b834",
+      "exporter/phases/describe_blender/helpers/merge_meshes.py": "c4cdbf8f6eb46402c20f05d0d049f97e0b6b67215d2c9ccfc296023ffae66b3a",
+      "exporter/phases/describe_blender/helpers/meshes.py": "b90fed6e41b9128c0125cb1fb10fb5cb1a90cb62ff8c4f4906ae520cd5e9a8b7",
+      "exporter/phases/describe_blender/helpers/particles.py": "11a1f89fd58cb393396d3203e67f03625a92e84c81397f13a64b484a646a48b0",
+      "exporter/phases/describe_blender/helpers/skeleton.py": "75fe9d8917273f594017fda6cd321d175c8590fde77c4664fcec09726aae7298",
+      "exporter/phases/package/package.py": "a93e2511040171b8f16443053844284d4b3ec27f2d1e6bd2e5c4113bef5e7ad6",
+      "exporter/phases/plan/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exporter/phases/plan/helpers/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "exporter/phases/plan/helpers/animations.py": "92d1b8a8ee2473fa12e423f292b5527fe36aff0edac1325806362998fb95e940",
+      "exporter/phases/plan/helpers/armature.py": "068cf513e445542cc54dbbe62a8f0c658f4ceb56034067fcd867510509a47060",
+      "exporter/phases/plan/helpers/cameras.py": "69e77803f69ed0b1069363e7d08a1be305f7a655016013d095a814fd8eb3a55d",
+      "exporter/phases/plan/helpers/constraints.py": "83376a9e888351aada89ae174a5363e6413bbf534c89144a1c8cc7818a5eb4de",
+      "exporter/phases/plan/helpers/lights.py": "293cad8475ef5efa774092b488eaa20b1461259a41f322cedfe76b46113cdeab",
+      "exporter/phases/plan/helpers/materials.py": "7796916522b269b9fa0f050ed8080a0094c2edda5909c8dc488277572c13e6d6",
+      "exporter/phases/plan/helpers/merge_meshes.py": "705358836621625c843e4cc824f3ee3814193dac770cf073a0caa4b24ec37f69",
+      "exporter/phases/plan/helpers/meshes.py": "7fa2ba2f0bc1df7a7c64e3e4b24e18719c47fdd938e622bae752719ab09af382",
+      "exporter/phases/plan/helpers/scene.py": "f48a42caee1cd162a0addf03805585f135026e272ce051567c4b2510d05d24e0",
+      "exporter/phases/plan/plan.py": "c2c5d1141c3ac2f9b08647c38e7ef05e0f78009da12573abeba900e44897562b",
+      "exporter/phases/pre_process/pre_process.py": "f2d77dd4f2d2da8737c20c3c9b4d4bef1199cd4f6ecb3a437b929616bcded219",
+      "exporter/phases/serialize/helpers/dat_builder.py": "6fbdc6951126dc28314a74dfaabc3cdfdb91ea9aa269b526962e6bbad7d544fb",
+      "exporter/phases/serialize/serialize.py": "e5c58a562013f54f0f16ecb09897b79f8e765d5a173236217ec4f8b521d734a7",
+      "importer/__init__.py": "b3bac899ee432cdf41eb35bfa02e8f4e53ee2de1accd56b8cf82d1260800293c",
+      "importer/importer.py": "2224bb941cde852dbd2e331df53854c972a9588255f56484fad5c731e1de94b7",
+      "importer/phases/build_blender/build_blender.py": "593ba2b49f952ede6b7a380d87cc1dda769b75cc82fa136bf1158c4c62807628",
+      "importer/phases/build_blender/errors/build_errors.py": "a22d3a8422a2ce1517b92447dbf50b62edf7fe798acce6bbafbae8a634c73e79",
+      "importer/phases/build_blender/helpers/animations.py": "ac5a70666da6e49be319ddafc430746d0d5832ec5be12ac73c3fc70c51bc9adc",
+      "importer/phases/build_blender/helpers/cameras.py": "c930223f396acdc6c72109a3e2efcccfc596ccf9a3f7a7543043a4d812d9b1d4",
+      "importer/phases/build_blender/helpers/constraints.py": "89cd94bb55de1a7007de3644d550aa33aae6823c35c65171fe9420d48744aaea",
+      "importer/phases/build_blender/helpers/lights.py": "30eada123c4ae5bdc55300fd5e52cee2163457eaa0bb564831d520aacfa01692",
+      "importer/phases/build_blender/helpers/material_animations.py": "3487b769c41303ba99ecb9a4a11c6cb6b4fb8076dea0a388332d982ddf9eefb2",
+      "importer/phases/build_blender/helpers/materials.py": "7c2e9832db987ccb9081260bba95179c8a9fa01112343732f378ab32937d2f3e",
+      "importer/phases/build_blender/helpers/meshes.py": "36934618087b43e7e6334eaf8f2efc1f34c60d529518ba7376539817266e290a",
+      "importer/phases/build_blender/helpers/particle_opcodes.py": "6eb4612dda726bc0eda6137d87df66099dadc2f632afd85c2294d62e017ce94b",
+      "importer/phases/build_blender/helpers/particles.py": "9cff065f834e4eadb080e00d18d9cd779a453a5441d2a5e7f0fd9d5bd0ae659d",
+      "importer/phases/build_blender/helpers/skeleton.py": "f975416226817b5d1fff3205e6f5abf0cde531e697a809210eaa6bb8d4f8b390",
+      "importer/phases/describe/describe.py": "e4788d4c807d6cb594179593b0daeeb746e70de99d855ce7b3c46ce4316c39a9",
+      "importer/phases/describe/helpers/animations.py": "5bff16186e709955de8cd8747f7d8d99169840f745acd555d51b61655380400d",
+      "importer/phases/describe/helpers/bones.py": "680203af213c58e526765fe23fd46d00f11bdd836c5b0f85a8566a934f9676e1",
+      "importer/phases/describe/helpers/cameras.py": "9a0b4650645b70b92dd6e58da447868e4fda69b3e8891b1a31686385a06d92d8",
+      "importer/phases/describe/helpers/constraints.py": "ddad4102a9b42f179b7314f02cd8d4e816b48bb3b2ba2f99bf9ad9a15f251dcc",
+      "importer/phases/describe/helpers/fog.py": "76e0def0096628885d86753b7e71096a8d21f866412b256dc53b2655f7a0aaff",
+      "importer/phases/describe/helpers/keyframe_decoder.py": "83df964d6eec1441e33a8385387bcdf1f48772647986de16c856090a4c4436fe",
+      "importer/phases/describe/helpers/lights.py": "627f9e38ef93b595df8b776b1e2041b3040fa1f3692fa96454cc8d3d6387562d",
+      "importer/phases/describe/helpers/material_animations.py": "8d9500e798e893d8f11263c8e08b020df22232eb305c7a4eab484fc0c9c2a045",
+      "importer/phases/describe/helpers/materials.py": "7aca793a035ee8a277122647aeb128791431fe90294149e72176755545d15d3f",
+      "importer/phases/describe/helpers/meshes.py": "6533e07e3829dd207290ce982a14f00a34930d66fb9dfd63ac685161f1454524",
+      "importer/phases/describe/helpers/particles.py": "72f55cc41e61a993e25fdb3e19233ecbcc65515896d7d244165d12eaa209c861",
+      "importer/phases/extract/extract.py": "f6a24c06462f700f40b4da0ddce9f0de7b213116288db8b05f015bf7edd307ae",
+      "importer/phases/extract/helpers/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "importer/phases/extract/helpers/fsys.py": "fabf773696e976c38f2f3de1dc130048d5bea809ebcff3eca4d71b21bd09a3d4",
+      "importer/phases/extract/helpers/lzss.py": "c139a8dbc41aee87946439a3a9c6a094c8016089d38409500f12241da6b492b1",
+      "importer/phases/parse/helpers/dat_parser.py": "448a7ba61fd30898418ea5dccffc97ea800590c8beed8454dea1132f85529d7f",
+      "importer/phases/parse/parse.py": "c02568f8310eb71984e6141d8d078aefd6c3c0b362a799ea866b587e0c9c88b6",
+      "importer/phases/plan/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "importer/phases/plan/helpers/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "importer/phases/plan/helpers/animations.py": "abd8b6b97dee623188c38c013937227eec3f53575bfd3e079dd4e33ee16a9582",
+      "importer/phases/plan/helpers/armature.py": "a59dd50cdf1c7f7c6f8979e27d7b8c55444ff6c788c51ac633aa567f4f7e3bcb",
+      "importer/phases/plan/helpers/materials.py": "40ce8a5ad218aa05059ff6d50c0651ea03463ec6469025ab104a833189eeedc0",
+      "importer/phases/plan/helpers/meshes.py": "1d4eea4e9733f78d747a398196fed3ff0ac423d0d5642e6b4857e2c98a6f38e3",
+      "importer/phases/plan/helpers/scene.py": "f96a8523bd5748b23277291a0d7cbaee91ff927605f034223d51bed581d3fe4e",
+      "importer/phases/plan/plan.py": "504b0e129f1e7c383dfd046893b5fc1e547ff9ea76611409862e727ead18069c",
+      "importer/phases/post_process/post_process.py": "016c2fede5289676abd325345738ddbd0a41f65dbef32a838b6e9d33e992c243",
+      "importer/phases/post_process/shiny_filter.py": "9d88149c715965ed9202711d2d41a2997381a51f4cb1482a48b16bdace7975c4",
+      "importer/phases/route/route.py": "aa9cfb142bec5b82c8d192778d094ecf98875ab770882c9d277abcc73527cd62",
+      "legacy/__init__.py": "f58a44d40c07009e82dada06ebe6eaf880c131cda40053811d05e40baba792e7",
+      "legacy/gx.py": "ee96e73718d19044026dc8b816d97aa9a40b04b478c90b85c76c2b9f7bc3afc3",
+      "legacy/hsd.py": "20d6ba637a50cf86bd842d5541b3e669ddcd5060d58fc14a528578771c6e7ad0",
+      "legacy/img.py": "4e153d720b4448e97759507f684c94bd3179a5bc55206e887f650cdb74646ed7",
+      "legacy/import_hsd.py": "62d3f054956c6d7552e35efe8731301f93c21b9444c89282bc028f17f5bcfe82",
+      "legacy/util.py": "6838b5f7c6c5b5bd8cffd97c33f87cd8f42476f947282aa2de549ec199d97948",
+      "scripts/add_ambient_lighting.py": "3a999224f33ca30b1ec10bdadb73fb65b7a15387e98331fff5b81fdf5765e207",
+      "scripts/add_debug_camera.py": "a56e080caf73174f3c7ea92c14550a364e8512d7da44df8b7e16dc5ae5510506",
+      "scripts/add_shiny_filter.py": "4ebb7c3c04ace8242ce211dc38761e9c743d81dda1824324cd5e15f6b3c77224",
+      "scripts/bake_chico_shader_to_principled.py": "39eb70c0d3820e7fc00a5d61cff76cba0c6070d3697aab103269aa1d2bde6a71",
+      "scripts/optimize/optimize_keyframes.py": "1600bce71b17eff25e624ed0d65bef9bed93f144917dcc1dace6cd068e389851",
+      "scripts/optimize/optimize_merge_verts.py": "ca53b92c65456e167050b2715afc639960e70a00cb13776b394391c173ff233a",
+      "scripts/optimize/optimize_polycount.py": "9055e618443128e8a9882b99041ee977112f2eacc2be2c1020488d32df460802",
+      "scripts/optimize/optimize_textures.py": "9360290d3e2a870b1dac699c6a4377b89e46b657dcff3bdcca7fbf831e757e52",
+      "scripts/optimize/optimize_weight_quantization.py": "5c3f0082a007628647792fa223b13b346ef867abf9acc179e5418c051f47ea68",
+      "scripts/optimize/optimize_weights.py": "2930de57522b506cd5fd7877cbab0fe1b51eeb82a1e3d417b5ec2186e170415d",
+      "scripts/optimize.py": "0ce7941f4e93caa557010cd432ca39de709b874506ec092b23a891131bcf8fb3",
+      "scripts/prepare_for_dat_export.py": "966e5a0a66ff208e2e73660dec3a4760afb3ff8e19b54f3c334278f3c9afd3ab",
+      "scripts/prepare_for_pkx_export.py": "52b13afe18f3d64aa7b032ede26e2a5024f6c12065f34f3c50229f3373d3d460",
+      "scripts/prepare_pbr_for_pkx_export.py": "48be666219a89c7e03916b219d6469168e0a366a53088281dbc0d6051178f576",
+      "scripts/remove_shiny_filter.py": "4e1b16478e4c9bb3b849b95be8353e3e2bb03b65c374926c26cfded91fb82647",
+      "scripts/set_texture_formats.py": "ec063c0fd7697e827f49fb3779e627d5bc24fea06ddb698d106b65a07e00fd20",
+      "scripts/utilities/deduplicate_images.py": "271dd28f88c9a1f4a529a0b1147377fcc232e4ec8b75b0338ec470a69bafa017",
+      "shared/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "shared/BlenderVersion.py": "4a8f9b71c7851adc42f519d8dcf151d42f22d850a5832f7ce0a33ea95692a439",
+      "shared/BR/__init__.py": "d9e74a0ab32a63f4bfecfbabba76edc0f3b0efc353962c8aae5462fc4b7d916d",
+      "shared/BR/actions.py": "b737b5c5914dc1776b03a673ee76d406fc098573941a1b2524583133890de1b3",
+      "shared/BR/armature.py": "12147374d2ec93ead6b95df2b538def131459a100f473fe919ff8159f2c2d348",
+      "shared/BR/cameras.py": "4de8d9a8ba62be489d0762f39bfd18a37d7665179591c868fde90d4c789bc28c",
+      "shared/BR/constraints.py": "1b112272d200e9bbb78d43c14080fd5c9c132285cac8c4ff898a336351fefc34",
+      "shared/BR/fog.py": "0b0f9b3405d36f612bf19c2e8c8779a8d1873ac9ca03ee4974b2c230173894da",
+      "shared/BR/lights.py": "734d23afb4ca66314bab3eb18880e47a018534bfeaebca548a1b142c74f08d16",
+      "shared/BR/materials.py": "adf03aedcfa2cc338cdc6cf6d4bef33f0120d1d27b62a63a6f6bd63ea7088de7",
+      "shared/BR/meshes.py": "a142a9207ea78e30a07ac4fbe8c57f99c12072454025a8b1d5a331f96f9c6f93",
+      "shared/BR/scene.py": "ec6db7ff4b0fff8d6245f0922cfc2582fc478544bbadc464de5e6f75af9d7df0",
+      "shared/ClassLookup/__init__.py": "56696b7f63fbe71bc0a61dd8a3f6dd906d204d6234a1a2505cc8a4dd78ba37f1",
+      "shared/ClassLookup/get_class_from_name.py": "db9731cf3fa23c679e31a90e2ffe6d2583936b662057c231823d7f7d6c30bc41",
+      "shared/Constants/__init__.py": "cab100aeac2c4c5dfb2cfcf14500c4507dd29d6dfe150c8de1cc5645501c7b5e",
+      "shared/Constants/gx.py": "ee96e73718d19044026dc8b816d97aa9a40b04b478c90b85c76c2b9f7bc3afc3",
+      "shared/Constants/hsd.py": "84bdf278ddc4cd6c956398cd52b988fc2ee1f6cbb8038adcf7139b109b0c38e0",
+      "shared/Constants/PrimitiveTypes.py": "3867080fceeefaf0a89f5e24906530317a7e395ba39059f441ce94a17a332c06",
+      "shared/Constants/RecursiveTypes.py": "14113d927897988b9c58b82d6d3268206fae3b2a9091cc21c26da4ca626f5bbf",
+      "shared/gx_texture.py": "c60693d3611ad65e677c6fd9c22b592f70cb8a7171dedb07acf8666924448003",
+      "shared/helpers/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "shared/helpers/binary.py": "93e665333536b5932153a885c676e2a85945ec67d65d10501174e45c3e24e26d",
+      "shared/helpers/file_io.py": "0e3fb02b54356729101ed2667e7410972b19b09e4fc46465bdab467e890af16a",
+      "shared/helpers/fsys_writer.py": "96df1d1745d4bd1d09fc3924f0585907e18ca45df115e1a132c34da71df5fa48",
+      "shared/helpers/gpt1.py": "e09f7737272a2e9a8d2ca4a907712399b98505f8a41ea0a4175e88deaec23a71",
+      "shared/helpers/gpt1_commands.py": "0463d17da20a57f5b98986a8182ac2fbb6bb992d96f3ed31223356636c9cbe8c",
+      "shared/helpers/gpt1_interpreter.py": "306a1bf6010524698e820214ed00eabe5829df477255588aec0f2d183f3e590a",
+      "shared/helpers/gpt1_simulator.py": "570c9fba1cb2e80299204457a6beb44f8ac4da25f2ba43628f2160c528c9965f",
+      "shared/helpers/logger.py": "17f7014c71569d61f2e0c544a56f463560d467ef7c1a7135200f549577c10458",
+      "shared/helpers/math_shim.py": "4124a2101c0388df4acf63979d541f142839def775d37831b73941c27cd9ae91",
+      "shared/helpers/node_layout.py": "ff1c55114c7754528dd3eeeefe22565e31f0095a3fff9e5f6d013be85c5905c1",
+      "shared/helpers/pkx.py": "e5fc7da5439cd21d27f986dbea6f6d5f563e53a4d4d47d2f9b1e8de1a224c2a1",
+      "shared/helpers/pkx_header.py": "6df5f15009e4a38fc671b247c4172b4bbbdc43866c109512ae494aa8860e285a",
+      "shared/helpers/scale.py": "9cf87c771a1b3428f1fbb5cf18322e8c70aceb13e83c879ecc07195b79d5e226",
+      "shared/helpers/shiny_params.py": "d19a0ae8cdd4891a1995e8ef49e979bf1832f40a1eb5fb2a13bc1d5cfa9fc866",
+      "shared/helpers/srgb.py": "41c74f5fe6e11a5c2baa47c898540ca981e59c114f19eae33d208ef57ff7dd3e",
+      "shared/helpers/wzx.py": "a0bca97e33d0c9c237771707f7840b33e51b3b52cba768cf03a00baeb916c05c",
+      "shared/IR/__init__.py": "67b524a5c5dfc4fb5e35f03fe0060a2b7a4670820eda53328372996fb8df7219",
+      "shared/IR/animation.py": "60a45e4581cb90ba01a3812abc037a292816547e366a632115ba2d67f5e0f7be",
+      "shared/IR/camera.py": "557d54580959db5ee08125143a50786afa46a112dd13627d23024f9b5355ab24",
+      "shared/IR/constraints.py": "9a02a9e11bfaa8e103655b3e58ec522055845b6ea087ebeecba55ec16e4c120b",
+      "shared/IR/enums.py": "579e6bfb1aaedf63e673ddf1c0842431315631e97793b35cca0192095f79ed4a",
+      "shared/IR/fog.py": "d6ab41fc03cd6e47d8fa722d3b3b11dc559bfd674e645886130c0147f4f299c5",
+      "shared/IR/geometry.py": "c8ae9e97d077375e39b972e583754e261c2ec70774466ea0230f192605cec2d2",
+      "shared/IR/lights.py": "6eedda892e4519e9c9eab9e0a56cee929e8ae3e5afca5e37b70c5850a87f7cee",
+      "shared/IR/material.py": "22e8befe4663e4f97bcfab82fd24cd5cb0204c9d614b407c3c4db17ccca7f740",
+      "shared/IR/particles.py": "904d96f01bc3beb184311deb19a5ec4d1de64d15e44f504b4126f75f01901a29",
+      "shared/IR/scene.py": "c371ad9b275811195132d14e759d7340d26f591783203ae1cfba4349bb95e6a8",
+      "shared/IR/shiny.py": "2b72eae835c38e81f842b308dcdd5b9384b05d822e298bfa876409a4ba919311",
+      "shared/IR/skeleton.py": "4b3588860a859e4e42094a7e47d286de912db5e6d7de56225e25481b3da72ee0",
+      "shared/Nodes/__init__.py": "95295b6ee0425ec3830318ee26fb768d130f17164e4c92edb75e0f314bd72968",
+      "shared/Nodes/Classes/__init__.py": "9faf1ff349cca2b74a596194861b1e6519a7318f9ac71b995843a640be8e3901",
+      "shared/Nodes/Classes/Animation/__init__.py": "f7903e8c6cd658d11298c203d95340860d485f89960c6dd85e8d9fc264318d07",
+      "shared/Nodes/Classes/Animation/Animation.py": "1fd268453fda2a6cb0e6883afa364ebb5a7ad47d2cd3190d302b282b01568c74",
+      "shared/Nodes/Classes/Animation/AnimationJoint.py": "659fa5ccdc8d704be9207dfafa92d5190d11f5a4260bb1ef8a0a27f73314a9ed",
+      "shared/Nodes/Classes/Animation/AnimationReference.py": "1fea7a9a2d0a0488131a0e1c0bec8e5b191c5dffe7c450d607f358cb6f11ed73",
+      "shared/Nodes/Classes/Animation/Frame.py": "8d994b2c5d19a84fb139256bbbdb3a3b58ff47e9babc3f4f1f0383886186535f",
+      "shared/Nodes/Classes/Camera/__init__.py": "c999523dbbb80c4dae7db3b8f63130fa802c209720704a90ed75114a68058bb7",
+      "shared/Nodes/Classes/Camera/Camera.py": "21e36505d6ab28887e017f6a05516d32a16ede7d08cd81a09bd80dd0368ceeee",
+      "shared/Nodes/Classes/Camera/CameraAnimation.py": "c38cb000381dc9c1f303d714b7b0e9ebf4a8b264726be1bc183c78635faae458",
+      "shared/Nodes/Classes/Camera/CameraSet.py": "28650dcccddc47427c08ea9d895002aee709c1418d425260ba65dd8b632ff0a8",
+      "shared/Nodes/Classes/Camera/Viewport.py": "9fa03ecc52faa579a45c219b35ce3b8f7c3661cda21a3b784831b198d84c6725",
+      "shared/Nodes/Classes/class_names.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "shared/Nodes/Classes/Colors/__init__.py": "d72606319b17ccc9baab9b37f7a449a070a08d5ae30c0a86a4437c8edc701fdf",
+      "shared/Nodes/Classes/Colors/Color.py": "e3737822012944a5cc8e8fbc7a452325c62159ec5fb04518f1c450d331caec6a",
+      "shared/Nodes/Classes/Colors/RGBAColor.py": "b7d41c27599f5210d8b23e0b32382aa6716f3048351f7c02e10d19d1a7f02111",
+      "shared/Nodes/Classes/Fog/__init__.py": "e92ca7a75803a657ee757ce24c3990f16f0ef0e6cbe134173c275682413e47bf",
+      "shared/Nodes/Classes/Fog/Fog.py": "21af6cfd13f37192f336ac2b2b8313987e65c51ff1dd12fb4e48a2876f9e7bd6",
+      "shared/Nodes/Classes/Fog/FogAdj.py": "48fd352f88728aacfbaf0bf5ec77332e6d864ce61080cdfad6d8344e728adbbd",
+      "shared/Nodes/Classes/Joints/__init__.py": "6991ce37ff5a17a66f25d4552ef0d827c2b72213775d71c81c62fb8ea6e64f0c",
+      "shared/Nodes/Classes/Joints/BoneReference.py": "c1fc1eddbeb2ecef9ebc620318c598c3f2e7c3a7663f720afa5c73f39c997b21",
+      "shared/Nodes/Classes/Joints/Envelope.py": "bd79d93a356490ee1ce485aaaafe3278f70fe380aad91d4d60888b3b85cbd8b5",
+      "shared/Nodes/Classes/Joints/Joint.py": "b63b3871a64bd7bcac6c05b732832e3aa36d5412b8643d5b03d63a8bee6f3ffd",
+      "shared/Nodes/Classes/Joints/ModelSet.py": "b7e388d7bf6b2b20ebf2a10eef066095da68e998522c6942f4c491d2efa036b9",
+      "shared/Nodes/Classes/Joints/Reference.py": "947ebe10ef27e26cf78af8d0ad7ed64a168ff31bf069a1a0b67a2e4c3180bc2e",
+      "shared/Nodes/Classes/Kirby/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "shared/Nodes/Classes/Kirby/KirbyDataGroup.py": "4943f4c87a5308b20e90243bcdd1ee2e786f89d0d1605b98dad67be2d7d2a57e",
+      "shared/Nodes/Classes/Kirby/KirbyModelRef.py": "69f215f553ea0094bf521190c43501b034cccf9655fd898d4d1cb1e3d46c66df",
+      "shared/Nodes/Classes/Kirby/KirbyModelVariant.py": "3e24976de7e41d5a0973641d08f755fe801db8dac4a354d484ed16a248f8aa2a",
+      "shared/Nodes/Classes/Light/__init__.py": "74ea0feb93dae09b355e75495726e81761d2633fc11a1a64da4cfe5e34792e48",
+      "shared/Nodes/Classes/Light/Attn.py": "21c24f073107ebe824ab901cc02873baf8760de27ad1b5eb5a2f600b9bc5c611",
+      "shared/Nodes/Classes/Light/Light.py": "7cef00c1d260bc8d3a3d192ad9d3943012b5483d5a9ba6eeb16a937940537140",
+      "shared/Nodes/Classes/Light/LightAnimation.py": "04f1b48de165820765924dd41419220e409cbd990b2a0616d23cfe1253127a09",
+      "shared/Nodes/Classes/Light/LightSet.py": "319b02e4792f00e5c2befc800574647013c7d38d2d68dda06f506b77be4299b0",
+      "shared/Nodes/Classes/Light/PointLight.py": "deaa614f6b999f0a42f89325848a2f0b47cfe537bf9811e393b0e87d26deaec0",
+      "shared/Nodes/Classes/Light/SpotLight.py": "79236a2f669fdc5620b82313cc3683566f21ceadd92497f02e810fe7eac6f2d5",
+      "shared/Nodes/Classes/Material/__init__.py": "2506a1e400fb7e29d744c986772dda634482721e37b6d2cc85ec76523bbd1bf7",
+      "shared/Nodes/Classes/Material/Material.py": "a422498b92d550dd3005eb316e3f301bbd7b95444f17ab3ea922ea980a50b2fe",
+      "shared/Nodes/Classes/Material/MaterialAnimation.py": "95c76a8112fd50606590e3ad70daceb65983e8fc187e30460e38e9887309de7f",
+      "shared/Nodes/Classes/Material/MaterialAnimationJoint.py": "6fcd2107cc902a2101006393ebdb60d9cf5e783c45bd3e722f97c663d9f35293",
+      "shared/Nodes/Classes/Material/MaterialObject.py": "7ff8eee8fc0bd18a3d2f2b672ea29713ac0b380b3ad5ddf6035f54b202f987b0",
+      "shared/Nodes/Classes/Mesh/__init__.py": "15655fee2e783f27718e3ca154da3c0f1dff732e3cc0dc3f930f578ffe05105e",
+      "shared/Nodes/Classes/Mesh/Mesh.py": "c9f1855d7f5a69a21b9c1761c297b0510b73c7a5a163ff9970ac46d4694c0683",
+      "shared/Nodes/Classes/Mesh/PObject.py": "c890b463afee6e7c75b114552fefbcd12024aae287ca61e6040d90853af6da95",
+      "shared/Nodes/Classes/Mesh/Vertex.py": "5f20030e431c8099fe05cf3a5eecfa3fe592a02a13099b608d1f2692ca31110d",
+      "shared/Nodes/Classes/Mesh/VertexList.py": "1299ef95574d1ac00ca62fab29420adf7601421b69bf1eaea53723bcc4d82797",
+      "shared/Nodes/Classes/Misc/__init__.py": "85a7c93a9b5b59f5516baee738f304d9c1592a01f34eda74978ae041ad3f0a2e",
+      "shared/Nodes/Classes/Misc/class Color.py": "b4608e459177088ad604d1ebf2b2f95627d75556950f11995ca44333f3e9a154",
+      "shared/Nodes/Classes/Misc/class RGBColor(Node).py": "6d1cdedde051ff4b8e977e027b1c82e74f3e604975fa61e7ec928c0d96f1aa63",
+      "shared/Nodes/Classes/Misc/SList.py": "1281c69fd197ff741f631c23f81f612617c43f47b038ab4d061fa2eaca08643e",
+      "shared/Nodes/Classes/Misc/Spline.py": "f696129262c4566edcc8d0a9b59e4a916f6707cb4edd3344c960a76a9a456755",
+      "shared/Nodes/Classes/Rendering/__init__.py": "6aa9419dfdc87e591d584896177b640443133a4b3766bdf6025c651d71a93257",
+      "shared/Nodes/Classes/Rendering/Particle.py": "af51b9bd580703b809e8dee3e565115a9b75d1b602ee430eee8c45f0df5777b8",
+      "shared/Nodes/Classes/Rendering/PixelEngine.py": "f49246b2ea71182ee94f61500b3fcbc979219a200f16358853b4ef9dd9f2fbd1",
+      "shared/Nodes/Classes/Rendering/Render.py": "5ab9a5e6cb5fb70bb8be19b5a52e339d920565020eab0dacc626c20b57cd27e3",
+      "shared/Nodes/Classes/Rendering/RenderAnimation.py": "4e3406ed5223cab64cc6a951f4276c46055e3f1afed9b9759f66be5b5aad525d",
+      "shared/Nodes/Classes/Rendering/WObject.py": "6168b1dc18d3d0f50591271f5f0a2153f63ccb0e52d4a99b03cd87281bbd1f94",
+      "shared/Nodes/Classes/Rendering/WObjectAnimation.py": "06eb38d38de946ae63ad04de13113a23aaca5ae4aed8eac4855bc3507bb1aa92",
+      "shared/Nodes/Classes/RootNodes/__init__.py": "50958e971f47ec8b257ba658294007aee25e7ac772f0f7c7600b0836af8925e5",
+      "shared/Nodes/Classes/RootNodes/ArchiveHeader.py": "dd672b59416e28766dbf547b8077c8e5324fb77fe35f50a042499e2323748960",
+      "shared/Nodes/Classes/RootNodes/BoundBox.py": "05c425f7c7a0c0078a35527c73ff8689540eb27fe6998f30676677a6002c63bf",
+      "shared/Nodes/Classes/RootNodes/SceneData.py": "a6dae289a70c94958b2512765eb83529dea3803e1802b7c1b0bf6d5a0b9c8774",
+      "shared/Nodes/Classes/RootNodes/SectionInfo.py": "5757531e60e6838735fe3ec5c2ed9804df6e28d2ec15607eff1b5c82e38d3329",
+      "shared/Nodes/Classes/Shape/__init__.py": "e0dc611a05904f227118ac9aacd53035403ca2a49561f477f3a5a65a95420da6",
+      "shared/Nodes/Classes/Shape/ShapeAnimation.py": "9f78824c9e98b5ea15d9802e3de40f6ba535a7dae5da7ed38381f5627596228a",
+      "shared/Nodes/Classes/Shape/ShapeAnimationJoint.py": "5d00a6c0b06a56d8af3b7dee6ce868ca13803ee82397d01a000d85dca0cfc1c0",
+      "shared/Nodes/Classes/Shape/ShapeAnimationMesh.py": "077111c48b96a3453bf802fbe1ca684e39cf4cb691fe56f537f36ad31d0c2c16",
+      "shared/Nodes/Classes/Shape/ShapeIndexTri.py": "a30e50964c9c1fc85c8419513816595be8430fed01b9c6686c39f7b5acb79336",
+      "shared/Nodes/Classes/Shape/ShapeSet.py": "6105c734ff42302b0bc5a98d685956d17f794698a82ade2d0869df13294bb20e",
+      "shared/Nodes/Classes/Texture/__init__.py": "43f1e989e4c26f9bd57532d6dad53fd9ded55ac684d8a7e12be24584b8495e13",
+      "shared/Nodes/Classes/Texture/Image.py": "f136d2edb4db2ba880120c860034e24a47fa19e5afefe34db446a6f0cb53db92",
+      "shared/Nodes/Classes/Texture/Palette.py": "17f1d79d8a400d3e9be2adebf579fe1bd417735b8598d30989702eda0187c58c",
+      "shared/Nodes/Classes/Texture/Texture.py": "81e421733a9fdcefc6379e8dabb6fd3370b6f625ebe32791f2448c13039ce3bf",
+      "shared/Nodes/Classes/Texture/TextureAnimation.py": "8fdb25c993739f918b235ae1b0e12433afc770a53c9f50186f8edbddc67d26df",
+      "shared/Nodes/Classes/Texture/TextureLOD.py": "40a49da40d015f38bce616b54b46842139ac25ed83741fc1d9f6b44bfa4a8afa",
+      "shared/Nodes/Classes/Texture/TextureTEV.py": "7ad43980430da69699ca09fe0822e9cd942d190360984c753939ff579dfdc930",
+      "shared/Nodes/Dummy.py": "8cf52e717095a8b9dddacc68c03f4ffd5b09f1059eb53eeb785b780a6d9cbbc9",
+      "shared/Nodes/Node.py": "e30e8c1f999dc45012438c1048fd7bf9e974a51d7f9b772dd8112cbe4d845f81",
+      "shared/Nodes/NodeTypes.py": "e5fc5281450790ca8ba06655596774ee1d6674fa2f3b92d52ed81b8e0cdce393",
+      "shared/texture_encoder.py": "a34d5d80816fd81a4190dc982b4a272ea3716748671588f1ab9247814e01b052",
+      "tests/conftest.py": "3fa72adac03d031dd7074bb795016adcc9e254572a9a864f395f134ce845bbda",
+      "tests/helpers.py": "ed45b22f87538d7016469584161c0a7e0832884218759c01066890a5cc1ef422",
+      "tests/pkx_metadata_compare.py": "554b8cefb2b7546aa37f120df995e149f65876ccc381e156c40596eca3be93b7",
+      "tests/round_trip/run_round_trips.py": "3897b69e964522f9cd0aa493727af9ce963c8c7a0891fdeca1d7c820e802cc96",
+      "tests/test_all_nodes.py": "43c5e6ab3fdf0fefee9aa5c07cd0410ff03be4e7b36899666d6c29d9b3c4d4c2",
+      "tests/test_blender_version.py": "31d61a566d2439b064b0c2d645b563e6828920cc67587952dcc2da8705fe61c7",
+      "tests/test_bone_spline_roundtrip.py": "3904f80aaa5ae9a664746eff20d9609071c1bb4dad12089f45ec5f7b536b9845",
+      "tests/test_build_mesh_instances.py": "86d07cc8fce492562d5d3bc10a0db9da2544a4254c6b8949aaf65183363ec82f",
+      "tests/test_build_mesh_smooth.py": "6bc9f1b1716e62c8187b2f46bb9390aa8b23287a5d4b345bd620e226723bf570",
+      "tests/test_build_pixel_engine_blend.py": "fa445e3958dbeb29d046d7e4f5da6ce0ec8423028516486b81d7019deb309615",
+      "tests/test_compose_cameras.py": "9d0916b695c39ebda5be9682e22754c0734b50d1505b06c4e61d0f9164567ab9",
+      "tests/test_compose_dedup.py": "7a2f8587f7a35e59f9922edc8c5ccf7ed216a0a49f3b8eeb870c14124526c6fa",
+      "tests/test_compose_envelope_consistency.py": "da9b83caf152de3c78cbeb4662344c6bd6ffd7053b8ec6892a79a932a1b4e1fd",
+      "tests/test_compose_envelope_split.py": "2ec0ed7bf98e47962c1c55523ce1722cbda430a6c62b4306b22b26c915fd828a",
+      "tests/test_compose_ik_pole_flip.py": "544213bac7acffb52ceee4161213048f7333e42bb7a6178bafc8e59933fc0019",
+      "tests/test_compose_material_anim_alignment.py": "8763d2b9fecc4d1cb263eb0b5dde30303b5c4df582f1b5f54fde54e51ab36a7d",
+      "tests/test_compose_multi_model.py": "b73362b841ea4f9829ef6e4148cf21fb7c69740a152b6a3d131a61250332a1d6",
+      "tests/test_compose_particles.py": "136aac7f15ed6fe75b56713a20230a208856f262bae15c98ba40bf07b5b0ce1c",
+      "tests/test_compose_per_frame_aabb.py": "4e12690bea1acb55b2b8dc52947e93e9b81ba7a04409bdf069601e5991ccbe4a",
+      "tests/test_compose_quad_primitives.py": "cb7bc5fcbed587fc893dc30cdfd671e43dde02532a014f251faaa7e18b8a68da",
+      "tests/test_compose_scale.py": "179eb765e3479bb1135386f72c8e1ca9dcbd6049e9fbfd98d515a25c1efc7cdb",
+      "tests/test_compose_scale_aliasing.py": "49dd5f200955dc0457778d5501fc84b2be2254f2cc1305ca031543b04a1036ad",
+      "tests/test_compose_single_bone_parent.py": "6f72f7aab76e15de1c9f876f1431dd6433c3606e70ed0b11cd103fffdce32cd5",
+      "tests/test_compose_texture_animation.py": "ef232a1b66a734c25721349d023beaec6adf594fab7440de5807f1371488c849",
+      "tests/test_compose_tristrip.py": "a240103ef82ddb0e5d664066564c3e779ae9460f8d00b765b3972d95643f9d7b",
+      "tests/test_dat_builder_envelope_order.py": "1dee46b0387f70f0c515a5395586f1ee74a70133151316cecaa51d899ef03cdd",
+      "tests/test_describe_action_selection.py": "b1409984f1acb9b898ec79b423467817683b1214944ed819aab19e3812f23c5e",
+      "tests/test_describe_anim_slot_names.py": "d7263dc69e30ae5a47c74db9be228333c8b4c0d48736d085fee6df9c81df1077",
+      "tests/test_describe_animation_no_objscale.py": "f8ea1be120f970041605bc43a5c306b644940d48979a92ac6e59cdc402f18a25",
+      "tests/test_describe_bone_anim_end_frame_off_by_one.py": "c7c1b59b2fec04fc71db602f99aa5d7b4e8ef951fa0e018aec1c8c9115edae73",
+      "tests/test_describe_bone_anim_euler_unwrap.py": "3eaaa00315eb7fadfc810512cf079f1558c6a90952e186551b4040b89eb20947",
+      "tests/test_describe_bone_anim_frame_range.py": "4d0f9d5d3af59365a1ed364be82c7df54997bb90865e9a11c47cd261cb51d071",
+      "tests/test_describe_bone_anim_gimbal_continuity.py": "b652b8836be81128afff7e372fd08dab19591a0ab762479628a7b67d42fe941f",
+      "tests/test_describe_bone_anim_rotation_mode.py": "29d3ed7b4391096a4cac428f4314df4bc97128e5214c5f0ea02c9cd33b6b62f8",
+      "tests/test_describe_bone_anim_slot_order.py": "feeb1c925150727d0f9b293afecbdda48791259a4d8fd843c5e5fd2a3d91add9",
+      "tests/test_describe_bone_channel_decode.py": "23d12ebd13efc7b79a57bc53f873819c0a0fb58dc5b5bdd8697f9c5a2166c16e",
+      "tests/test_describe_bone_track_helpers.py": "3c47c722a65a3cb462c48036d30e4b16349ccfbe7297c3dd97be5ce53a57a67f",
+      "tests/test_describe_bone_vertex_symmetry.py": "3f3c985902ff85a115bc52f793d23efd31ae515c451770ac92d2b3d369d99715",
+      "tests/test_describe_bones.py": "64de92595ab59edf81e8ad2e36ec03cb0cda94f7cb34d7998983c3bc7e4e49b3",
+      "tests/test_describe_cameras.py": "b0d5438e7c9a12b4ea291ecd6dac7317cc87e2e06a388fbdfaf692e38b6ccc82",
+      "tests/test_describe_colors.py": "dc789ab201b646d9bacfbb0364028b952152de534477c1adc0f9f56c844e6b04",
+      "tests/test_describe_envelope.py": "f7b934c0dd43a0751f0b19239964a79f6b618ef0eefaaa7e68228a45e57ee0e1",
+      "tests/test_describe_keyframe_handles.py": "4418ec69809db428caa50b7b5f8037aa99c9b41073c5ca53bd0cce2c9e4c8ba4",
+      "tests/test_describe_lights.py": "92a8e26ae6b718b412d83c35f5641e93bb93868575badd472828efc1224e4ee9",
+      "tests/test_describe_material_anim_export.py": "7aeaa9de15e6e7dff2844121adf87fa9224c88493a4ed63b9e86fdacd141e88e",
+      "tests/test_describe_material_animations.py": "b6de8e1b46991d9aff3e7735aa522ebb15604c8b9aeac296a76db16cd70f0b26",
+      "tests/test_describe_material_lighting.py": "d0aa13df33fc93cb8392085e8b860a9715143bc193fa1bb0efc4419027877f3a",
+      "tests/test_describe_materials.py": "b71eda3e0513eaf44695dfe68bde159bafbaa2ec8a009f07fad76493f575453e",
+      "tests/test_describe_meshes.py": "60c7d2b232646de4b7f427ee0c8582548b3c024594409193cb05bf8a3eeab114",
+      "tests/test_describe_normals_export.py": "90bc613cc5ea871a4fc3595249e5f47f65db4ff1ca5a88b15b2e4fa04ec92a1c",
+      "tests/test_describe_parent_bone.py": "fa74d1b3d29c03a22bab2abe130a8fb6e705e0a3a77ca5e218c8676117f2e8d6",
+      "tests/test_describe_texture_per_axis_wrap.py": "94dcd26406725f0ac14a7a942d75a0c4ccc02997990a103d2a3cf8335003d43f",
+      "tests/test_encode_channel_opcodes.py": "9fe0bd3268714cae041466300133f91107473754020e17c70132cd532eb46396",
+      "tests/test_export_plan_lights.py": "6fe9bf288dfbe270b94cd1cce58f949765568d89fff904b85cbd1ee68dda955c",
+      "tests/test_export_plan_self_sufficient.py": "bbf2db8d2b473f8d5a65de5455d21af42e9a7c954b259c24c19a541651ea3b62",
+      "tests/test_exporter.py": "3e63100ca67b28915bb2a36e5d144fb05183a3f9d5dfad68b1745dd770fa8bd3",
+      "tests/test_extract.py": "f6eaf0b65701ab649ce6fcb40d05e064a60073cefe0df74dfb33944a2fce8dc6",
+      "tests/test_fix_near_zero_bone_matrices.py": "43f0e8fd0048b76ba78190eb2f57935e4c427158112aab1ae5abff9fc6ca506a",
+      "tests/test_fog_roundtrip.py": "e31106bce381bd3749dc01ab7694bdda9b371c082dcfd578d33006ca0ad6ac68",
+      "tests/test_frame_roundtrip.py": "7dd0dfbc47175428cdadad24dc54671bb1c4f6173d41da6ceb2ddad7433a3205",
+      "tests/test_fsys_writer.py": "2ab1aa930e195281695cfde9d99cd3af0020b66180cb897140da91f00e955f54",
+      "tests/test_gpt1.py": "d21e87d0b96bfad39eeaa31d355c07e71ec8b5ab04fb4c30a4329eee3312be41",
+      "tests/test_gpt1_assemble.py": "ad62855644abe118b90b9814bc63455fb772aeacc8ad109124481fb2fc4d98eb",
+      "tests/test_gx_codec_numpy.py": "55950d3dc86eca0ac054d0cf0091c117a0655a2553d6640e7179a115624d11f6",
+      "tests/test_helpers.py": "6c0f533364fe476841e03feea6eb149bb1bdc78b5bec590b2b03840104bc53c4",
+      "tests/test_ir_types.py": "a1dd45f4fe7d31f4aca3e526d1d314ae6de36410692e78daabad807fae099825",
+      "tests/test_kirby_data_group.py": "0a2f421ae6042b2088d7da71c356e8a86f5916d82486b7e3d65c0d30b1db79aa",
+      "tests/test_light_animations.py": "cc5c12e4a291c0e5d51b3892273b99d92cde74f996d01d79c8a14075fe109a91",
+      "tests/test_markup_field_type.py": "16a8fae5ac2594d8ee094dc5cf3db0559ed1f8ae98b72e5def15877d98677402",
+      "tests/test_merge_meshes.py": "2edcf67803ed7f6c79d3a216c85116c8df1159c7bc4f6ea97ba7e378fdddd5fb",
+      "tests/test_node_parsing.py": "6041f3c821d74c9ba523ebda76d56e7359be040754d1160d4569c90488d7f527",
+      "tests/test_particle_opcodes.py": "6685299e6562665bfc8654f18283101eeb5d640304bc36784dbe0acfba012aac",
+      "tests/test_pick_quantization.py": "de585d8c72d6e589acce738dadf43a7bc5093b742da4557ca51643c305f0c84a",
+      "tests/test_pipeline_stubs.py": "709714670ecca7809fc6dec4a298c3846c22b65fd3ee8f604755207a08224743",
+      "tests/test_pkx_custom_props.py": "b2a39a86bdb2b8d9de4177626ebb531f34a7f41172a3bb10f514f4aff9808924",
+      "tests/test_pkx_header.py": "726a460cc336e50b33cb548f638b79a807725649f8a7df62aa9548435dd1dc2e",
+      "tests/test_pkx_metadata_round_trip.py": "9bba0ecc522d0ae5548c4020222ed2c1ba8bd87a49d20f2ad7febebf4f718343",
+      "tests/test_plan_actions.py": "529552b79cd1230d024debf1474c9062c5bf1e5fd9afa323653e5a5b912068c7",
+      "tests/test_plan_armature.py": "8ba09ca4fde6d30933bf21e4c46e6c3798c6ccd46089e5eaff86bb884a2b0c2b",
+      "tests/test_plan_armature_bone_roll.py": "248ab6e71721a69cc0e4daadcc8e47a6a54c1044cc5380b10f4ad45d62f5c0f3",
+      "tests/test_plan_material_color_chain.py": "3c5ce635d37ee6a8954b9e01ae102ea85b36977214e019ba091c824dfe172531",
+      "tests/test_plan_materials.py": "b8acb7c016fc94b540730f762714e8c7a71a6578824e423ae15fbb05da31463d",
+      "tests/test_plan_meshes.py": "268eccb748801c6c7d11e917a66132a06dcb0030379e33f7ca36b58ac5cedfed",
+      "tests/test_plan_round_trips.py": "e26f323dd2f2c5a6cd57cea24eb4efe0f0c098d6379e25a550bd258a6ab8a540",
+      "tests/test_plan_scene.py": "00bdb110010ca435b9bac6a3b2c53342dce167aa917ff6f4c35ed8b0412b62e3",
+      "tests/test_plan_socket_identifiers.py": "57ef331f38b0ca6ca91dfdf03342a5840c740469aa8740f8adb35b02b40e00b5",
+      "tests/test_post_process_bake_children.py": "afd92c45eb06c230c00ad8257292e1670f0a40cfb44085e45fbfeba04109c9eb",
+      "tests/test_pre_process_fsys.py": "9d08f360c7f41c640f9925d5e2718f259e082ab6545b934e5d94d1f3516b3f13",
+      "tests/test_prep_default_light_directions.py": "7c253dcfd730746b351089d67f29b1aac51eb9189b490658a26b9dc05698f6b3",
+      "tests/test_prep_get_action_duration.py": "60a00020033dce31c21f30cb44679e2d4d94e4000508cee1a027d1005552310e",
+      "tests/test_prep_root_orientation.py": "ce36ba3e0b03313bdb1cd08a744314ec759457c3f54b0b851a23ee317bfb2007",
+      "tests/test_primitives.py": "5ebc18e975e2ccb5166a55be08bebcd2c3c6880f111f49bae8827d6ff4215ca9",
+      "tests/test_refine_flags.py": "9fb23da9e75748233946229cce1f4a42916cf7ef7a20c1434fffac9077d74526",
+      "tests/test_route.py": "3ad7852a7210e73064f98401d8787a482303145afbedf22d15e4564c7bef34ed",
+      "tests/test_serialization_order.py": "009ec5d71232bfae7c4b0fcd0d82924490e7edf8c09b5e62f370bc5d0db7f928",
+      "tests/test_shiny_filter.py": "efca8921a002652c3985276f56d6e6e3522b7a7a1b05b4770ff3cf75a1af4bc8",
+      "tests/test_sparsify.py": "228b7a501150fedc482d8e16a26983a2a1c4d8a53cc2dc8e7d3cb8a3b361ebb2",
+      "tests/test_sparsify_constant_two_keyframes.py": "48baba6ae35034ef950c8f1745a9ae0586fe8e92483521b9a87bf6b1e8e435c8",
+      "tests/test_stripify.py": "cbfa4001baa590d3f27638ab8021d4261691bbae41545ac74bbfa3a7b3e49658",
+      "tests/test_texture_animation_tables.py": "01c1807abbaa09dc2be4c2098671170330b58f25ce48b52834eed0dc3240fd6f",
+      "tests/test_texture_encoder.py": "982f14162607cddae6c665aa281b0cf8d7c7d28c7e4a2dbb622b247a90ea2755",
+      "tests/test_write_roundtrip.py": "992388a3a1bb996943a0a0ebe4add00adba5aed1ae628c8fbabc399245d25fee",
+      "tests/test_wzx.py": "ccaee5f46c21a0b5f8ec3bae2109b1fd172496e5a6e4fa6f04d651a28c08665d"
+    }
+  },
+  "art_approval": true
+}

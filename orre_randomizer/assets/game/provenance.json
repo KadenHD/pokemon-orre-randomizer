@@ -1275,6 +1275,618 @@
     "models/portrait-variants.json": {
       "bytes": 14643,
       "sha256": "a790dbe0f578b95c4012a478dca416b7bf7d9fa1083a3b7b5a18d74d4e46ffe9"
+    },
+    "fonts/NotoSansJP.ttf": {
+      "bytes": 9589900,
+      "sha256": "c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f"
+    },
+    "fonts/OFL-NotoSansJP.txt": {
+      "bytes": 4388,
+      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+    },
+    "fonts/manifest.json": {
+      "bytes": 1686,
+      "sha256": "8dc5ecb1785fd6db7b80a6eaad6ca1aaf851c7edb2f206181edd4460fd8e124b"
+    },
+    "models/extra-portraits/extra-portraits.json": {
+      "bytes": 1464445,
+      "sha256": "1bf2dbf2c1352a660ffafaa27063666900d34d1f4c58d713033fe1926d424a2a"
+    },
+    "models/extra-portraits/colosseum-form-385f-x4.png": {
+      "bytes": 79280,
+      "sha256": "3024cae8b7a3da4427aa686b2cc39f3aa03608df7b03f9847a7c124e95715d02"
+    },
+    "models/extra-portraits/colosseum-form-385i-x4.png": {
+      "bytes": 94709,
+      "sha256": "10c88983e852281d174b09ca8b7dae4be233e2b048efbcb9d0bbccb2089d6909"
+    },
+    "models/extra-portraits/colosseum-form-385w-x4.png": {
+      "bytes": 91880,
+      "sha256": "4dd3bcb6ed98afefbe4b95879576e82e6d4853c4e43ded8bc9847bfc3a0b8324"
+    },
+    "models/extra-portraits/xd-form-385f-x4.png": {
+      "bytes": 66175,
+      "sha256": "8fcdf0bca25b8aecbd6598ccb8ffa540196d1d8818e9d46ae41cf9b662bc63cb"
+    },
+    "models/extra-portraits/xd-form-385i-x4.png": {
+      "bytes": 83520,
+      "sha256": "e378dbb3eb3f8d5fbf33a5965208d41ce139878a0b1e9bcd252f3dc1d4f1d8a5"
+    },
+    "models/extra-portraits/xd-form-385w-x4.png": {
+      "bytes": 82948,
+      "sha256": "d282ba23ea696f2d796a19d3054e05fb9df95c8ddcdf43f0e7c9ce3074f3fbcc"
+    },
+    "models/extra-portraits/xd-form-410atk-x4.png": {
+      "bytes": 49827,
+      "sha256": "8e9f752f582ee40bde41c2a63b077ffeb11aa008bf5ace427dff39b1f655b110"
+    },
+    "models/extra-portraits/xd-form-410def-x4.png": {
+      "bytes": 56497,
+      "sha256": "9bffdc899afe539d815b02f4bd2e6c87dd253a7dbc0d46769d669d8366aaa9cc"
+    },
+    "models/extra-portraits/xd-form-410sp-x4.png": {
+      "bytes": 56131,
+      "sha256": "41439fe2cc434d034bcfd8c4816370baef0b8021205382c7d154fab068853f5a"
+    },
+    "menu-atlases/catalog.json": {
+      "bytes": 1353668,
+      "sha256": "645445ec7e30ed83f13976ab80dc744cf73077448011928ea4cdd7a7e81e0687"
+    },
+    "menu-atlases/vector-outlines.json": {
+      "bytes": 585480,
+      "sha256": "1b41b184db19918840bf3717d1aede21bfc7c8c5e0176080bc7396a7967b4e20"
+    },
+    "menu-atlases/bingo-type-cards-background-x4.png": {
+      "bytes": 226411,
+      "sha256": "b52cef93320387577b22aad4638f69456e53536332db7cddf1d04f159f61a783"
+    },
+    "menu-atlases/bingo-tools-388-captionless-x4-v2.png": {
+      "bytes": 338167,
+      "sha256": "dd2ba1d92fbf93ef5fc5897ee2491e4b244431c95c8c58832e90ad8a5765d243"
+    },
+    "menu-atlases/bingo-tools-342-captionless-x4-v2.png": {
+      "bytes": 335561,
+      "sha256": "2b9fb433df6a3e0db3c3f59c61a8deaca8a212da37c9e5524f7107ee67a107df"
+    },
+    "menu-atlases/xd-vs-controller-x4.png": {
+      "bytes": 534192,
+      "sha256": "7c2e94d409fa3beff767a15b4e19cb51d41a1a4985beb72c61e217b26a71bba9"
+    },
+    "menu-atlases/xd-vs-gba-x4.png": {
+      "bytes": 547403,
+      "sha256": "a4d83c5356b429b4ffea3e86b26366a0c6162027c9edc875249153b6192141c4"
+    },
+    "menu-atlases/vs-scenes.json": {
+      "bytes": 38087,
+      "sha256": "4e745ea92d2814b0fae105cb34757e72195a5e00b054898c1e322f6a7857beb8"
+    },
+    "menu-atlases/colosseum-jp-common-hud-background-x4.png": {
+      "bytes": 256366,
+      "sha256": "3b6faeb1dab38c1173aca8666c69da78379aa29d87d8d66d3e83755c0e0e9ca5"
+    },
+    "menu-atlases/xd-sheet-captionless-background-x4.png": {
+      "bytes": 73937,
+      "sha256": "43c8f3b2a73f233e7d3f16ce2b2745eede64d5526950c5868a2019d8200efc91"
+    },
+    "menu-atlases/xd-sheet-jp-captionless-background-x4.png": {
+      "bytes": 72938,
+      "sha256": "d2e9018c67fc26bd31e97a7f57bc425d3c7323e1819ded221786ff3a8324919a"
+    },
+    "menu-atlases/battle-background-14966fe8295cf04e-x4.png": {
+      "bytes": 14802,
+      "sha256": "14966fe8295cf04e111dc6328c97ebc3930eb86cd2686c0e904efb94fd13a185"
+    },
+    "menu-atlases/battle-background-09dbb27db66a5a44-x4.png": {
+      "bytes": 169510,
+      "sha256": "09dbb27db66a5a44233019fe6636bb51bbc087c434db19d8af5762ed7d6d8eb7"
+    },
+    "menu-atlases/battle-background-f253901238e983d9-x4.png": {
+      "bytes": 36666,
+      "sha256": "f253901238e983d9e17f095daef392fe9b8e77d4f84a57b21e6a8ee50ea5fcea"
+    },
+    "menu-atlases/battle-background-5029b66d5235a750-x4.png": {
+      "bytes": 158881,
+      "sha256": "5029b66d5235a750107ceda3f5a0610e091dd0988a121035a712f9efa77dd044"
+    },
+    "menu-atlases/battle-background-45b2daedce10c8eb-x4.png": {
+      "bytes": 36321,
+      "sha256": "45b2daedce10c8eb1c2467178dd8407f90d4a28da4233e09581ee1bdd94bfc1e"
+    },
+    "menu-atlases/battle-background-99b66c6c95611dfd-x4.png": {
+      "bytes": 36590,
+      "sha256": "99b66c6c95611dfdef88eec9124aceb8aac631ffaa31354ccb48cea7e686fac7"
+    },
+    "menu-atlases/battle-background-709077726db1aa4a-x4.png": {
+      "bytes": 173555,
+      "sha256": "709077726db1aa4ace7b793f3f22a34c907a0c01790b592e00487b2c03870d85"
+    },
+    "menu-atlases/battle-background-1a8dc276b2a28a8a-x4.png": {
+      "bytes": 36566,
+      "sha256": "1a8dc276b2a28a8af4cdb1310ea48e0c37e268f08e7dcd4d97d29c5eb90ab2a9"
+    },
+    "menu-atlases/battle-background-38638d6a87631ffc-x4.png": {
+      "bytes": 36394,
+      "sha256": "38638d6a87631ffc8701fd9ebe43e9b7c8aa21600b50bbec19617cee59dbef8a"
+    },
+    "menu-atlases/xd-jp-pda-main-background-x4.png": {
+      "bytes": 145914,
+      "sha256": "601225b2c8191ac795c516ec58617f6489c008eb7ffcda77346e4008dd370e1f"
+    },
+    "menu-atlases/xd-sheet-jp-aux-captionless-background-x4.png": {
+      "bytes": 20120,
+      "sha256": "a61dc5cf14679dc56f70948c60cd7a3bbee83ca65e020f0f41013b28994ac9ad"
+    },
+    "menu-atlases/bingo-matchup-fr-captionless-x4.png": {
+      "bytes": 612340,
+      "sha256": "f3dae9776f3adf0413f098cadab7700bb18665a8a679ea121730300ec1537d2f"
+    },
+    "menu-atlases/bingo-matchup-de-captionless-x4.png": {
+      "bytes": 611922,
+      "sha256": "d1bcfd1d63699e1df07aa3c749156c3de8d6c5f49234631fe3ec06b7843899f1"
+    },
+    "menu-atlases/bingo-matchup-it-captionless-x4.png": {
+      "bytes": 611828,
+      "sha256": "e335a78194586c4e4518a1a53323907772a9c01c4e6e2287b047108362a630a8"
+    },
+    "menu-atlases/bingo-matchup-es-captionless-x4.png": {
+      "bytes": 612408,
+      "sha256": "cacebe362fd1418cbfd3319781f4a87fcd14feb81b3e0bdff8201bd5c9dc8992"
+    },
+    "menu-atlases/bingo-matchup-ja-captionless-x4.png": {
+      "bytes": 550224,
+      "sha256": "e3af730aeeb48a27e0828c46df1f04e7947dcc8c08adc3e88f1723a502f98d1e"
+    },
+    "menu-atlases/bingo-card-icons-x4.png": {
+      "bytes": 23179,
+      "sha256": "ccf35f3f90859632fcf87296846fb026c35ac6b0b6f1663ba45a4adcae4977b8"
+    },
+    "menu-atlases/xd-title-controls-vector-background-x4.png": {
+      "bytes": 36862,
+      "sha256": "894309aa626a2a51bbf6b97bd9bca6fab280c531aaea1407a96c86c4cab954fe"
+    },
+    "menu-atlases/xd-title-options-vector-background-x4.png": {
+      "bytes": 3118,
+      "sha256": "948e245465dc8e5be17fb81593defacbe74cc865b35bb2b8404f9147294d20e4"
+    },
+    "menu-atlases/xd-title-jp-vector-background-x4.png": {
+      "bytes": 17170,
+      "sha256": "f6055fe95cfaa9e5b0450ee2fad308e91019ce9766eb1e41b1e43dbf7ffeba85"
+    },
+    "menu-atlases/xd-pc-hp-captionless-x4.png": {
+      "bytes": 2745,
+      "sha256": "a58e9c5a677efa763b1e8ddb4adb55aaeb25c4a977effb9a0b406b1ef1fb9274"
+    },
+    "menu-atlases/bingo-pokemon-band-x4.png": {
+      "bytes": 771883,
+      "sha256": "17261363f5d2ce96d36060fd520e1d35168cd6a2ede9e6ac0dd2a19b18584bdb"
+    },
+    "menu-atlases/bingo-scenes.json": {
+      "bytes": 123589,
+      "sha256": "bdc90a42b788068d388f338e4b2ba64cdf7069fe4e97d01048d2e27f178b501e"
+    },
+    "menu-atlases/colosseum-equality-draw-x4.png": {
+      "bytes": 217649,
+      "sha256": "5d34917e795ed3181fa06092acfcb61d05bc84958e00423c0fa3004f59a2280f"
+    },
+    "menu-atlases/colosseum-equality-egalite-x4.png": {
+      "bytes": 192078,
+      "sha256": "4a794eaa3692b8dc1e0bc4ffdf58fe2e26791bdf84184f0b7a23ee7c7aa5c3e7"
+    },
+    "menu-atlases/colosseum-equality-patt-x4.png": {
+      "bytes": 124509,
+      "sha256": "e7ded33fd819e5db5140e9c4482f7af3e6e267ea64855e3ed20c68c845507882"
+    },
+    "menu-atlases/colosseum-equality-pari-x4.png": {
+      "bytes": 147737,
+      "sha256": "a44e9c9134c94005240f997092bbbaaaf5bb6602dc00785083caf3e3037336b4"
+    },
+    "menu-atlases/colosseum-equality-empate-x4.png": {
+      "bytes": 185707,
+      "sha256": "4eabaf52ae65768439c4921d5d673a4441cf87fccd7a3761f37cd61568909aa2"
+    },
+    "menu-atlases/xd-pc-pal-front-background-x4.png": {
+      "bytes": 314811,
+      "sha256": "0a99a90fa1cb0d01ca8054b80e606972f0ca96ea387f3aa95842a411c4dd0af7"
+    },
+    "menu-atlases/xd-pc-side-panel-vector-x4.png": {
+      "bytes": 34284,
+      "sha256": "841a0fffd55961d874ceaa94f98bd50771c5dab9943d735432c28eefa9b82825"
+    },
+    "menu-atlases/xd-pc516-common-background-x4.png": {
+      "bytes": 122318,
+      "sha256": "b6b47dc9d4209c84347f77eeca31dcb9ae339c8423e26a7358d5a88e5cade51d"
+    },
+    "menu-atlases/xd-pc516-jp-background-x4.png": {
+      "bytes": 110011,
+      "sha256": "31059c608c1ef280fc8c10aa3d09fcaae39439bc57694c53c4b1c07371d781c7"
+    },
+    "menu-atlases/xd-pc-jp-captionless-background-x4.png": {
+      "bytes": 16845,
+      "sha256": "5fdde061c18e9b24f97f9ac59f2b702204b2f8468c48d60e6a3e0366cfcf76f1"
+    },
+    "menu-atlases/colosseum-core-source.json": {
+      "bytes": 82439,
+      "sha256": "91147b232f22fcd9f55c7253d23b31384ddfa2228387bb41ca3adf2fd78f1b17"
+    },
+    "menu-atlases/colosseum-core-4eea52d196ec79cf538d-x4.png": {
+      "bytes": 244874,
+      "sha256": "4eea52d196ec79cf538d888df2c3a530e98f6d1002727ebf42eaeea0e665c170"
+    },
+    "menu-atlases/colosseum-core-2c92eec0c84e42202e96-x4.png": {
+      "bytes": 245089,
+      "sha256": "2c92eec0c84e42202e96c17cb4648e76cc2f66c42ab5a2fe08c854f20369fadd"
+    },
+    "menu-atlases/colosseum-core-d609140ef9fe017d64d0-x4.png": {
+      "bytes": 247812,
+      "sha256": "d609140ef9fe017d64d06acef7ee9c2dd97c847a8ae859ad3a1ea4014dcfa4ae"
+    },
+    "menu-atlases/colosseum-core-8c598b672ae022a200ca-x4.png": {
+      "bytes": 246424,
+      "sha256": "8c598b672ae022a200caccec84df4adfd1d88992ee0616d922316e4385042018"
+    },
+    "menu-atlases/colosseum-core-da9935264e3714ec6b0e-x4.png": {
+      "bytes": 245045,
+      "sha256": "da9935264e3714ec6b0e36dde12ac534db7d2aca8a36fd3773b744a11363157d"
+    },
+    "menu-atlases/colosseum-core-e698aa0408128f958698-x4.png": {
+      "bytes": 360207,
+      "sha256": "e698aa0408128f95869860c31c93b8e2e801544414ec7e133916621592809d42"
+    },
+    "menu-atlases/colosseum-core-b40b0aa2ca35ad4d4585-x4.png": {
+      "bytes": 365032,
+      "sha256": "b40b0aa2ca35ad4d4585929767a1d1229bac2d1d65ad1d2aaea8fa1d16944077"
+    },
+    "menu-atlases/colosseum-core-32816f2ecf5e20ef0933-x4.png": {
+      "bytes": 361774,
+      "sha256": "32816f2ecf5e20ef0933cc0cfe2ed27be562166387d6520f68c6d86d17738626"
+    },
+    "menu-atlases/colosseum-core-9780d7f0e3d0c19fa6be-x4.png": {
+      "bytes": 368618,
+      "sha256": "9780d7f0e3d0c19fa6be465d167a504e50c3ebf07ff51ad3e321b056eda46798"
+    },
+    "menu-atlases/colosseum-core-0f63cd0b272caefcf77a-x4.png": {
+      "bytes": 368905,
+      "sha256": "0f63cd0b272caefcf77a896c10b0764832b4407ad401560c82c4608c78e1311b"
+    },
+    "menu-atlases/colosseum-core-40216d2fd19a82934b2a-x4.png": {
+      "bytes": 8868,
+      "sha256": "40216d2fd19a82934b2a8397462e5379b84839cec1d72d86747f04bc51f77ee3"
+    },
+    "menu-atlases/colosseum-core-45f7a3d81ebf87673553-x4.png": {
+      "bytes": 69878,
+      "sha256": "45f7a3d81ebf87673553de57e9181513a21a4ffd0b8db3f664e919e789963073"
+    },
+    "menu-atlases/solo-menu-source.json": {
+      "bytes": 295535,
+      "sha256": "a3bf132c3c85c5bcb3c9a655cc074d2113a4ad6522d23d7587f7ab64c55922be"
+    },
+    "menu-atlases/tex1_640x256_9aafa27f10780d44_6-x4.png": {
+      "bytes": 382323,
+      "sha256": "177d2a848e82e2ec77493a68e0e345f0092b85a363f92f99049a07a7299916b9"
+    },
+    "menu-atlases/tex1_640x256_366eb7523a1e8934_6-x4.png": {
+      "bytes": 341018,
+      "sha256": "a97fad2337432be0c0315d870600282bb04939aea37903e453c8a13885ef5098"
+    },
+    "menu-atlases/tex1_428x122_a6f3df40c7d6d3b1_6-x4.png": {
+      "bytes": 281385,
+      "sha256": "8b45eda5a49f9a4d725a81723fa3fa38a686eb452c1d06fb03495128dcf37b6f"
+    },
+    "menu-atlases/tex1_520x190_715921f91619f10e_6-x4.png": {
+      "bytes": 234216,
+      "sha256": "8789addfb96ca21f92362c6ed75e521838c1fa22535a8be2f2d292315a53b13e"
+    },
+    "menu-atlases/tex1_558x601_fcc3bb925815b595_6-x4.png": {
+      "bytes": 1114250,
+      "sha256": "78c1d68122d1e5201fb77a314321623a2e96d5e69adaa7360ff42ecd3178a7e9"
+    },
+    "menu-atlases/bonus-menu-source.json": {
+      "bytes": 500468,
+      "sha256": "d34f26920459e502b2d6f18129006cccf25f728db559824b6b422fcdec7b68f3"
+    },
+    "menu-atlases/tex1_320x195_b5dc0267fdd05e5b_6-x4.png": {
+      "bytes": 200829,
+      "sha256": "186b6b64e9472eeac28ec050ca255f955db51aaaaa47b586bcb235eb7fd85391"
+    },
+    "menu-atlases/tex1_429x153_b14f1a8e895aa8d9_6-x4.png": {
+      "bytes": 176142,
+      "sha256": "2415c2461a0909492a893284245de32e1344ad6a71a98ea0430a8a6bde959c95"
+    },
+    "menu-atlases/tex1_496x202_4ac3f1863978b6df_6-x4.png": {
+      "bytes": 461552,
+      "sha256": "1bd5450ab736f7de2c3190a25767026f408d4a3ef294c0d8a6d40f49f7a966ba"
+    },
+    "menu-atlases/xd-sheet-pal-aux-captionless-background-x4.png": {
+      "bytes": 13216,
+      "sha256": "d7d8bb2e65fd12a026f1aeb59382e862b67a0107f5be54e77a7c11fc30710ca1"
+    },
+    "menu-atlases/source-xd-link-controls.json": {
+      "bytes": 56164,
+      "sha256": "e9530594d1b2a5d610fc33dd7f5f393cbf8e0b8f573487af4caf4e81493676ee"
+    },
+    "menu-atlases/tex1_249x53_fc52a6a60f2a06e5_439274954ae7a762_8-x4.png": {
+      "bytes": 39501,
+      "sha256": "b65ea19d11d7569140f384a0bffaef0bc567ef467ba612f959f60dbd04967ea3"
+    },
+    "menu-atlases/tex1_165x36_5c7018481930ca16_21294088366d8839_9-x4.png": {
+      "bytes": 92041,
+      "sha256": "87c595fc483b8bba2a492474acf572257960e14bd5cad80ada91c5f238ff3364"
+    },
+    "menu-atlases/tex1_310x105_3675ab08ff7642dd_dd75b0b77148fe5e_9-x4.png": {
+      "bytes": 29893,
+      "sha256": "5b20003d33befb6c85358fccf776aca185641fd469b2aac12e343a32beb7907d"
+    },
+    "menu-atlases/tex1_310x105_19d8b848eb4c14e4_9acdecb3d9c173b8_9-x4.png": {
+      "bytes": 26206,
+      "sha256": "ab726377b4571628a7a9c325f20d707edecaa52a96bcac77bbd6732a7ade8f1c"
+    },
+    "menu-atlases/source-xd-link-device-variants.json": {
+      "bytes": 15705,
+      "sha256": "553d84d170f9fadd442f44d780ae240773b084044ecf112a876d2a99962f0aa3"
+    },
+    "menu-atlases/tex1_165x36_a678af16e066aa82_c4b0fcbacb3600db_9-x4.png": {
+      "bytes": 91837,
+      "sha256": "dd3ed421eda65aa3c07e4f9c1e5ab75929a379a21051a67be3b11e2fe6a69bb9"
+    },
+    "menu-atlases/tex1_152x36_a225c5de88deae5c_fa9c248b623fa722_9-x4.png": {
+      "bytes": 91053,
+      "sha256": "fc12af1ecd0d77558e36f4d7d94f2c98d2ecf3db82a56d0f7ee557fd44e6a88e"
+    },
+    "menu-atlases/colosseum-regional-sheet-source.json": {
+      "bytes": 2091828,
+      "sha256": "2c078ea9bac4fee86b2ed2688d3985a0eca56dacb78d6344e6f76ac145e4e811"
+    },
+    "menu-atlases/tex1_512x512_159f00f8f300cc7a_5-x4.png": {
+      "bytes": 1628546,
+      "sha256": "7a6e175df947abd82b85a2413a65e0574cf63acda6288d570e9e03f6bc4dff35"
+    },
+    "menu-atlases/tex1_512x512_677f4dbbd9648a31_5-x4.png": {
+      "bytes": 1198705,
+      "sha256": "64f7dc10ffce77562f0345bfea3a62196ab4ad595e1fce3a7fd182577cf408ff"
+    },
+    "menu-atlases/cb-source-brendan-rs-x4.png": {
+      "bytes": 134180,
+      "sha256": "38b0dbfaa88a026b53db1c932fdc3cec1ec0e1c7c5d4ab54453754e13c33e1cd"
+    },
+    "menu-atlases/cb-source-cb-ui-de-308-x4.png": {
+      "bytes": 96159,
+      "sha256": "2d7c76e2176a9071bde8460df377351dccf5e917208a4b9b293aed3dd42fd25a"
+    },
+    "menu-atlases/cb-source-cb-ui-de-680-x4.png": {
+      "bytes": 431092,
+      "sha256": "62125d13da29d3bedea21ca4699eec7179651d3d6d22e9f5026204bedecfd007"
+    },
+    "menu-atlases/cb-source-cb-ui-en-308-x4.png": {
+      "bytes": 78825,
+      "sha256": "0c7f44459e8a080daa386d34437495628528d055aa947541a4fd717808f3b846"
+    },
+    "menu-atlases/cb-source-cb-ui-en-650-x4.png": {
+      "bytes": 405594,
+      "sha256": "924204cb01381aa2eec32c03b3df828d2a215ad2f54f22a3289ea1ec63669b28"
+    },
+    "menu-atlases/cb-source-cb-ui-es-308-x4.png": {
+      "bytes": 78697,
+      "sha256": "c3b1e0c39bfac994bb0ed5ad1f73336616c1d12d78489b1c7d9f551fa18ccde9"
+    },
+    "menu-atlases/cb-source-cb-ui-es-650-x4.png": {
+      "bytes": 377556,
+      "sha256": "a2babe187843bb10dfa7cb18272eac52495846e1a2b0369c0f05f25417c23ded"
+    },
+    "menu-atlases/cb-source-cb-ui-fr-308-x4.png": {
+      "bytes": 79220,
+      "sha256": "ca4632ee4c69c4d6c64acc5376519c3d195e356165608e86dc57c3bd3516d10d"
+    },
+    "menu-atlases/cb-source-cb-ui-fr-650-x4.png": {
+      "bytes": 370122,
+      "sha256": "a1cd6a46ad4922483ba28b641889a78d45ce20f1fd6931ed31779ce7c986373b"
+    },
+    "menu-atlases/cb-source-cb-ui-it-308-x4.png": {
+      "bytes": 89253,
+      "sha256": "4f538514c1e1be5511ebceedd17efd1835372c3d69b59ea856f9d1a174729f96"
+    },
+    "menu-atlases/cb-source-cb-ui-it-650-x4.png": {
+      "bytes": 392912,
+      "sha256": "777bcacb672470682084a827963a0f27520d89e10f16abb54ec68fb933249c55"
+    },
+    "menu-atlases/cb-source-leaf-frlg-x4.png": {
+      "bytes": 168133,
+      "sha256": "9b4d3db8f4b542a112aca7fdf869f037236b7e15fb94099c72197556a2e54d91"
+    },
+    "menu-atlases/cb-source-may-rs-x4.png": {
+      "bytes": 195454,
+      "sha256": "a1b61009d68ce1225dfe16adc5bcb9d690147ed428eccfbbe3655808f80a4fcf"
+    },
+    "menu-atlases/cb-source-red-frlg-x4.png": {
+      "bytes": 162031,
+      "sha256": "caef16b1645a922667cb64133b7eaef7691cb8ddb8828ebb1efb6031317553ea"
+    },
+    "menu-atlases/cb-source-wes-x4.png": {
+      "bytes": 226446,
+      "sha256": "fe004ecb42f4b608aa2f226fc55a110c603e73225930278aa784d0c8d333ff3d"
+    },
+    "menu-atlases/cb-final-tex1_308x403_72898d618ee11c9f_5.png": {
+      "bytes": 493542,
+      "sha256": "a4fb0d558bce26c85fa43dd4ab11bf743cca713a1a3d0c94f027edb17a67f598"
+    },
+    "menu-atlases/cb-final-tex1_650x254_275cada060c5a128_6.png": {
+      "bytes": 1515786,
+      "sha256": "17f3ff5f5e0b507e404980e01dc82f4d9f27df30279d7e2d0718c85ff942fff8"
+    },
+    "menu-atlases/cb-final-tex1_308x403_6b937ada06b0b39d_6.png": {
+      "bytes": 494002,
+      "sha256": "ba476cf14824a3b1c94440f4d57b7d9bbc2a6880d1412aa5ca0b8b6db06b420e"
+    },
+    "menu-atlases/cb-final-tex1_650x254_2cfeeaddded2f2ea_5.png": {
+      "bytes": 1476760,
+      "sha256": "9698a944b5f16ecf838386dd69abd7ecbe9b14310f639b7da9ab2d4ac4d19ce8"
+    },
+    "menu-atlases/cb-final-tex1_308x403_d146773c941cc8b7_6.png": {
+      "bytes": 508896,
+      "sha256": "4e6d87af7a751ca3ba86809b7878503d490dc1975141e07845260223f155346b"
+    },
+    "menu-atlases/cb-final-tex1_680x254_b7fc917c96b15fae_5.png": {
+      "bytes": 1539649,
+      "sha256": "b33783a6a3ad0a878b9be1048d1147dc584ed093a34e81caea2fffc9d11d6752"
+    },
+    "menu-atlases/cb-final-tex1_308x403_253cb9d8c4e3abc3_6.png": {
+      "bytes": 503125,
+      "sha256": "95bbb02b7eeecb1ea87a00106ee20fef2660ed1b696ddaec7ef93e83dacba7d4"
+    },
+    "menu-atlases/cb-final-tex1_650x254_a2c00a7229d7e698_5.png": {
+      "bytes": 1493732,
+      "sha256": "c55ef183e66519e84e5819c4576c5b41271b694741598875ac14d6a1f1cd8f24"
+    },
+    "menu-atlases/cb-final-tex1_308x403_573b59af9665023f_6.png": {
+      "bytes": 494083,
+      "sha256": "e4e172df71d442a70771a91b6715bec0119d1759cb560e9b6c800d0c80b77e73"
+    },
+    "menu-atlases/cb-final-tex1_650x254_c1d556f837694099_5.png": {
+      "bytes": 1482945,
+      "sha256": "027b9a52fd2532e92212117b596923afebd5f5052f54e39b54b66a695a7c4aaa"
+    },
+    "menu-atlases/cb-final-tex1_640x347_c35f35511cd5a87d_5.png": {
+      "bytes": 969038,
+      "sha256": "3df2d04d41f370500013fb23123185186eb76e185b5dcf001cbd6f25c85819f5"
+    },
+    "menu-atlases/cb-final-tex1_181x234_1e626183a9a0e12b_6.png": {
+      "bytes": 213852,
+      "sha256": "fb60871f926c4d184e8297c3e140ddd9721f0486371f337c7015809ba6314255"
+    },
+    "menu-atlases/cb-final-tex1_650x254_cee623d7bab42907_5.png": {
+      "bytes": 1043133,
+      "sha256": "912af20b2dd7889378ea177a71e9186fbcd6d29b7c2b64188c6c5c34db3e2f80"
+    },
+    "menu-atlases/cb-final-tex1_380x313_609a9fec58f527f6_5.png": {
+      "bytes": 748413,
+      "sha256": "cdc0f2336e30f0bf47b276adf14b96dccd1c6fe8c2500b2be1e6878a2b0e24d1"
+    },
+    "menu-atlases/cb-final-tex1_329x486_11a0d2c5bb8d7f79_6.png": {
+      "bytes": 334546,
+      "sha256": "51a442108c4b74fb0757db6b59a190a60c089994de23b8d6d046841da0b50c7b"
+    },
+    "menu-atlases/cb-final-tex1_687x202_d334ccd6ae0c97b8_6.png": {
+      "bytes": 1043630,
+      "sha256": "1d5d0d4d1acf08ac588af953a53ba1dd8c88034093a9d85f19bbb78ef5e1afd6"
+    },
+    "menu-atlases/cb-composition-source.json": {
+      "bytes": 608973,
+      "sha256": "cee4067be4bbc7911396f2ea89d0f2c77a455e9ac5ad9e7234f34d4cd2ff9628"
+    },
+    "menu-atlases/cb-portrait-render-source.json": {
+      "bytes": 61792,
+      "sha256": "a8bcd8b4fc0cea843b59c689e18661a99b05320ad8c00becfe8999fa947f3f50"
+    },
+    "menu-atlases/nontext-nintendo-jp-blue-x4.png": {
+      "bytes": 141224,
+      "sha256": "e8467636b4666d8e82e72800075432122aa7463f80a6bd9cd0ea0e33d45d4a6a"
+    },
+    "menu-atlases/nontext-final-tex1_230x100_2e3dce6145065035_6.png": {
+      "bytes": 68620,
+      "sha256": "e8392455b822c9f7bd3932c5e42041c407d0fe3c6350496a36cf855be2cbd938"
+    },
+    "menu-atlases/nontext-final-tex1_78x55_8641347219b4738c_e49796ec497f397b_9.png": {
+      "bytes": 22232,
+      "sha256": "922a3cc1980f8f22ebda8de319c0fe5bfe0e4ecc5b213d8c28ab4fe86a1ac358"
+    },
+    "menu-atlases/nontext-final-tex1_420x79_4a9329fb1490a53c_87b87f25a5a90df5_9.png": {
+      "bytes": 13409,
+      "sha256": "47c2073718c9f86aec6947bb50f4c3c4558921fe5a1e795206d96ef2e451bbfa"
+    },
+    "menu-atlases/nontext-final-tex1_442x207_ac59af9beb1b1d21_e0d5a7e4ae79ebb7_9.png": {
+      "bytes": 66000,
+      "sha256": "a05a0e74ec8e76532fc1450699449ad34b07c7cb115ecb9e95e9d790b4b29276"
+    },
+    "menu-atlases/nontext-five-source.json": {
+      "bytes": 2292244,
+      "sha256": "bbe38e1119b8b8d67c5c3568d47c88fa25153f4457ca832e37ff646c5b17c69d"
+    },
+    "menu-atlases/tex1_426x143_c0ff5b61bf1689dd_eea5745ee927f89b_9-x4.png": {
+      "bytes": 43084,
+      "sha256": "0aa91d80c3cdeb6ae88e791757d06902d52535481a60bd81c0bffd6bfd0b301c"
+    },
+    "menu-atlases/tex1_426x143_97e91c58ba44b63d_773d8dec08af3b39_9-x4.png": {
+      "bytes": 43603,
+      "sha256": "d7a7bfe09431fa403d929ce6a661800ef1c94f7d68bc617ed1de9e88e19e5dc8"
+    },
+    "menu-atlases/tex1_426x143_3643b39504ca660e_773d8dec08af3b39_9-x4.png": {
+      "bytes": 45628,
+      "sha256": "bfda5be8c0ee25e5507b50906fe4802eeccdbc7f854f9dda08952befb7ef0a73"
+    },
+    "menu-atlases/tex1_524x335_30bdf4360510db90_a13094ef302a7ea9_9-x4.png": {
+      "bytes": 353308,
+      "sha256": "f5e9c02b89cdbdbac7795d7effe9a5ba96e9f9ebb8600ec6a4b408c749dc1350"
+    },
+    "menu-atlases/tex1_272x240_761e8d6355a15485_a52e79072ec09a02_9-x4.png": {
+      "bytes": 441434,
+      "sha256": "e2e25fb47f03965a81f46b23e185bfc5d9896e52f2ebf83b2d8157adcf905122"
+    },
+    "menu-atlases/tex1_524x335_5966031994b532a9_f2396a385e7af0a9_9-x4.png": {
+      "bytes": 341150,
+      "sha256": "d8cb36bcc2a7888d23c5e6a566366132ba2dd075ea1f02c592c438332446beb4"
+    },
+    "menu-atlases/tex1_272x240_a947263a6a104b2d_101b97675053f638_9-x4.png": {
+      "bytes": 403548,
+      "sha256": "10e5f85fd9e37557a8f7f9e417c432d97a6fda977cb421b947c6c7d478c7a1d2"
+    },
+    "menu-atlases/tex1_524x335_d55ca82873725291_759f8a9b064ba43d_9-x4.png": {
+      "bytes": 363149,
+      "sha256": "0c6102d1d5afe501ab3b8d5cce16b10d4902a8db563f9b2d8303ebfdee1146d5"
+    },
+    "menu-atlases/tex1_272x240_f8e5ba83f5778551_49c1fc555fa0caf7_9-x4.png": {
+      "bytes": 438757,
+      "sha256": "7d756d7aaff7c23409a9541471025f312d7d2e419c3e36a3a0fdd9141c94644c"
+    },
+    "menu-atlases/tex1_524x335_9926b9f55f7bfb81_f26c8425b8965481_9-x4.png": {
+      "bytes": 346013,
+      "sha256": "1bc99a2d003b45ea6b7f9149f5597326c5202e96e28662230a6c9b792e065670"
+    },
+    "menu-atlases/tex1_524x335_b3fcacb12ba50c39_4946494d43d67965_9-x4.png": {
+      "bytes": 347244,
+      "sha256": "6de2960228bddcd3f3c29b7d773736273e3e681587d0beda446dc6a77bc424f1"
+    },
+    "menu-atlases/tex1_272x240_020bf6eed983b6bf_802bbe2872e5614b_9-x4.png": {
+      "bytes": 436568,
+      "sha256": "e947c7fc38f0adc4ff9a44e62ae7b762837ea6b5d39cefa40ff6bc5f6c767286"
+    },
+    "menu-atlases/tex1_426x143_fef9523ead11e113_eea5745ee927f89b_9-x4.png": {
+      "bytes": 43060,
+      "sha256": "e35435c2373ea7303b4011dc2a7bf7cf6a928be5511bd6dd56cbd72cd39a968f"
+    },
+    "menu-atlases/tex1_524x276_0437ee9d34062c79_2f66923c50ccad04_9-x4.png": {
+      "bytes": 311640,
+      "sha256": "60fd21a0a640332f808b16530b25c1bd6f8aa66094542f729126eb0b24c28058"
+    },
+    "menu-atlases/tex1_295x213_5816fa27454a74e5_49a929713cb97460_9-x4.png": {
+      "bytes": 439905,
+      "sha256": "922d4f491ad59a3652ca950521a3714fc145af637c5d9abacd9df020adab9ce0"
+    },
+    "menu-atlases/tex1_524x276_b6c5886c87490a5c_543760628788f1e2_9-x4.png": {
+      "bytes": 311640,
+      "sha256": "60fd21a0a640332f808b16530b25c1bd6f8aa66094542f729126eb0b24c28058"
+    },
+    "menu-atlases/xd-link-trade-source.json": {
+      "bytes": 2430365,
+      "sha256": "dc92a1234fa36f3820ba9fe68d6252b6a81e9e2b8dc03f570d6b4a82a3f455d0"
+    },
+    "menu-atlases/colo-extra-final-tex1_145x380_cd200a2ce9404b59_5.png": {
+      "bytes": 135949,
+      "sha256": "ca4393fac94626b63b82fc005ae5e195a6509219cfe4c817c2f92dec5d7d92d6"
+    },
+    "menu-atlases/colo-extra-final-tex1_774x139_21bdb2414a9f9905_6.png": {
+      "bytes": 373372,
+      "sha256": "0b750e74a88a123b659b1d84423ab63f5f4a62a5ec27399cfdc6b589368062c8"
+    },
+    "menu-atlases/colo-extra-final-tex1_650x314_be11c506857ff154_6.png": {
+      "bytes": 456528,
+      "sha256": "6319874b093125d56d31dcde7ef7c6f570606745cf1f694394f1fb22dad40f4d"
+    },
+    "menu-atlases/colo-extra-final-tex1_276x574_e778f3201c3052ee_6.png": {
+      "bytes": 1283421,
+      "sha256": "c706ea78186960a0576b4d9f82b618067d92bd27598e17767219fbe7fc9f340c"
+    },
+    "menu-atlases/colosseum-extra-four-source.json": {
+      "bytes": 225816,
+      "sha256": "3d4f692702f3c2278cea6d5823c6d3c3959fbc69b093a8e53fd36cfd5e1df823"
     }
   },
   "additional_sources": [
@@ -1292,5 +1904,331 @@
   "move_descriptions_metadata": "text/move-descriptions.json",
   "bonus_model_metadata": "models/manifest.json",
   "shadow_lugia_body_metadata": "models/fullbody-manifest.json",
-  "shadow_lugia_portrait_metadata": "models/portrait-variants.json"
+  "shadow_lugia_portrait_metadata": "models/portrait-variants.json",
+  "text_vector_font_metadata": "fonts/manifest.json",
+  "extra_portrait_metadata": "models/extra-portraits/extra-portraits.json",
+  "menu_atlas_metadata": {
+    "catalogue": "menu-atlases/catalog.json",
+    "vectors": "menu-atlases/vector-outlines.json",
+    "source": "Sephie Pokemon Colosseum HD V2.00; mikeyX Pokemon XD HD v1.0 and UI SVGs V1.0; declared original-guide analytic geometry",
+    "vector_archive_sha256": "c575a04cb5044a41df620e92557cd6bd5d72fb9c3ad4e726dacf972def262616",
+    "native_raster_upscaled": false,
+    "credits": "Sephie Colosseum HD donors; mikeyX XD backgrounds/vector design; Microsoft Bahnschrift captured outlines; Google/Adobe Noto Sans JP weight700 for Japanese captions",
+    "license": "Upstream images retain their own recorded licenses. mikeyX SVG derivatives: CC BY-NC-SA4.0 with Pokemon-mod exception; Noto: SIL OFL1.1. Game artwork remains separate from code MIT.",
+    "runtime_validated": false,
+    "analytic_artwork": {
+      "kind": "original analytic reconstruction from measured native UI geometry",
+      "families": [
+        "arena-name-captions",
+        "battle-command-timers",
+        "battle-hud",
+        "battle-player-badges",
+        "battle-turn-panel",
+        "bingo-card-icons",
+        "bingo-model-band",
+        "bingo-tools",
+        "bingo-type-cards",
+        "bingo-type-chart",
+        "bonus-ecard-input",
+        "bonus-extension-coupon",
+        "cb-controller-connection",
+        "cb-player-selection",
+        "colosseum-combat-controls",
+        "colosseum-equality-result",
+        "colosseum-jp-common-hud",
+        "colosseum-jp-extra-145",
+        "colosseum-jp-extra-276",
+        "colosseum-jp-extra-650",
+        "colosseum-jp-extra-774",
+        "colosseum-jp-link-connection",
+        "colosseum-jp-link-material",
+        "colosseum-jp-link-mode",
+        "colosseum-jp-link-party",
+        "colosseum-jp-link-result",
+        "colosseum-jp-link-text",
+        "colosseum-party-change",
+        "colosseum-pc-frame",
+        "colosseum-pda-frame",
+        "colosseum-regional-sheet",
+        "pc-japanese-frame",
+        "pda-pokeball",
+        "regional-combat-controls",
+        "regional-copyright",
+        "regional-options",
+        "regional-pc-box",
+        "startup-nintendo-jp",
+        "xd-japanese-pda",
+        "xd-link-connection",
+        "xd-link-controls",
+        "xd-link-rules",
+        "xd-participant-panels",
+        "xd-pc-controls-glyphs",
+        "xd-pc-hp",
+        "xd-pc-pal-front",
+        "xd-pc-side-panel",
+        "xd-pokemon-sheet",
+        "xd-pokemon-sheet-aux",
+        "xd-purification-panel",
+        "xd-quick-battle-options",
+        "xd-title-controls",
+        "xd-trade-panels",
+        "xd-vs-scene-atlas"
+      ],
+      "native_bitmap_resampled": false,
+      "palette": "original declared flat colours",
+      "runtime_validated": false
+    },
+    "backgrounds": {
+      "bingo-type-cards-background-x4.png": {
+        "kind": "real-author-svg-background",
+        "version": 1,
+        "source_sha256": "e1fa53e34270363eccb1e703d5f364d424995a2eb651b53af8ad05af29eb2ec3",
+        "native_dimensions": [
+          578,
+          212
+        ],
+        "source_scale": 4,
+        "remove_ids": [
+          "g8"
+        ],
+        "removed_nodes": [
+          {
+            "id": "namedview4",
+            "kind": "namedview"
+          },
+          {
+            "id": "g8",
+            "kind": "g"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-9",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-4",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-8",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-83",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-6",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-61",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-1",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-10",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-13",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-5",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-98",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-88",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-0",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-48",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-86",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-2",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-2-7",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-2-1",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-2-7-7",
+            "kind": "text"
+          },
+          {
+            "id": "text8883-5-4-3-1-1-8-3",
+            "kind": "text"
+          },
+          {
+            "id": "metadata980",
+            "kind": "metadata"
+          }
+        ],
+        "sanitized_svg_sha256": "7a8619306e3a7cd8a804c44cd047e7258d717de221f023269a19a9f1a5a00f36",
+        "sanitized_vector_elements": 124,
+        "native_bitmap_resampled": false,
+        "raster_images_remaining": 0,
+        "font_rendering_remaining": false,
+        "qt_version": "6.11.2",
+        "file": "bingo-type-cards-background-x4.png",
+        "bytes": 226411,
+        "sha256": "b52cef93320387577b22aad4638f69456e53536332db7cddf1d04f159f61a783",
+        "source_author": "mikeyX",
+        "source_archive_sha256": "c575a04cb5044a41df620e92557cd6bd5d72fb9c3ad4e726dacf972def262616",
+        "source_member": "svg/tex1_578x212_96759d22a973e22a_1b98ad8730ad4fd3_9.svg",
+        "source_guides_removed": "whole hidden g8 group, including both embedded native guide images",
+        "artistic_review": true,
+        "runtime_validated": false,
+        "source_license": "CC BY-NC-SA 4.0 with Pokemon-mod exception"
+      },
+      "bingo-tools-388-captionless-x4-v2.png": {
+        "file": "bingo-tools-388-captionless-x4-v2.png",
+        "sha256": "dd2ba1d92fbf93ef5fc5897ee2491e4b244431c95c8c58832e90ad8a5765d243",
+        "bytes": 338167,
+        "source_pack": "xd-1.0",
+        "source_file": "tex1_344x388_ee5c992f1a89c78e_ed41aa007b9c0d1f_9.png",
+        "source_sha256": "81005a2962556a9db4a7389d7a20ee7dbe6384367da776c9670e1c19b199e725",
+        "background_svg_png_sha256": "e3fad4e5c29b4e854b66a4c542737be7381e0fe04622771743e32af249253fdd",
+        "background_svg_source_sha256": "d8b4a3b1784994aa26dac0b5ace1959c2e98206a91b189efeafc3f0abe7d76c5",
+        "svg_guide_remove_ids": [
+          "g8"
+        ],
+        "clear_original_caption_rectangles_native": [
+          [
+            144,
+            214,
+            184,
+            255
+          ],
+          [
+            16,
+            357,
+            155,
+            387
+          ]
+        ],
+        "initial_native_canvas_crop": [
+          0,
+          0,
+          344,
+          388
+        ],
+        "relayout": [],
+        "unchanged_source_HD_pixels": "all cropped source pixels outside caption cleanup and relayout rectangles",
+        "native_raster_resampled": false,
+        "runtime_validated": false,
+        "source_author": "mikeyX",
+        "source_archive_sha256": "c575a04cb5044a41df620e92557cd6bd5d72fb9c3ad4e726dacf972def262616",
+        "source_member": "svg/tex1_344x388_ee5c992f1a89c78e_ed41aa007b9c0d1f_9.svg",
+        "source_license": "CC BY-NC-SA 4.0 with Pokemon-mod exception",
+        "artistic_review": true
+      },
+      "bingo-tools-342-captionless-x4-v2.png": {
+        "file": "bingo-tools-342-captionless-x4-v2.png",
+        "sha256": "2b9fb433df6a3e0db3c3f59c61a8deaca8a212da37c9e5524f7107ee67a107df",
+        "bytes": 335561,
+        "source_pack": "xd-1.0",
+        "source_file": "tex1_344x388_ee5c992f1a89c78e_ed41aa007b9c0d1f_9.png",
+        "source_sha256": "81005a2962556a9db4a7389d7a20ee7dbe6384367da776c9670e1c19b199e725",
+        "background_svg_png_sha256": "e3fad4e5c29b4e854b66a4c542737be7381e0fe04622771743e32af249253fdd",
+        "background_svg_source_sha256": "d8b4a3b1784994aa26dac0b5ace1959c2e98206a91b189efeafc3f0abe7d76c5",
+        "svg_guide_remove_ids": [
+          "g8"
+        ],
+        "clear_original_caption_rectangles_native": [
+          [
+            144,
+            214,
+            184,
+            255
+          ],
+          [
+            16,
+            357,
+            155,
+            387
+          ]
+        ],
+        "initial_native_canvas_crop": [
+          0,
+          0,
+          344,
+          342
+        ],
+        "relayout": [
+          {
+            "source_native": [
+              12,
+              348,
+              164,
+              388
+            ],
+            "destination_native": [
+              72,
+              76,
+              220,
+              114
+            ],
+            "source_scale": 4,
+            "destination_scale": 4,
+            "resize": "LANCZOS on genuine HD component, never a native bitmap"
+          }
+        ],
+        "unchanged_source_HD_pixels": "all cropped source pixels outside caption cleanup and relayout rectangles",
+        "native_raster_resampled": false,
+        "runtime_validated": false,
+        "source_author": "mikeyX",
+        "source_archive_sha256": "c575a04cb5044a41df620e92557cd6bd5d72fb9c3ad4e726dacf972def262616",
+        "source_member": "svg/tex1_344x388_ee5c992f1a89c78e_ed41aa007b9c0d1f_9.svg",
+        "source_license": "CC BY-NC-SA 4.0 with Pokemon-mod exception",
+        "artistic_review": true
+      }
+    },
+    "vs_scenes": {
+      "metadata": "menu-atlases/vs-scenes.json",
+      "credits": "Native source character meshes; upstream material donors; Evan-Amos and Alphathon authentic hardware photographs",
+      "full_HD_material_coverage": false,
+      "runtime_validated": false
+    }
+  },
+  "menu_bingo_band_metadata": {
+    "source_author": "mikeyX HD materials; original game meshes; project model composition and procedural ambience",
+    "scope": "eleven fixed Bingo illustrations only; same source meshes/UVs, no new game geometry",
+    "source_manifest": "menu-atlases/bingo-scenes.json",
+    "used_exact_HD_material_pairs": 103,
+    "limits": [
+      "Original Bingo CGI camera and lighting were not recovered; camera was calibrated to each original90 guide.",
+      "Real native model clips and UVs, exact x4 pack textures; reconstructed Blender lighting/shader can differ from retail CGI gloss.",
+      "Backgrounds are new procedural reconstructions, not identified original arenas or claimed pack scene donors.",
+      "Generic frames and clipping aperture are analytic vector reconstructions, not enlarged native bitmap or Pokemon silhouettes.",
+      "Importer omits zero-area primitives and uses white for absent vertex colors; no claim of bit-exact retail fixed-function shading.",
+      "Native90 here denotes a real source-material DCC model render, not the original composed Bingo bitmap.",
+      "This art approval is distinct from a Dolphin menu runtime witness. GPU PNG bytes may vary across graphics drivers."
+    ]
+  }
 }

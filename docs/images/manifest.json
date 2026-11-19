@@ -570,6 +570,59 @@
       "captured_in_version": "2.0.0",
       "description": "Original and HD portraits of normal and shiny Shadow Lugia, with square Colosseum and round XD frames.",
       "source": "The eight registered native-mesh portrait renders. Native GPU textures and pinned-pack HD materials use the same 86-joint pose and normalized head crop. Original 42px portraits are displayed at 4x with nearest-neighbor solely for this comparison. No personal data or save content is shown."
+    },
+    "hd-colosseum-text.png": {
+      "bytes": 322735,
+      "sha256": "1b8f739ada0f5c2cbe9a87038c60791f923c159eee9c07e8680c19757ecbd8d1",
+      "kind": "gameplay-comparison",
+      "language": "en",
+      "game": "colosseum",
+      "width": 1320,
+      "height": 1148,
+      "captured_in_version": "unreleased",
+      "recipe": "noto-sans-jp-700-common-x-native-advance-v5",
+      "description": "Original and HD names, items and message text, with shared letter proportions and preserved game advances.",
+      "source": "Unscaled crops from separate real Dolphin cold boots on the same generated QA ISO and copied memory card. Original/HD headings are outside source pixels. Text reviewed individually; no pose synchronization or desktop capture."
+    },
+    "hd-xd-text.png": {
+      "bytes": 115939,
+      "sha256": "5f60154468937c271b741b2a191551b53a9327e9ac797e10369406676e9c4987",
+      "kind": "gameplay-comparison",
+      "language": "en",
+      "game": "xd",
+      "width": 1320,
+      "height": 688,
+      "captured_in_version": "unreleased",
+      "recipe": "noto-sans-jp-700-common-x-native-advance-v5",
+      "description": "Original and HD names, items and message text, with shared letter proportions and preserved game advances.",
+      "source": "Unscaled crops from separate real Dolphin cold boots on the same generated QA ISO and copied memory card. Original/HD headings are outside source pixels. Text reviewed individually; no pose synchronization or desktop capture."
+    },
+    "hd-xd-vs.png": {
+      "bytes": 1844236,
+      "sha256": "0ddbd227ea7bec2650312dfce29ce25fad9e2b6f1f93393be60882949ec902e7",
+      "kind": "gameplay",
+      "language": "en",
+      "game": "xd",
+      "width": 2166,
+      "height": 1584,
+      "captured_in_version": "unreleased",
+      "description": "HD VS menu with recreated character scenes and authentic GameCube controller and Game Boy Advance photographs.",
+      "source": "Unedited actual Dolphin screenshot from a muted private profile and copied QA memory card. Registered HD artwork, regional labels and native menu layout. Source ISO and card hashes unchanged after the run.",
+      "controller_artwork": {
+        "authors": [
+          "Evan-Amos",
+          "Alphathon"
+        ],
+        "license": "CC-BY-SA-3.0",
+        "source": "https://commons.wikimedia.org/wiki/File:GameCube_controller.png"
+      },
+      "gba_artwork": {
+        "authors": [
+          "Evan-Amos"
+        ],
+        "license": "Public domain",
+        "source": "https://commons.wikimedia.org/wiki/File:Nintendo-Game-Boy-Advance-Purple-FL.png"
+      }
     }
   }
 }

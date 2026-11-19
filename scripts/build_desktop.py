@@ -15,7 +15,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME, __version__
-from scripts.release_media import documentation_media
+from scripts.release_media import (BINGO_AUTHORING_ROOT, bingo_authoring_media,
+                                  documentation_media, game_asset_name_allowed)
 
 
 NATIVE_RUNTIME_NAMES = ("orre_lzss.dll", "orre_disc.dll", "orre_musyx.dll", "OrreLauncher.exe")
@@ -25,6 +26,13 @@ REQUIRED_RUNTIME_MODULES = frozenset((
     "orre_randomizer.native_music_state", "orre_randomizer.native_music_render",
     "orre_randomizer.native_music_output", "orre_randomizer.native_music_volume",
     "orre_randomizer.hd_images", "orre_randomizer.hd_overlays", "orre_randomizer.hd_spinda_diagram",
+    "orre_randomizer.hd_hud",
+    "orre_randomizer.hd_menu_atlases", "orre_randomizer.hd_menu_catalog",
+    "orre_randomizer.hd_text", "orre_randomizer.hd_text_capture", "orre_randomizer.hd_text_runtime",
+    "orre_randomizer.hd_text_assets", "orre_randomizer.hd_text_vectors", "orre_randomizer.hd_text_symbols",
+    "orre_randomizer.hd_text_layout",
+    "orre_randomizer.hd_spinda_face", "orre_randomizer.engine.dna_spinda_face_hd",
+    "orre_randomizer.hd_extra_portraits", "orre_randomizer.hd_extra_portrait_catalog",
     "orre_randomizer.engine.dna_hd_tiles", "orre_randomizer.engine.dna_spinda_hd",
     "orre_randomizer.engine.spinda_diagram",
 ))
@@ -67,7 +75,7 @@ def runtime_build_inputs() -> dict:
     """Content identities only; the record never contains local absolute paths."""
     files = list((ROOT / "orre_randomizer").rglob("*.py"))
     files += [ROOT / "orre_randomizer/_native" / name for name in (*NATIVE_RUNTIME_NAMES, "orre_musyx.json")]
-    files += [ROOT / name for name in ("scripts/desktop.spec", "scripts/desktop_entry.py", "scripts/build_desktop.py",
+    files += [ROOT / name for name in ("scripts/desktop.spec", "scripts/desktop_entry.py", "scripts/build_desktop.py", "scripts/release_media.py",
         "scripts/build_native.py", "scripts/build_music.py", "pyproject.toml", "requirements-build.txt",
         "native/music/patches.json", "native/music/renderer_adapter.c", "orre_randomizer/windows_update.ps1",
         "orre_randomizer/assets/game/provenance.json", "orre_randomizer/assets/app/provenance.json",
@@ -96,6 +104,15 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
         files += [path for path in (ROOT / folder / "src").rglob("*.rs") if path.is_file()]
     files += [path for path in (ROOT / "native/music").rglob("*") if path.is_file() and path.suffix in {".c", ".h", ".json", ".md", ".txt"}]
     files.append(ROOT / "docs/reverse-engineering/baseline.json")
+    files.append(ROOT / "scripts/EXTRA_PORTRAIT_CAPTURE.md")
+    files += [ROOT / "scripts/vs_menu_artwork" / name for name in
+              ("README.md", "scene-recipe.json", "genuine-gba-reference.json")]
+    authoring = ROOT / BINGO_AUTHORING_ROOT
+    for name in bingo_authoring_media(lambda name: (authoring / name).read_bytes()):
+        path = authoring / name
+        if path.is_symlink() or not path.resolve().is_relative_to(authoring.resolve()):
+            raise RuntimeError("External Bingo authoring layer refused")
+        files.append(path)
     documentation = ROOT / "docs/images"
     for name in documentation_media(lambda name: (documentation / name).read_bytes()):
         files.append(documentation / name)
@@ -111,8 +128,7 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
         for name, expected in manifest["files"].items():
             path = pack / name
             if (not path.resolve().is_relative_to(pack.resolve()) or path.is_symlink() or
-                    (path.suffix not in {".png", ".wav", ".json", ".md"}
-                     and name != "models/dark-lugia-colosseum-v1.pkx") or
+                    not game_asset_name_allowed(name) or
                     path.stat().st_size != expected["bytes"] or
                     hashlib.sha256(path.read_bytes()).hexdigest() != expected["sha256"]):
                 raise RuntimeError("Invalid interface asset: " + name)

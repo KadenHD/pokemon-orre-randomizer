@@ -107,6 +107,17 @@ components:
     typography: "{typography.body}"
     rounded: "{rounded.control}"
     padding: "4px 12px"
+  tooltip-home:
+    backgroundColor: "{colors.home-field}"
+    textColor: "{colors.home-label}"
+    typography: "{typography.body}"
+    padding: "8px"
+  input-home:
+    backgroundColor: "{colors.home-field}"
+    textColor: "{colors.home-label}"
+    typography: "{typography.body}"
+    rounded: "{rounded.control}"
+    padding: "5px 8px"
 ---
 
 # Design System: Pokémon Orre Randomizer
@@ -176,6 +187,26 @@ descriptions retain the status in words.
 
 **The Native Text Rule.** Useful text remains localized Qt content. Artwork does
 not replace labels, help, search, progress or keyboard focus.
+
+In-game HD lettering is separate from desktop text. It uses the bundled,
+openly licensed Noto Sans JP at weight 700, with the approved common proportions
+centered in native character cells. The game's advances, baseline, colors,
+alignment and encoded line breaks remain authoritative. Original mode uses the
+original glyph samples. HD pages are external Dolphin replacements, not a new
+bitmap alphabet written over the source disc. Keep accents and Japanese marks
+inside their drawing margins without per-letter stretching.
+
+**The Game Artwork Rule.** Complete missing in-game menus within the original
+game's visual identity and playable language. Use exact verified HD donors or
+faithful vector compositions with recorded source and geometry. Preserve atlas
+cells, transparency, icons and frames; never use another language's label merely
+because its texture dimensions match. Hardware illustrations use authentic
+photographs or verified models, with the correct silhouette and controls.
+Scale photographs uniformly; do not substitute a generic primitive reconstruction.
+Inspect critical lettering in unscaled crops and verify the captured file's
+identity before reporting a missing label from a resized whole-screen preview.
+Texture coverage and observed runtime
+coverage are reported separately. Prerecorded movies remain untouched.
 
 ## Layout
 
@@ -292,9 +323,10 @@ Keep the same structure in the Colosseum and XD themes.
 
 Show HD installation readiness beside graphics and keep the pack-manager action
 nearby. Availability and experimental audio explanations are working status,
-not decorations. The independent-music checkbox stays disabled and unchecked
-until the final combined-output audio gate passes, including saved manifests
-that request it. Do not remove that status to match demonstration data. The fixed
+not decorations. The independent-music checkbox is enabled only for the verified
+Windows/Europe revision-0 configuration and checked renderer recipe. Unsupported
+configurations keep it disabled and unchecked, including saved manifests that
+request it. Do not remove that status to match demonstration data. The fixed
 launcher layout keeps main settings and footer actions on one page; the Dolphin
 recovery chooser belongs in the footer rather than adding a full path row to
 its panel. The normal footer keeps the two approved actions: an ivory outline
@@ -397,6 +429,15 @@ tiles. Both music and menu sounds start enabled when available and remember
 independent preferences. Audio availability never blocks randomization.
 HD packs and Open a game use the same neutral secondary controls beneath the
 game choices; their shared scope does not inherit either game's accent.
+Neutral tooltips, menus, text details, selections and native fallback surfaces
+use the same charcoal/silver palette. Switching into either game and returning
+Home must not retain its colors. The shared HD manager stays neutral regardless
+of the game that opened it.
+
+Installing a pack immediately shows preparation, progress and Cancel. Disable
+Install/Reinstall, the shared path and Done until the worker finishes. Closing
+requests cancellation and closes only after cleanup; returning to the manager
+starts a fresh operation rather than retaining an earlier close request.
 
 A newer stable release adds one secondary update button below both game
 tiles and above the credit. It reuses the neutral home-control face, gray border

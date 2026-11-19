@@ -24,7 +24,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends libegl1 libgl1
-      - run: python -m pip install -c requirements-build.txt -e .
+      - run: python -m pip install -c requirements-build.txt -e ".[artwork]"
       - name: Check that Qt can start offscreen
         run: python -c "from PySide6.QtWidgets import QApplication; app = QApplication([])"
       - run: python scripts/build_native.py

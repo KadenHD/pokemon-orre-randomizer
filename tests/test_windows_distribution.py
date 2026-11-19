@@ -93,7 +93,7 @@ class WindowsDistributionTests(unittest.TestCase):
             root = Path(directory)
             names = ["orre_randomizer/example.py", "orre_randomizer/assets/game/provenance.json",
                 *["orre_randomizer/_native/" + n for n in (*build_desktop.NATIVE_RUNTIME_NAMES, "orre_musyx.json")],
-                "scripts/desktop.spec", "scripts/desktop_entry.py", "scripts/build_desktop.py",
+                "scripts/desktop.spec", "scripts/desktop_entry.py", "scripts/build_desktop.py", "scripts/release_media.py",
                 "scripts/build_native.py", "scripts/build_music.py", "pyproject.toml", "requirements-build.txt",
                 "native/music/patches.json", "native/music/renderer_adapter.c", "orre_randomizer/windows_update.ps1",
                 "orre_randomizer/assets/app/provenance.json", "orre_randomizer/assets/app/logo.json",

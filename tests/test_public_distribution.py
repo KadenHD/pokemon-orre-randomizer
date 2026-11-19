@@ -11,10 +11,23 @@ from unittest.mock import patch
 
 from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME
 from scripts import build_desktop, verify_release
-from scripts.release_media import DOCUMENTATION_IMAGES, documentation_media
+from scripts.release_media import (BINGO_AUTHORING_LAYERS, BINGO_AUTHORING_ROOT,
+    DOCUMENTATION_IMAGES, bingo_authoring_media, documentation_media, game_asset_name_allowed)
 
 
 class PublicDistributionTests(unittest.TestCase):
+    def test_all_registered_assets_share_the_source_and_release_audit_policy(self):
+        pack = build_desktop.ROOT / "orre_randomizer/assets/game"
+        manifest = json.loads((pack / "provenance.json").read_text("utf-8"))
+        self.assertIn("fonts/NotoSansJP.ttf", manifest["files"])
+        self.assertIn("fonts/OFL-NotoSansJP.txt", manifest["files"])
+        for name in manifest["files"]:
+            self.assertTrue(game_asset_name_allowed(name), name)
+        for unsafe in ("fonts/other.ttf", "fonts/license.txt", "../fonts/NotoSansJP.ttf",
+                       "/fonts/NotoSansJP.ttf", "C:/fonts/NotoSansJP.ttf", "fonts\\NotoSansJP.ttf",
+                       "fonts/example.png:stream.json", "game.iso", "models/other.pkx"):
+            self.assertFalse(game_asset_name_allowed(unsafe), unsafe)
+
     def test_default_archive_includes_exact_verified_interface_pack(self):
         pack = build_desktop.ROOT / "orre_randomizer/assets/game"
         manifest = json.loads((pack / "provenance.json").read_text("utf-8"))
@@ -47,9 +60,22 @@ class PublicDistributionTests(unittest.TestCase):
         for path in files:
             relative = path.relative_to(build_desktop.ROOT).as_posix()
             self.assertNotIn("assets/game/", relative)
-            if relative not in {"docs/images/" + name for name in DOCUMENTATION_IMAGES} | {"orre_randomizer/assets/app/icon.png", "orre_randomizer/assets/app/icon.ico",
+            if relative not in {"docs/images/" + name for name in DOCUMENTATION_IMAGES} | {
+                                BINGO_AUTHORING_ROOT + name for name in BINGO_AUTHORING_LAYERS} | {"orre_randomizer/assets/app/icon.png", "orre_randomizer/assets/app/icon.ico",
                                 "orre_randomizer/assets/app/logo.png", "orre_randomizer/assets/app/controller.png"}:
                 self.assertNotIn(path.suffix.lower(), {".iso", ".rvz", ".fsys", ".raw", ".sav", ".png", ".ico", ".wav", ".dll"})
+
+    def test_bingo_authoring_media_rejects_tampered_or_unregistered_layers(self):
+        root = build_desktop.ROOT / BINGO_AUTHORING_ROOT
+        read = lambda name: (root / name).read_bytes()
+        self.assertEqual(bingo_authoring_media(read), BINGO_AUTHORING_LAYERS | {"bingo-recipe.json", "README.md"})
+        chosen = sorted(BINGO_AUTHORING_LAYERS)[0]
+        with self.assertRaisesRegex(RuntimeError, "Invalid Bingo"):
+            bingo_authoring_media(lambda name: read(name) + (b"X" if name == chosen else b""))
+        recipe = json.loads(read("bingo-recipe.json"))
+        recipe["authored_layers"][0]["file"] = "../unregistered.png"
+        with self.assertRaisesRegex(RuntimeError, "Unexpected Bingo"):
+            bingo_authoring_media(lambda name: json.dumps(recipe).encode() if name == "bingo-recipe.json" else read(name))
 
     def test_documentation_media_rejects_tampering_and_unknown_names(self):
         root = build_desktop.ROOT / "docs/images"

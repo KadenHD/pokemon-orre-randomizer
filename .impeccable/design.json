@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-18T00:02:38.016974Z",
+  "generatedAt": "2026-11-18T23:14:13.071775Z",
   "title": "Design System: Pokémon Orre Randomizer",
   "extensions": {
     "colorMeta": {
@@ -559,7 +559,44 @@
         "name": "folder-sidebar-min-width",
         "value": "820px"
       }
-    ]
+    ],
+    "gameArtwork": {
+      "authoritativeSources": [
+        "docs/HD_COVERAGE.md",
+        "docs/HD_SOURCES.md",
+        "orre_randomizer/hd_hud.py",
+        "orre_randomizer/hd_text_vectors.py",
+        "orre_randomizer/hd_menu_catalog.py",
+        "orre_randomizer/hd_menu_atlases.py"
+      ],
+      "font": "Noto Sans JP",
+      "weight": 700,
+      "layout": "Common proportions centered in native advance cells; retain native baselines and encoded line breaks",
+      "originalMode": "Native samples; prerecorded movies unchanged",
+      "coverage": "Separate exact source coverage from actual rendered Dolphin witnesses",
+      "hardware": "Authentic source photographs or verified models; retain silhouette, controls and uniform scale",
+      "captureReview": "Inspect critical small labels in unscaled crops and compare original captured pixels before reporting missing or clipped artwork."
+    },
+    "neutralSurfaces": {
+      "platform": "PySide6 QWidget",
+      "authority": "Actual Qt palette and QSS; panel HTML previews are illustrative equivalents",
+      "sources": {
+        "orre_randomizer/ui_theme.py": "9762c88841a8b49c396ed242b24ad811d1c8404f6a6b2a7264d2fde0e704481c",
+        "orre_randomizer/ui_game_folder.py": "e459171f1e257764da2c44f23a48a9a1615fe27c6491448eb3be6c4b27691600",
+        "orre_randomizer/ui_play.py": "a273ecd7d69159ad5e467d2388d85f4cbe52cf7342adb08ed2c4b69e8b2df0ab",
+        "orre_randomizer/gui.py": "a236e1c8484419faeb6a4010099f809b073456aed7fd67b449a7e71699b7ef07"
+      },
+      "scope": "Home, shared HD manager, tooltips, menus, details, selection and fallback palette",
+      "workerStates": [
+        "preparing",
+        "downloading",
+        "extracting",
+        "cancelled",
+        "failed",
+        "installed"
+      ],
+      "closing": "Cooperative cancellation; close after worker cleanup; reset close request before retry; remove bindings when dialogs are destroyed"
+    }
   },
   "components": [
     {
@@ -668,6 +705,29 @@
       "description": "Neutral angular grouping for game identity, pinned version, download/installed sizes and installation action. The original game logo stays proportional. The shared manager is fixed at 1,000 × 800 px without page scrolling; download details open separately.",
       "html": "<section class=\"ds-pack-row\"><div><strong>Pokémon Colosseum</strong><p>Pinned version</p><small>Download and installed sizes</small></div><div><p>Installation status</p><button>Install</button></div></section>",
       "css": ".ds-pack-row{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:12px 16px;background:#191b1e;color:#eceef2;border:1px solid #727782;clip-path:polygon(11px 0,calc(100% - 11px) 0,100% 11px,100% calc(100% - 11px),calc(100% - 11px) 100%,11px 100%,0 calc(100% - 11px),0 11px);font:14px \"Segoe UI\",sans-serif}.ds-pack-row p{margin:8px 0}.ds-pack-row small{font-size:13px;color:#cbd0d8}.ds-pack-row button{background:#202327;color:#eceef2;border:1px solid #727782;border-radius:4px;min-height:28px;padding:4px 12px;font:inherit}.ds-pack-row button:hover,.ds-pack-row button:focus-visible{background:#30343a;border-color:#cbd0d8;outline:1px solid #cbd0d8}.ds-pack-row button:active{background:#17191c}.ds-pack-row strong{font-size:18px;font-weight:600}"
+    },
+    {
+      "name": "Shared tooltip",
+      "kind": "tooltip",
+      "refersTo": "tooltip-home",
+      "description": "Neutral tooltip for shared Home and HD controls, independent of either game palette.",
+      "html": "<span class=\"ds-neutral-tip\">Shared HD packs</span>",
+      "css": ".ds-neutral-tip{display:inline-block;background:#191b1e;color:#eceef2;border:1px solid #727782;padding:8px;font:14px \"Segoe UI\",sans-serif;}"
+    },
+    {
+      "name": "Shared detail field",
+      "kind": "input",
+      "refersTo": "input-home",
+      "description": "Read-only download details use charcoal, silver selection and a readable field border.",
+      "html": "<textarea class=\"ds-neutral-detail\" readonly>Verified pack source\nSHA-256</textarea>",
+      "css": ".ds-neutral-detail{background:#191b1e;color:#eceef2;border:1px solid #727782;border-radius:4px;padding:5px 8px;font:14px \"Segoe UI\",sans-serif;min-height:80px}.ds-neutral-detail::selection{background:#535b66;color:#ffffff}"
+    },
+    {
+      "name": "Shared download progress",
+      "kind": "progress",
+      "description": "Preparation is indeterminate; download/extraction report real progress. Cancel stays separate from disabled completion controls.",
+      "html": "<div class=\"ds-pack-status\">Downloading HD pack…</div><progress class=\"ds-pack-progress\" value=\"34\" max=\"100\">34%</progress>",
+      "css": ".ds-pack-status{color:#eceef2;font:14px \"Segoe UI\",sans-serif;margin-bottom:8px}.ds-pack-progress{width:100%;height:18px;background:#191b1e;border:1px solid #727782;border-radius:3px;accent-color:#535b66}"
     }
   ],
   "narrative": {
@@ -702,6 +762,11 @@
         "name": "The Shared Template Rule",
         "body": "Common controls have the same order, words and\nbehavior in both games. Do not create a separate XD synonym or omit a shared\nfeature to fit its theme.",
         "section": "components"
+      },
+      {
+        "name": "The Game Artwork Rule",
+        "body": "Complete missing in-game menus within the original\ngame's visual identity and playable language. Use exact verified HD donors or\nfaithful vector compositions with recorded source and geometry. Preserve atlas\ncells, transparency, icons and frames; never use another language's label merely\nbecause its texture dimensions match. Hardware illustrations use authentic\nphotographs or verified models, with the correct silhouette and controls.\nScale photographs uniformly; do not substitute a generic primitive reconstruction.\nTexture coverage and observed runtime\ncoverage are reported separately. Prerecorded movies remain untouched.",
+        "section": "typography"
       }
     ],
     "dos": [

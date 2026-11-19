@@ -1,11 +1,39 @@
 """Place game-folder runtime additions inside an already staged disc image."""
 from __future__ import annotations
 
+import hashlib
 import struct
 from pathlib import Path
 
-from .engine.analyze_game import FormatError, u32
+from .engine.analyze_game import FormatError, parse_dol, u32
 from .engine.survey_assets import fst_inventory
+
+
+# Colosseum JP revision0's apploader sums rounded text/data sizes and compares
+# them with BI2+0x28 before loading the DOL. Keep a finite exact budget; never
+# disable its separate section-address or physical-memory checks.
+_BUDGET_APPLOADERS = {
+    b"GC6J01": "1c67172bb1504174470d04d98000332d28735b0bc0b0c4e17861be9e7f91cbb9",
+}
+
+
+def _updated_load_budget(boot, app_payload, old_budget, executable):
+    if boot[:6] not in _BUDGET_APPLOADERS or not old_budget:
+        return None
+    required = sum((u32(executable, 0x90 + index * 4) + 31) & ~31 for index in range(18))
+    if required <= old_budget:
+        return None
+    if (hashlib.sha256(app_payload).hexdigest() != _BUDGET_APPLOADERS[boot[:6]]
+            or old_budget % 32):
+        raise FormatError("Unverified Japanese apploader executable budget")
+    layout = parse_dol(executable)
+    if any(section["ram_address"] < 0x80000000
+           or section["ram_address"] + section["size"] > 0x81200000
+           for section in layout["sections"]):
+        raise FormatError("Executable exceeds the verified apploader memory boundary")
+    return {"disc_offset": 0x468, "previous": old_budget, "required": required,
+            "updated": required, "apploader_sha256": hashlib.sha256(app_payload).hexdigest(),
+            "section_boundary_checks_preserved": True}
 
 
 def executable_size(header: bytes) -> int:
@@ -78,6 +106,14 @@ def update_staged_disc(image: Path, executable: bytes, archives=None) -> dict:
         if len(app) != 0x20:
             raise FormatError("Truncated staged apploader")
         app_end = 0x2460 + u32(app, 0x14) + u32(app, 0x18)
+        if not 0x2460 <= app_end <= limit:
+            raise FormatError("Staged apploader exceeds disc bounds")
+        budget = None
+        if boot[:6] in _BUDGET_APPLOADERS:
+            stream.seek(0x468)
+            old_budget = u32(stream.read(4), 0)
+            stream.seek(0x2460)
+            budget = _updated_load_budget(boot, stream.read(app_end - 0x2460), old_budget, executable)
         occupied = [(0, app_end), (fst_offset, fst_offset + max(fst_size, fst_max))]
         occupied += [(e["disc_offset"], e["disc_offset"] + e["size"])
                      for name, e in files.items() if name not in archives and e["size"]]
@@ -99,6 +135,8 @@ def update_staged_disc(image: Path, executable: bytes, archives=None) -> dict:
             raise FormatError("Game-folder executable exceeds disc bounds")
         placements.extend(((dol_offset, executable), (fst_offset, bytes(fst)),
                            (0x420, struct.pack(">I", dol_offset))))
+        if budget is not None:
+            placements.append((budget["disc_offset"], struct.pack(">I", budget["updated"])))
         # Every extent and placement is validated before the first write.
         for offset, payload in placements:
             stream.seek(offset)
@@ -110,4 +148,5 @@ def update_staged_disc(image: Path, executable: bytes, archives=None) -> dict:
                 raise OSError("Game-folder disc write verification failed")
     return {"dol_disc_offset": dol_offset,
             "archives": {name: {"disc_offset": u32(fst, files[name]["index"] * 12 + 4),
-                                 "size": len(payload)} for name, payload in archives.items()}}
+                                 "size": len(payload)} for name, payload in archives.items()},
+            **({"apploader_dol_budget": budget} if budget is not None else {})}

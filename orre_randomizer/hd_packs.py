@@ -508,20 +508,32 @@ class PackStore:
                 remove_owned(stage, destination.parent)
             lock.unlink(missing_ok=True)
 
-    def texture_view(self, pack: Pack, game_id: str, overlays: Path | None = None):
-        """One content-addressed union on the cache volume; no copied HD packs."""
+    def texture_view(self, pack: Pack, game_id: str, overlays: Path | None = None,
+                     *, fallback_packs: tuple[Pack, ...] = ()):
+        """Primary art, then exact missing keys from dependencies, then custom art."""
         if not self.installed(pack) or not re.fullmatch(r"(?:GC6|GXX)[EPJ]01", game_id):
             raise UserError("Installez le pack HD validé avant de lancer cette partie en HD.")
+        layers = []
+        for candidate in (pack, *fallback_packs):
+            if not isinstance(candidate, Pack) or not self.installed(candidate):
+                raise UserError("Installez le pack HD validé avant de lancer cette partie en HD.")
+            if any(layer[0].key == candidate.key for layer in layers):
+                continue
+            receipt = json.loads((self.location(candidate) / "installed.json").read_text("utf-8"))
+            generation = receipt.get("generation", "initial")
+            if generation != "initial" and not re.fullmatch(r"[a-f0-9]{32}", generation):
+                raise UserError("Le pack HD n’a pas pu être installé. Réessayez.")
+            layers.append((candidate, generation))
         custom = sorted(overlays.glob("tex1_*.png")) if overlays is not None and overlays.is_dir() else []
         stamp = hashlib.sha256()
+        stamp.update(b"orre-texture-view-union-2\0")
+        for candidate, generation in layers[1:]:
+            stamp.update((candidate.key + "\0" + generation + "\0").encode("ascii"))
         for path in custom:
             if path.is_symlink():
                 raise UserError("Une texture personnalisée pointe vers un fichier externe.")
             stamp.update(path.name.encode()); stamp.update(bytes.fromhex(digest(path)))
-        receipt = json.loads((self.location(pack) / "installed.json").read_text("utf-8"))
-        generation = receipt.get("generation", "initial")
-        if generation != "initial" and not re.fullmatch(r"[a-f0-9]{32}", generation):
-            raise UserError("Le pack HD n’a pas pu être installé. Réessayez.")
+        generation = layers[0][1]
         view = self.root / "TextureViews" / (pack.key + "-" + game_id + "-" + generation + "-" + stamp.hexdigest()[:24])
         if (view / "complete.json").is_file():
             return view / "Load"
@@ -531,18 +543,34 @@ class PackStore:
             target = stage / "Load/Textures" / game_id
             target.mkdir(parents=True)
             overrides = {texture_identity(p): p for p in custom}
-            for source in sorted((self.location(pack) / "Textures").iterdir()):
-                if source.suffix.lower() not in {".png", ".dds"}:
-                    continue
-                if texture_identity(source) not in overrides:
+            occupied = set(overrides)
+            contributions = {}
+            for candidate, _ in layers:
+                supplied = set()
+                linked = 0
+                for source in sorted((self.location(candidate) / "Textures").iterdir()):
+                    if source.suffix.lower() not in {".png", ".dds"}:
+                        continue
+                    identity = texture_identity(source)
+                    if identity in occupied:
+                        continue
+                    if source.is_symlink() or not source.is_file():
+                        raise UserError("Une texture personnalisée pointe vers un fichier externe.")
                     try:
                         os.link(source, target / source.name)
                     except OSError as error:
                         raise UserError("Le dossier partagé doit être sur un disque permettant les liens de fichiers.") from error
+                    supplied.add(identity)
+                    linked += 1
+                occupied.update(supplied)
+                contributions[candidate.key] = linked
             for path in overrides.values():
                 shutil.copyfile(path, target / path.name)
             (stage / "complete.json").write_text(json.dumps({"pack": pack.key,
-                "game_id": game_id, "overlays": len(custom)}), encoding="utf-8")
+                "game_id": game_id, "overlays": len(custom),
+                "packs": [{"key": item.key, "generation": generation} for item, generation in layers],
+                "stock_files_by_pack": contributions,
+                "priority": "custom > game pack > required fallback packs"}), encoding="utf-8")
             for attempt in range(10):
                 try:
                     stage.rename(view)

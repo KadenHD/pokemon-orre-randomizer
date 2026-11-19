@@ -21,34 +21,37 @@ from .preferences import application_preferences
 from .resources import application_icon, home_logos, interface_assets
 from .service import Cancelled, UserError
 from .ui_game_folder import show_packs
-from .ui_theme import GameSurface, MenuPanel, STYLE, XD_STYLE
+from .ui_theme import GameSurface, MenuPanel, STYLE, XD_STYLE, theme_palette
 from .ui_workspace import scroll_area
 from .ui_play_controls import ControllerDiagram, VisibleChoices, separator, navigation_icon
 
 
 class LaunchPreparation(QThread):
-    succeeded = Signal(list)
+    succeeded = Signal(list, dict)
     failed = Signal(object)
 
     def __init__(self, folder, manifest, parent):
         super().__init__(parent)
         self.folder, self.manifest = folder, manifest
         self.cancel = threading.Event()
+        self.session_context = {}
 
     def run(self):
         try:
-            command = launch_command(self.folder, self.manifest, cancel=self.cancel)
+            command = launch_command(self.folder, self.manifest, cancel=self.cancel,
+                                     session_context=self.session_context)
             if self.cancel.is_set():
                 raise Cancelled("Opération annulée.")
         except (OSError, ValueError, UserError, Cancelled) as error:
             self.failed.emit(error)
         else:
-            self.succeeded.emit(command)
+            self.succeeded.emit(command, self.session_context)
 
 
 class GameLauncher(QMainWindow):
     playing = Signal(bool)
     music_error = Signal(str)
+    hd_error = Signal(str)
 
     def __init__(self, path, *, manifest=None, preferences=None):
         super().__init__()
@@ -60,6 +63,7 @@ class GameLauncher(QMainWindow):
         self.language = self.data.get("language", "en")
         self.process = self.preparation = self.log = self.play_lock = self.music_session = self.speed_session = None
         self.speed_controls = None
+        self.face_session = None
         self.close_after_preparation = False
         self._text_bindings = []
         self.setWindowTitle(f"{APP_NAME} - {self.folder.name}")
@@ -67,6 +71,7 @@ class GameLauncher(QMainWindow):
             self.setWindowIcon(QIcon(str(application_icon())))
         self.setFixedSize(1100, 800)
         xd = self.data["game"] == "xd"
+        self.setPalette(theme_palette(self.palette(), xd=xd))
         self.setStyleSheet(XD_STYLE if xd else STYLE)
         surface = GameSurface()
         surface.set_xd(xd)
@@ -182,7 +187,7 @@ class GameLauncher(QMainWindow):
             keycap = self.label(key)
             keycap.setAlignment(Qt.AlignmentFlag.AlignCenter)
             keycap.setMinimumWidth(92)
-            keycap.setStyleSheet("border: 1px solid #829e98; border-radius: 4px; padding: 5px 10px;")
+            keycap.setObjectName("shortcutKey")
             row.addWidget(keycap)
             audio.addLayout(row)
             audio.addWidget(separator())
@@ -253,6 +258,13 @@ class GameLauncher(QMainWindow):
         outer.addLayout(footer)
         self.timer = QTimer(self); self.timer.setInterval(200); self.timer.timeout.connect(self.poll)
         self.music_error.connect(self.on_music_error)
+        self.hd_error.connect(self.on_hd_error)
+
+    def on_hd_error(self, error):
+        if self.log is not None:
+            self.log.write(("\nOrre Spinda face: " + str(error) + "\n").encode("utf-8"))
+            self.log.flush()
+        self.status.setText(self.text("Le visage de Spinda utilise le rendu d’origine. Consultez le journal du lanceur."))
 
     def on_music_error(self, error):
         if self.log is not None:
@@ -346,7 +358,7 @@ class GameLauncher(QMainWindow):
         if self.close_after_preparation and self.process is None:
             self.close()
 
-    def launch(self, command):
+    def launch(self, command, session_context=None):
         if self.preparation is not None and self.preparation.cancel.is_set():
             self.failed(Cancelled("Opération annulée.")); return
         try:
@@ -363,9 +375,20 @@ class GameLauncher(QMainWindow):
                 metadata = self.data["features"]["music"]
                 self.music_session = MusicSession(self.process, Path(metadata["assets"]), metadata,
                     Path(command[0]).parent, on_error=self.music_error.emit).start()
+            face = (session_context or {}).get("spinda_face")
+            face_error = None
+            if face:
+                from .hd_spinda_face import SpindaFaceSession
+                try:
+                    self.face_session = SpindaFaceSession(self.process, Path(face["assets"]), face["metadata"],
+                        on_error=self.hd_error.emit).start()
+                except (OSError, ValueError, RuntimeError) as error:
+                    face_error = error
             self.playing.emit(True)
             self.play.setText(self.text("Jouer")); self.play.setEnabled(False)
             self.status.setText(self.text("Partie en cours dans Dolphin."))
+            if face_error is not None:
+                self.on_hd_error(face_error)
             self.timer.start()
         except (OSError, ValueError, RuntimeError) as error:
             if self.process is not None and self.process.poll() is None:
@@ -380,6 +403,8 @@ class GameLauncher(QMainWindow):
         self.release()
 
     def release(self):
+        if self.face_session is not None:
+            self.face_session.stop(); self.face_session = None
         if self.music_session is not None:
             self.music_session.stop(); self.music_session = None
         if self.speed_session is not None:
@@ -402,9 +427,7 @@ class GameLauncher(QMainWindow):
 
     def configure_controls(self):
         if self.preparation is not None:
-            self.close_after_preparation = True
-            self.start()
-            event.ignore(); return
+            return
         if self.process is not None:
             return
         try:

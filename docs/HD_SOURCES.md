@@ -65,6 +65,91 @@ Body and head artwork was recaptured with the complete material set, including
 the shiny variant. The model manifest records each source and the native mesh.
 The source ZIPs remain unchanged; custom images are generated separately.
 
+## Localized XD status atlases
+
+European XD has distinct native HP/level texture identities in each of its
+five languages. A missing French atlas cannot use an English donor unchanged:
+that would display HP/Lv. instead of PV/N. The adapter keeps the original
+1032x80 XD HD atlas outside two label rectangles and redraws those labels
+with vector outlines matching the source typography. It produces HP/Lv.,
+PV/N., KP/Lv., PS/L. and PS/Nv. for verified revision-0 European identities.
+It does not apply these mappings to USA or Japanese identities.
+
+The source is **Pokemon XD UI SVGs V1.0** by mikeyX:
+[author's vector archive](https://mega.nz/file/gB4GBSSJ#vj7DVhNCdm_MzSLu5KCn3ZdTsPH6wffX0cMolCPfFhY),
+SHA-256 `c575a04cb5044a41df620e92557cd6bd5d72fb9c3ad4e726dacf972def262616`.
+Its [license](../licenses/hd/mikeyX-ui-license.txt) and
+[README](../licenses/hd/mikeyX-ui-readme.txt) are retained unchanged. Derived
+artwork remains credited under CC BY-NC-SA 4.0 with the author's Pokemon-mod
+exception, separate from Orre's code license. No native raster is enlarged.
+The vector README excludes VS-mode UI from that source; it does not establish
+the coverage of every texture in the complete HD pack.
+
+## Localized menu artwork
+
+Regional options, copyright, battle controls and PC layouts keep their own
+native cells rather than borrowing another region's entire atlas. The
+extension-disc and Poké Coupon resources also retain their original Japanese
+captions. Their gold frames use recorded vector geometry; the pointer, currency
+icon and PRESS START artwork come from verified Colosseum HD donors. These
+bonus resources are source-qualified, without claiming their gameplay routes
+have been replayed.
+
+The [regional menu authoring tool](../scripts/build_hd_solo_menu_backgrounds.py)
+replays the recorded compositions from authenticated ingredients and captured
+font outlines. Its output does not depend on enlarging a native bitmap guide.
+
+Additional registered type/status badges and timer labels use the native
+regional atlas identities and measured sprite rectangles. Latin lettering uses
+captured outlines matching the author's Bahnschrift typography; Japanese
+lettering uses the pinned Noto Sans JP donor. The original labels, abbreviations
+and the Generation III `???` type are retained. An English donor does not
+replace a localized caption unchanged.
+
+Where an authentic HD frame exists, its pixels outside the registered caption
+regions remain unchanged. Simple geometry without a donor, such as Colosseum's
+P-AD emblem, is redrawn as vectors from measured native circles and line widths.
+These are authored derivatives, identified separately from upstream HD pixels.
+No enlarged native raster is used as replacement lettering or vector artwork.
+
+The catalogue records native member and decoded-image hashes, applicable game
+IDs, donor hashes, vector data and renderer revision. Preparation authenticates
+the data and publishes these files with the other immutable custom overlays.
+The same source and artwork credits accompany the prepared cache. Registered
+derivatives do not establish that every screen has an HD replacement; see
+[coverage and limitations](HD_COVERAGE.md).
+
+The recreated XD VS illustrations combine the game's real character meshes
+with authentic hardware photographs. The GameCube controller photograph is
+by Evan-Amos, with background removal by Alphathon, under CC BY-SA 3.0. The
+[Game Boy Advance photograph](https://commons.wikimedia.org/wiki/File:Nintendo-Game-Boy-Advance-Purple-FL.png)
+is by Evan-Amos, released into the public domain through the Vanamo project.
+Photographs keep their proportions and colors. The character renders use
+recorded poses and verified material donors; three GBA-scene characters retain
+their native material maps. These are newly composed illustrations, rather
+than a claim that the upstream packs contain those HD scenes.
+
+The sources, transforms and artwork hashes are recorded in
+`menu-atlases/vs-scenes.json`. The [reproduction guide](../scripts/vs_menu_artwork/README.md)
+uses separately supplied game data, texture packs and Blender tools. No model
+importer, source disc or emulator state is bundled with the application.
+
+The eleven new XD Bingo portraits use the original Pokémon meshes and Idle
+poses with pinned materials from mikeyX's XD pack. Their paired native/HD
+renders keep identical visible geometry, UV coordinates, joint matrices,
+camera and lights. Procedural backgrounds and vector frames are separate
+authored layers; the original CGI lighting and cameras were not recovered.
+The [Bingo reproduction guide](../scripts/bingo_menu_artwork/README.md) records
+the required inputs, source checks and rendering limits. Its small authored
+layers are included for reproduction; source models, pack textures and the
+external Blender importer are not.
+
+The authoring tools can also reproduce registered Japanese Colosseum HUD and
+XD sheet backgrounds from their pinned donors. The recipes retain their own
+regional layouts, including Japan's separate sheet dimensions. Source archives
+are read without modification; generated replacements live in the party's
+versioned HD cache.
+
 ## Pokemon portraits
 
 The pinned Colosseum archive contains x4 portraits for all 386 base species,
@@ -78,7 +163,15 @@ species and form using verified native texture identities, keeps both shiny
 frames and fits the art to XD's circular frame. It records the donor's file,
 hash and scale; it does not rename files blindly or replace a missing form
 with another Pokemon. Castform's weather forms and Deoxys's extra XD forms
-have no matching donor in this selection and keep their original portraits.
+have no matching donor in this selection. Nine separately rendered x4 atlases
+cover these forms: three Castform weather forms in each game and three Deoxys
+forms in XD. They use the actual models and authored HD materials, paired
+normal/shiny poses and crops, and the native square or circular frame. Gen3
+Castform weather forms retain their original shared normal/shiny colors.
+Original mode keeps the native portraits. The
+[capture procedure](../scripts/EXTRA_PORTRAIT_CAPTURE.md) and authoring tools
+record the source hashes, poses, material recipes and framing; these portrait
+renders do not expand the upstream packs' stock 3D material coverage.
 XD's HD mode requires the pinned Colosseum pack as well as XD's own pack.
 The manager installs missing dependencies together; creation and launch check
 both packs even when an older folder has no recorded portrait dependencies.
@@ -95,6 +188,35 @@ palette adjustment are recorded in `models/portrait-variants.json`.
 
 The model, portrait and Snag List keep the same saved shiny identity. The DNA
 keypad continues to use separate whole-body art, never the head portrait.
+
+## Vector lettering for generated text
+
+The text preparation pipeline uses **Noto Sans JP**, by Google and Adobe,
+under the SIL Open Font License 1.1. Its exact upstream revision, font hash,
+license hash and drawing recipe are pinned in `hd_text_vectors.py`. The font
+and its unmodified license are bundled for offline preparation.
+
+This is adapted vector typography, rather than an enlargement of the game's
+glyph bitmaps. Each style uses one horizontal scale, calibrated against the
+native A-Z, a-z and digit advances, with the font's side bearings centered in
+each original character cell. CJK styles use common full-width proportions.
+Letters are never stretched separately to fill their cells. Letter heights,
+accents and descenders use a common vertical grid for each style. Transparent
+draw margins prevent clipping without changing character advances, text
+measurement, alignment or encoded line breaks. The original message layout remains
+authoritative. Game-specific symbols use explicit recipes keyed by their
+original shapes; an unsupported convention is never replaced with a missing
+character box. The native U+FF04 variants use the game's double-stroke
+Pokédollar symbol rather than a Unicode dollar sign. Small regional font banks
+are included when their complete structure and source bytes validate. Spaces
+retain the native advance-only path, including Japanese U+3000.
+
+Regional preparation keeps the captured Latin alphabet and UI symbols resident
+on European/USA images. Imported characters outside that corpus retain native
+rendering. Japanese images have their own corpus and memory qualification.
+The font and recipe credits accompany generated HD text caches. See
+[coverage and runtime qualification](HD_COVERAGE.md) for the enabled scope;
+successful offline generation alone does not establish correct in-game drawing.
 
 ## Versioned storage and downloads
 

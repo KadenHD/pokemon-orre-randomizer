@@ -1,6 +1,7 @@
 """True HD portrait transfer preserves forms, atlas cells and native round style."""
 from copy import deepcopy
 import unittest
+from unittest.mock import patch
 
 from PySide6.QtGui import QImage, QColor
 
@@ -31,7 +32,8 @@ def fixture(member):
 
 class OrdinaryPortraitTests(unittest.TestCase):
     def test_catalog_covers_every_base_species_and_28_unown_without_form_substitution(self):
-        report = portraits.portrait_coverage_report()
+        with patch("orre_randomizer.hd_extra_portraits.extra_portraits_registered", return_value=False):
+            report = portraits.portrait_coverage_report()
         self.assertEqual(report["texture_atlases"], 413)
         self.assertEqual(report["base_species"], 386)
         self.assertEqual(report["unown_forms"], 28)
@@ -41,6 +43,16 @@ class OrdinaryPortraitTests(unittest.TestCase):
             self.assertFalse(portraits.is_ordinary_portrait_member(member))
             self.assertIsNone(portraits.ordinary_portrait_origin(member, "unused", (42, 84)))
         self.assertTrue(portraits.is_ordinary_portrait_member("face410"))
+
+    def test_reviewed_extra_captures_close_portrait_gaps_without_claiming_stock3d_materials(self):
+        with patch("orre_randomizer.hd_extra_portraits.extra_portraits_registered", return_value=True):
+            report = portraits.portrait_coverage_report()
+        self.assertEqual(report["texture_atlases"], 413)
+        self.assertEqual(report["missing_forms"], [])
+        self.assertEqual(len(report["forms_absent_from_upstream_portrait_donors"]), 6)
+        self.assertEqual(report["additional_portraits"]["texture_atlases"], 9)
+        self.assertTrue(report["additional_portraits"]["registered"])
+        self.assertFalse(report["additional_portraits"]["stock_3d_materials_installed"])
 
     def test_every_identity_roundtrips_without_region_offsets_and_accepts_mipmap_alias(self):
         for member, (_, width, source, target, _) in portraits._CATALOG.items():

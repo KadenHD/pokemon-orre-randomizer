@@ -1,6 +1,6 @@
 """Code-owned Colosseum menu frames. Game pictures come from the exported local interface pack."""
 from PySide6.QtCore import QPointF, QRectF, Qt
-from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPen, QPixmap, QPolygonF
+from PySide6.QtGui import QColor, QLinearGradient, QPainter, QPalette, QPen, QPixmap, QPolygonF
 from PySide6.QtWidgets import QCheckBox, QFrame, QStyle, QStyleOptionButton, QWidget
 
 
@@ -91,6 +91,33 @@ class MenuPanel(QFrame):
             painter.drawPolygon(polygon)
 
 
+def theme_palette(base, *, home=False, xd=False):
+    """Theme native fallback surfaces as well as stylesheet-painted widgets."""
+    palette = QPalette(base)
+    if home:
+        window, field, ink, button, highlight, placeholder, tooltip = (
+            "#191b1e", "#191b1e", "#eceef2", "#202327", "#535b66", "#cbd0d8", "#191b1e")
+    elif xd:
+        window, field, ink, button, highlight, placeholder, tooltip = (
+            "#24191a", "#181314", "#fff4e6", "#382527", "#793d32", "#e2c9bb", "#352223")
+    else:
+        window, field, ink, button, highlight, placeholder, tooltip = (
+            "#082b24", "#0b1c20", "#f2f6f1", "#172c33", "#17666b", "#b0c6bd", "#0b2520")
+    for role, color in ((QPalette.ColorRole.Window, window),
+                        (QPalette.ColorRole.Base, field),
+                        (QPalette.ColorRole.Text, ink),
+                        (QPalette.ColorRole.WindowText, ink),
+                        (QPalette.ColorRole.Button, button),
+                        (QPalette.ColorRole.ButtonText, ink),
+                        (QPalette.ColorRole.Highlight, highlight),
+                        (QPalette.ColorRole.HighlightedText, "#ffffff"),
+                        (QPalette.ColorRole.PlaceholderText, placeholder),
+                        (QPalette.ColorRole.ToolTipBase, tooltip),
+                        (QPalette.ColorRole.ToolTipText, ink)):
+        palette.setColor(role, QColor(color))
+    return palette
+
+
 JAPANESE_FONT_STYLE = """
 QWidget { font-family: "Yu Gothic UI", "Meiryo", "Noto Sans CJK JP", "Noto Sans JP", sans-serif; }
 QLabel#title { font-family: "Segoe UI", sans-serif; }
@@ -175,6 +202,9 @@ QTabWidget#sheetTabs::pane { border: 1px solid #69877a; background: #09271f; }
 QProgressBar#sheetStat { min-height: 8px; max-height: 8px; border: 1px solid #54726c; }
 QProgressBar#sheetStat::chunk { background: #60d4d9; }
 QToolTip { background: #0b2520; color: #f2f6f1; border: 1px solid #a3bdb1; padding: 8px; }
+QFrame#sectionDivider { color: #829e98; background: #829e98; border: 0; }
+QLabel#shortcutKey { border: 1px solid #829e98; border-radius: 4px; padding: 5px 10px; }
+QWidget#folderEntry { border: 1px solid #829e98; border-radius: 4px; }
 QListWidget#ruleNavigation::item { padding: 4px 6px; }
 QTabBar::tab { background: #172c33; color: #f2f6f1; padding: 6px 13px; border: 1px solid #69877a; }
 QTabBar#previewTabs::tab { padding: 6px 8px; }
@@ -221,7 +251,29 @@ QLabel#sheetShadowType {
 
 XD_STYLE = xd_stylesheet()
 
-HOME_STYLE = STYLE + """
+def home_stylesheet():
+    """Keep neutral surfaces neutral, including inherited popups and details."""
+    style = STYLE
+    for original, replacement in {
+        "#181b3b": "#191b1e", "#f2f6f1": "#eceef2", "#e4eee8": "#eceef2",
+        "#dce8e1": "#eceef2", "#c1d8cf": "#cbd0d8", "#8be8e7": "#cbd0d8",
+        "#0b1c20": "#191b1e", "#829e98": "#727782", "#17666b": "#535b66",
+        "#71e2e6": "#cbd0d8", "#0c3029": "#202327", "#172c33": "#202327",
+        "#9eafa9": "#727782", "#24483f": "#30343a", "#bce9de": "#cbd0d8",
+        "#0a3935": "#17191c", "#125359": "#30343a", "#9dafa9": "#969ba5",
+        "#1b292c": "#202327", "#40534f": "#626772", "#173e38": "#30343a",
+        "#245d4f": "#3b4047", "#a3bdb1": "#727782", "#60d4d9": "#cbd0d8",
+        "#d6faf1": "#eceef2", "#50665b": "#626772", "#40564d": "#535b66",
+        "#287b71": "#535b66", "#0b2520": "#191b1e", "#102e26": "#191b1e",
+        "#69877a": "#727782", "#09271f": "#191b1e", "#173f32": "#30343a",
+        "#a8f0ed": "#eceef2", "#36584f": "#535b66", "#54726c": "#727782",
+        "#294f41": "#535b66",
+    }.items():
+        style = style.replace(original, replacement)
+    return style
+
+
+HOME_STYLE = home_stylesheet() + """
 QPushButton#updateDownload, QPushButton#updateCancel {
     background: #202327; color: #eceef2; border: 1px solid #727782;
 }

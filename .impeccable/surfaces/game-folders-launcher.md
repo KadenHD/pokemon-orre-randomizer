@@ -39,6 +39,14 @@ claim to move existing files. Its fixed 1,000 × 800 px window keeps the two pac
 rows grouped horizontally, with no horizontal or vertical page scrollbar.
 Download URLs and hashes open in a separate fixed 900 × 480 px details dialog;
 they do not expand the main page.
+All shared tooltips, popup menus, detail fields, selections and native fallback
+surfaces use neutral charcoal/silver, including when opened from either game.
+Immediately show preparation and progress when Install starts. Cancel remains
+available while installation and path controls are disabled. A close request
+cancels cooperatively, waits for worker cleanup, then closes; it must not leave
+an unstarted worker or apply the old close request to the next installation.
+Remove bindings to destroyed dialogs. Closing and reopening the manager must
+remain safe before and after changing the interface language.
 
 ## Launcher
 

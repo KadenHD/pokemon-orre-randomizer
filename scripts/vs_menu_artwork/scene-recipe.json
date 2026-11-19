@@ -1,0 +1,1322 @@
+{
+  "schema": 1,
+  "review_only": false,
+  "kind": "source-mesh-characters-with-authentic-hardware-photos",
+  "approved_by": "root",
+  "dimensions": [
+    864,
+    472
+  ],
+  "target_native_window_dimensions": [
+    216,
+    118
+  ],
+  "files": {
+    "controller-scene-composite-authentic-review.png": {
+      "scene": "controller",
+      "sha256": "7c2e94d409fa3beff767a15b4e19cb51d41a1a4985beb72c61e217b26a71bba9",
+      "bytes": 534192,
+      "dimensions": [
+        864,
+        472
+      ]
+    },
+    "controller-scene-foreground-authentic-review.png": {
+      "scene": "controller",
+      "sha256": "8f4046b840a06d862b56ad2cb60aeabe3c85138cefad4cb0da7904580a1e76fa",
+      "bytes": 414852,
+      "dimensions": [
+        864,
+        472
+      ]
+    },
+    "gba-scene-composite-authentic-review.png": {
+      "scene": "gba",
+      "sha256": "a4d83c5356b429b4ffea3e86b26366a0c6162027c9edc875249153b6192141c4",
+      "bytes": 547403,
+      "dimensions": [
+        864,
+        472
+      ]
+    },
+    "gba-scene-foreground-authentic-review.png": {
+      "scene": "gba",
+      "sha256": "408d62badc8e35f4086c92525b3629b7f207fc17d77b608ef76242a9d3ddc471",
+      "bytes": 491553,
+      "dimensions": [
+        864,
+        472
+      ]
+    }
+  },
+  "source_game_id": "GXXP01",
+  "source_revision": 0,
+  "native_archive": {
+    "file": "people_archive.fsys",
+    "sha256": "3da4a673c0b720db7a349c1d1dbca47110e08c6a269dace4ac913d446e75fa75"
+  },
+  "source_packs": {
+    "colosseum": {
+      "version": "2.00",
+      "author": "Sephie",
+      "source": "https://www.reddit.com/r/DolphinEmulator/comments/sxzxi2/",
+      "archive_source": "https://drive.google.com/file/d/1FwGSM1TJfIrAKNfy7BTrTF850JccSwkt/view",
+      "archives": [
+        {
+          "sha256": "4cac6314d8b3fed18743dc0db844b64651c3845668037912d8ed216053af0e33",
+          "bytes": 722522130
+        }
+      ]
+    },
+    "xd": {
+      "version": "1.0",
+      "author": "mikeyX",
+      "source": "https://forums.dolphin-emu.org/Thread-pokemon-xg-xd-hd-texture-pack-v1-0",
+      "archive_source": "https://mega.nz/folder/kA4WFZ7D#cd66IQr-2AM_PeYd8hFd3Q/file/QZgmWYIZ",
+      "archives": [
+        {
+          "sha256": "56bbf26551f26b7bdb1d0d7d4a6eb7073cf4f8fef72130648bd97abde8851cf2",
+          "bytes": 3295188617
+        }
+      ]
+    }
+  },
+  "scenes": [
+    {
+      "scene": "controller",
+      "output": "controller-scene-composite-authentic-review.png",
+      "camera": {
+        "type": "ORTHO",
+        "ortho_scale": 8.640000343322754,
+        "matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.6292068494294654e-07,
+            -1.0,
+            -20.0
+          ],
+          [
+            0.0,
+            1.0,
+            -1.6292068494294654e-07,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "exposure": -0.6000000238418579
+      },
+      "actors": [
+        {
+          "model": "rinto_0100",
+          "native_model_sha256": "9c0aa2f660510aa3233799540096288b1995b232ccc45ef13c836db9bfb5e158",
+          "source_height": 1.4330381155014038,
+          "scale": 6.5,
+          "location": [
+            -2.5,
+            0.0,
+            -7.234747886657715
+          ],
+          "yaw_degrees": 25,
+          "upper_arm_bones": [
+            "Bone_27",
+            "Bone_59"
+          ],
+          "native_constraints_muted_for_authored_FK_pose": [
+            {
+              "bone": "Bone_05",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_06",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_07",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_08",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_29",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_61",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_72",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_78",
+              "constraint": "IK"
+            }
+          ],
+          "authored_pose_not_original_prerender_pose": true,
+          "pose_basis": {
+            "Bone_27": [
+              [
+                0.30990898609161377,
+                0.024809280410408974,
+                0.9504425525665283,
+                0.0
+              ],
+              [
+                0.024809233844280243,
+                0.999108076095581,
+                -0.03416909649968147,
+                0.0
+              ],
+              [
+                -0.9504425525665283,
+                0.03416906297206879,
+                0.3090170919895172,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "Bone_59": [
+              [
+                0.30990883708000183,
+                0.024810852482914925,
+                -0.9504425525665283,
+                0.0
+              ],
+              [
+                0.02481076680123806,
+                0.9991079568862915,
+                0.03417124226689339,
+                0.0
+              ],
+              [
+                0.9504425525665283,
+                -0.03417117893695831,
+                0.3090168237686157,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        },
+        {
+          "model": "trainer_f_0100",
+          "native_model_sha256": "d05c2eeaddbdf7a9631bbefd94724476b8bf42e42890b06d4b83e194b0731bd1",
+          "source_height": 1.5154187679290771,
+          "scale": 8.0,
+          "location": [
+            2.6500000953674316,
+            0.0,
+            -9.843350410461426
+          ],
+          "yaw_degrees": -25,
+          "upper_arm_bones": [
+            "Bone_16",
+            "Bone_34"
+          ],
+          "native_constraints_muted_for_authored_FK_pose": [
+            {
+              "bone": "Bone_05",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_18",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_36",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_47",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_53",
+              "constraint": "IK"
+            }
+          ],
+          "authored_pose_not_original_prerender_pose": true,
+          "pose_basis": {
+            "Bone_16": [
+              [
+                0.31051918864250183,
+                0.032180532813072205,
+                0.9500222206115723,
+                0.0
+              ],
+              [
+                0.032180529087781906,
+                0.9984980225563049,
+                -0.04434093087911606,
+                0.0
+              ],
+              [
+                -0.9500222206115723,
+                0.04434093087911606,
+                0.30901721119880676,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "Bone_34": [
+              [
+                0.31051892042160034,
+                0.032180532813072205,
+                -0.9500222206115723,
+                0.0
+              ],
+              [
+                0.0321805477142334,
+                0.9984980225563049,
+                0.044340915977954865,
+                0.0
+              ],
+              [
+                0.9500222206115723,
+                -0.04434092715382576,
+                0.3090169131755829,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        }
+      ],
+      "mesh_UV_digests": {
+        "rinto_0100": {
+          "mesh_uv_digest_sha256": "db3d769da679f3cc04798fc19f8dfb6dfc30b90b46c8b67e9c5a02c7d2aca044",
+          "vertices": 1878,
+          "triangles": 2121,
+          "loops": 6255,
+          "no_mesh_or_UV_edits_after_import": true
+        },
+        "trainer_f_0100": {
+          "mesh_uv_digest_sha256": "132a519bb0357155b966fd62cec1d1b0b40110fa9f5421ea73c144a516e6a27f",
+          "vertices": 1000,
+          "triangles": 1575,
+          "loops": 4677,
+          "no_mesh_or_UV_edits_after_import": true
+        }
+      },
+      "hardware_photo": {
+        "review_only": false,
+        "manual_controller_geometry_rejected": true,
+        "source_file": "assets/app/controller.png",
+        "source_sha256": "9bf8d0c7ba77ba048c5912814b38b005b0b4ba84b9d38c9fdd9284cd220dea63",
+        "source_url": "https://commons.wikimedia.org/wiki/File:GameCube_controller.png",
+        "authors": [
+          "Evan-Amos",
+          "Alphathon"
+        ],
+        "license": "CC-BY-SA-3.0",
+        "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+        "source_dimensions": [
+          1800,
+          1400
+        ],
+        "resized_dimensions": [
+          288,
+          224
+        ],
+        "uniform_scale_numerator": 4,
+        "uniform_scale_denominator": 25,
+        "no_tint_or_recolour": true,
+        "original_alpha_preserved": true,
+        "resampling": "premultiplied RGBa Lanczos reduction",
+        "placement": [
+          291,
+          129
+        ],
+        "native_cable_extension": {
+          "authored": true,
+          "photo_anchor_row": 100,
+          "x": 437.48,
+          "width": 7.36,
+          "colour": [
+            45,
+            46,
+            49,
+            255
+          ],
+          "range_y": [
+            0,
+            150.0
+          ]
+        },
+        "composition_changes": "Uniform reduction, alpha composition over source-mesh characters and procedural flame background; separate cable extension to frame top.",
+        "photo_derivative_contribution_license": "CC-BY-SA-3.0",
+        "other_materials": "retain their own source rights; no license claim over game assets",
+        "source_photo_unchanged": true,
+        "outputs": [
+          {
+            "file": "controller-scene-composite-authentic-review.png",
+            "sha256": "7c2e94d409fa3beff767a15b4e19cb51d41a1a4985beb72c61e217b26a71bba9",
+            "bytes": 534192
+          },
+          {
+            "file": "controller-scene-foreground-authentic-review.png",
+            "sha256": "8f4046b840a06d862b56ad2cb60aeabe3c85138cefad4cb0da7904580a1e76fa",
+            "bytes": 414852
+          }
+        ],
+        "owned_Blender_closed": true,
+        "art_approval": "Root accepted the genuine photograph, composition and unchanged ratios for integration; no additional user confirmation required."
+      },
+      "background": "authored procedural flame noise"
+    },
+    {
+      "scene": "gba",
+      "output": "gba-scene-composite-authentic-review.png",
+      "camera": {
+        "type": "ORTHO",
+        "ortho_scale": 8.640000343322754,
+        "matrix_world": [
+          [
+            1.0,
+            0.0,
+            0.0,
+            0.0
+          ],
+          [
+            0.0,
+            -1.6292068494294654e-07,
+            -1.0,
+            -20.0
+          ],
+          [
+            0.0,
+            1.0,
+            -1.6292068494294654e-07,
+            0.0
+          ],
+          [
+            0.0,
+            0.0,
+            0.0,
+            1.0
+          ]
+        ],
+        "exposure": -0.6000000238418579
+      },
+      "actors": [
+        {
+          "model": "gba_fl_m_0100",
+          "native_model_sha256": "9d4194fac358ce4e572793659988e7d81eb7fdc1b95675c19dd2d89d2325036c",
+          "source_height": 1.526684045791626,
+          "scale": 6.2,
+          "location": [
+            -1.4500000476837158,
+            0.6000000238418579,
+            -7.2754411697387695
+          ],
+          "yaw_degrees": 10,
+          "upper_arm_bones": [
+            "Bone_17",
+            "Bone_32"
+          ],
+          "native_constraints_muted_for_authored_FK_pose": [
+            {
+              "bone": "Bone_05",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_19",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_34",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_45",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_51",
+              "constraint": "IK"
+            }
+          ],
+          "authored_pose_not_original_prerender_pose": true,
+          "pose_basis": {
+            "Bone_17": [
+              [
+                0.7665530443191528,
+                0.010897384956479073,
+                -0.6420885324478149,
+                0.0
+              ],
+              [
+                0.010897346772253513,
+                0.9994913339614868,
+                0.029972871765494347,
+                0.0
+              ],
+              [
+                0.6420885324478149,
+                -0.029972858726978302,
+                0.7660443782806396,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "Bone_18": [
+              [
+                -0.17124658823013306,
+                -0.05303552746772766,
+                -0.9837996959686279,
+                0.0
+              ],
+              [
+                -0.053035296499729156,
+                0.9975984692573547,
+                -0.04454773664474487,
+                0.0
+              ],
+              [
+                0.9837996959686279,
+                0.04454746097326279,
+                -0.17364808917045593,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "Bone_19": [
+              [
+                -0.3392741084098816,
+                -0.060641832649707794,
+                0.9387309551239014,
+                0.0
+              ],
+              [
+                -0.0606420561671257,
+                0.9972541332244873,
+                0.042505305260419846,
+                0.0
+              ],
+              [
+                -0.9387309551239014,
+                -0.04250562563538551,
+                -0.3420199453830719,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "Bone_32": [
+              [
+                0.31051960587501526,
+                0.03218875825405121,
+                -0.9500218629837036,
+                0.0
+              ],
+              [
+                0.032188769429922104,
+                0.9984972476959229,
+                0.04435227811336517,
+                0.0
+              ],
+              [
+                0.9500218629837036,
+                -0.04435228556394577,
+                0.3090168535709381,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        },
+        {
+          "model": "gba_emr_m_0100",
+          "native_model_sha256": "0ae2e2a4aef63bc18e597e18ebfa9ab26c89df260c5c84ef538ff42d1adcd476",
+          "source_height": 1.5258169174194336,
+          "scale": 6.0,
+          "location": [
+            2.0999999046325684,
+            0.6000000238418579,
+            -6.824901580810547
+          ],
+          "yaw_degrees": -8,
+          "upper_arm_bones": [
+            "Bone_17",
+            "Bone_32"
+          ],
+          "native_constraints_muted_for_authored_FK_pose": [
+            {
+              "bone": "Bone_05",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_19",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_34",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_45",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_51",
+              "constraint": "IK"
+            }
+          ],
+          "authored_pose_not_original_prerender_pose": true,
+          "pose_basis": {
+            "Bone_17": [
+              [
+                0.31051960587501526,
+                0.03218460828065872,
+                0.9500219225883484,
+                0.0
+              ],
+              [
+                0.0321846678853035,
+                0.9984976649284363,
+                -0.04434657841920853,
+                0.0
+              ],
+              [
+                -0.9500219225883484,
+                0.04434662312269211,
+                0.30901724100112915,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "Bone_32": [
+              [
+                0.3105190396308899,
+                0.032181572169065475,
+                -0.950022280216217,
+                0.0
+              ],
+              [
+                0.03218155726790428,
+                0.9984979033470154,
+                0.04434235394001007,
+                0.0
+              ],
+              [
+                0.950022280216217,
+                -0.044342342764139175,
+                0.30901697278022766,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        },
+        {
+          "model": "gba_fl_f_0100",
+          "native_model_sha256": "5fa963476cde27850f72650cf5f022479f0639d0c3f50cafa96333f253d62310",
+          "source_height": 1.5205360651016235,
+          "scale": 6.3,
+          "location": [
+            -3.200000047683716,
+            0.0,
+            -7.969377040863037
+          ],
+          "yaw_degrees": 10,
+          "upper_arm_bones": [
+            "Bone_19",
+            "Bone_39"
+          ],
+          "native_constraints_muted_for_authored_FK_pose": [
+            {
+              "bone": "Bone_05",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_21",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_41",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_52",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_58",
+              "constraint": "IK"
+            }
+          ],
+          "authored_pose_not_original_prerender_pose": true,
+          "pose_basis": {
+            "Bone_19": [
+              [
+                0.3105200231075287,
+                0.032190270721912384,
+                0.9500216841697693,
+                0.0
+              ],
+              [
+                0.032190293073654175,
+                0.9984971284866333,
+                -0.0443543866276741,
+                0.0
+              ],
+              [
+                -0.9500216841697693,
+                0.0443544015288353,
+                0.3090171217918396,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "Bone_39": [
+              [
+                0.31051960587501526,
+                0.03218824416399002,
+                -0.9500217437744141,
+                0.0
+              ],
+              [
+                0.03218824043869972,
+                0.9984973073005676,
+                0.04435156285762787,
+                0.0
+              ],
+              [
+                0.9500217437744141,
+                -0.04435155913233757,
+                0.3090169131755829,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        },
+        {
+          "model": "gba_emr_f_0100",
+          "native_model_sha256": "b68e6122c8448a046662a5082059ef197951a7690b84ba7a6fd7021480337c7b",
+          "source_height": 1.5077664852142334,
+          "scale": 6.3,
+          "location": [
+            3.2300000190734863,
+            0.0,
+            -7.868928909301758
+          ],
+          "yaw_degrees": -14,
+          "upper_arm_bones": [
+            "Bone_17",
+            "Bone_38"
+          ],
+          "native_constraints_muted_for_authored_FK_pose": [
+            {
+              "bone": "Bone_05",
+              "constraint": "COPY_LOCATION"
+            },
+            {
+              "bone": "Bone_19",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_40",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_51",
+              "constraint": "IK"
+            },
+            {
+              "bone": "Bone_57",
+              "constraint": "IK"
+            }
+          ],
+          "authored_pose_not_original_prerender_pose": true,
+          "pose_basis": {
+            "Bone_17": [
+              [
+                0.31051892042160034,
+                0.03217899426817894,
+                0.9500224590301514,
+                0.0
+              ],
+              [
+                0.03217900171875954,
+                0.9984981417655945,
+                -0.044338807463645935,
+                0.0
+              ],
+              [
+                -0.9500224590301514,
+                0.044338811188936234,
+                0.3090170621871948,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ],
+            "Bone_38": [
+              [
+                0.31051987409591675,
+                0.032190822064876556,
+                -0.9500216841697693,
+                0.0
+              ],
+              [
+                0.032190799713134766,
+                0.9984970688819885,
+                0.0443551205098629,
+                0.0
+              ],
+              [
+                0.9500216841697693,
+                -0.04435510188341141,
+                0.3090169429779053,
+                0.0
+              ],
+              [
+                0.0,
+                0.0,
+                0.0,
+                1.0
+              ]
+            ]
+          }
+        }
+      ],
+      "mesh_UV_digests": {
+        "gba_fl_m_0100": {
+          "mesh_uv_digest_sha256": "89f73eb29d58893e53c7f101f14a768af13aac0dcf698b960b305afd4da4300f",
+          "vertices": 1275,
+          "triangles": 2024,
+          "loops": 6044,
+          "no_mesh_or_UV_edits_after_import": true
+        },
+        "gba_emr_m_0100": {
+          "mesh_uv_digest_sha256": "7d32c9be0a3576eca906d2725cdfe69c4f1ebb3cd00fe6b28a19fb87b36cab88",
+          "vertices": 1084,
+          "triangles": 1762,
+          "loops": 5282,
+          "no_mesh_or_UV_edits_after_import": true
+        },
+        "gba_fl_f_0100": {
+          "mesh_uv_digest_sha256": "9f1bed112dd7014cb048d03f758ef549267cc472b651b6c07218988d4ce1e865",
+          "vertices": 1236,
+          "triangles": 1877,
+          "loops": 5579,
+          "no_mesh_or_UV_edits_after_import": true
+        },
+        "gba_emr_f_0100": {
+          "mesh_uv_digest_sha256": "7710a8a36353f458b99aa4c691767deb4909f187d6867bfbb5e5b9d6343fdc0d",
+          "vertices": 1128,
+          "triangles": 1826,
+          "loops": 5444,
+          "no_mesh_or_UV_edits_after_import": true
+        }
+      },
+      "hardware_photo": {
+        "review_only": false,
+        "manual_gba_geometry_rejected": true,
+        "reference": {
+          "source_page": "https://commons.wikimedia.org/wiki/File:Nintendo-Game-Boy-Advance-Purple-FL.png",
+          "source_page_oldid": "1176745620",
+          "author": "Evan-Amos",
+          "photograph_date": "2016-07-04",
+          "png_uploader": "DoDoDon (2022-08-27)",
+          "license": "Public-domain dedication by the copyright holder (PD-self)",
+          "source_original": {
+            "dimensions": [
+              4200,
+              2900
+            ],
+            "bytes": 11725777,
+            "page_sha1": "72f480f011f1f5d2e499cb5a87c54937dd0c59b9",
+            "local_download": "not available: HTTP429; original SHA1 not locally verified"
+          },
+          "downloaded_official_thumbnail": {
+            "file": "references\\Nintendo-Game-Boy-Advance-Purple-FL-official-960px.png",
+            "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Nintendo-Game-Boy-Advance-Purple-FL.png/960px-Nintendo-Game-Boy-Advance-Purple-FL.png",
+            "dimensions": [
+              960,
+              663
+            ],
+            "bytes": 501924,
+            "sha256": "67bfde0165b6daa1edc9b1a9efd36756fffdd584c8969b421682a7473d791789",
+            "transparent": true
+          }
+        },
+        "source_sha256": "67bfde0165b6daa1edc9b1a9efd36756fffdd584c8969b421682a7473d791789",
+        "no_tint_or_recolour": true,
+        "no_screen_changes": true,
+        "original_alpha_preserved": true,
+        "rigid_rotation_degrees_ccw": 17,
+        "uniform_scale": 0.36,
+        "single_affine_scalar": true,
+        "resampling": "premultiplied RGBa bicubic rigid rotation then uniform affine reduction",
+        "transformed_image_dimensions": [
+          401,
+          330
+        ],
+        "placement": [
+          242,
+          88
+        ],
+        "projected_photo_alpha_box": [
+          293,
+          172,
+          588,
+          341
+        ],
+        "link_cable": "separate authored five-pixel gray cable, behind authentic photograph",
+        "source_photo_unchanged": true,
+        "material_coverage": "authentic hardware photo; four source-mesh characters, three retain native materials",
+        "outputs": [
+          {
+            "file": "gba-scene-composite-authentic-review.png",
+            "bytes": 547403,
+            "sha256": "a4d83c5356b429b4ffea3e86b26366a0c6162027c9edc875249153b6192141c4"
+          },
+          {
+            "file": "gba-scene-foreground-authentic-review.png",
+            "bytes": 491553,
+            "sha256": "408d62badc8e35f4086c92525b3629b7f207fc17d77b608ef76242a9d3ddc471"
+          }
+        ],
+        "owned_Blender_closed": true,
+        "art_approval": "Root accepted the genuine photograph, composition and unchanged ratios for integration; no additional user confirmation required."
+      },
+      "background": "authored procedural violet field and lightning curves"
+    }
+  ],
+  "material_records": {
+    "rinto_0100": [
+      {
+        "native_key": "tex1_256x256_52ecb3892f4da464_14.png",
+        "native_dimensions": [
+          256,
+          256
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_256x256_52ecb3892f4da464_14.png",
+          "sha256": "1f5440d12bb2f4c7ca6f428dccc272318bb8200b8ebaaf9393d8e47b93ab6a59",
+          "width": 1024,
+          "height": 1024,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      },
+      {
+        "native_key": "tex1_32x32_bae53bd02262e772_14.png",
+        "native_dimensions": [
+          32,
+          32
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_64x64_72a0bda70b97cdd3_14.png",
+        "native_dimensions": [
+          64,
+          64
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_64x64_72a0bda70b97cdd3_14.png",
+          "sha256": "26121a0cf9113c2917a35c7e695d32205c06cf586ec9560bdfff8e7cae823190",
+          "width": 256,
+          "height": 256,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      },
+      {
+        "native_key": "tex1_24x64_28a3dca593c9589c_c93968df7dbf7966_9.png",
+        "native_dimensions": [
+          24,
+          64
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_24x64_28a3dca593c9589c_c93968df7dbf7966_9.png",
+          "sha256": "06e7d66eb14237da2b1c0d0580e15182f03e9df4ac4a08acb03631fc2e000071",
+          "width": 96,
+          "height": 256,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      }
+    ],
+    "trainer_f_0100": [
+      {
+        "native_key": "tex1_64x128_73e6871a9a3df503_14.png",
+        "native_dimensions": [
+          64,
+          128
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_64x128_73e6871a9a3df503_14.png",
+          "sha256": "dfdf27b364632db8d7e8371f38194019e5cce700b643d897a57791def59ace17",
+          "width": 256,
+          "height": 512,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      },
+      {
+        "native_key": "tex1_32x32_bde2b1551f7175bb_02bd12cb99f2843a_9.png",
+        "native_dimensions": [
+          32,
+          32
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_32x32_bde2b1551f7175bb_02bd12cb99f2843a_9.png",
+          "sha256": "347986e0704820031af199fe569f2135a0319760f1434e3599f2fb2d4a0e441a",
+          "width": 128,
+          "height": 128,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      },
+      {
+        "native_key": "tex1_256x256_4564f24cb68589c0_14.png",
+        "native_dimensions": [
+          256,
+          256
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_256x256_4564f24cb68589c0_14.png",
+          "sha256": "28fcbb3625bdbec5aa359cfda60759119458ac49e10a0000b6b4ae98c2b054ee",
+          "width": 1024,
+          "height": 1024,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      },
+      {
+        "native_key": "tex1_32x96_6bc520e8e335e6b5_b38ac19df160abea_9.png",
+        "native_dimensions": [
+          32,
+          96
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_32x96_6bc520e8e335e6b5_b38ac19df160abea_9.png",
+          "sha256": "62299357b637c1030d96b88d2b298846e3041ecf075649f51a6150c5bc97944e",
+          "width": 128,
+          "height": 384,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      }
+    ],
+    "gba_fl_m_0100": [
+      {
+        "native_key": "tex1_64x128_803014d46156c22f_14.png",
+        "native_dimensions": [
+          64,
+          128
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_256x256_88f63a235b09c0d5_14.png",
+        "native_dimensions": [
+          256,
+          256
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_48x72_f2b86bb150221bd5_14.png",
+        "native_dimensions": [
+          48,
+          72
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_48x72_4cf9dade7d3ea502_14.png",
+        "native_dimensions": [
+          48,
+          72
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_32x56_73f9d19a5c510415_b258008b8640df26_9.png",
+        "native_dimensions": [
+          32,
+          56
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      }
+    ],
+    "gba_emr_m_0100": [
+      {
+        "native_key": "tex1_64x128_4db136cd9fdff294_14.png",
+        "native_dimensions": [
+          64,
+          128
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_64x128_4db136cd9fdff294_14.png",
+          "sha256": "1d0e8fb30a7018b7f89a3032bcea076162b1a44344c767b163a206c8da778adc",
+          "width": 256,
+          "height": 512,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      },
+      {
+        "native_key": "tex1_256x256_78136334b811a66a_14.png",
+        "native_dimensions": [
+          256,
+          256
+        ],
+        "source": "exact-HD-pack-donor",
+        "HD_donor": {
+          "pack": "xd-1.0",
+          "physical_file": "tex1_256x256_78136334b811a66a_14.png",
+          "sha256": "4515f779e2fa6304547b3548d211e9ecfc1aee5b8f3438eeac5ae58581406ec4",
+          "width": 1024,
+          "height": 1024,
+          "source_scale": 4,
+          "format": "PNG",
+          "mip_levels": 1
+        }
+      }
+    ],
+    "gba_fl_f_0100": [
+      {
+        "native_key": "tex1_64x128_e871f1f48ea0a510_14.png",
+        "native_dimensions": [
+          64,
+          128
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_32x96_7b60f6f081910384_45d1fcece5528263_9.png",
+        "native_dimensions": [
+          32,
+          96
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_48x72_60272e003d80b367_14.png",
+        "native_dimensions": [
+          48,
+          72
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_48x72_4cf9dade7d3ea502_14.png",
+        "native_dimensions": [
+          48,
+          72
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_256x256_ee31ed47779efdff_14.png",
+        "native_dimensions": [
+          256,
+          256
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      }
+    ],
+    "gba_emr_f_0100": [
+      {
+        "native_key": "tex1_64x128_7124c301371abab8_14.png",
+        "native_dimensions": [
+          64,
+          128
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_256x256_2cc1cdcc75069582_14.png",
+        "native_dimensions": [
+          256,
+          256
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      },
+      {
+        "native_key": "tex1_32x96_22e5139cf6d2e3a7_12885d76915703a5_9.png",
+        "native_dimensions": [
+          32,
+          96
+        ],
+        "source": "original-material-retained",
+        "HD_donor": null
+      }
+    ]
+  },
+  "tool": {
+    "name": "Blender HAL DAT Model Addon",
+    "version": "3.1.0",
+    "authors": [
+      "Made",
+      "StarsMmd",
+      "MikeyX"
+    ],
+    "source": "https://github.com/StarsMmd/Blender-Addon-Gamecube-Models",
+    "license": "GPL-3.0-or-later",
+    "use": "private import tool, neither installed into user profile nor distributed with runtime",
+    "renderer": "Blender5.2.3 EEVEE, Standard view, exposure-0.6"
+  },
+  "light_recipe": [
+    {
+      "type": "AREA",
+      "position": [
+        -4,
+        -7,
+        7
+      ],
+      "energy": 1800,
+      "size": 8,
+      "look_at": [
+        0,
+        0,
+        0.7
+      ]
+    },
+    {
+      "type": "AREA",
+      "position": [
+        5,
+        -5,
+        4
+      ],
+      "energy": 700,
+      "size": 7,
+      "look_at": [
+        0,
+        0,
+        0.7
+      ]
+    }
+  ],
+  "recipe": "Import exact DAT meshes/UVs and image-TLUT-matched textures; mute imported IK constraints for recorded authored FK pose; render characters/background at864x472; alpha-compose the pinned real photos with a shared scalar per axis and optional rigid rotation, without tint or screen edits.",
+  "limitations": [
+    "three GBA protagonists retain native material maps",
+    "Michael32x32 environment/reflection map remains native",
+    "camera/poses reconstructed rather than recovered from original CGI",
+    "GBA original11MB was not downloaded; exact official960px source is pinned"
+  ],
+  "full_HD_material_coverage": false,
+  "rejected_manual_hardware_not_used": true,
+  "no_original_CGI_pose_or_lighting_claim": true
+}

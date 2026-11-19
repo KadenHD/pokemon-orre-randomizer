@@ -1,0 +1,29 @@
+{
+  "source_page": "https://commons.wikimedia.org/wiki/File:Nintendo-Game-Boy-Advance-Purple-FL.png",
+  "source_page_oldid": "1176745620",
+  "author": "Evan-Amos",
+  "photograph_date": "2016-07-04",
+  "png_uploader": "DoDoDon (2022-08-27)",
+  "license": "Public-domain dedication by the copyright holder (PD-self)",
+  "source_original": {
+    "dimensions": [
+      4200,
+      2900
+    ],
+    "bytes": 11725777,
+    "page_sha1": "72f480f011f1f5d2e499cb5a87c54937dd0c59b9",
+    "local_download": "not available: HTTP429; original SHA1 not locally verified"
+  },
+  "downloaded_official_thumbnail": {
+    "file": "references\\Nintendo-Game-Boy-Advance-Purple-FL-official-960px.png",
+    "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0b/Nintendo-Game-Boy-Advance-Purple-FL.png/960px-Nintendo-Game-Boy-Advance-Purple-FL.png",
+    "dimensions": [
+      960,
+      663
+    ],
+    "bytes": 501924,
+    "sha256": "67bfde0165b6daa1edc9b1a9efd36756fffdd584c8969b421682a7473d791789",
+    "transparent": true
+  },
+  "role": "Photograph download provenance only; final composition transforms are recorded in scene-recipe.json and vs-scenes.json."
+}

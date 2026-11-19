@@ -104,10 +104,21 @@ packs; missing custom artwork blocks HD preparation instead of substituting
 an enlarged native image. These texture packs add no polygons or HQ audio.
 **Original** mode needs no pack download.
 
+HD mode adds localized type and status labels, battle controls, Pokémon sheets,
+title menus and P-AD captions alongside the texture packs. XD's VS illustrations use the
+game's character models and authentic hardware photos. New game folders also
+support sharp vector lettering without changing dialogue layout.
+Coverage varies by region and language, and some artwork remains native;
+see [HD coverage and limitations](docs/HD_COVERAGE.md).
+Prerecorded movies keep their original resolution. HD mode is not a complete
+remaster of either game.
+
 XD's **HD mode requires both packs**: XD supplies the textures and Colosseum
 supplies HD portraits for all 386 base species and Unown forms, adapted to XD's
 round frames. Clicking **Install** for XD installs both missing packs, reusing
-any version already installed. Unsupported extra forms keep their original portraits.
+any version already installed. Castform's weather forms and XD's additional
+Deoxys forms also have paired normal/shiny x4 portraits. These portrait additions
+do not replace missing stock 3D textures in the upstream packs.
 Custom Shadow Lugia portraits match its normal/shiny colors at both
 resolutions, with violet square frames in Colosseum and round frames in XD.
 The DNA lab uses separate whole-body artwork with matching native/HD poses
@@ -116,6 +127,15 @@ and the keypad's black outline.
 ![Original and HD portraits for both Shadow Lugia appearances](docs/images/hd-custom-lugia-portraits.png)
 
 ![Shared, versioned HD texture packs](docs/images/hd-packs.png)
+
+New game folders keep text sharp alongside the x4 artwork, with consistent
+letter heights and the game's original spacing and line layout.
+
+| Colosseum | XD |
+| --- | --- |
+| ![Original and HD text in Colosseum](docs/images/hd-colosseum-text.png) | ![Original and HD text in XD](docs/images/hd-xd-text.png) |
+
+![XD's HD VS menu](docs/images/hd-xd-vs.png)
 
 The Colosseum pack downloads about **0.72 GB**, XD about **3.30 GB**. The shared
 cache also holds runtime and locally extracted music resources when supported.

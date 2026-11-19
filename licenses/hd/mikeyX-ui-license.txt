@@ -1,0 +1,12 @@
+Pokemon XD UI SVGs © 2021 by mikeyX is licensed under Attribution-NonCommercial-ShareAlike 4.0 International. 
+To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
+
+The included vector images (SVGs), the Photoshop files (PSDs) and the exported PSDs as PNG are all under this license.
+
+This means you can adapt and change the files included and use them in projects.
+
+While the license states that Attribution must be respected (You must give appropriate credit, [...]), it is not something I will enforce. I'll appreciate the credit though. :P
+The license also states that the same license must be applied to any work that uses this work. I am allowing the use of the included the images and vector images (and derivatives) in a Pokemon hack/mod/patch without using the same license (aka. you don't have to license your mod). For any use outside of that (or if you're redistributing your modifications outside of your mod), the same license MUST be used on the modified files.
+The NonCommercial statement remains the same in ANY cases, this work cannot be used commercially or sold in any shape or form.
+
+For questions, private message me on Discord @mikeyX#4697.

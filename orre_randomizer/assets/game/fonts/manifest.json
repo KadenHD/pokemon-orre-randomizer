@@ -1,0 +1,38 @@
+{
+  "version": 1,
+  "contract": "orre-gsmsg-static-glyph-pages-v1",
+  "bridge_contract": "orre-gsmsg-borrowed-static-pages-v2",
+  "vector": {
+    "name": "Noto Sans JP",
+    "author": "Google / Adobe",
+    "license": "SIL Open Font License 1.1",
+    "font_sha256": "c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f",
+    "license_sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9",
+    "url": "https://github.com/google/fonts/tree/main/ofl/notosansjp",
+    "upstream_commit": "523d033d6cb47f4a80c58a35753646f5c3608a78",
+    "weight": 700,
+    "recipe": "noto-sans-jp-700-common-x-native-advance-v5",
+    "layout_recipe": "shared-y-native-advance-centered-common-x-v5",
+    "style": "adapted vector typography; shared shape proportions, balanced native advance cells, common vertical metrics",
+    "glyph_policy": "letters-digits-common-shape; other-glyphs-native-graphic-regions",
+    "rasterizer": {
+      "pillow": "13.0.0",
+      "freetype": "2.14.3",
+      "vertical": "common-grid-bicubic-2x-lanczos",
+      "horizontal": "bounded-advance-fit-fixed-cell-shape-cap-v5"
+    }
+  },
+  "symbol_recipes_sha256": "577e30decd3493e977ddbc9bbf9202753537e77ef9eb812eeec9de1593e8b811",
+  "files": {
+    "fonts/NotoSansJP.ttf": {
+      "bytes": 9589900,
+      "sha256": "c2f3b4d463500a2ddcd3849cded1fceeb9fd6d1c32e6cbecd568453ba50fc68f"
+    },
+    "fonts/OFL-NotoSansJP.txt": {
+      "bytes": 4388,
+      "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+    }
+  },
+  "native_corpus_policy": "regional-native-message-alphabet-v2",
+  "native_glyph_draw_policy": "space-is-an-advance-v1"
+}

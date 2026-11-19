@@ -237,7 +237,8 @@ def configure_profile(folder: Path, manifest, *, load_path=None, muted=False, pa
         _write_ini(profile / "Config/Dolphin.ini", {"DSP": {"Backend": "Cubeb"}})
     hd = manifest["settings"]["graphics"] == "hd"
     _write_ini(profile / "Config/GFX.ini", {"Settings": {"HiresTextures": hd, "CacheHiresTextures": False,
-        "InternalResolution": 3 if hd else 1}})
+        "InternalResolution": 3 if hd else 1},
+        "Enhancements": {"ForceTextureFiltering": 2 if hd else 0}})
     controls = profile / "Config/GCPadNew.ini"
     marker = profile / "Config/OrreControls.json"
     desired = manifest["settings"].get("controller", "keyboard")
@@ -308,12 +309,61 @@ def missing_hd_packs(manifest):
     return [game for game in hd_game_requirements(manifest) if not store.installed(PACKS[game])]
 
 
-HD_CACHE_REVISION = 4
+HD_CACHE_REVISION = 6
+
+
+def _checked_cache_file(root, name, digest, cancel):
+    """Keep auxiliary guides inside their cache, including on Windows."""
+    if not isinstance(name, str):
+        return False
+    relative = Path(name)
+    if (relative.is_absolute() or relative.drive
+            or not relative.parts or ".." in relative.parts or ":" in name):
+        return False
+    path = root / relative
+    if any((root.joinpath(*relative.parts[:index])).is_symlink()
+           or (root.joinpath(*relative.parts[:index])).is_junction()
+           for index in range(len(relative.parts) + 1)):
+        return False
+    try:
+        return path.resolve().is_relative_to(root.resolve()) and file_hash(path, cancel) == digest
+    except (OSError, ValueError):
+        return False
+
+
+def _prepare_text_hd(source_iso, output_iso, stage, game_id, cancel):
+    from .hd_text_capture import collect_source_glyphs
+    from .hd_text_runtime import prepare_text_bridge
+    from .hd_text_assets import capture_text_assets
+    from .hd_text import select_runtime_glyphs
+    from .hd_text_vectors import native_padding
+    from .play_rom import read_executable, update_staged_disc
+    original, glyphs, audit = collect_source_glyphs(source_iso, game_id=game_id, cancel=cancel)
+    resident, _ = select_runtime_glyphs(glyphs, game_id)
+    try:
+        margins, layout = native_padding(resident, cancel=cancel)
+    except InterruptedError as error:
+        raise Cancelled("Opération annulée.") from error
+    modified, plan = prepare_text_bridge(original, read_executable(output_iso), game_id, glyphs,
+                                         padding_by_identity=margins)
+    plan["typography_layout"] = {key: layout[key] for key in ("layout_recipe", "source", "styles")}
+    checkpoint(cancel)
+    try:
+        captured = capture_text_assets(modified, plan, stage / "Textures", cancel=cancel)
+    except InterruptedError as error:
+        raise Cancelled("Opération annulée.") from error
+    placement = update_staged_disc(output_iso, modified)
+    return dict(captured, native_memory_added=plan["native_memory_added"],
+                state_address=plan["state_address"], source_font_members=audit["font_members"],
+                source_dol_sha256=hashlib.sha256(original).hexdigest(), **placement)
 
 
 def prepare_custom_hd(folder, manifest, *, cancel=None):
     """Build only authenticated pack-derived assets, into an immutable per-party view."""
     from .hd_overlays import VERSION, OverlayError, native_asset_manifest, prepare_hd_overlays
+    from .hd_hud import hud_recipes, prepare_hud_overlays
+    from .hd_extra_portraits import prepare_extra_portrait_overlays
+    from .hd_text_assets import MANIFEST as TEXT_MANIFEST, text_recipe, prepare_text_overlays
     from .resources import bundle_root
     cancel = cancel or threading.Event()
     root = Path(folder) / "Textures"
@@ -334,7 +384,29 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
                 game="Pokémon XD" if game == "xd" else "Pokémon Colosseum"))
     identity = hashlib.sha256((root / "orre-overlays-v2.json").read_bytes())
     identity.update(f"{__version__}:{VERSION}:{HD_CACHE_REVISION}".encode())
-    for filename in ("hd-fullbody-manifest.json", "portrait-variants.json"):
+    identity.update(json.dumps(hud_recipes(manifest["game_id"]), sort_keys=True,
+                               separators=(",", ":")).encode("ascii"))
+    text_manifest = root / TEXT_MANIFEST
+    text_feature = manifest.get("features", {}).get("text_hd_bridge")
+    if text_feature and (not text_manifest.is_file()
+            or any(not _checked_cache_file(root, name, digest, cancel)
+                   for name, digest in text_feature.get("auxiliary_files", {}).items())):
+        raise UserError("Recréez ce dossier de partie pour préparer les nouveaux visuels HD.")
+    if text_manifest.is_file():
+        if (text_manifest.is_symlink() or text_manifest.is_junction()
+                or text_manifest.parent.is_symlink() or text_manifest.parent.is_junction()):
+            raise UserError("Les réglages du lanceur sont invalides.")
+        identity.update(text_manifest.read_bytes())
+        identity.update(json.dumps(text_recipe(), sort_keys=True, separators=(",", ":")).encode("ascii"))
+    face_references = root / "NativeReferences/SpindaFace"
+    face_manifest = face_references / "native-face-assets.json"
+    if manifest.get("features", {}).get("spinda_face"):
+        if not _checked_cache_file(root, "NativeReferences/SpindaFace/native-face-assets.json",
+                                   manifest["features"]["spinda_face"].get("reference_manifest_sha256"), cancel):
+            raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.")
+        identity.update(face_manifest.read_bytes())
+    for filename in ("hd-fullbody-manifest.json", "portrait-variants.json",
+                     "extra-portraits/extra-portraits.json"):
         registry = bundle_root() / "models" / filename
         if registry.is_file():
             identity.update(filename.encode("ascii"))
@@ -348,8 +420,11 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
             cached = json.loads(receipt.read_text("utf-8"))
             if (cached["hd_ready"] and cached["schema"] == 2
                     and cached.get("generator_revision") == HD_CACHE_REVISION
-                    and all(Path(item["file"]).name == item["file"] and not (target / item["file"]).is_symlink()
-                            and file_hash(target / item["file"], cancel) == item["sha256"] for item in cached["files"])):
+                    and all(Path(item["file"]).name == item["file"]
+                            and _checked_cache_file(target, item["file"], item["sha256"], cancel)
+                            for item in cached["files"])
+                    and all(_checked_cache_file(target, name, digest, cancel)
+                            for name, digest in cached.get("auxiliary_files", {}).items())):
                 return dict(cached, directory=str(target))
         except (OSError, KeyError, ValueError):
             pass
@@ -367,10 +442,60 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
         if not result["hd_ready"]:
             (root / "hd-diagnostics.json").write_text(json.dumps(result.get("missing_assets", []), indent=2) + "\n", encoding="utf-8")
             raise UserError("Certains visuels HD personnalisés sont indisponibles. Le mode Origine reste disponible.")
+        checkpoint(cancel)
+        try:
+            hud = prepare_hud_overlays(manifest["game_id"],
+                {game: store.location(PACKS[game]) for game in required}, stage)
+        except (OSError, ValueError) as error:
+            raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.") from error
+        result["localized_hud"] = hud
+        result["files"].extend({"file": name, "sha256": digest, "hd_source": {"kind": "localized-hud"}}
+                               for name, digest in hud["files"].items())
+        checkpoint(cancel)
+        try:
+            forms = prepare_extra_portrait_overlays(manifest["game_id"],
+                {game: store.location(PACKS[game]) for game in required}, stage)
+        except (OSError, ValueError) as error:
+            raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.") from error
+        result["extra_form_portraits"] = forms
+        known = {item["file"]: item["sha256"] for item in result["files"]}
+        for name, digest in forms["files"].items():
+            if name in known:
+                if known[name] != digest:
+                    raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.")
+                continue
+            result["files"].append({"file": name, "sha256": digest,
+                                    "hd_source": {"kind": "catalogued-extra-form-portrait"}})
+        if text_manifest.is_file():
+            checkpoint(cancel)
+            try:
+                text = prepare_text_overlays(root, stage, cancel=cancel)
+            except InterruptedError as error:
+                raise Cancelled("Opération annulée.") from error
+            except (OSError, ValueError) as error:
+                raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.") from error
+            result["vector_text"] = text
+            result["files"].extend({"file": name, "sha256": digest, "hd_source": {"kind": "vector-text"}}
+                                   for name, digest in text["files"].items())
+            result.setdefault("auxiliary_files", {}).update(text["auxiliary_files"])
+        if manifest.get("features", {}).get("spinda_face"):
+            from .hd_spinda_face import prepare_face_assets_from_references
+            checkpoint(cancel)
+            try:
+                face = prepare_face_assets_from_references(face_references,
+                    store.location(PACKS["colosseum"]), stage / "SpindaFace")
+            except (OSError, ValueError) as error:
+                raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.") from error
+            result["spinda_face"] = face
+            face_files = {str(path.relative_to(stage).as_posix()): file_hash(path, cancel)
+                          for path in (stage / "SpindaFace").iterdir() if path.is_file()}
+            result.setdefault("auxiliary_files", {}).update(face_files)
+        result["texture_count"] = len(result["files"])
         result["generator_revision"] = HD_CACHE_REVISION
+        (stage / "orre-overlays-v2.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         (stage / "cache.json").write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
         checkpoint(cancel)
-        stage.rename(target)
+        _publish_folder(stage, target, cancel)
     return dict(result, directory=str(target))
 
 
@@ -379,6 +504,7 @@ def _prepare_extras(source_iso, output_iso, boot, stage, shared, progress, cance
     from .play_rom import read_executable, update_staged_disc
     asset_context = dict(asset_context or {})
     features = {}
+    spinda_samples = []
     if boot[:3] == b"GC6" and asset_context.get("dna_lab"):
         from .artwork import _disc_files
         from .engine.dna_hd_tiles import split_keypad_archive, install_dna_hd_tile_bridge
@@ -415,7 +541,19 @@ def _prepare_extras(source_iso, output_iso, boot, stage, shared, progress, cance
         bridge.update(update_staged_disc(output_iso, modified, {"DNA_key.fsys": keypad}))
         asset_context["dna_hd_layout"] = layout
         features["dna_hd_tiles"] = bridge
+        if spinda_samples:
+            from .engine.dna_spinda_face_hd import face_runtime_validated, patch_spinda_face_bridge
+            game_id = boot[:6].decode("ascii")
+            # Qualification covers the native hooks and their memory reservation,
+            # not just the host companion. Unqualified discs retain native faces.
+            if face_runtime_validated(game_id, boot[7]):
+                modified, metadata = patch_spinda_face_bridge(original_dol, read_executable(output_iso),
+                                                              game_id=game_id, revision=boot[7])
+                checkpoint(cancel)
+                metadata.update(update_staged_disc(output_iso, modified))
+                features["spinda_face"] = metadata
     progress(79, "Préparation des textures personnalisées…")
+    features["text_hd_bridge"] = _prepare_text_hd(source_iso, output_iso, stage, boot[:6].decode("ascii"), cancel)
     try:
         overlays = capture_native_assets(output_iso, stage / "Textures", is_xd=boot[:3] == b"GXX",
             reference_iso=source_iso, asset_context=asset_context, cancel=cancel)
@@ -423,9 +561,17 @@ def _prepare_extras(source_iso, output_iso, boot, stage, shared, progress, cance
         raise Cancelled("Opération annulée.") from error
     features["overlays"] = {"schema": 2, "count": overlays["texture_count"],
         "required_packs": overlays.get("required_packs", []), "hd_ready": False}
+    if features.get("spinda_face"):
+        from .hd_spinda_face import capture_native_face_assets
+        references = stage / "Textures/NativeReferences/SpindaFace"
+        references.parent.mkdir(parents=True, exist_ok=True)
+        capture_native_face_assets(source_iso, references)
+        features["spinda_face"]["reference_manifest_sha256"] = file_hash(
+            references / "native-face-assets.json", cancel)
     if hd_requested:
         progress(81, "Préparation des textures HD personnalisées…")
         hd = prepare_custom_hd(stage, {"game": "xd" if boot[:3] == b"GXX" else "colosseum",
+            "game_id": boot[:6].decode("ascii"),
             "shared": str(shared), "features": features}, cancel=cancel)
         features["overlays"].update(hd_ready=True, hd_count=hd["texture_count"])
     game_id = boot[:6].decode("ascii")
@@ -527,7 +673,9 @@ def create_game_folder(*, request: PlayFolderRequest, source: Path, destination:
         return report
 
 
-def launch_command(folder: Path, manifest, *, muted=False, cancel=None):
+def launch_command(folder: Path, manifest, *, muted=False, cancel=None, session_context=None):
+    if session_context is not None:
+        session_context.clear()
     dolphin = validate_dolphin(Path(manifest["dolphin"]))
     load_path = None
     if manifest["settings"]["graphics"] == "hd":
@@ -536,7 +684,13 @@ def launch_command(folder: Path, manifest, *, muted=False, cancel=None):
         if pack.key != manifest["pack"]:
             raise UserError("Cette partie nécessite une autre version du pack HD. Réinstallez son runtime Orre.")
         hd = prepare_custom_hd(folder, manifest, cancel=cancel)
-        load_path = store.texture_view(pack, manifest["game_id"], Path(hd["directory"]))
+        fallback = tuple(PACKS[game] for game in hd_game_requirements(manifest) if game != pack.game)
+        load_path = store.texture_view(pack, manifest["game_id"], Path(hd["directory"]),
+                                       fallback_packs=fallback)
+        face = manifest.get("features", {}).get("spinda_face")
+        if session_context is not None and face and hd.get("spinda_face"):
+            session_context["spinda_face"] = {"assets": str(Path(hd["directory"]) / "SpindaFace"),
+                                             "metadata": face}
     profile = configure_profile(folder, manifest, load_path=load_path, muted=muted)
     return [str(dolphin), "-b", "-u", str(profile), "-e", str(folder / manifest["rom"]),
             *(["-C", "Dolphin.DSP.Volume=0", "-C", "Dolphin.DSP.Mute=True"] if muted else [])]

@@ -338,6 +338,11 @@ def _selected(name: str, member: dict, is_xd: bool) -> str | None:
     if name == "poke_face.fsys":
         if ident in (0x7DF51200, 0x7DF61200, 0x7DF71200):
             return "portrait"
+        from .hd_extra_portraits import is_extra_portrait_member, extra_portraits_registered
+        if (ident & 0xFF00 == 0x1200 and
+                is_extra_portrait_member(member["name"], "xd" if is_xd else "colosseum") and
+                extra_portraits_registered()):
+            return "retail_form"
         if is_xd:
             from .hd_portraits import is_ordinary_portrait_member
             if ident & 0xFF00 == 0x1200 and is_ordinary_portrait_member(member["name"]):
@@ -845,7 +850,7 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                     continue
                 _checkpoint(cancel)
                 raw = _raw_member(archive, member)
-                if role in ("portrait", "retail_portrait"):
+                if role in ("portrait", "retail_portrait", "retail_form"):
                     textures = (_face(raw),)
                 elif role == "battle":
                     textures = _dat_textures(_pkx_dat(raw, is_xd))
@@ -893,7 +898,13 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
         portrait_reference = None
         for asset in assets.values():
             base = asset["base_key"]
-            if asset["role"] == "retail_portrait":
+            if asset["role"] == "retail_form":
+                from .hd_extra_portraits import portrait_origin
+                asset["hd"] = portrait_origin(report["game"], base,
+                    (asset["native"]["width"], asset["native"]["height"]))
+                if asset["hd"] is None:
+                    raise OverlayError("The additional portrait has an unknown or changed native identity.")
+            elif asset["role"] == "retail_portrait":
                 from .hd_portraits import ordinary_portrait_origin
                 resource = next(r for r in report["resources"] if asset["file"] in r["textures"])
                 asset["hd"] = ordinary_portrait_origin(resource["member"], base,
@@ -954,6 +965,10 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
             report["assets"].append(asset)
         report["asset_count"] = len(assets)
         report["texture_count"] = len(assets)
+        if any(row["role"] == "retail_form" for row in report["resources"]):
+            from .hd_extra_portraits import portrait_coverage_report
+            report["additional_portraits"] = {**portrait_coverage_report(),
+                "captured_atlases": sum(row["role"] == "retail_form" for row in report["resources"])}
         if is_xd:
             from .hd_portraits import portrait_coverage_report
             report["portrait_transfer"] = {**portrait_coverage_report(),
@@ -1586,6 +1601,28 @@ def prepare_hd_overlays(native_directory: Path, destination: Path, *, pack_roots
             if marker.get("key") != pack.key or marker.get("archives") != [part.sha256 for part in pack.parts]:
                 raise OverlayError("HD donor pack does not match the pinned release.")
             cache[game] = folder
+        if origin["transform"]["type"] == "captured-extra-portrait":
+            from .hd_extra_portraits import render_extra_portrait
+            try:
+                image, components = render_extra_portrait(origin,
+                    native_image=_load_reference(root, asset["native"]))
+            except (OSError, ValueError) as error:
+                report["missing_assets"].append({"file": asset["file"], "reason": str(error)})
+                continue
+            expected = asset["native"]["width"] * 4, asset["native"]["height"] * 4
+            if (image.width(), image.height()) != expected:
+                raise OverlayError("The registered additional portrait has changed atlas dimensions.")
+            png = _png(expected, bytes(image.constBits()))
+            target.mkdir(parents=True, exist_ok=True)
+            _write(target / asset["file"], png)
+            report["files"].append({"file": asset["file"], "sha256": hashlib.sha256(png).hexdigest(),
+                "width": expected[0], "height": expected[1], "bytes": len(png),
+                "native_format": asset["native_format"], "hd_source": {
+                    "kind": "native-form-mesh-render-portrait", "pack": PACKS[game].key,
+                    "file": "extra-portraits/extra-portraits.json",
+                    "sha256": components["manifest_sha256"], "source_scale": 4, "output_scale": 4,
+                    "transform": origin["transform"], "components": components}})
+            continue
         exact_target = _resolve_hd(folder, asset["base_key"])
         if (origin["file"] != asset["base_key"] and exact_target is not None and
                 origin["transform"]["type"] in ("identity", "pkx_recipe")):

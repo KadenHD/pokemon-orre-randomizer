@@ -30,7 +30,7 @@ jobs:
             throw 'The tag must match the application version.'
           }
       - run: python -m pip install -r requirements-build.txt
-      - run: python -m pip install --no-deps -e .
+      - run: python -m pip install -c requirements-build.txt -e ".[artwork]"
       - run: python scripts/build_native.py
       - run: python scripts/fetch_qt_notices.py
       - run: python scripts/build_desktop.py --edition public

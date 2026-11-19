@@ -6,7 +6,8 @@ from pathlib import Path
 from orre_randomizer.hd_packs import PACKS
 import tempfile
 import unittest
-from unittest.mock import patch
+from types import SimpleNamespace
+from unittest.mock import Mock, patch
 
 from PySide6.QtCore import QCoreApplication, QEvent, QSettings
 from PySide6.QtWidgets import QApplication
@@ -14,13 +15,57 @@ from PySide6.QtWidgets import QScrollArea
 from PySide6.QtGui import QFontDatabase, QFont
 from orre_randomizer.gui import MainWindow
 from orre_randomizer.i18n import CATALOGS, LANGUAGES, translate
-from orre_randomizer.ui_play import GameLauncher
+from orre_randomizer.ui_play import GameLauncher, LaunchPreparation
 from orre_randomizer.ui_game_folder import PackDialog
 from orre_randomizer.play_folders import create_game_folder
 from orre_randomizer.play_music import MusicCapability
 
 
 class PlayGui(unittest.TestCase):
+    def test_launch_preparation_transfers_companion_context_without_gui_work(self):
+        worker = LaunchPreparation(self.root, {}, None)
+        received = []
+        worker.succeeded.connect(lambda command, context: received.append((command, context)))
+        def command(folder, data, *, cancel, session_context):
+            session_context["spinda_face"] = {"assets": "verified cache"}
+            return ["owned Dolphin", "-b"]
+        with patch("orre_randomizer.ui_play.launch_command", side_effect=command):
+            worker.run()
+        self.assertEqual(received, [(["owned Dolphin", "-b"], {"spinda_face": {"assets": "verified cache"}})])
+        worker.deleteLater()
+
+    def test_configuring_controls_during_preparation_does_not_cancel_or_close(self):
+        pending = SimpleNamespace(preparation=object(), close_after_preparation=False)
+        GameLauncher.configure_controls(pending)
+        self.assertFalse(pending.close_after_preparation)
+
+    def test_face_helper_failure_keeps_game_running_and_fallback_visible(self):
+        game = self.root / "Face fallback"; (game / "Game").mkdir(parents=True)
+        (game / "Game/game.iso").write_bytes(b"synthetic QA source")
+        data = {"schema":1, "game":"colosseum", "game_id":"GC6P01", "seed":"test",
+            "rom":"Game/game.iso", "dolphin":str(self.root / "Dolphin.exe"),
+            "shared":str(self.root / "Shared"), "pack":PACKS["colosseum"].key, "language":"en",
+            "settings":{"graphics":"original", "speed":1, "native_music":False}}
+        path = game / "game.json"; path.write_text(json.dumps(data))
+        launcher = GameLauncher(path, preferences=self.settings)
+        process = Mock(); process.poll.return_value = None
+        try:
+            with patch("orre_randomizer.ui_play.subprocess.Popen", return_value=process), \
+                 patch("orre_randomizer.play_speed.prepare_speed_controls"), \
+                 patch("orre_randomizer.play_speed.SpeedSession"), \
+                 patch("orre_randomizer.hd_spinda_face.SpindaFaceSession", side_effect=ValueError("unavailable")):
+                launcher.launch([str(self.root / "Dolphin.exe")],
+                    {"spinda_face":{"assets":str(self.root / "cache"), "metadata":{}}})
+            self.assertIs(launcher.process, process)
+            self.assertFalse(launcher.play.isEnabled())
+            self.assertEqual(launcher.status.text(), launcher.text(
+                "Le visage de Spinda utilise le rendu d’origine. Consultez le journal du lanceur."))
+            self.assertIn(b"Orre Spinda face: unavailable", (game / "DolphinUser/Logs/launcher.log").read_bytes())
+        finally:
+            launcher.timer.stop(); launcher.process = None; launcher.release()
+            launcher.close(); launcher.deleteLater()
+            QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+
     @classmethod
     def setUpClass(cls):
         cls.app = QApplication.instance() or QApplication([])

@@ -46,13 +46,18 @@ def ordinary_portrait_origin(member: str, native_key: str, native_size: tuple[in
 
 
 def portrait_coverage_report() -> dict:
+    from .hd_extra_portraits import portrait_coverage_report as extra_coverage
+    extra = extra_coverage()
+    absent_upstream = [{"member": name, "form": form} for name, form in _MISSING_FORMS.items()]
     return {"kind": "ordinary Colosseum HD portraits ported to XD", "native_rom_changed": False,
             "required_packs": ["colosseum"], "texture_atlases": len(_CATALOG),
             "base_species": len({row[0] for row in _CATALOG.values()}),
             "unown_forms": sum(name.startswith("face201") for name in _CATALOG),
             "normal_and_shiny": True, "native_cell_size": 42,
-            "missing_forms": [{"member": name, "form": form, "policy": "unchanged retail base fallback"}
-                              for name, form in _MISSING_FORMS.items()],
+            "missing_forms": ([] if extra["registered"] else
+                [{**form, "policy": "unchanged retail base fallback"} for form in absent_upstream]),
+            "forms_absent_from_upstream_portrait_donors": absent_upstream,
+            "additional_portraits": extra,
             "custom_shadow_lugia": "separate authored asset contract"}
 
 

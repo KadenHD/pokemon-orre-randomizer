@@ -67,6 +67,30 @@ class GameFolders(unittest.TestCase):
             else:
                 link.unlink()
 
+    def test_hd_filter_is_local_and_resets_when_returning_to_original(self):
+        folder = self.root / "Party"
+        manifest = self.manifest()
+        manifest["settings"]["graphics"] = "hd"
+        profile = configure_profile(folder, manifest)
+        path = profile / "Config/GFX.ini"
+        settings = configparser.ConfigParser()
+        settings.optionxform = str
+        settings.read(path)
+        self.assertEqual(settings.getint("Enhancements", "ForceTextureFiltering"), 2)
+        self.assertTrue(settings.getboolean("Settings", "HiresTextures"))
+        settings.set("Enhancements", "MaxAnisotropy", "4")
+        with path.open("w", encoding="utf-8") as output:
+            settings.write(output)
+
+        manifest["settings"]["graphics"] = "original"
+        configure_profile(folder, manifest)
+        settings.read(path)
+        self.assertEqual(settings.getint("Enhancements", "ForceTextureFiltering"), 0)
+        self.assertFalse(settings.getboolean("Settings", "HiresTextures"))
+        self.assertEqual(settings.getint("Settings", "InternalResolution"), 1)
+        self.assertEqual(settings.getint("Enhancements", "MaxAnisotropy"), 4)
+        self.assertFalse((self.root / "Config").exists())
+
     def test_music_reserves_equal_headroom_and_qa_mute_is_reversible(self):
         folder = self.root / "Party"
         manifest = self.manifest()

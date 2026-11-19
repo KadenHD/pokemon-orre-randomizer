@@ -51,8 +51,9 @@ Game folders reuse it and retain their recorded runtime and pack after updates.
 HD sources are original community releases by their authors, recorded with
 exact archive hashes and credits. Retrieve packs automatically from the approved
 HTTPS origin or distribution folder, without asking players to select ZIPs.
-Prepare both packs for private storage together;
-production hosting requires a separate proposal and the user's approval.
+Both packs are served by the approved, separate frozen GitHub pack release.
+Changing the production host or publishing another pack still requires a
+separate proposal and the user's approval.
 Rebuild custom materials and body artwork whenever a pinned source changes.
 Custom x4 textures derive from actual pinned-pack donors and override matching
 HD names. Native meshes remain in the ROM. Missing newly authored HD assets
@@ -62,12 +63,27 @@ not add polygons or HQ audio.
 The launcher shares the incumbent Colosseum/XD layout and uses their respective
 themes. It offers 100%/200% base speed, hold Tab for 200%, Shift+Tab for 50%,
 keyboard/XInput presets and native Dolphin remapping. Speed shortcuts require
-the owned game window to have focus. The experimental independent-music option
-is disabled until final combined-output validation passes. Its implementation
-is limited to verified Europe revision-0 images on Windows.
+the owned game window to have focus. The optional independent-music setting
+is enabled only for verified Europe revision-0 images on Windows with the
+checked renderer recipe, following bounded combined-output validation.
 It keeps gameplay music at normal speed; effects/cries and prerecorded movies
 follow game speed. Native audio is the fallback when the helper cannot follow.
 Do not describe this option as validated for every scene, region or emulator.
+
+HD game text and menu artwork have their own rendering contract, separate from
+the application's accessible Qt labels. Newly created game folders retain native
+font references and a verified text bridge. Original mode draws native samples;
+HD mode loads external vector lettering with the game's advances, baselines,
+colors and encoded line breaks. The approved typography uses common letter
+proportions in native character cells. Preserve it when filling missing paths.
+Do not rewrite a player's existing ROM merely by opening the launcher.
+
+Menu replacements follow exact texture identities, verified pack donors and
+the original language-specific layout. Preserve the original wording, icons,
+alpha, sprite cells and frame geometry. A complete species portrait catalogue
+does not establish full coverage of menus, rendered messages or 3D materials.
+Keep the playable language/region matrix, remaining native fallbacks and real
+Dolphin evidence in docs/HD_COVERAGE.md. Prerecorded movies remain original.
 
 Custom shiny rates for supported starters, gifts and trainer/Shadow encounters
 use the seed; the retired Colosseum unlink flag is normalized after profile verification.

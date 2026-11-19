@@ -1,11 +1,13 @@
 """Runtime additions preserve every non-replaced file and the fixed disc extent."""
 import struct
+import hashlib
 import tempfile
 from pathlib import Path
 import unittest
+from unittest.mock import patch
 
 from orre_randomizer.engine.analyze_game import FormatError
-from orre_randomizer.play_rom import read_executable, update_staged_disc
+from orre_randomizer.play_rom import read_executable, update_staged_disc, _updated_load_budget
 
 
 def dol(size):
@@ -59,6 +61,47 @@ class StagedRuntimeTests(unittest.TestCase):
             with self.subTest(size=len(executable), archives=list(archives)), self.assertRaises(FormatError):
                 update_staged_disc(self.path, executable, archives)
             self.assertEqual(self.path.read_bytes(), before)
+
+    def budget_fixture(self):
+        with self.path.open('r+b') as stream:
+            stream.truncate(12 * 1024 * 1024)
+            stream.seek(0); stream.write(b'GC6J01')
+            stream.seek(0x468); stream.write(struct.pack('>I', 4 * 1024 * 1024))
+        executable = bytearray(dol(4 * 1024 * 1024 + 0x221))
+        struct.pack_into('>I', executable, 0x48, 0x80010000)
+        struct.pack_into('>I', executable, 0xE0, 0x80010000)
+        return bytes(executable)
+
+    def test_verified_apploader_keeps_a_finite_exact_rounded_budget(self):
+        executable = self.budget_fixture()
+        before = self.path.read_bytes()
+        expected = (len(executable) - 0x100 + 31) & ~31
+        with patch('orre_randomizer.play_rom._BUDGET_APPLOADERS', {b'GC6J01':hashlib.sha256(b'').hexdigest()}):
+            result = update_staged_disc(self.path, executable)
+            # A later runtime addition can raise the same finite budget again.
+            self.assertIsNone(_updated_load_budget(b'GC6J01', b'', expected, executable))
+            self.assertIsNone(_updated_load_budget(b'GC6J01', b'', 0, executable))
+        after = self.path.read_bytes()
+        self.assertEqual(struct.unpack_from('>I', after, 0x468)[0], expected)
+        self.assertEqual(result['apploader_dol_budget']['previous'], 4 * 1024 * 1024)
+        self.assertTrue(result['apploader_dol_budget']['section_boundary_checks_preserved'])
+        self.assertEqual(after[0x2440:0x2460], before[0x2440:0x2460])
+        self.assertEqual(after[0x6000:0x8000], before[0x6000:0x8000])
+        self.assertEqual(read_executable(self.path), executable)
+
+    def test_unknown_apploader_or_out_of_range_sections_fail_without_disc_writes(self):
+        executable = self.budget_fixture()
+        before = self.path.read_bytes()
+        with self.assertRaisesRegex(FormatError, 'Unverified Japanese apploader'):
+            update_staged_disc(self.path, executable)
+        self.assertEqual(self.path.read_bytes(), before)
+        invalid = bytearray(executable)
+        struct.pack_into('>I', invalid, 0x48, 0x811FF000)
+        struct.pack_into('>I', invalid, 0xE0, 0x811FF000)
+        with patch('orre_randomizer.play_rom._BUDGET_APPLOADERS', {b'GC6J01':hashlib.sha256(b'').hexdigest()}):
+            with self.assertRaisesRegex(FormatError, 'memory boundary'):
+                update_staged_disc(self.path, bytes(invalid))
+        self.assertEqual(self.path.read_bytes(), before)
 
 
 if __name__ == "__main__":

@@ -49,6 +49,43 @@ bundled in the Orre application. Generated custom x4 overlays do not transfer
 ownership of the underlying game assets. See [game-folder storage and texture
 priority](docs/GAME_FOLDERS.md).
 
+The localized XD HP/level atlases and registered menu derivatives use mikeyX's **Pokemon XD UI SVGs
+V1.0** and the pinned XD pack. The vector source archive has SHA-256
+`c575a04cb5044a41df620e92557cd6bd5d72fb9c3ad4e726dacf972def262616`.
+The original [license](licenses/hd/mikeyX-ui-license.txt) and
+[README](licenses/hd/mikeyX-ui-readme.txt) are preserved. This artwork is
+CC BY-NC-SA 4.0, with the author's exception for inclusion in Pokemon
+hacks/mods/patches; its NonCommercial restriction remains in effect. The
+localized labels change the original English lettering, using captured
+Bahnschrift outlines matching the SVG typography. No font file is bundled.
+The derived artwork is separate from this project's MIT-licensed code.
+
+Additional localized type/status badges and timer captions retain native
+regional identities and measured atlas rectangles. Their Japanese outlines use
+the pinned Noto Sans JP/OFL donor described below. Geometric additions without
+an HD donor are separately authored vectors based on measured native guides;
+they are not credited as pixels from an upstream PNG. The menu catalogue and
+prepared cache retain these distinctions and the donor hashes. See
+[menu artwork sources](docs/HD_SOURCES.md#localized-menu-artwork).
+
+The recreated XD VS illustrations use original game character meshes, recorded
+poses and separately credited material maps. Their photographic components
+retain their own terms: the GameCube controller photo is credited above under
+CC BY-SA 3.0; the
+[Game Boy Advance photo by Evan-Amos](https://commons.wikimedia.org/wiki/File:Nintendo-Game-Boy-Advance-Purple-FL.png)
+was released into the public domain through the Vanamo project. The photos are
+proportionally reduced and composed with the actors; the GBA is also rotated.
+Cable extensions are separate artwork. Source identities, credits and changes
+are recorded in `menu-atlases/vs-scenes.json`. The game meshes and material maps
+remain separate from the MIT code license.
+
+The recreated XD Bingo portraits likewise retain the original Pokémon mesh
+rights and mikeyX's HD material credits. Their backgrounds and vector frames
+are separately authored layers. Recorded sources, changes and rendering limits
+accompany `menu-atlases/bingo-scenes.json` and the
+[portable authoring guide](scripts/bingo_menu_artwork/README.md). These
+compositions do not relicense the source games or upstream texture pack.
+
 Pillow 13.0.0 decodes PNG and DDS source textures when preparing custom HD
 overlays. Its MIT-CMU license and bundled dependency notices are preserved in
 `licenses/images/Pillow-LICENSE.txt`. The application restricts this reader to
@@ -180,19 +217,29 @@ The [move catalog](orre_randomizer/assets/game/text/move-descriptions.json)
 records the original descriptions and their message banks, including the texts
 specific to each game's Shadow moves.
 
-The optional Colosseum postgame event uses XD's original Shadow Lugia model and
-portrait. These are also game resources, separate from the code's MIT license.
+The optional Colosseum postgame event uses XD's original Shadow Lugia model.
+This is also a game resource, separate from the code's MIT license.
 The PKX container and animation scheduling metadata are adapted for Colosseum
 while retaining the original mesh, textures and DAT animation tracks. A custom
 shiny variant swaps the original body and belly material colors and darkens
-the belly texture; its matching
-portrait is recolored from the original face. These modified game resources
+the belly texture. Native and x4 portraits use separate GPU head renders with
+the model's normal or shiny materials, matched poses and game-specific frames.
+Their capture identities and transformations are recorded in the
+[portrait manifest](orre_randomizer/assets/game/models/portrait-variants.json).
+These modified game resources
 remain separate from the application's MIT license.
 The verified disc hashes, resource identifiers,
 conversion and output hashes are recorded in the
 [model manifest](orre_randomizer/assets/game/models/manifest.json).
 The local export script requires both original game images; neither image,
 their archives nor their executables are distributed.
+
+Additional Castform and Deoxys form portraits use the original model geometry
+with pack-derived or separately authored x4 materials. Their normal and shiny
+renders, framing, material sources and hashes are recorded in
+`orre_randomizer/assets/game/models/extra-portraits/extra-portraits.json`.
+The authoring and composition scripts are included with the application source.
+These rendered game assets remain separate from the code's MIT license.
 
 The home screen additionally uses the original transparent English game logos
 hosted by Bulbagarden Archives, copied without pixel changes:
@@ -209,3 +256,13 @@ The interface music includes native renders of the Colosseum and XD title themes
 and Colosseum's Pyrite Town theme. The corresponding game sources, capture
 intervals, transformations and file hashes are recorded in the
 [music asset metadata](orre_randomizer/assets/game/music/).
+
+## HD text typography
+
+The optional HD text renderer uses Noto Sans JP by Google and Adobe, distributed
+under the SIL Open Font License 1.1. The font and its unmodified license are
+bundled in `orre_randomizer/assets/game/fonts/`. The original game's character
+advances, baselines and message layout are retained; the HD lettering uses
+adapted vector typography. It is separate from the application's MIT license.
+The exact upstream revision and file hashes are recorded in
+`orre_randomizer/hd_text_vectors.py` and the interface asset provenance.

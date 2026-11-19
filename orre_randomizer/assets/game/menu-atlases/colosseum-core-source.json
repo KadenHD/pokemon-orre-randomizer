@@ -1,0 +1,2017 @@
+{
+  "schema": 1,
+  "kind": "registered-colosseum-core-vector-source",
+  "review_only": false,
+  "atlas_records": [
+    {
+      "target": "tex1_520x190_64cf375adbfeac7e_6.png",
+      "game_ids": [
+        "GC6E01",
+        "GC6P01"
+      ],
+      "family": "colosseum-combat-controls",
+      "language": "en",
+      "native_dimensions": [
+        520,
+        190
+      ],
+      "labels": [
+        {
+          "text": "START",
+          "bounds": [
+            109,
+            162,
+            170,
+            180
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        },
+        {
+          "text": "Y",
+          "bounds": [
+            277,
+            84,
+            290,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "X",
+          "bounds": [
+            319,
+            83,
+            326,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "1P:",
+          "bounds": [
+            404,
+            168,
+            438,
+            183
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "21a0ba5576d4f28c57b122f55dd28e459a4f43295d1a0da1f38e5e4ba589eeb3",
+        "member_sha256": "56244c32d421a63d0454c0b265fc4fd352c0fdb26a2fabb224ff08895e2efff9"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/fight_common.fsys/menu_048",
+      "background_vector_file": "combat-geometry.svg",
+      "background_vector_sha256": "afc78e42f4f5d69a1b44fdab8bcd96d5ea5962d367a43c188124b7b47ac32019",
+      "cell_vector_file": null,
+      "cell_vector_sha256": null,
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            474,
+            550,
+            526,
+            583
+          ],
+          "destination_box_native": [
+            268,
+            28,
+            320,
+            61
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            412,
+            550,
+            465,
+            586
+          ],
+          "destination_box_native": [
+            333,
+            27,
+            386,
+            63
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_451x370_10947ef916567b0c_6.dds",
+          "sha256": "fd0a504f542531450976f90bd0ab2e181927571d29cb5682f6922b6c11a1c1e6",
+          "source_box_native": [
+            353,
+            98,
+            403,
+            147
+          ],
+          "destination_box_native": [
+            346,
+            69,
+            394,
+            116
+          ],
+          "trim_HD_alpha_pixels": [
+            0,
+            0,
+            200,
+            196
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            87,
+            122,
+            115,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            207,
+            122,
+            236,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_520x190_64cf375adbfeac7e_6.png",
+      "sha256": "4eea52d196ec79cf538d888df2c3a530e98f6d1002727ebf42eaeea0e665c170",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_520x190_0c471c1eccfe37b6_6.png",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "family": "colosseum-combat-controls",
+      "language": "fr",
+      "native_dimensions": [
+        520,
+        190
+      ],
+      "labels": [
+        {
+          "text": "START",
+          "bounds": [
+            109,
+            162,
+            170,
+            180
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        },
+        {
+          "text": "Y",
+          "bounds": [
+            277,
+            84,
+            290,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "X",
+          "bounds": [
+            319,
+            83,
+            326,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "J1:",
+          "bounds": [
+            402,
+            167,
+            438,
+            183
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "06a226a3b6a2d2d4e7d336d513d3a2a294d924bc5d66020922796c642ecf405b",
+        "member_sha256": "eddc64dcbc24e28adeab2f2a0e6a2f786c7d927df5031fc297534f6d291a83de"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/fight_common_fr.fsys/menu_048",
+      "background_vector_file": "combat-geometry.svg",
+      "background_vector_sha256": "afc78e42f4f5d69a1b44fdab8bcd96d5ea5962d367a43c188124b7b47ac32019",
+      "cell_vector_file": null,
+      "cell_vector_sha256": null,
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            474,
+            550,
+            526,
+            583
+          ],
+          "destination_box_native": [
+            268,
+            28,
+            320,
+            61
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            412,
+            550,
+            465,
+            586
+          ],
+          "destination_box_native": [
+            333,
+            27,
+            386,
+            63
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_451x370_10947ef916567b0c_6.dds",
+          "sha256": "fd0a504f542531450976f90bd0ab2e181927571d29cb5682f6922b6c11a1c1e6",
+          "source_box_native": [
+            353,
+            98,
+            403,
+            147
+          ],
+          "destination_box_native": [
+            346,
+            69,
+            394,
+            116
+          ],
+          "trim_HD_alpha_pixels": [
+            0,
+            0,
+            200,
+            196
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            87,
+            122,
+            115,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            207,
+            122,
+            236,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_520x190_0c471c1eccfe37b6_6.png",
+      "sha256": "2c92eec0c84e42202e96c17cb4648e76cc2f66c42ab5a2fe08c854f20369fadd",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_520x190_68178eb28b593069_6.png",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "family": "colosseum-combat-controls",
+      "language": "de",
+      "native_dimensions": [
+        520,
+        190
+      ],
+      "labels": [
+        {
+          "text": "START",
+          "bounds": [
+            109,
+            162,
+            170,
+            180
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        },
+        {
+          "text": "Y",
+          "bounds": [
+            277,
+            84,
+            290,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "X",
+          "bounds": [
+            319,
+            83,
+            326,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "SP1:",
+          "bounds": [
+            403,
+            167,
+            438,
+            183
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "762de29e74314f49d35053bb52aa42e77cc47b4cdf30195832be548f0cd4dcf8",
+        "member_sha256": "08701362d0f692ff9b241ea4ae5c29880f7ca209ca86972d7854e8a4387fc850"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/fight_common_ge.fsys/menu_048",
+      "background_vector_file": "combat-geometry.svg",
+      "background_vector_sha256": "afc78e42f4f5d69a1b44fdab8bcd96d5ea5962d367a43c188124b7b47ac32019",
+      "cell_vector_file": null,
+      "cell_vector_sha256": null,
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            474,
+            550,
+            526,
+            583
+          ],
+          "destination_box_native": [
+            268,
+            28,
+            320,
+            61
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            412,
+            550,
+            465,
+            586
+          ],
+          "destination_box_native": [
+            333,
+            27,
+            386,
+            63
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_451x370_10947ef916567b0c_6.dds",
+          "sha256": "fd0a504f542531450976f90bd0ab2e181927571d29cb5682f6922b6c11a1c1e6",
+          "source_box_native": [
+            353,
+            98,
+            403,
+            147
+          ],
+          "destination_box_native": [
+            346,
+            69,
+            394,
+            116
+          ],
+          "trim_HD_alpha_pixels": [
+            0,
+            0,
+            200,
+            196
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            87,
+            122,
+            115,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            207,
+            122,
+            236,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_520x190_68178eb28b593069_6.png",
+      "sha256": "d609140ef9fe017d64d06acef7ee9c2dd97c847a8ae859ad3a1ea4014dcfa4ae",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_520x190_0602641ccf23b5fc_6.png",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "family": "colosseum-combat-controls",
+      "language": "it",
+      "native_dimensions": [
+        520,
+        190
+      ],
+      "labels": [
+        {
+          "text": "START",
+          "bounds": [
+            109,
+            162,
+            170,
+            180
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        },
+        {
+          "text": "Y",
+          "bounds": [
+            277,
+            84,
+            290,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "X",
+          "bounds": [
+            319,
+            83,
+            326,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "G1:",
+          "bounds": [
+            403,
+            167,
+            438,
+            183
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "f54bcb690292f0923f543c4b4379cfeaa7b0a78dd876a3cceac513c593754fb2",
+        "member_sha256": "e6a75e03480d486681479afdce6906119b227454235594409e75bc60eacdbd11"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/fight_common_it.fsys/menu_048",
+      "background_vector_file": "combat-geometry.svg",
+      "background_vector_sha256": "afc78e42f4f5d69a1b44fdab8bcd96d5ea5962d367a43c188124b7b47ac32019",
+      "cell_vector_file": null,
+      "cell_vector_sha256": null,
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            474,
+            550,
+            526,
+            583
+          ],
+          "destination_box_native": [
+            268,
+            28,
+            320,
+            61
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            412,
+            550,
+            465,
+            586
+          ],
+          "destination_box_native": [
+            333,
+            27,
+            386,
+            63
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_451x370_10947ef916567b0c_6.dds",
+          "sha256": "fd0a504f542531450976f90bd0ab2e181927571d29cb5682f6922b6c11a1c1e6",
+          "source_box_native": [
+            353,
+            98,
+            403,
+            147
+          ],
+          "destination_box_native": [
+            346,
+            69,
+            394,
+            116
+          ],
+          "trim_HD_alpha_pixels": [
+            0,
+            0,
+            200,
+            196
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            87,
+            122,
+            115,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            207,
+            122,
+            236,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_520x190_0602641ccf23b5fc_6.png",
+      "sha256": "8c598b672ae022a200caccec84df4adfd1d88992ee0616d922316e4385042018",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_520x190_93f597fb1eba4ff5_6.png",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "family": "colosseum-combat-controls",
+      "language": "es",
+      "native_dimensions": [
+        520,
+        190
+      ],
+      "labels": [
+        {
+          "text": "START",
+          "bounds": [
+            109,
+            162,
+            170,
+            180
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        },
+        {
+          "text": "Y",
+          "bounds": [
+            277,
+            84,
+            290,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "X",
+          "bounds": [
+            319,
+            83,
+            326,
+            98
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.3,
+          "outline": "#000000"
+        },
+        {
+          "text": "J.1:",
+          "bounds": [
+            402,
+            167,
+            438,
+            183
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ffffff",
+          "stroke_native": 0.5,
+          "outline": "#000000"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "c692205b05f855f4f4a9f333a8a719707bc1ef046b02bc4dedc56f9a93c6a6d6",
+        "member_sha256": "82e07b584c87f876d813e5690d2f6e86ada31c96e2b183b868691d0b79982243"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/fight_common_sp.fsys/menu_048",
+      "background_vector_file": "combat-geometry.svg",
+      "background_vector_sha256": "afc78e42f4f5d69a1b44fdab8bcd96d5ea5962d367a43c188124b7b47ac32019",
+      "cell_vector_file": null,
+      "cell_vector_sha256": null,
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            474,
+            550,
+            526,
+            583
+          ],
+          "destination_box_native": [
+            268,
+            28,
+            320,
+            61
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_558x601_473dd8e84cb9d101_6.dds",
+          "sha256": "ee7f98c23fd381b60f544ac0cde3d1d6ae8cd2799b8b51815c8484f4f18473d1",
+          "source_box_native": [
+            412,
+            550,
+            465,
+            586
+          ],
+          "destination_box_native": [
+            333,
+            27,
+            386,
+            63
+          ],
+          "trim_HD_alpha_pixels": null,
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_451x370_10947ef916567b0c_6.dds",
+          "sha256": "fd0a504f542531450976f90bd0ab2e181927571d29cb5682f6922b6c11a1c1e6",
+          "source_box_native": [
+            353,
+            98,
+            403,
+            147
+          ],
+          "destination_box_native": [
+            346,
+            69,
+            394,
+            116
+          ],
+          "trim_HD_alpha_pixels": [
+            0,
+            0,
+            200,
+            196
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            87,
+            122,
+            115,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            207,
+            122,
+            236,
+            152
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "source-over existing vector geometry"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_520x190_93f597fb1eba4ff5_6.png",
+      "sha256": "da9935264e3714ec6b0e36dde12ac534db7d2aca8a36fd3773b744a11363157d",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_329x486_2edf701e2d2c73e9_6.png",
+      "game_ids": [
+        "GC6E01",
+        "GC6P01",
+        "GXXE01",
+        "GXXJ01",
+        "GXXP01"
+      ],
+      "family": "colosseum-party-change",
+      "language": "en",
+      "native_dimensions": [
+        329,
+        486
+      ],
+      "labels": [
+        {
+          "text": "ITEM",
+          "bounds": [
+            131,
+            394,
+            192,
+            410
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "MOVES",
+          "bounds": [
+            126,
+            425,
+            198,
+            441
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "OK!",
+          "bounds": [
+            257,
+            437,
+            325,
+            466
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ad1723",
+          "stroke_native": 1.1,
+          "outline": "#eeeeee"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "54fa34ff1953ea32aa2e2fbb2d344cb1ef101a51784f8bb2e88634fb72c4d1ee",
+        "member_sha256": "cc0ade7d1c2353ca462c202cb533de4182c1b27a2ca0807d7a4cd85c845b0505"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/pokechg_menu.fsys/menu_057",
+      "background_vector_file": "party-geometry.svg",
+      "background_vector_sha256": "cae88acff86055b5b39e9e23d273b58f9b71601865d822d1703a0419be07086f",
+      "cell_vector_file": "tex1_329x486_2edf701e2d2c73e9_6-cells.svg",
+      "cell_vector_sha256": "cd25b746b60cec5234de69310954b0b8b0c4abb4dd0c4455f47a3c6abcd95d8b",
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            0,
+            178,
+            77,
+            234
+          ],
+          "destination_box_native": [
+            124,
+            334,
+            199,
+            387
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            29,
+            297,
+            212
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            78,
+            177,
+            154,
+            234
+          ],
+          "destination_box_native": [
+            8,
+            432,
+            81,
+            481
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            13,
+            294,
+            213
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            129,
+            455,
+            158,
+            484
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            172,
+            455,
+            195,
+            478
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_329x486_2edf701e2d2c73e9_6.png",
+      "sha256": "e698aa0408128f95869860c31c93b8e2e801544414ec7e133916621592809d42",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_329x486_655c8dd4a2af8f41_6.png",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "family": "colosseum-party-change",
+      "language": "fr",
+      "native_dimensions": [
+        329,
+        486
+      ],
+      "labels": [
+        {
+          "text": "OBJET",
+          "bounds": [
+            128,
+            407,
+            195,
+            423
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "CAPACITES",
+          "bounds": [
+            123,
+            431,
+            201,
+            447
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "OK!",
+          "bounds": [
+            257,
+            437,
+            325,
+            466
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ad1723",
+          "stroke_native": 1.1,
+          "outline": "#eeeeee"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "ca8c33626e8943a0b8787a1319d25bdb59a4eaba69f168bda40e1fb1d241a34c",
+        "member_sha256": "0516e814c6b3f47a73d6d92872d2eb2b85c6f98a51ccb25d56e521eb51054513"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/pokechg_menu_fr.fsys/menu_057",
+      "background_vector_file": "party-geometry.svg",
+      "background_vector_sha256": "cae88acff86055b5b39e9e23d273b58f9b71601865d822d1703a0419be07086f",
+      "cell_vector_file": "tex1_329x486_655c8dd4a2af8f41_6-cells.svg",
+      "cell_vector_sha256": "cd25b746b60cec5234de69310954b0b8b0c4abb4dd0c4455f47a3c6abcd95d8b",
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            0,
+            178,
+            77,
+            234
+          ],
+          "destination_box_native": [
+            124,
+            334,
+            199,
+            387
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            29,
+            297,
+            212
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            78,
+            177,
+            154,
+            234
+          ],
+          "destination_box_native": [
+            8,
+            432,
+            81,
+            481
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            13,
+            294,
+            213
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            129,
+            455,
+            158,
+            484
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            172,
+            455,
+            195,
+            478
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_329x486_655c8dd4a2af8f41_6.png",
+      "sha256": "b40b0aa2ca35ad4d4585929767a1d1229bac2d1d65ad1d2aaea8fa1d16944077",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_329x486_0753d25a69e169a3_6.png",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "family": "colosseum-party-change",
+      "language": "de",
+      "native_dimensions": [
+        329,
+        486
+      ],
+      "labels": [
+        {
+          "text": "ATTACKEN",
+          "bounds": [
+            122,
+            400,
+            202,
+            416
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "ITEMS",
+          "bounds": [
+            133,
+            424,
+            193,
+            440
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "O.K.",
+          "bounds": [
+            258,
+            443,
+            325,
+            471
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ad1723",
+          "stroke_native": 1.1,
+          "outline": "#eeeeee"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "d2b280661f70bf21bb76f834346f5d1de20314dee2d361fe23d96f7fbbf588d3",
+        "member_sha256": "d0cc3d10b2ac7bb2f6c821a60a4c3f7a86ba0c9264abf62c06f8a10ba559fe63"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/pokechg_menu_ge.fsys/menu_057",
+      "background_vector_file": "party-geometry.svg",
+      "background_vector_sha256": "cae88acff86055b5b39e9e23d273b58f9b71601865d822d1703a0419be07086f",
+      "cell_vector_file": "tex1_329x486_0753d25a69e169a3_6-cells.svg",
+      "cell_vector_sha256": "cd25b746b60cec5234de69310954b0b8b0c4abb4dd0c4455f47a3c6abcd95d8b",
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            0,
+            178,
+            77,
+            234
+          ],
+          "destination_box_native": [
+            124,
+            334,
+            199,
+            387
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            29,
+            297,
+            212
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            78,
+            177,
+            154,
+            234
+          ],
+          "destination_box_native": [
+            8,
+            432,
+            81,
+            481
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            13,
+            294,
+            213
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            129,
+            455,
+            158,
+            484
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            172,
+            455,
+            195,
+            478
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_329x486_0753d25a69e169a3_6.png",
+      "sha256": "32816f2ecf5e20ef0933cc0cfe2ed27be562166387d6520f68c6d86d17738626",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_329x486_f8c06add0b582dfc_6.png",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "family": "colosseum-party-change",
+      "language": "it",
+      "native_dimensions": [
+        329,
+        486
+      ],
+      "labels": [
+        {
+          "text": "MOSSE",
+          "bounds": [
+            130,
+            391,
+            195,
+            407
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "STRUMENTO",
+          "bounds": [
+            121,
+            412,
+            202,
+            428
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "OK!",
+          "bounds": [
+            196,
+            453,
+            264,
+            482
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ad1723",
+          "stroke_native": 1.1,
+          "outline": "#eeeeee"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "df7213f1e00653b1ef25dbfc674ee6b9a64978f8222bca9bbbf0d21b6bb8fa7b",
+        "member_sha256": "b5fa315f195ea1294cbcc6a0952a16c711d80fa88f5f2d53814ddf3a576ec09d"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/pokechg_menu_it.fsys/menu_057",
+      "background_vector_file": "party-geometry.svg",
+      "background_vector_sha256": "cae88acff86055b5b39e9e23d273b58f9b71601865d822d1703a0419be07086f",
+      "cell_vector_file": "tex1_329x486_f8c06add0b582dfc_6-cells.svg",
+      "cell_vector_sha256": "0e48c1365ea2d68a503907947eb18351be43756dde2447cf675d2c8d1834121d",
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            0,
+            178,
+            77,
+            234
+          ],
+          "destination_box_native": [
+            124,
+            334,
+            199,
+            387
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            29,
+            297,
+            212
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            78,
+            177,
+            154,
+            234
+          ],
+          "destination_box_native": [
+            8,
+            432,
+            81,
+            481
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            13,
+            294,
+            213
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            121,
+            448,
+            150,
+            477
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            261,
+            421,
+            284,
+            444
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_329x486_f8c06add0b582dfc_6.png",
+      "sha256": "9780d7f0e3d0c19fa6be465d167a504e50c3ebf07ff51ad3e321b056eda46798",
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_329x486_7af9c6f61472fe40_6.png",
+      "game_ids": [
+        "GC6P01"
+      ],
+      "family": "colosseum-party-change",
+      "language": "es",
+      "native_dimensions": [
+        329,
+        486
+      ],
+      "labels": [
+        {
+          "text": "MOVIMIENTOS",
+          "bounds": [
+            122,
+            392,
+            202,
+            408
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "OBJETO",
+          "bounds": [
+            128,
+            414,
+            197,
+            430
+          ],
+          "font_family": "latin_bold",
+          "fill": "#9d3b00",
+          "stroke_native": 1,
+          "outline": "#ffffff"
+        },
+        {
+          "text": "¡LISTO!",
+          "bounds": [
+            162,
+            455,
+            318,
+            482
+          ],
+          "font_family": "latin_bold",
+          "fill": "#ad1723",
+          "stroke_native": 1.1,
+          "outline": "#eeeeee"
+        }
+      ],
+      "native_guide": {
+        "rgba_sha256": "f8e49a3a67d741a7e3240db09e91d5d2b3b633e8596ae9308ca4e7942ba5104d",
+        "member_sha256": "1a07fd974095ff474f615bf49422bfcda5935a01b243da5320c95e4ff2e5743c"
+      },
+      "vectors_sha256": "752090f26ef9b751162bb840367097db55d727ec5db12bf2442bca71600af7ca",
+      "native_source": "GC6P01/pokechg_menu_sp.fsys/menu_057",
+      "background_vector_file": "party-geometry.svg",
+      "background_vector_sha256": "cae88acff86055b5b39e9e23d273b58f9b71601865d822d1703a0419be07086f",
+      "cell_vector_file": "tex1_329x486_7af9c6f61472fe40_6-cells.svg",
+      "cell_vector_sha256": "0e48c1365ea2d68a503907947eb18351be43756dde2447cf675d2c8d1834121d",
+      "HD_sources": [
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            0,
+            178,
+            77,
+            234
+          ],
+          "destination_box_native": [
+            124,
+            334,
+            199,
+            387
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            29,
+            297,
+            212
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_181x234_7bc866c78da8171b_5.dds",
+          "sha256": "5035ff218de1bacfea51440da038bcc25f2e21cb85feb9f39b436701712dd86e",
+          "source_box_native": [
+            78,
+            177,
+            154,
+            234
+          ],
+          "destination_box_native": [
+            8,
+            432,
+            81,
+            481
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            13,
+            294,
+            213
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            29,
+            94,
+            58
+          ],
+          "destination_box_native": [
+            121,
+            448,
+            150,
+            477
+          ],
+          "trim_HD_alpha_pixels": [
+            11,
+            0,
+            112,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        },
+        {
+          "game": "colosseum",
+          "file": "tex1_94x114_73c3297df3685676_6.dds",
+          "sha256": "a4d659c633f90c4079047028caa9d65f7d7c284e76338af256119dc59508d13c",
+          "source_box_native": [
+            62,
+            0,
+            94,
+            29
+          ],
+          "destination_box_native": [
+            261,
+            421,
+            284,
+            444
+          ],
+          "trim_HD_alpha_pixels": [
+            7,
+            8,
+            101,
+            102
+          ],
+          "resampled_pixels": "genuine HD donor only",
+          "native_bitmap_resampled": false,
+          "compositing": "exact RGBA cell replacement"
+        }
+      ],
+      "new_geometry": "parametric vector bevels/frames; native coordinates and palette guides only",
+      "native_bitmap_resampled": false,
+      "file": "tex1_329x486_7af9c6f61472fe40_6.png",
+      "sha256": "0f63cd0b272caefcf77a896c10b0764832b4407ad401560c82c4608c78e1311b",
+      "runtime_validated": false
+    }
+  ],
+  "geometry_records": [
+    {
+      "target": "tex1_141x260_30a49e4c005f8b24_6.png",
+      "family": "pc-frame",
+      "game_ids": [
+        "GC6E01",
+        "GC6J01",
+        "GC6P01"
+      ],
+      "native_dimensions": [
+        141,
+        260
+      ],
+      "source_native_member_sha256": "0f024fc0cfd9aaf2db584eecb9d2c92bc1f759b5ade92af2315a3f769af721c0",
+      "source_native_RGBA_sha256": "525bc1d6b1ab21570997eef14c1d8cde24ed6e0631f446851afc37124024a8f7",
+      "file": "pc-frame-x4.png",
+      "sha256": "40216d2fd19a82934b2a8397462e5379b84839cec1d72d86747f04bc51f77ee3",
+      "vector_source": "pc-frame.svg",
+      "vector_sha256": "50fca3061e2317653a5b05a7314f7c096ab4e4473bc1c66281a6f3056648d9ce",
+      "source_native_role": "measured geometry and flat palette guide only",
+      "native_bitmap_resampled": false,
+      "genuine_HD_cells": [],
+      "diagnostic_alpha_IoU_at_native_threshold128": 0.9930944525435433,
+      "renderer": {
+        "kind": "real-author-svg-background",
+        "version": 1,
+        "source_sha256": "50fca3061e2317653a5b05a7314f7c096ab4e4473bc1c66281a6f3056648d9ce",
+        "native_dimensions": [
+          141,
+          260
+        ],
+        "source_scale": 4,
+        "remove_ids": [],
+        "removed_nodes": [],
+        "sanitized_svg_sha256": "e4f5563d8f8781415561dfeeea9be3a851f85ebdf560d6f6d69e40c657ba1156",
+        "sanitized_vector_elements": 5,
+        "native_bitmap_resampled": false,
+        "raster_images_remaining": 0,
+        "font_rendering_remaining": false,
+        "qt_version": "6.11.2"
+      },
+      "runtime_validated": false
+    },
+    {
+      "target": "tex1_166x195_c7f7842252250594_6.png",
+      "family": "pda-frame",
+      "game_ids": [
+        "GC6E01",
+        "GC6J01",
+        "GC6P01"
+      ],
+      "native_dimensions": [
+        166,
+        195
+      ],
+      "source_native_member_sha256": "c36cda1519854eab7ae7b61eabf115c851a8df3f23e9c44a8c7fdc4f51c806ba",
+      "source_native_RGBA_sha256": "e5c2e71a167a7e237ed57c43fbeb96a1d6e900e102808138459f68568854d82f",
+      "file": "pda-frame-x4.png",
+      "sha256": "45f7a3d81ebf87673553de57e9181513a21a4ffd0b8db3f664e919e789963073",
+      "vector_source": "pda-frame.svg",
+      "vector_sha256": "b6bbfd53f2d3864543d2852471d9ef4fc3d819766a892023b397ada7770a5dd7",
+      "source_native_role": "measured geometry and flat palette guide only",
+      "native_bitmap_resampled": false,
+      "genuine_HD_cells": [
+        {
+          "pack": "colosseum-2.00",
+          "file": "tex1_451x370_10947ef916567b0c_6.dds",
+          "sha256": "fd0a504f542531450976f90bd0ab2e181927571d29cb5682f6922b6c11a1c1e6",
+          "source_native_box": [
+            270,
+            14,
+            346,
+            204
+          ],
+          "destination_native_box": [
+            0,
+            0,
+            76,
+            190
+          ],
+          "native_RGBA_proved_identical": true,
+          "role": "exact native shared frame cell, genuine HD pixels unchanged"
+        }
+      ],
+      "diagnostic_alpha_IoU_at_native_threshold128": 0.9907810851717653,
+      "renderer": {
+        "kind": "real-author-svg-background",
+        "version": 1,
+        "source_sha256": "b6bbfd53f2d3864543d2852471d9ef4fc3d819766a892023b397ada7770a5dd7",
+        "native_dimensions": [
+          166,
+          195
+        ],
+        "source_scale": 4,
+        "remove_ids": [],
+        "removed_nodes": [],
+        "sanitized_svg_sha256": "57e015ea9b4b4aafd57eab0bc579742e22728127bb33c531728ae083838d0004",
+        "sanitized_vector_elements": 46,
+        "native_bitmap_resampled": false,
+        "raster_images_remaining": 0,
+        "font_rendering_remaining": false,
+        "qt_version": "6.11.2"
+      },
+      "runtime_validated": false
+    }
+  ],
+  "atlas_vectors": {
+    "combat-geometry.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"520\" height=\"190\" viewBox=\"0 0 520 190\"><defs>\n<linearGradient id=\"glass\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#0b1416\"/><stop offset=\".5\" stop-color=\"#334446\"/><stop offset=\"1\" stop-color=\"#152426\"/></linearGradient>\n<linearGradient id=\"metal\" x1=\"0\" y1=\"0\" x2=\".18\" y2=\"1\"><stop offset=\"0\" stop-color=\"#eeeDE8\"/><stop offset=\".16\" stop-color=\"#b8b7b3\"/><stop offset=\".66\" stop-color=\"#8f8e8b\"/><stop offset=\"1\" stop-color=\"#595957\"/></linearGradient>\n<linearGradient id=\"orange\" x1=\"0\" y1=\"0\" x2=\".18\" y2=\"1\"><stop offset=\"0\" stop-color=\"#e68b43\"/><stop offset=\".16\" stop-color=\"#bf6428\"/><stop offset=\".65\" stop-color=\"#a14c12\"/><stop offset=\"1\" stop-color=\"#60320f\"/></linearGradient>\n<linearGradient id=\"inside\" x1=\"0\" y1=\"0\" x2=\".2\" y2=\"1\"><stop offset=\"0\" stop-color=\"#393938\"/><stop offset=\".8\" stop-color=\"#626260\"/><stop offset=\"1\" stop-color=\"#c1c0bb\"/></linearGradient>\n<linearGradient id=\"yellow\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#fff99a\"/><stop offset=\".4\" stop-color=\"#dcca00\"/><stop offset=\"1\" stop-color=\"#6a5900\"/></linearGradient>\n<linearGradient id=\"purple\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#b2a6d3\"/><stop offset=\".5\" stop-color=\"#82719e\"/><stop offset=\"1\" stop-color=\"#3c2e5d\"/></linearGradient>\n<linearGradient id=\"red\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#696969\"/><stop offset=\".3\" stop-color=\"#580d12\"/><stop offset=\".6\" stop-color=\"#31030a\"/><stop offset=\"1\" stop-color=\"#100002\"/></linearGradient>\n<linearGradient id=\"green\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#757575\"/><stop offset=\".3\" stop-color=\"#006344\"/><stop offset=\".6\" stop-color=\"#003025\"/><stop offset=\"1\" stop-color=\"#001b14\"/></linearGradient>\n<linearGradient id=\"strip\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"0\"><stop offset=\"0\" stop-color=\"#263030\"/><stop offset=\".5\" stop-color=\"#435454\"/><stop offset=\"1\" stop-color=\"#152020\"/></linearGradient>\n</defs>\n<rect x=\"0\" y=\"0\" width=\"84\" height=\"190\" fill=\"url(#strip)\"/>\n<path d=\"M10 0V190M21 0V190M32 0V190M43 0V190M54 0V190M65 0V190M76 0V190\" stroke=\"#0c1516\" stroke-width=\"1\" opacity=\".7\"/>\n<path d=\"M12 125H23V138H12ZM0 163H10V179H0ZM65 167H74V190H65Z\" fill=\"#101918\"/>\n<rect x=\"87.5\" y=\".5\" width=\"430.5\" height=\"26\" rx=\"5\" fill=\"none\" stroke=\"#a4b8bb\" stroke-width=\"2.5\"/>\n<rect x=\"89\" y=\"32\" width=\"23\" height=\"69\" rx=\"5\" fill=\"url(#glass)\" fill-opacity=\".8\" stroke=\"#a4b8bb\" stroke-width=\"2.5\"/>\n<rect x=\"112\" y=\"31\" width=\"149\" height=\"57\" rx=\"5\" fill=\"url(#glass)\" fill-opacity=\".8\" stroke=\"#71888b\" stroke-width=\"2.5\"/>\n<rect x=\"405\" y=\"33\" width=\"67\" height=\"125\" rx=\"5\" fill=\"url(#glass)\" fill-opacity=\".8\" stroke=\"#a0b3b8\" stroke-width=\"2.5\"/>\n<rect x=\"472\" y=\"33\" width=\"90\" height=\"156\" rx=\"5\" fill=\"url(#glass)\" fill-opacity=\".8\" stroke=\"#a0b3b8\" stroke-width=\"2.5\"/>\n<path d=\"M442 74H520M443 75V189H472\" fill=\"none\" stroke=\"#778d90\" stroke-width=\"1\"/>\n<rect x=\"369\" y=\"122\" width=\"33\" height=\"33\" rx=\"5\" fill=\"url(#glass)\" fill-opacity=\".8\" stroke=\"#92adb2\" stroke-width=\"3\"/>\n<rect x=\"90\" y=\"124\" width=\"114\" height=\"25\" rx=\"7\" fill=\"url(#green)\" stroke=\"#94c8b5\" stroke-width=\"2\"/>\n<rect x=\"211\" y=\"124\" width=\"112\" height=\"25\" rx=\"7\" fill=\"url(#red)\" stroke=\"#b27a94\" stroke-width=\"2\"/>\n<rect x=\"89\" y=\"158\" width=\"184\" height=\"26\" rx=\"7\" fill=\"url(#glass)\" fill-opacity=\".752941\" stroke=\"#a9bcbf\" stroke-width=\"3\"/>\n<rect x=\"277\" y=\"158\" width=\"116\" height=\"26\" rx=\"6\" fill=\"url(#glass)\" fill-opacity=\".8\" stroke=\"#a9bcbf\" stroke-width=\"3\"/>\n<rect x=\"89\" y=\"159\" width=\"85\" height=\"24\" rx=\"12\" fill=\"#aab7b7\" stroke=\"#dde8e6\" stroke-width=\"1.5\"/>\n<circle cx=\"100\" cy=\"171\" r=\"7\" fill=\"#e4e9e8\" stroke=\"#707979\" stroke-width=\"1.2\"/>\n<path d=\"M122 97L133 117L145 97Z M148 117L160 97L172 117Z M176 96L197 107L176 118Z M223 96L202 107L223 118Z\" fill=\"url(#yellow)\" stroke=\"#493d00\" stroke-width=\".6\"/>\n<path d=\"M229 98L239 107L229 116M247 98L257 107L247 116\" fill=\"none\" stroke=\"#e0002f\" stroke-width=\"1\"/>\n<ellipse cx=\"282\" cy=\"94\" rx=\"14\" ry=\"9\" transform=\"rotate(-35 282 94)\" fill=\"url(#metal)\" stroke=\"#686868\" stroke-width=\"1\"/>\n<ellipse cx=\"322.5\" cy=\"95\" rx=\"8.5\" ry=\"13.3\" transform=\"rotate(-20 322.5 95)\" fill=\"url(#metal)\" stroke=\"#686868\" stroke-width=\"1\"/>\n<circle cx=\"346.5\" cy=\"138\" r=\"20.5\" fill=\"url(#purple)\" stroke=\"#5b4c75\" stroke-width=\"1.5\"/>\n<circle cx=\"346.5\" cy=\"138\" r=\"13\" fill=\"#d6d1e8\" stroke=\"#67577f\" stroke-width=\"1.2\"/>\n<circle cx=\"346.5\" cy=\"138\" r=\"9\" fill=\"#b4a8d1\" stroke=\"#75668c\" stroke-width=\"1.2\"/>\n<circle cx=\"346.5\" cy=\"138\" r=\"5.5\" fill=\"#e0dbef\" stroke=\"#73608f\" stroke-width=\"1\"/>\n</svg>",
+    "party-geometry.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"329\" height=\"486\" viewBox=\"0 0 329 486\"><defs>\n<linearGradient id=\"glass\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#0b1416\"/><stop offset=\".5\" stop-color=\"#334446\"/><stop offset=\"1\" stop-color=\"#152426\"/></linearGradient>\n<linearGradient id=\"metal\" x1=\"0\" y1=\"0\" x2=\".18\" y2=\"1\"><stop offset=\"0\" stop-color=\"#eeeDE8\"/><stop offset=\".16\" stop-color=\"#b8b7b3\"/><stop offset=\".66\" stop-color=\"#8f8e8b\"/><stop offset=\"1\" stop-color=\"#595957\"/></linearGradient>\n<linearGradient id=\"orange\" x1=\"0\" y1=\"0\" x2=\".18\" y2=\"1\"><stop offset=\"0\" stop-color=\"#e68b43\"/><stop offset=\".16\" stop-color=\"#bf6428\"/><stop offset=\".65\" stop-color=\"#a14c12\"/><stop offset=\"1\" stop-color=\"#60320f\"/></linearGradient>\n<linearGradient id=\"inside\" x1=\"0\" y1=\"0\" x2=\".2\" y2=\"1\"><stop offset=\"0\" stop-color=\"#393938\"/><stop offset=\".8\" stop-color=\"#626260\"/><stop offset=\"1\" stop-color=\"#c1c0bb\"/></linearGradient>\n<linearGradient id=\"yellow\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#fff99a\"/><stop offset=\".4\" stop-color=\"#dcca00\"/><stop offset=\"1\" stop-color=\"#6a5900\"/></linearGradient>\n<linearGradient id=\"purple\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"1\"><stop offset=\"0\" stop-color=\"#b2a6d3\"/><stop offset=\".5\" stop-color=\"#82719e\"/><stop offset=\"1\" stop-color=\"#3c2e5d\"/></linearGradient>\n<linearGradient id=\"red\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#696969\"/><stop offset=\".3\" stop-color=\"#580d12\"/><stop offset=\".6\" stop-color=\"#31030a\"/><stop offset=\"1\" stop-color=\"#100002\"/></linearGradient>\n<linearGradient id=\"green\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\"><stop offset=\"0\" stop-color=\"#757575\"/><stop offset=\".3\" stop-color=\"#006344\"/><stop offset=\".6\" stop-color=\"#003025\"/><stop offset=\"1\" stop-color=\"#001b14\"/></linearGradient>\n<linearGradient id=\"strip\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"0\"><stop offset=\"0\" stop-color=\"#263030\"/><stop offset=\".5\" stop-color=\"#435454\"/><stop offset=\"1\" stop-color=\"#152020\"/></linearGradient>\n</defs><defs><clipPath id=\"third-frame-clip\"><rect x=\"258\" y=\"0\" width=\"60\" height=\"420\"/></clipPath></defs><path d=\"M25 11H98Q121 11 121 34V311Q121 334 98 334H25Q2 334 2 311V34Q2 11 25 11Z M31 22H92Q109 22 109 39V302Q109 319 92 319H31Q14 319 14 302V39Q14 22 31 22Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.3\"/><path d=\"M25 10H97Q119 10 119 32V308Q119 330 97 330H25Q3 330 3 308V32Q3 10 25 10Z M31 22H92Q109 22 109 39V302Q109 319 92 319H31Q14 319 14 302V39Q14 22 31 22Z\" fill-rule=\"evenodd\" fill=\"#3f2815\" opacity=\"1\"/><path d=\"M25 11H97Q118 11 118 32V307Q118 328 97 328H25Q4 328 4 307V32Q4 11 25 11Z M31 22H92Q109 22 109 39V302Q109 319 92 319H31Q14 319 14 302V39Q14 22 31 22Z\" fill-rule=\"evenodd\" fill=\"url(#orange)\" opacity=\"1\"/><path d=\"M31 19H92Q112 19 112 39V302Q112 322 92 322H31Q11 322 11 302V39Q11 19 31 19Z M31 22H92Q109 22 109 39V302Q109 319 92 319H31Q14 319 14 302V39Q14 22 31 22Z\" fill-rule=\"evenodd\" fill=\"#3c1d08\" opacity=\"1\"/><path d=\"M31.0 22H92.0Q109.0 22 109.0 39V302Q109.0 319 92.0 319H31.0Q14.0 319 14.0 302V39Q14.0 22 31.0 22Z M30.7 23H92.3Q108.3 23 108.3 39V302Q108.3 318 92.3 318H30.7Q14.7 318 14.7 302V39Q14.7 23 30.7 23Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.55\"/><path d=\"M30.7 23H92.3Q108.3 23 108.3 39V302Q108.3 318 92.3 318H30.7Q14.7 318 14.7 302V39Q14.7 23 30.7 23Z M30.4 24H92.60000000000001Q107.60000000000001 24 107.60000000000001 39V302Q107.60000000000001 317 92.60000000000001 317H30.4Q15.4 317 15.4 302V39Q15.4 24 30.4 24Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.40408163265306135\"/><path d=\"M30.4 24H92.60000000000001Q107.60000000000001 24 107.60000000000001 39V302Q107.60000000000001 317 92.60000000000001 317H30.4Q15.4 317 15.4 302V39Q15.4 24 30.4 24Z M30.1 25H92.9Q106.9 25 106.9 39V302Q106.9 316 92.9 316H30.1Q16.1 316 16.1 302V39Q16.1 25 30.1 25Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.2806122448979592\"/><path d=\"M30.1 25H92.9Q106.9 25 106.9 39V302Q106.9 316 92.9 316H30.1Q16.1 316 16.1 302V39Q16.1 25 30.1 25Z M29.8 26H93.2Q106.2 26 106.2 39V302Q106.2 315 93.2 315H29.8Q16.8 315 16.8 302V39Q16.8 26 29.8 26Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.17959183673469387\"/><path d=\"M29.8 26H93.2Q106.2 26 106.2 39V302Q106.2 315 93.2 315H29.8Q16.8 315 16.8 302V39Q16.8 26 29.8 26Z M29.5 27H93.5Q105.5 27 105.5 39V302Q105.5 314 93.5 314H29.5Q17.5 314 17.5 302V39Q17.5 27 29.5 27Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.10102040816326534\"/><path d=\"M29.5 27H93.5Q105.5 27 105.5 39V302Q105.5 314 93.5 314H29.5Q17.5 314 17.5 302V39Q17.5 27 29.5 27Z M29.2 28H93.8Q104.8 28 104.8 39V302Q104.8 313 93.8 313H29.2Q18.2 313 18.2 302V39Q18.2 28 29.2 28Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.044897959183673466\"/><path d=\"M29.2 28H93.8Q104.8 28 104.8 39V302Q104.8 313 93.8 313H29.2Q18.2 313 18.2 302V39Q18.2 28 29.2 28Z M28.9 29H94.1Q104.1 29 104.1 39V302Q104.1 312 94.1 312H28.9Q18.9 312 18.9 302V39Q18.9 29 28.9 29Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.011224489795918375\"/><path d=\"M153 11H226Q249 11 249 34V309Q249 332 226 332H153Q130 332 130 309V34Q130 11 153 11Z M171 53H211Q231 53 231 73V289Q231 309 211 309H171Q151 309 151 289V73Q151 53 171 53Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.3\"/><path d=\"M153 10H225Q247 10 247 32V306Q247 328 225 328H153Q131 328 131 306V32Q131 10 153 10Z M171 53H211Q231 53 231 73V289Q231 309 211 309H171Q151 309 151 289V73Q151 53 171 53Z\" fill-rule=\"evenodd\" fill=\"#414140\" opacity=\"1\"/><path d=\"M153 11H225Q246 11 246 32V305Q246 326 225 326H153Q132 326 132 305V32Q132 11 153 11Z M171 53H211Q231 53 231 73V289Q231 309 211 309H171Q151 309 151 289V73Q151 53 171 53Z\" fill-rule=\"evenodd\" fill=\"url(#metal)\" opacity=\"1\"/><path d=\"M171 50H211Q234 50 234 73V289Q234 312 211 312H171Q148 312 148 289V73Q148 50 171 50Z M171 53H211Q231 53 231 73V289Q231 309 211 309H171Q151 309 151 289V73Q151 53 171 53Z\" fill-rule=\"evenodd\" fill=\"url(#inside)\" opacity=\"1\"/><path d=\"M171 53H211Q231 53 231 73V289Q231 309 211 309H171Q151 309 151 289V73Q151 53 171 53Z\" fill=\"rgb(18,18,18)\" fill-opacity=\"0.6509803921568628\"/><path d=\"M171.0 53H211.0Q231.0 53 231.0 73V289Q231.0 309 211.0 309H171.0Q151.0 309 151.0 289V73Q151.0 53 171.0 53Z M170.7 54H211.29999999999998Q230.29999999999998 54 230.29999999999998 73V289Q230.29999999999998 308 211.29999999999998 308H170.7Q151.7 308 151.7 289V73Q151.7 54 170.7 54Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.55\"/><path d=\"M170.7 54H211.29999999999998Q230.29999999999998 54 230.29999999999998 73V289Q230.29999999999998 308 211.29999999999998 308H170.7Q151.7 308 151.7 289V73Q151.7 54 170.7 54Z M170.4 55H211.60000000000002Q229.60000000000002 55 229.60000000000002 73V289Q229.60000000000002 307 211.60000000000002 307H170.4Q152.4 307 152.4 289V73Q152.4 55 170.4 55Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.40408163265306135\"/><path d=\"M170.4 55H211.60000000000002Q229.60000000000002 55 229.60000000000002 73V289Q229.60000000000002 307 211.60000000000002 307H170.4Q152.4 307 152.4 289V73Q152.4 55 170.4 55Z M170.1 56H211.89999999999998Q228.89999999999998 56 228.89999999999998 73V289Q228.89999999999998 306 211.89999999999998 306H170.1Q153.1 306 153.1 289V73Q153.1 56 170.1 56Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.2806122448979592\"/><path d=\"M170.1 56H211.89999999999998Q228.89999999999998 56 228.89999999999998 73V289Q228.89999999999998 306 211.89999999999998 306H170.1Q153.1 306 153.1 289V73Q153.1 56 170.1 56Z M169.8 57H212.20000000000002Q228.20000000000002 57 228.20000000000002 73V289Q228.20000000000002 305 212.20000000000002 305H169.8Q153.8 305 153.8 289V73Q153.8 57 169.8 57Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.17959183673469387\"/><path d=\"M169.8 57H212.20000000000002Q228.20000000000002 57 228.20000000000002 73V289Q228.20000000000002 305 212.20000000000002 305H169.8Q153.8 305 153.8 289V73Q153.8 57 169.8 57Z M169.5 58H212.5Q227.5 58 227.5 73V289Q227.5 304 212.5 304H169.5Q154.5 304 154.5 289V73Q154.5 58 169.5 58Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.10102040816326534\"/><path d=\"M169.5 58H212.5Q227.5 58 227.5 73V289Q227.5 304 212.5 304H169.5Q154.5 304 154.5 289V73Q154.5 58 169.5 58Z M169.2 59H212.79999999999998Q226.79999999999998 59 226.79999999999998 73V289Q226.79999999999998 303 212.79999999999998 303H169.2Q155.2 303 155.2 289V73Q155.2 59 169.2 59Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.044897959183673466\"/><path d=\"M169.2 59H212.79999999999998Q226.79999999999998 59 226.79999999999998 73V289Q226.79999999999998 303 212.79999999999998 303H169.2Q155.2 303 155.2 289V73Q155.2 59 169.2 59Z M168.9 60H213.10000000000002Q226.10000000000002 60 226.10000000000002 73V289Q226.10000000000002 302 213.10000000000002 302H168.9Q155.9 302 155.9 289V73Q155.9 60 168.9 60Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.011224489795918375\"/><g clip-path=\"url(#third-frame-clip)\"><path d=\"M281 9H354Q377 9 377 32V388Q377 411 354 411H281Q258 411 258 388V32Q258 9 281 9Z M299 52H339Q359 52 359 72V330Q359 350 339 350H299Q279 350 279 330V72Q279 52 299 52Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.3\"/><path d=\"M281 8H353Q375 8 375 30V385Q375 407 353 407H281Q259 407 259 385V30Q259 8 281 8Z M299 52H339Q359 52 359 72V330Q359 350 339 350H299Q279 350 279 330V72Q279 52 299 52Z\" fill-rule=\"evenodd\" fill=\"#414140\" opacity=\"1\"/><path d=\"M281 9H353Q374 9 374 30V384Q374 405 353 405H281Q260 405 260 384V30Q260 9 281 9Z M299 52H339Q359 52 359 72V330Q359 350 339 350H299Q279 350 279 330V72Q279 52 299 52Z\" fill-rule=\"evenodd\" fill=\"url(#metal)\" opacity=\"1\"/><path d=\"M299 49H339Q362 49 362 72V330Q362 353 339 353H299Q276 353 276 330V72Q276 49 299 49Z M299 52H339Q359 52 359 72V330Q359 350 339 350H299Q279 350 279 330V72Q279 52 299 52Z\" fill-rule=\"evenodd\" fill=\"url(#inside)\" opacity=\"1\"/><path d=\"M299.0 52H339.0Q359.0 52 359.0 72V330Q359.0 350 339.0 350H299.0Q279.0 350 279.0 330V72Q279.0 52 299.0 52Z M298.7 53H339.29999999999995Q358.29999999999995 53 358.29999999999995 72V330Q358.29999999999995 349 339.29999999999995 349H298.7Q279.7 349 279.7 330V72Q279.7 53 298.7 53Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.55\"/><path d=\"M298.7 53H339.29999999999995Q358.29999999999995 53 358.29999999999995 72V330Q358.29999999999995 349 339.29999999999995 349H298.7Q279.7 349 279.7 330V72Q279.7 53 298.7 53Z M298.4 54H339.59999999999997Q357.59999999999997 54 357.59999999999997 72V330Q357.59999999999997 348 339.59999999999997 348H298.4Q280.4 348 280.4 330V72Q280.4 54 298.4 54Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.40408163265306135\"/><path d=\"M298.4 54H339.59999999999997Q357.59999999999997 54 357.59999999999997 72V330Q357.59999999999997 348 339.59999999999997 348H298.4Q280.4 348 280.4 330V72Q280.4 54 298.4 54Z M298.1 55H339.90000000000003Q356.90000000000003 55 356.90000000000003 72V330Q356.90000000000003 347 339.90000000000003 347H298.1Q281.1 347 281.1 330V72Q281.1 55 298.1 55Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.2806122448979592\"/><path d=\"M298.1 55H339.90000000000003Q356.90000000000003 55 356.90000000000003 72V330Q356.90000000000003 347 339.90000000000003 347H298.1Q281.1 347 281.1 330V72Q281.1 55 298.1 55Z M297.8 56H340.20000000000005Q356.20000000000005 56 356.20000000000005 72V330Q356.20000000000005 346 340.20000000000005 346H297.8Q281.8 346 281.8 330V72Q281.8 56 297.8 56Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.17959183673469387\"/><path d=\"M297.8 56H340.20000000000005Q356.20000000000005 56 356.20000000000005 72V330Q356.20000000000005 346 340.20000000000005 346H297.8Q281.8 346 281.8 330V72Q281.8 56 297.8 56Z M297.5 57H340.5Q355.5 57 355.5 72V330Q355.5 345 340.5 345H297.5Q282.5 345 282.5 330V72Q282.5 57 297.5 57Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.10102040816326534\"/><path d=\"M297.5 57H340.5Q355.5 57 355.5 72V330Q355.5 345 340.5 345H297.5Q282.5 345 282.5 330V72Q282.5 57 297.5 57Z M297.2 58H340.79999999999995Q354.79999999999995 58 354.79999999999995 72V330Q354.79999999999995 344 340.79999999999995 344H297.2Q283.2 344 283.2 330V72Q283.2 58 297.2 58Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.044897959183673466\"/><path d=\"M297.2 58H340.79999999999995Q354.79999999999995 58 354.79999999999995 72V330Q354.79999999999995 344 340.79999999999995 344H297.2Q283.2 344 283.2 330V72Q283.2 58 297.2 58Z M296.9 59H341.09999999999997Q354.09999999999997 59 354.09999999999997 72V330Q354.09999999999997 343 341.09999999999997 343H296.9Q283.9 343 283.9 330V72Q283.9 59 296.9 59Z\" fill-rule=\"evenodd\" fill=\"#000000\" opacity=\"0.011224489795918375\"/></g><rect x=\"324\" y=\"0\" width=\"5\" height=\"408\" fill=\"#121212\" fill-opacity=\".65098039215686\"/><rect x=\"1\" y=\"345\" width=\"116\" height=\"79\" rx=\"10\" fill=\"#9d5700\" stroke=\"#7b8b84\" stroke-width=\"2\"/>\n<g fill=\"none\" stroke=\"#ababa4\" stroke-width=\"2\"><ellipse cx=\"59\" cy=\"373\" rx=\"49\" ry=\"9\" transform=\"rotate(-18 59 373)\"/><ellipse cx=\"59\" cy=\"385\" rx=\"49\" ry=\"9\" transform=\"rotate(-18 59 385)\"/></g></svg>",
+    "tex1_329x486_2edf701e2d2c73e9_6-cells.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"329\" height=\"486\" viewBox=\"0 0 329 486\"><rect x=\"205.5\" y=\"377.5\" width=\"48\" height=\"99\" fill=\"none\" stroke=\"#4c6798\" stroke-width=\"3\"/><rect x=\"205.5\" y=\"433.5\" width=\"47\" height=\"46\" fill=\"none\" stroke=\"#4b2279\" stroke-width=\"3\"/><rect x=\"91\" y=\"434\" width=\"25\" height=\"41\" fill=\"rgb(29,29,29)\" fill-opacity=\"0.25098039215686274\"/></svg>",
+    "tex1_329x486_655c8dd4a2af8f41_6-cells.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"329\" height=\"486\" viewBox=\"0 0 329 486\"><rect x=\"205.5\" y=\"377.5\" width=\"48\" height=\"99\" fill=\"none\" stroke=\"#4c6798\" stroke-width=\"3\"/><rect x=\"205.5\" y=\"433.5\" width=\"47\" height=\"46\" fill=\"none\" stroke=\"#4b2279\" stroke-width=\"3\"/><rect x=\"91\" y=\"434\" width=\"25\" height=\"41\" fill=\"rgb(29,29,29)\" fill-opacity=\"0.25098039215686274\"/></svg>",
+    "tex1_329x486_0753d25a69e169a3_6-cells.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"329\" height=\"486\" viewBox=\"0 0 329 486\"><rect x=\"205.5\" y=\"377.5\" width=\"48\" height=\"99\" fill=\"none\" stroke=\"#4c6798\" stroke-width=\"3\"/><rect x=\"205.5\" y=\"433.5\" width=\"47\" height=\"46\" fill=\"none\" stroke=\"#4b2279\" stroke-width=\"3\"/><rect x=\"91\" y=\"434\" width=\"25\" height=\"41\" fill=\"rgb(29,29,29)\" fill-opacity=\"0.25098039215686274\"/></svg>",
+    "tex1_329x486_f8c06add0b582dfc_6-cells.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"329\" height=\"486\" viewBox=\"0 0 329 486\"><rect x=\"206.5\" y=\"342.5\" width=\"47\" height=\"99\" fill=\"none\" stroke=\"#4c6798\" stroke-width=\"3\"/><rect x=\"206.5\" y=\"398.5\" width=\"47\" height=\"46\" fill=\"none\" stroke=\"#4b2279\" stroke-width=\"3\"/><rect x=\"91\" y=\"434\" width=\"25\" height=\"41\" fill=\"rgb(29,29,29)\" fill-opacity=\"0.25098039215686274\"/></svg>",
+    "tex1_329x486_7af9c6f61472fe40_6-cells.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"329\" height=\"486\" viewBox=\"0 0 329 486\"><rect x=\"206.5\" y=\"342.5\" width=\"47\" height=\"99\" fill=\"none\" stroke=\"#4c6798\" stroke-width=\"3\"/><rect x=\"206.5\" y=\"398.5\" width=\"47\" height=\"46\" fill=\"none\" stroke=\"#4b2279\" stroke-width=\"3\"/><rect x=\"91\" y=\"434\" width=\"25\" height=\"41\" fill=\"rgb(29,29,29)\" fill-opacity=\"0.25098039215686274\"/></svg>"
+  },
+  "geometry_vectors": {
+    "pc-frame.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"141\" height=\"260\" viewBox=\"0 0 141 260\">\n<rect x=\"1\" y=\"1\" width=\"126\" height=\"69\" fill=\"#1b1b1b\" fill-opacity=\"0.63921568627451\"/>\n<path d=\"M .5 69.5 V .5 H 127\" fill=\"none\" stroke=\"#8ffff6\" stroke-width=\"1\"/>\n<path d=\"M 1.5 93.5 L 34.5 73.5 H 67 L 70 76 H 138 V 97 H 21 V 167 H 5 V 117 H 2 V 96 Z\"\n fill=\"#71c0fd\" fill-opacity=\"0.9921568627451\"/>\n<path d=\"M 133.5 177.5 H 64.5 L 59 172.5 H 36 L 6.5 190.5 V 203.5 H 10.5 V 259\"\n fill=\"none\" stroke=\"#8ffff6\" stroke-width=\"1\" stroke-linejoin=\"round\"/>\n</svg>",
+    "pda-frame.svg": "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"166\" height=\"195\" viewBox=\"0 0 166 195\">\n<defs>\n <linearGradient id=\"panel\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\" gradientUnits=\"objectBoundingBox\">\n  <stop offset=\"0\" stop-color=\"#000000\"/><stop offset=\".5\" stop-color=\"#006713\"/>\n  <stop offset=\"1\" stop-color=\"#001704\"/>\n </linearGradient>\n <linearGradient id=\"orange\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"0\">\n  <stop offset=\"0\" stop-color=\"#8f3600\"/><stop offset=\".45\" stop-color=\"#e26500\"/>\n  <stop offset=\"1\" stop-color=\"#8f3600\"/>\n </linearGradient>\n <linearGradient id=\"olive\" x1=\"0\" y1=\"0\" x2=\"1\" y2=\"0\">\n  <stop offset=\"0\" stop-color=\"#0c1e04\"/><stop offset=\".5\" stop-color=\"#284c0c\"/>\n  <stop offset=\"1\" stop-color=\"#0c1e04\"/>\n </linearGradient>\n <linearGradient id=\"arrow-green\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n  <stop offset=\"0\" stop-color=\"#93ed98\"/><stop offset=\".5\" stop-color=\"#16bb38\"/>\n  <stop offset=\"1\" stop-color=\"#005320\"/>\n </linearGradient>\n <linearGradient id=\"arrow-orange\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n  <stop offset=\"0\" stop-color=\"#f4c66f\"/><stop offset=\".5\" stop-color=\"#e16d12\"/>\n  <stop offset=\"1\" stop-color=\"#603201\"/>\n </linearGradient>\n <linearGradient id=\"arrow-purple\" x1=\"0\" y1=\"0\" x2=\"0\" y2=\"1\">\n  <stop offset=\"0\" stop-color=\"#9b66ed\"/><stop offset=\".5\" stop-color=\"#6333af\"/>\n  <stop offset=\"1\" stop-color=\"#311568\"/>\n </linearGradient>\n</defs>\n<path d=\"M 26 1.5 H 48 Q 53 1.5 53 5 H 76 V 183 H 52 V 187.5 H 27 Q 20 187.5 20 179 V 143 L 2 127 V 73 Q 2 67 7 62 L 20 51 V 10 Q 20 1.5 26 1.5 Z\"\n fill=\"#001303\"/>\n<path d=\"M 76 5 V 183 H 28 V 140 L 13 126 V 72 L 30 55 V 13 H 53 V 5 Z\" fill=\"url(#panel)\"/>\n<path d=\"M 48 5 H 31 Q 24 5 24 13 V 52 L 7 66 V 126 L 24 142 V 181 Q 24 185 30 185 H 49\"\n fill=\"none\" stroke=\"#005b0b\" stroke-width=\"7\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\n<path d=\"M 48 5 H 31 Q 24 5 24 13 V 52 L 7 66 V 126 L 24 142 V 181 Q 24 185 30 185 H 49\"\n fill=\"none\" stroke=\"#002b06\" stroke-width=\"2\" stroke-linejoin=\"round\" stroke-linecap=\"round\"/>\n<path d=\"M 48 14 H 34 V 56 L 17 71 V 125 L 32 138 V 177 H 51\" fill=\"none\" stroke=\"#005b0b\" stroke-width=\"2\"/>\n<rect x=\"59\" y=\"4\" width=\"18\" height=\"4\" rx=\"2\" fill=\"#003c08\"/>\n<rect x=\"59\" y=\"184\" width=\"17\" height=\"4\" rx=\"2\" fill=\"#003c08\"/>\n<path d=\"M 84 1 H 165 V 23 L 158 30 H 77 V 8 Z\" fill=\"url(#orange)\"/>\n<path d=\"M 84 30 H 165 V 51 L 158 58 H 77 V 37 Z\" fill=\"url(#olive)\"/>\n<path d=\"M 78 29 H 157 L 165 22\" fill=\"none\" stroke=\"#a9a47e\" stroke-width=\".7\"/>\n<path d=\"M 78 57 H 157 L 165 50\" fill=\"none\" stroke=\"#a9a47e\" stroke-width=\".7\"/>\n<path d=\"M 113.5 59 H 136 V 192 H 113.5 C 104 190 100 182 100 174 V 77 C 100 69 104 61 113.5 59 Z\n M 113.5 64.5 H 115.5 C 112 66.5 111 70 111 76 V 174 C 111 180 112 184 115.5 186 H 113.5 C 107 182 105 178 105 174 V 77 C 105 71 108 67 113.5 64.5 Z\"\n fill=\"#001704\" fill-rule=\"evenodd\"/>\n<path d=\"M 120 62 Q 102.5 62 102.5 81 V 170 Q 102.5 188 120 188\" fill=\"none\" stroke=\"#006122\" stroke-width=\"5\"/>\n<path d=\"M 79 60.5 L 95 69.5 L 79 78.5 Z\" fill=\"url(#arrow-green)\"/>\n<path d=\"M 78 88.5 L 90.5 95.5 L 78 102.5 Z\" fill=\"url(#arrow-orange)\"/>\n<path d=\"M 79 113.5 L 95 122.5 L 79 131.5 Z\" fill=\"url(#arrow-orange)\"/>\n<path d=\"M 87.5 135.5 L 98.5 146.5 V 151 H 77.5 V 146.5 Z\" fill=\"url(#arrow-purple)\"/>\n<path d=\"M 77.5 152 H 98.5 V 156.5 L 87.5 167 L 77.5 156.5 Z\" fill=\"url(#arrow-purple)\"/>\n<rect x=\"20\" y=\"99\" width=\"2\" height=\"23\" fill=\"#001500\"/>\n<path d=\"M 1 194 H 166\" fill=\"none\" stroke=\"#006713\" stroke-width=\"2\"/>\n</svg>"
+  },
+  "source_scope": "twelve UI atlases only; original native images not included or needed; geometry analytic, genuine HD cells pinned"
+}

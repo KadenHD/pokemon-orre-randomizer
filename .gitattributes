@@ -11,3 +11,5 @@ orre_randomizer/assets/game/** -text
 # The validated music recipe pins these exact bytes, including line endings.
 native/music/patches.json -text
 native/music/renderer_adapter.c -text
+# Preserve the upstream license texts copied with the HD artwork.
+licenses/hd/** -text

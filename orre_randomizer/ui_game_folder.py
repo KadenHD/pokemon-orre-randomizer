@@ -8,8 +8,8 @@ from pathlib import Path
 import re
 import threading
 
-from PySide6.QtCore import Qt, QThread, Signal
-from PySide6.QtGui import QColor, QPalette, QPixmap, QDesktopServices
+from PySide6.QtCore import Qt, QThread, Signal, Slot
+from PySide6.QtGui import QPixmap, QDesktopServices
 from PySide6.QtCore import QUrl
 from PySide6.QtWidgets import (QCheckBox, QComboBox, QDialog, QFileDialog, QGridLayout,
     QBoxLayout, QHBoxLayout, QLabel, QLineEdit, QPlainTextEdit, QProgressBar, QPushButton,
@@ -20,7 +20,7 @@ from .i18n import Message
 from .play_folders import PlayFolderRequest, find_dolphin, validate_request
 from .resources import application_logo, home_logos
 from .service import Cancelled, UserError
-from .ui_theme import HOME_STYLE, MenuPanel
+from .ui_theme import HOME_STYLE, MenuPanel, theme_palette
 from .ui_workspace import scroll_area
 from .ui_play_controls import VisibleChoices, separator, navigation_icon
 
@@ -129,7 +129,6 @@ class PlayFolderFields(QWidget):
             label.setTextInteractionFlags(Qt.TextInteractionFlag.TextSelectableByMouse)
             frame = QWidget()
             frame.setObjectName("folderEntry")
-            frame.setStyleSheet("QWidget#folderEntry { border: 1px solid #829e98; border-radius: 4px; }")
             row = QHBoxLayout(frame)
             row.setContentsMargins(10, 7, 10, 7)
             icon = QLabel()
@@ -239,10 +238,7 @@ class PackDialog(QDialog):
         self.close_after_cancel = self.close_parent_after_cancel = False
         window.bind(self.setWindowTitle, "Packs HD")
         self.setStyleSheet(PACK_STYLE)
-        palette = self.palette()
-        palette.setColor(QPalette.ColorRole.Window, QColor("#191b1e"))
-        palette.setColor(QPalette.ColorRole.WindowText, QColor("#eceef2"))
-        self.setPalette(palette)
+        self.setPalette(theme_palette(self.palette(), home=True))
         self.setAutoFillBackground(True)
         self.setFixedSize(1000, 800)
         outer = QVBoxLayout(self)
@@ -359,6 +355,7 @@ class PackDialog(QDialog):
         details_row.addStretch(1)
         form.addLayout(details_row)
         self.status = QLabel()
+        self.status.setObjectName("packStatus")
         self.status.setWordWrap(True)
         self.status.setTextFormat(Qt.TextFormat.PlainText)
         store = PackStore()
@@ -366,6 +363,7 @@ class PackDialog(QDialog):
             window.bind(self.status.setText, "La source des packs HD n’est pas encore configurée.")
         form.addWidget(self.status)
         self.progress = QProgressBar()
+        self.progress.setObjectName("packProgress")
         self.progress.hide()
         form.addWidget(self.progress)
         form.addStretch(1)
@@ -388,9 +386,14 @@ class PackDialog(QDialog):
         self.refresh()
 
     def resizeEvent(self, event):
+        logos = home_logos()
         for logo, game in getattr(self, "row_layouts", ()):
             width = 80 if self.width() < 760 else 135
-            logo.setPixmap(QPixmap(str(home_logos()[game])).scaled(width, 64, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
+            source = logos.get(game)
+            if source is None:
+                logo.clear()
+            else:
+                logo.setPixmap(QPixmap(str(source)).scaled(width, 64, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation))
         super().resizeEvent(event)
 
     def save_path(self):
@@ -424,19 +427,40 @@ class PackDialog(QDialog):
     def install(self, game):
         if self.thread is not None:
             return
+        self.close_after_cancel = self.close_parent_after_cancel = False
         self.save_path()
         store = PackStore(Path(self.path.text()))
         ready = all(store.installed(PACKS[key]) for key in required_pack_games(game))
         self.thread = PackInstall(store, game, self, force=ready)
-        self.thread.progress.connect(lambda value, message: (self.progress.setValue(value), self.status.setText(self.window.text(message))))
-        self.thread.succeeded.connect(lambda _: self.status.setText(self.window.text("Packs HD installés et vérifiés.")))
-        self.thread.failed.connect(lambda error: self.status.setText(self.window.error_message(error)))
-        self.thread.finished.connect(self.finished)
-        self.progress.setValue(0)
+        self.thread.progress.connect(self.install_progress)
+        self.thread.succeeded.connect(self.install_succeeded)
+        self.thread.failed.connect(self.install_failed)
+        self.thread.finished.connect(self.install_finished)
+        self.status.setText(self.window.text("Préparation des packs HD…"))
+        self.progress.setRange(0, 0)
         self.progress.show()
         self.cancel.show()
+        self.done.setEnabled(False)
         self.thread.start()
         self.refresh()
+
+    @Slot(int, object)
+    def install_progress(self, value, message):
+        self.progress.setRange(0, 100)
+        self.progress.setValue(value)
+        if self.thread is not None and not self.thread.cancel.is_set():
+            self.status.setText(self.window.text(message))
+
+    @Slot(dict)
+    def install_succeeded(self, _result):
+        self.progress.setRange(0, 100)
+        self.progress.setValue(100)
+        self.status.setText(self.window.text("Packs HD installés et vérifiés."))
+
+    @Slot(object)
+    def install_failed(self, error):
+        self.progress.setRange(0, 100)
+        self.status.setText(self.window.error_message(error))
 
     def cancel_install(self):
         if self.thread is not None:
@@ -444,11 +468,13 @@ class PackDialog(QDialog):
             self.cancel.setEnabled(False)
             self.status.setText(self.window.text("Annulation en cours…"))
 
-    def finished(self):
+    @Slot()
+    def install_finished(self):
         thread, self.thread = self.thread, None
         thread.deleteLater()
         self.cancel.hide()
         self.cancel.setEnabled(True)
+        self.done.setEnabled(True)
         self.refresh()
         if hasattr(self.window, "refresh_pack_status"):
             self.window.refresh_pack_status()

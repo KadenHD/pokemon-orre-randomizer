@@ -1,5 +1,70 @@
 # Changelog
 
+## Unreleased
+
+## 2.0.1 - 2026-11-19
+
+- Add localized HD type/status badges, battle controls, Pokémon sheets, P-AD
+  and PC captions, with separate regional layouts and authenticated donors.
+- Recreate XD's VS illustrations with game character meshes and authentic
+  GameCube controller and GBA photographs, retaining their source credits.
+- Use linear texture filtering in each game's isolated HD profile so localized
+  x4 menu captions remain smooth. Restore native filtering in Original mode.
+- Add localized XD title menus, Bingo type charts and eleven Bingo portraits
+  rendered from the real Pokémon models and pinned x4 materials. Preserve
+  original text cells and distinguish reconstructed artwork from upstream art.
+- Include portable authoring tools and offline packaged checks for the new
+  vector menus and registered scene artwork.
+- Fix the HD manager's worker connection, which prevented downloads from
+  starting and left closing the window stuck on cancellation. Show preparation
+  and byte progress immediately, keep the interface responsive, and restore
+  controls after completion, failure or cancellation.
+- Use neutral charcoal backgrounds for Home and shared HD-manager tooltips,
+  menus, text details and selection states. Theme dividers and shortcut keys
+  through the active palette instead of inheriting Colosseum's green.
+- Remove translation bindings when a dialog is destroyed, so changing the
+  language after closing the HD manager does not access deleted Qt widgets.
+- Keep the HD manager usable when optional game logos are unavailable, including
+  its resize and language-change paths.
+- Fail packaged diagnostics on Python exceptions raised in Qt callbacks,
+  including errors that do not propagate out of the event loop.
+- Include valid small native font banks in HD text capture, covering their
+  Pokédollar and punctuation variants without changing the approved letter
+  proportions or native advances. Distinguish advance-only spaces from native
+  fallback quads with nonzero geometry in runtime diagnostics.
+- Fill missing HD texture identities from already-required companion packs,
+  while preserving the game pack's art and custom overrides. Track both pack
+  generations so repairing a dependency prepares a new immutable view.
+- Add localized HD HP/level atlases for the five European XD languages, using
+  the genuine XD donor and mikeyX's vector typography. Validate these files
+  with the custom overlay cache; retain Original mode without HD packs.
+- Add native glyph-page capture for new game folders and vector HD lettering
+  from a pinned Noto Sans JP donor. Preserve native text advances, dialogue
+  layout and visible Original-mode samples. Keep native guides independent of artistic
+  recipes so later HD text corrections can rebuild the cache without the ROM.
+- Check custom texture and auxiliary-file hashes before reusing an HD cache,
+  and reject missing or altered native guides before rendering replacements.
+- Add reviewed x4 portraits for Castform's three weather forms in both games
+  and Deoxys's Attack, Defense and Speed forms in XD. Keep native square/round
+  framing and paired normal/shiny crops. Include reproducible material and
+  composition tools; leave the upstream stock 3D coverage unchanged.
+- Add a PID-aware x4 Spinda face companion for qualified Colosseum profiles,
+  with fenced texture banks and native fallback. Wait for an observed native
+  acknowledgement before reusing buffers after startup or a save-state rewind.
+  Do not inject its hooks or reserve its memory on unqualified profiles.
+- Use XD's actual horizontal text scale when positioning padded glyphs;
+  preserve Colosseum's separate layout and restore the task origin after drawing.
+- Retry temporary Windows locks when publishing a completed HD cache, using
+  the same cancellable, atomic publication as game folders.
+- Update Colosseum Japan's verified apploader budget when runtime additions
+  exceed its original 4 MiB executable allowance. Set a finite budget from the
+  actual rounded sections and retain the independent memory-boundary checks.
+- Keep the controls dialog closed while launch preparation is running. Preserve
+  the native-rendering warning if the optional Spinda face companion cannot
+  start, while allowing the game to continue.
+- Document remaining HD coverage gaps across regions, languages, extra forms
+  and dynamically generated text instead of implying complete HUD coverage.
+
 ## 2.0.0 - 2026-11-18
 
 - Align custom DNA body artwork at native and x4 resolution using one frozen

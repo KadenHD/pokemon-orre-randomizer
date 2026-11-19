@@ -20,7 +20,7 @@ import threading
 import traceback
 
 from PySide6.QtCore import QLibraryInfo, QLocale, QObject, QPoint, QSettings, QSignalBlocker, QSize, QThread, QTimer, QTranslator, QUrl, Signal, Slot, Qt
-from PySide6.QtGui import QDesktopServices, QColor, QFont, QIcon, QKeySequence, QPainter, QPalette, QPixmap, QShortcut
+from PySide6.QtGui import QDesktopServices, QFont, QIcon, QKeySequence, QPainter, QPalette, QPixmap, QShortcut
 from PySide6.QtWidgets import (QApplication, QCheckBox, QComboBox, QFileDialog,
                                QDoubleSpinBox, QFormLayout, QFrame, QHBoxLayout, QLabel, QLineEdit,
                                QMainWindow, QMenu, QProgressBar, QPushButton,
@@ -38,7 +38,7 @@ from .preview_cache import PreviewCache
 from .ui_species import SpeciesChoice
 from .locales.selection_names import SPECIES_NAMES
 from .pokemon_details import display_species_name
-from .ui_theme import GameSurface, MenuPanel, MenuCheckBox, STYLE, XD_STYLE, HOME_STYLE, JAPANESE_FONT_STYLE
+from .ui_theme import GameSurface, MenuPanel, MenuCheckBox, STYLE, XD_STYLE, HOME_STYLE, JAPANESE_FONT_STYLE, theme_palette
 from .xd_ui import XDWorkspace
 from .ui_audio import MenuAudio
 from .ui_music import MenuMusic
@@ -431,18 +431,7 @@ class MainWindow(QMainWindow):
         footer.addWidget(self.next_button)
         footer.addWidget(self.create_button)
         outer.addLayout(footer)
-        palette = self.palette()
-        for role, color in ((QPalette.ColorRole.Window, "#082b24"),
-                            (QPalette.ColorRole.Base, "#0b1c20"),
-                            (QPalette.ColorRole.Text, "#f2f6f1"),
-                            (QPalette.ColorRole.WindowText, "#f2f6f1"),
-                            (QPalette.ColorRole.Button, "#172c33"),
-                            (QPalette.ColorRole.ButtonText, "#f2f6f1"),
-                            (QPalette.ColorRole.Highlight, "#17666b"),
-                            (QPalette.ColorRole.HighlightedText, "#ffffff"),
-                            (QPalette.ColorRole.PlaceholderText, "#b0c6bd")):
-            palette.setColor(role, QColor(color))
-        self.setPalette(palette)
+        self.setPalette(theme_palette(self.palette()))
         self.xd = XDWorkspace(self)
         self.game_views.addWidget(self.xd)
         self.setStyleSheet(STYLE)
@@ -567,6 +556,7 @@ class MainWindow(QMainWindow):
         else:
             style = STYLE
         self.setStyleSheet(style + (JAPANESE_FONT_STYLE if self.language == "ja" else ""))
+        self.setPalette(theme_palette(self.palette(), home=home, xd=xd))
 
     def go_back(self):
         if self.step == 0:
@@ -961,7 +951,14 @@ class MainWindow(QMainWindow):
         return translate(Message(message, **parameters) if parameters else message, self.language)
 
     def bind(self, setter, message: str):
-        self._text_bindings.append((setter, message))
+        binding = (setter, message)
+        self._text_bindings.append(binding)
+        target = getattr(setter, "__self__", None)
+        if isinstance(target, QObject):
+            def forget_binding(_object=None):
+                if binding in self._text_bindings:
+                    self._text_bindings.remove(binding)
+            target.destroyed.connect(forget_binding)
         setter(self.text(message))
 
     def label(self, message: str) -> QLabel:

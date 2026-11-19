@@ -10,6 +10,40 @@ import sys
 import tempfile
 
 
+def check_menu_artwork() -> dict:
+    """Exercise each self-contained menu renderer using authenticated assets."""
+    from PySide6.QtGui import QImage
+    from .hd_menu_catalog import SUPPORTED, menu_image, menu_recipes, menu_vectors
+    from .hd_menu_atlases import render_menu_atlas
+    regional = {game: menu_recipes(game) for game in sorted(SUPPORTED)}
+    assert all(regional.values()), "A regional menu catalogue is unavailable"
+    vectors = menu_vectors()
+    assert {"latin", "japanese"} <= set(vectors["families"])
+    registered = {key: row for rows in regional.values() for key, row in rows.items()}
+    samples = {}
+    for target, row in sorted(registered.items()):
+        if row.get("file") and not row.get("bundled_donor"):
+            continue  # External HD pack donors are checked at preparation.
+        recipe = row["transform"]
+        method = recipe["type"]
+        if method in samples:
+            continue
+        if row.get("bundled_donor"):
+            donor = menu_image(row["bundled_donor"], tuple(row["source_native_dimensions"]))
+            source, metadata = donor.image, donor.metadata
+        else:
+            source, metadata = QImage(), {"kind": "authored-vector-artwork"}
+        output, receipt = render_menu_atlas(source, recipe, source_metadata=metadata)
+        size = [value * 4 for value in recipe["native_dimensions"]]
+        assert not output.isNull() and [output.width(), output.height()] == size
+        samples[method] = {"target": target, "dimensions": size,
+                           "rgba_sha256": receipt["output_rgba_sha256"]}
+    assert samples, "No authenticated menu sample could be rendered"
+    return {"regional_recipe_counts": {game: len(rows) for game, rows in regional.items()},
+            "unique_recipes": len(registered), "rendered_methods": samples,
+            "external_packs_opened": False, "rom_opened": False}
+
+
 def run_checks(report: Path, *, screenshots: bool = False) -> dict:
     from PySide6.QtCore import QCoreApplication, QEvent, QSettings, Qt, qVersion
     from PySide6.QtGui import QFont, QFontDatabase
@@ -48,6 +82,17 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
             "rom_opened": False, "personal_preferences_opened": False,
             "home_states": [], "states": [], "exclusion_states": [], "shiny_states": [], "preview_states": [],
             "consolidation_states": [], "xd_states": [], "xd_parity_states": []}
+    data["hd_text_font"] = None
+    if images:
+        from .hd_text_vectors import SOURCE as FONT_SOURCE, _sources
+        fonts = Path(__file__).resolve().parent / "assets/game/fonts"
+        font, cmap = _sources(fonts / "NotoSansJP.ttf", fonts / "OFL-NotoSansJP.txt")
+        font_sample = "AaéÉÄñàあ"
+        assert all(ord(char) in cmap for char in font_sample)
+        assert font.getmask(font_sample, mode="L").getbbox(), "The bundled vector font did not render"
+        data["hd_text_font"] = {"verified_donor_and_license": True, "sample_rendered": True,
+                                "recipe": FONT_SOURCE["recipe"], "rasterizer": FONT_SOURCE["rasterizer"]}
+        data["hd_menu_artwork"] = check_menu_artwork()
     data["disc_converter"] = None
     if disc_images.library_path().is_file():
         import threading
@@ -74,6 +119,7 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
         settings = QSettings(str(Path(folder)/"preferences.ini"), QSettings.Format.IniFormat)
         settings.setValue("interface/music", False)
         settings.setValue("interface/sounds", False)
+        settings.setValue("launcher/shared", str(Path(folder) / "Shared"))
         window = MainWindow(settings=settings, system_languages=["fr-FR"])
         try:
             data["game_folder_default"] = all(owner.play_folder.enabled.isChecked() for owner in (window, window.xd))
@@ -394,6 +440,29 @@ def run_checks(report: Path, *, screenshots: bool = False) -> dict:
                 assert not window.sound_toggle.isEnabled()
             if not data["music_available"]:
                 assert not window.music_toggle.isEnabled()
+            from .ui_game_folder import PackDialog
+            from .ui_theme import theme_palette
+            from PySide6.QtGui import QPalette
+            data["pack_manager_states"] = []
+            for language in LANGUAGES:
+                window.language_combo.setCurrentIndex(window.language_combo.findData(language))
+                dialog = PackDialog(window)
+                try:
+                    dialog.show()
+                    app.processEvents()
+                    assert dialog.thread is None and dialog.done.isEnabled()
+                    expected_palette = theme_palette(dialog.palette(), home=True)
+                    assert dialog.palette().color(QPalette.ColorRole.Base) == expected_palette.color(QPalette.ColorRole.Base)
+                    state = {"language": language, "width": dialog.width(), "height": dialog.height(),
+                             "private_empty_cache": True, "network_install_started": False}
+                    if screenshots:
+                        state["screenshot"] = f"hd-packs-{language}.png"
+                        assert dialog.grab().save(str(report.parent / state["screenshot"]))
+                    data["pack_manager_states"].append(state)
+                finally:
+                    dialog.close()
+                    dialog.deleteLater()
+                    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
         finally:
             window.close()
             window.deleteLater()
@@ -415,12 +484,27 @@ def main(arguments=None) -> int:
         # unhandled traceback dialog that would block unattended checks.
         return 2
     with stream:
+        callback_errors = []
+        previous_hook = sys.excepthook
+
+        def record_callback_error(kind, error, _traceback):
+            callback_errors.append(f"{kind.__name__}: {error}")
+
+        # Qt reports exceptions raised by Python slots through excepthook.
+        # They do not propagate out of processEvents(), even when a captured
+        # screen still looks valid. A frozen-app check must fail on them too.
+        sys.excepthook = record_callback_error
         try:
             result = run_checks(args.report, screenshots=args.screenshots)
+            if callback_errors:
+                raise RuntimeError("UI callbacks failed: " + "; ".join(callback_errors))
         except Exception as error:
             json.dump({"successful": False, "error": f"{type(error).__name__}: {error}"}, stream, indent=2)
             stream.write("\n")
             return 1
+        finally:
+            sys.excepthook = previous_hook
+        result["unhandled_event_errors"] = callback_errors
         json.dump(result, stream, ensure_ascii=False, indent=2)
         stream.write("\n")
     return 0

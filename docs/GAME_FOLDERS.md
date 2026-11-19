@@ -101,6 +101,12 @@ and the launcher. Each Orre release records fixed upstream downloads and
 hashes. It never silently follows an upstream latest release. Existing game
 folders retain their runtime and pack version after an Orre update.
 
+Installation shows preparation followed by download and extraction progress.
+**Cancel** interrupts the current operation; closing the manager cancels and
+waits for cleanup before closing. Interrupted downloads can resume when you
+return. Installation and path controls become available again after completion,
+cancellation or an error.
+
 | Game | Pinned version | Download | Installed textures |
 | --- | --- | ---: | ---: |
 | Colosseum | HD Pack V2 / 2.00 | 0.72 GB | 7,032 DDS |
@@ -121,8 +127,23 @@ game. Original graphics are available without downloading a pack.
 Allow room for the download and extracted pack during installation. Successful
 archives are deleted. Texture views use hard links on the shared cache volume;
 they do not duplicate a whole pack per seed. Use a filesystem supporting hard
-links, such as NTFS on Windows. HD uses 3x internal resolution and on-demand
-replacement textures rather than preloading the complete pack into RAM.
+links, such as NTFS on Windows. HD uses 3x internal resolution, linear texture
+filtering and on-demand replacement textures rather than preloading the complete
+pack into RAM. Original mode restores native resolution and filtering in the
+same isolated profile.
+
+Texture priority is **custom overlays > game pack > already-required companion
+packs**. A companion fills only missing Dolphin texture identities, including
+PNG/DDS and mipmap filename aliases. It does not replace the game pack's version
+of an existing texture or trigger a download of an otherwise unused pack.
+Repairing either contributing pack creates a new view; running games retain
+their earlier files.
+
+European XD also prepares localized HD HP/level atlases for English, French,
+German, Italian and Spanish. These derive from the pinned XD artwork and
+[mikeyX's vector sources](HD_SOURCES.md#localized-xd-status-atlases). They are
+verified and published with the custom overlay cache. This does not make every
+menu or generated line of dialogue HD; see [coverage and limitations](HD_COVERAGE.md).
 
 Custom meshes, field models and shiny palettes remain in the generated ROM.
 Each game folder records their native references and HD recipes while that
@@ -142,8 +163,11 @@ installs the missing packs together, without downloading an installed version
 again. A partial installation is marked **Incomplete**; HD creation and launch
 require both packs. If installation is interrupted, retrying keeps the completed
 pack and installs only what is missing. Original mode requires neither pack.
-The few extra forms without a matching donor
-retain their original portraits. Shadow Lugia has separate normal/shiny
+Nine separately rendered x4 atlases cover Castform's three weather forms in
+each game and Deoxys's three extra forms in XD. They retain the native frame
+and paired normal/shiny pose. Castform's weather forms share their original
+Gen3 colors. These are portrait additions; the upstream packs still determine
+stock extra-form 3D material coverage. Shadow Lugia has separate normal/shiny
 portraits in both resolutions, with a square violet background in Colosseum
 and a round violet background in XD. DNA artwork shows its whole body.
 The source, transform and hashes are recorded for the generated assets. A
@@ -164,8 +188,19 @@ Spinda's DNA diagram follows the analyzed specimen's saved PID and shiny status.
 Original and HD modes keep its body colors and spot diagram together, including
 older saves with a different PID. HD spot artwork uses paint from the pinned
 pack's Spinda material, with the original rules determining each spot's position.
-The hologram still uses the game's runtime-generated 128x128 face. Its pattern
-is preserved; this adapter does not add an HD replacement for that face.
+On Windows, newly created European and USA revision-0 Colosseum folders can also
+use a 512x512 hologram face while HD mode is active. A separate launcher companion
+reads the specimen's actual PID, fills an inactive texture bank and lets the
+native renderer publish it after a GPU fence. The five native material maps,
+shiny palette handling and blue hologram filter remain in use. The companion
+works independently of the music option. If it stops, the game returns to its
+native 128x128 face.
+
+Japanese Colosseum keeps that native face: the additional static face memory
+reservation failed its loading check, so new Japanese folders do not install
+those hooks or reserve their banks. Its HD body and spot diagram remain separate
+and available. Opening a ROM directly without the launcher also uses the native
+face.
 
 Shadow Lugia has x4 counterparts for all five battle materials: two actual pack
 textures and three authored reflection/mouth maps using those HD palettes.
@@ -190,6 +225,17 @@ rejects an older custom DNA body rather than pairing it with a different HD pose
 These packs change textures, not polygon counts or the opening movie. They
 contain no HQ audio replacement. The music-speed feature below uses the
 original game's audio resources.
+
+## Updating generated artwork
+
+Installing a new application version does not rewrite an existing game's ROM.
+Recreate the game folder from the same original image, seed and complete profile
+to adopt additions that change native artwork or runtime hooks. Existing folders
+retain their own ROM, saves and versioned launcher runtime.
+
+Use a copy of the memory-card save when moving to the rebuilt folder, then boot
+the game normally. Save states contain the previous executable and its memory
+layout; they are not a substitute for a memory-card save across rebuilt ROMs.
 
 ## Music and game speed
 

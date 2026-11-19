@@ -2,6 +2,7 @@
 
 # French keys; English, German, Spanish, Italian and Japanese values.
 ROWS = {
+    "Le visage de Spinda utilise le rendu d’origine. Consultez le journal du lanceur.": ("Spinda's face is using the original rendering. Check the launcher log.", "Spindas Gesicht wird mit der Originalgrafik dargestellt. Sieh im Launcher-Protokoll nach.", "El rostro de Spinda usa los gráficos originales. Consulta el registro del lanzador.", "Il volto di Spinda usa la grafica originale. Consulta il registro del launcher.", "パッチールの顔は元の描画を使用しています。ランチャーのログを確認してください。"),
     "Crédits des packs": ("Pack credits", "Paketnachweise", "Créditos de los packs", "Crediti dei pacchetti", "パックのクレジット"),
     "La source des packs HD n’est pas encore configurée.": ("The HD pack source has not been configured yet.", "Die Quelle der HD-Pakete ist noch nicht eingerichtet.", "La fuente de los packs HD aún no está configurada.", "La sorgente dei pacchetti HD non è ancora configurata.", "HDパックの取得元はまだ設定されていません。"),
     "Le pack HD est introuvable dans le dossier de distribution.": ("The HD pack was not found in the distribution folder.", "Das HD-Paket wurde im Verteilungsordner nicht gefunden.", "No se ha encontrado el pack HD en la carpeta de distribución.", "Il pacchetto HD non è stato trovato nella cartella di distribuzione.", "配布フォルダーにHDパックが見つかりません。"),
@@ -104,6 +105,7 @@ ROWS = {
     "Une texture personnalisée pointe vers un fichier externe.": ("A custom texture points to an external file.", "Eine eigene Textur verweist auf eine externe Datei.", "Una textura personalizada apunta a un archivo externo.", "Una texture personalizzata rimanda a un file esterno.", "独自のテクスチャが外部ファイルを参照しています。"),
     "Opération annulée.": ("Operation cancelled.", "Vorgang abgebrochen.", "Operación cancelada.", "Operazione annullata.", "操作をキャンセルしました。"),
     "Annulation en cours…": ("Cancelling…", "Abbruch läuft…", "Cancelando…", "Annullamento…", "キャンセル中…"),
+    "Préparation des packs HD…": ("Preparing HD packs…", "HD-Pakete werden vorbereitet…", "Preparando paquetes HD…", "Preparazione dei pacchetti HD…", "HDパックを準備しています…"),
     "Pack HD installé et vérifié.": ("HD pack installed and verified.", "HD-Paket installiert und geprüft.", "Paquete HD instalado y verificado.", "Pacchetto HD installato e verificato.", "HDパックのインストールと検証が完了しました。"),
     "Téléchargement du pack HD…": ("Downloading HD pack…", "HD-Paket wird heruntergeladen…", "Descargando el paquete HD…", "Download del pacchetto HD…", "HDパックをダウンロード中…"),
     "Installation des textures HD…": ("Installing HD textures…", "HD-Texturen werden installiert…", "Instalando texturas HD…", "Installazione delle texture HD…", "HDテクスチャをインストール中…"),

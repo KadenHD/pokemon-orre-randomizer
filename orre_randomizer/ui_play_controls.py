@@ -39,7 +39,7 @@ class VisibleChoices(QWidget):
 def separator(vertical=False):
     line = QFrame()
     line.setFrameShape(QFrame.Shape.VLine if vertical else QFrame.Shape.HLine)
-    line.setStyleSheet("color: #829e98; background: #829e98; border: 0;")
+    line.setObjectName("sectionDivider")
     line.setFixedWidth(1) if vertical else line.setFixedHeight(1)
     return line
 
