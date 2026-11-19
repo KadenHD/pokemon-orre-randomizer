@@ -59,14 +59,26 @@ class WindowsUpdateHelperTests(unittest.TestCase):
         cls.versions = {}
         for version in ('old', 'new'):
             code = root / f'{version}.cs'
-            # Windowless fixture. A second launch records the version and exits.
-            code.write_text('''using System; using System.IO; using System.Threading;
+            # Windowless fixture. Restart readiness is not process termination:
+            # the test must observe the exact owned process before deleting it.
+            code.write_text('''using System; using System.IO; using System.Threading; using System.Diagnostics;
 class App { static void Main(string[] args) {
 string root = AppDomain.CurrentDomain.BaseDirectory;
 if (args.Length > 0 && args[0] == "--hold") {
 while (!File.Exists(Path.Combine(root, "release-parent"))) Thread.Sleep(20);
 } else { File.WriteAllText(Path.Combine(root, "relaunched.txt"), "''' + version + '''");
-File.WriteAllText(Path.Combine(root, "reset-env.txt"), Environment.GetEnvironmentVariable("PYINSTALLER_RESET_ENVIRONMENT") ?? ""); }
+File.WriteAllText(Path.Combine(root, "reset-env.txt"), Environment.GetEnvironmentVariable("PYINSTALLER_RESET_ENVIRONMENT") ?? "");
+using (Process current = Process.GetCurrentProcess()) {
+File.WriteAllLines(Path.Combine(root, "restart-process.tmp"), new string[] {
+current.Id.ToString(), current.StartTime.ToFileTimeUtc().ToString(), current.MainModule.FileName });
+File.Move(Path.Combine(root, "restart-process.tmp"), Path.Combine(root, "restart-process.txt"));
+}
+Stopwatch watchdog = Stopwatch.StartNew();
+while (!File.Exists(Path.Combine(root, "release-restarted")) && watchdog.ElapsedMilliseconds < 10000) Thread.Sleep(10);
+if (!File.Exists(Path.Combine(root, "release-restarted"))) Environment.Exit(73);
+string delay = Path.Combine(root, "restart-delay-ms");
+if (File.Exists(delay)) Thread.Sleep(Math.Min(1000, Math.Max(0, Int32.Parse(File.ReadAllText(delay)))));
+}
 } }''')
             executable = root / f'{version}.exe'
             subprocess.run([str(CSC), '/nologo', '/target:winexe', f'/out:{executable}', str(code)],
@@ -112,8 +124,20 @@ return 0; } }''')
             'OrreRandomizer.exe', '_internal/version.txt', '_internal/obsolete.txt', 'update-files.json']))
         self.parent = subprocess.Popen([str(self.exe), '--hold'], creationflags=subprocess.CREATE_NO_WINDOW)
         self.addCleanup(self.stop_parent)
+        self.restart_reaped = False
+        self.addCleanup(self.reap_restarted_fixture)
         kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+        self.kernel = kernel
         kernel.GetProcessTimes.argtypes = [wintypes.HANDLE] + [ctypes.POINTER(wintypes.FILETIME)] * 4
+        kernel.OpenProcess.argtypes = [wintypes.DWORD, wintypes.BOOL, wintypes.DWORD]
+        kernel.OpenProcess.restype = wintypes.HANDLE
+        kernel.QueryFullProcessImageNameW.argtypes = [wintypes.HANDLE, wintypes.DWORD,
+                                                     wintypes.LPWSTR, ctypes.POINTER(wintypes.DWORD)]
+        kernel.WaitForSingleObject.argtypes = [wintypes.HANDLE, wintypes.DWORD]
+        kernel.WaitForSingleObject.restype = wintypes.DWORD
+        kernel.GetExitCodeProcess.argtypes = [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+        kernel.TerminateProcess.argtypes = [wintypes.HANDLE, wintypes.UINT]
+        kernel.CloseHandle.argtypes = [wintypes.HANDLE]
         created, exited, system, user = (wintypes.FILETIME() for _ in range(4))
         self.assertTrue(kernel.GetProcessTimes(wintypes.HANDLE(self.parent._handle), ctypes.byref(created),
             ctypes.byref(exited), ctypes.byref(system), ctypes.byref(user)))
@@ -123,6 +147,59 @@ return 0; } }''')
         if self.parent.poll() is None:
             (self.target / 'release-parent').touch()
             self.parent.wait(timeout=10)
+
+    def wait_restarted_fixture(self, *, required=True):
+        if self.restart_reaped:
+            return
+        marker = self.target / 'restart-process.txt'
+        deadline = time.monotonic() + 5
+        while not marker.exists() and time.monotonic() < deadline:
+            time.sleep(.01)
+        if not marker.exists() and not required:
+            return
+        self.assertTrue(marker.is_file(), 'The restarted fixture did not publish its process identity')
+        pid, birth, recorded_path = marker.read_text('utf-8-sig').splitlines()
+        self.assertEqual(Path(recorded_path).resolve(strict=True), self.exe)
+        # A native handle retains identity even if the numeric PID is reused.
+        handle = self.kernel.OpenProcess(0x00101001, False, int(pid))
+        self.assertTrue(handle, 'Cannot observe the owned restarted fixture')
+        identified = False
+        try:
+            created, exited, system, user = (wintypes.FILETIME() for _ in range(4))
+            self.assertTrue(self.kernel.GetProcessTimes(handle, ctypes.byref(created), ctypes.byref(exited),
+                                                       ctypes.byref(system), ctypes.byref(user)))
+            self.assertEqual(str(created.dwLowDateTime | created.dwHighDateTime << 32), birth)
+            image = ctypes.create_unicode_buffer(32768)
+            length = wintypes.DWORD(len(image))
+            self.assertTrue(self.kernel.QueryFullProcessImageNameW(handle, 0, image, ctypes.byref(length)))
+            self.assertEqual(Path(image.value).resolve(strict=True), self.exe)
+            identified = True
+            (self.target / 'release-restarted').touch()
+            result = self.kernel.WaitForSingleObject(handle, 5000)
+            self.assertEqual(result, 0, 'The restarted fixture kept its executable mapped after release')
+            code = wintypes.DWORD()
+            self.assertTrue(self.kernel.GetExitCodeProcess(handle, ctypes.byref(code)))
+            self.assertEqual(code.value, 0)
+            self.restart_reaped = True
+        finally:
+            # On a failed assertion, clean up only the verified private fixture;
+            # retain the original failure instead of ignoring a lingering child.
+            if identified and self.kernel.WaitForSingleObject(handle, 0) == 258:
+                self.kernel.TerminateProcess(handle, 74)
+                self.kernel.WaitForSingleObject(handle, 1000)
+            self.kernel.CloseHandle(handle)
+            child = getattr(self, 'fixture_child', None)
+            if identified and child is not None and child.pid == int(pid):
+                child.wait(timeout=1)
+                child._handle.Close()
+
+    def reap_restarted_fixture(self):
+        # Runs after stop_helper and before stop_parent/TemporaryDirectory.
+        # Also covers an assertion failing between the helper's exit and the
+        # child's readiness marker. The fixture has its own bounded watchdog.
+        if ((self.target / 'restart-process.txt').exists()
+                or hasattr(self, 'helper') and self.parent.poll() is not None):
+            self.wait_restarted_fixture(required=False)
 
     def make_job(self, extra=None, bad_hash=False, wrong_parent=False, kind='portable'):
         package = self.work / ('package.zip' if kind == 'portable' else 'package.exe')
@@ -163,6 +240,8 @@ return 0; } }''')
             self.helper.wait(timeout=12)
         except subprocess.TimeoutExpired:
             self.fail((self.work / 'helper.log').read_text(errors='replace'))
+        if self.parent.poll() is not None and not (self.work / 'cancel').exists():
+            self.wait_restarted_fixture()
 
     def wait_status(self, state, timeout=15):
         deadline = time.monotonic() + timeout
@@ -221,6 +300,26 @@ return 0; } }''')
         self.assertEqual(self.exe.read_bytes(), self.versions['new'])
         self.assertFalse((self.work / 'package.exe').exists())
         self.assert_personal_files()
+
+    def test_restart_marker_does_not_release_the_executable_before_the_process_exits(self):
+        self.stop_parent()
+        (self.target / 'restart-delay-ms').write_text('250')
+        child = subprocess.Popen([str(self.exe)], creationflags=subprocess.CREATE_NO_WINDOW)
+        self.fixture_child = child
+        marker = self.target / 'restart-process.txt'
+        deadline = time.monotonic() + 5
+        while not marker.exists() and time.monotonic() < deadline:
+            time.sleep(.01)
+        self.assertTrue(marker.is_file())
+        self.assertIsNone(child.poll())
+        # Negative control: the old marker-only cleanup really fails on Windows.
+        with self.assertRaises(PermissionError):
+            self.exe.unlink()
+        started = time.monotonic()
+        self.wait_restarted_fixture()
+        self.assertGreaterEqual(time.monotonic() - started, .15)
+        self.assertEqual(child.wait(timeout=1), 0)
+        self.exe.unlink()  # The image is now genuinely unmapped and deletable.
 
     def test_failed_installer_reports_failure_and_restarts_the_old_app(self):
         self.make_job(kind='installer')

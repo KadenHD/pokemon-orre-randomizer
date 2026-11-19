@@ -33,6 +33,8 @@
   the Windows smoke test while only encoding the screenshots it retains.
 - Require successful independent main-branch tests for the exact release
   commit before publishing Windows downloads.
+- Wait for updater-test executables to exit before removing their temporary
+  folders, avoiding intermittent Windows file locks in source audits.
 
 ## 2.0.3 - 2026-11-19
 
