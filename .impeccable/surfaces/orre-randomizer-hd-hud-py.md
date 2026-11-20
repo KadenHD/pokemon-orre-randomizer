@@ -45,6 +45,9 @@ transparent cutout and translucent panel. New SVG artwork uses measured paths
 and analytic gradients, with a separately pinned recipe and x4 PNG. Treat Qt's
 one-step opacity quantization separately from an accidental opaque fill. Keep
 source qualification distinct from proof that a sprite appeared in a replay.
+Treat the resource kind as part of coverage: the normal Genius Sonority intro
+is a THP movie. Its separate white-background UI sprite does not replace that
+movie; a registered x4 drawing does not establish where the sprite is used.
 
 Measure adjacent atlas captions within separate native text bands. An accent
 from the next heading must not enlarge the previous word's bounds. Retain a

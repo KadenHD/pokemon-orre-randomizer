@@ -24,6 +24,7 @@ from .ui_game_folder import show_packs
 from .ui_theme import GameSurface, MenuPanel, STYLE, XD_STYLE, theme_palette
 from .ui_workspace import scroll_area
 from .ui_play_controls import ControllerDiagram, VisibleChoices, separator, navigation_icon
+from .play_display import acceleration_target, display_mode
 
 
 class LaunchPreparation(QThread):
@@ -120,7 +121,7 @@ class GameLauncher(QMainWindow):
         self.fields = QWidget()
         fields = QVBoxLayout(self.fields)
         fields.setContentsMargins(0, 0, 0, 0)
-        fields.setSpacing(16)
+        fields.setSpacing(12)
         graphics_row = QHBoxLayout()
         self.graphics = QComboBox()
         self.graphics.addItem("", "original"); self.graphics.addItem("", "hd")
@@ -144,6 +145,13 @@ class GameLauncher(QMainWindow):
         if self.data["game"] == "xd":
             fields.addWidget(self.note("XD en HD nécessite les deux packs : XD pour les textures, Colosseum pour les vignettes."))
         fields.addWidget(separator())
+        display_row = QHBoxLayout()
+        self.display = QComboBox()
+        self.display.addItem("", "16:9"); self.display.addItem("", "4:3")
+        self.bind(lambda text: self.display.setItemText(0, text), "16:9 sans étirement")
+        self.bind(lambda text: self.display.setItemText(1, text), "4:3 fidèle")
+        self.display.setCurrentIndex(self.display.findData(display_mode(self.data["settings"])))
+        display_row.addWidget(VisibleChoices(self.display), 1)
         self.columns = QBoxLayout(QBoxLayout.Direction.LeftToRight)
         self.columns.setSpacing(32)
         self.columns.setAlignment(Qt.AlignmentFlag.AlignTop)
@@ -152,14 +160,15 @@ class GameLauncher(QMainWindow):
         heading = self.label("Vitesse et audio"); heading.setObjectName("subheading")
         audio.addWidget(heading)
         row = QHBoxLayout()
-        row.addWidget(self.label("Vitesse du jeu"))
+        row.addWidget(self.label("Vitesse d’accélération"))
         self.speed = QComboBox()
-        for percent in (100, 200):
+        for percent in (100, 200, 300):
             self.speed.addItem(f"{percent} %", percent / 100)
-        self.speed.setCurrentIndex(self.speed.findData(self.data["settings"]["speed"]))
+        self.speed.setCurrentIndex(self.speed.findData(acceleration_target(self.data["settings"])))
         speed_choices = VisibleChoices(self.speed); speed_choices.setFixedWidth(210)
         row.addWidget(speed_choices); row.addStretch(1)
         audio.addLayout(row)
+        audio.addWidget(self.note("Le jeu démarre toujours à 100 %."))
         self.native_music = QCheckBox()
         self.bind(self.native_music.setText, "Garder la musique à 100 %")
         self.native_music.setChecked(self.data["settings"].get("native_music", False))
@@ -173,15 +182,15 @@ class GameLauncher(QMainWindow):
             self.native_music.setChecked(False)
         audio.addWidget(self.native_music)
         if supported and not capability.production_validated:
-            audio.addWidget(self.note("Musique indépendante : validation audio finale en attente."))
+            self.bind(self.native_music.setToolTip, "Musique indépendante : validation audio finale en attente.")
         elif not available:
-            audio.addWidget(self.note("La musique à 100 % n’est pas disponible pour cette partie."))
+            self.bind(self.native_music.setToolTip, "La musique à 100 % n’est pas disponible pour cette partie.")
         audio.addWidget(self.note("Bruitages et cris : suivent le jeu."))
         audio.addWidget(self.note("Vidéos précalculées : image et son suivent le jeu."))
-        audio.addSpacing(8)
         shortcuts = self.label("Raccourcis"); shortcuts.setObjectName("subheading")
         audio.addWidget(shortcuts)
-        for caption, key in (("Accélérer à 200 %", "Tab"), ("Ralentir à 50 %", "Maj + Tab")):
+        for caption, key in (("Accélération maintenue", "Tab"), ("Ralentir à 50 %", "Maj + Tab"),
+                             ("Activer / désactiver l’accélération", "Ctrl + Tab")):
             row = QHBoxLayout()
             row.addWidget(self.label(caption), 1)
             keycap = self.label(key)
@@ -191,13 +200,18 @@ class GameLauncher(QMainWindow):
             row.addWidget(keycap)
             audio.addLayout(row)
             audio.addWidget(separator())
-        audio.addWidget(self.note("Maintenez la touche. La vitesse choisie revient au relâchement."))
+        audio.addWidget(self.note("Tab : maintenir. Ctrl + Tab : appuyer pour changer de mode."))
         audio.addStretch(1)
         self.columns.addLayout(audio, 1)
         self.column_divider = separator(vertical=True)
         self.columns.addWidget(self.column_divider)
         controls = QVBoxLayout()
         controls.setSpacing(8)
+        heading = self.label("Affichage"); heading.setObjectName("subheading")
+        controls.addWidget(heading)
+        controls.addLayout(display_row)
+        controls.addWidget(self.note("Plein écran fenêtré"))
+        controls.addWidget(separator())
         heading = self.label("Commandes"); heading.setObjectName("subheading")
         controls.addWidget(heading)
         self.controller = QComboBox()
@@ -323,7 +337,8 @@ class GameLauncher(QMainWindow):
 
     def persist(self):
         self.data["dolphin"] = str(validate_dolphin(Path(self.dolphin.text())))
-        self.data["settings"].update(graphics=self.graphics.currentData(), speed=self.speed.currentData(),
+        self.data["settings"].update(graphics=self.graphics.currentData(), speed=1,
+            acceleration=self.speed.currentData(), display=self.display.currentData(),
             native_music=self.native_music.isChecked(), controller=self.controller.currentData())
         save_game(self.path, self.data)
 
@@ -369,7 +384,7 @@ class GameLauncher(QMainWindow):
             self.log = log_path.open("ab")
             self.process = subprocess.Popen(command, cwd=Path(command[0]).parent, stdin=subprocess.DEVNULL,
                 stdout=self.log, stderr=self.log, creationflags=0x08000000 if sys.platform == "win32" else 0)
-            self.speed_session = SpeedSession(self.process, self.data["settings"]["speed"], self.speed_controls).start()
+            self.speed_session = SpeedSession(self.process, acceleration_target(self.data["settings"]), self.speed_controls).start()
             if self.native_music.isChecked():
                 from .play_music import MusicSession
                 metadata = self.data["features"]["music"]

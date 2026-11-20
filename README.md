@@ -71,9 +71,12 @@ detected automatically when possible, or selected manually. The launcher uses
 that run's `DolphinUser/` profile; it never takes over your usual saves. All
 generated file and folder names stay in English. Dolphin itself is not bundled.
 
-Choose a base speed of 100% or 200%, hold **Tab** for 200% or **Shift + Tab**
-for 50%, then release to return to your selected speed. Keyboard and XInput
-controller presets can be remapped in Dolphin.
+Each launch starts at 100%. Choose a 100%, 200% or 300% fast-forward target:
+hold **Tab** to use it, or press **Ctrl + Tab** to toggle it on and off.
+**Shift + Tab** temporarily slows the game to 50%. Choose widened **16:9** or
+original **4:3** in borderless fullscreen. Keyboard and XInput controller
+presets can be remapped in Dolphin. See [launcher details](docs/GAME_FOLDERS.md)
+for speed transitions and display compatibility.
 
 | Colosseum launcher | XD launcher |
 | --- | --- |

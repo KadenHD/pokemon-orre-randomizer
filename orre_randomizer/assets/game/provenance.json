@@ -1329,8 +1329,8 @@
       "sha256": "41439fe2cc434d034bcfd8c4816370baef0b8021205382c7d154fab068853f5a"
     },
     "menu-atlases/catalog.json": {
-      "bytes": 1393343,
-      "sha256": "dada659a7356b3b30a8717fd9eafd29a0bddb8580cf4283ca7c54d9d3e3827b2"
+      "bytes": 1395168,
+      "sha256": "26495ce1e318ef1c658b062d4dc1919ef16777fed7b6921940c460eac1158ddb"
     },
     "menu-atlases/vector-outlines.json": {
       "bytes": 585480,
@@ -2283,6 +2283,14 @@
     "castform-shinies/catalog.json": {
       "bytes": 37134,
       "sha256": "f0e69a230c92dc2d7bce3eb73e779d163df1999f393dd8ba695eb9d62bcb7930"
+    },
+    "menu-atlases/startup-branding-source.json": {
+      "bytes": 26859,
+      "sha256": "f48ad0ea445622ef86307bfd59d54e56bd000d837102e5ee7337eb7d712dcd99"
+    },
+    "menu-atlases/genius-sonority-vector-x4.png": {
+      "bytes": 72838,
+      "sha256": "d14732983fa50b0c3eb75ddddfd71c2c0d4e6fbcf277161e8b4a36a2a6809c4e"
     }
   },
   "additional_sources": [

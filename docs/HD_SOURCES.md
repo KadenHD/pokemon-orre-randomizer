@@ -129,6 +129,21 @@ convert it to straight alpha, avoiding CPU-dependent reciprocal conversion.
 Reproduction checks every decoded pixel before writing the authenticated PNG.
 Original mode continues to use the game's own textures.
 
+The same authoring tool's `--source startup` mode reproduces the Genius
+Sonority wordmark from `startup-branding-source.json`. This is a new vector
+trace authored by Orre contributors from the retail silhouettes and divider
+curve, not an official vector source or an unchanged upstream HD donor. It
+retains the original 640x480 white canvas, navy color, lettering positions and
+spacing. The packet embeds the complete Bezier paths and records the matching
+native member and decoded-image hashes from all six revision-0 regional discs.
+No native raster is enlarged and no replacement system font is used. The x4
+output and native-size comparison were reviewed. This is the separate flat
+white-background UI resource, element `0x03A7` in XD; its actual use remains
+unproven, rather than being classified as unused. The normal startup Genius
+Sonority sequence is a separate 640x480 THP movie, `movie_gs_logo.fsys`, and is
+unchanged. The `startup` authoring option does not imply an HD replacement for
+that video. The original wordmark rights remain with their respective owners.
+
 [`build_hd_options_stripes.py`](../scripts/build_hd_options_stripes.py)
 reproduces the Options background correction for all seven Colosseum locale
 layouts. `options-stripes-source.json` records the shared native rectangle
@@ -136,8 +151,8 @@ geometry and exact x4 donor hashes. The authored band preserves the native
 two-pixel stripes and gradients without the compressed donor's irregular alpha
 edges. Every donor RGBA pixel outside native y200..255 remains unchanged.
 
-The same tool's `--source warnings` mode reproduces five European XD health
-notices from separately pinned paths in `xd-warning-pages-source.json`. Original
+`build_hd_geometry_additions.py --source warnings` reproduces five European XD
+health notices from separately pinned paths in `xd-warning-pages-source.json`. Original
 wording, per-line ink bounds, colors and the printed historical URL are retained.
 The warning triangle is measured geometry. The source records the original
 CI4/RGB565 member identities; no native raster supplies the high-resolution

@@ -76,6 +76,7 @@ class SpeedProtocolTests(unittest.TestCase):
                 self.assertEqual(parser["Core"]["EmulationSpeed"], "2")
                 self.assertTrue(parser.getboolean("General", "HotkeysRequireFocus"))
                 self.assertTrue(parser.getboolean("Interface", "PauseOnFocusLost"))
+                self.assertFalse(parser.getboolean("Interface", "OnScreenDisplayMessages"))
                 parser.read(config / "Hotkeys.ini")
                 self.assertEqual(parser["Hotkeys"]["Device"], "DInput/0/Keyboard Mouse")
                 self.assertEqual(parser["Hotkeys"]["General/Toggle Pause"], "F10")
@@ -141,10 +142,11 @@ class ForegroundTests(unittest.TestCase):
         self.assertEqual(calls, [])
 
     def test_shift_tab_has_priority_over_tab_and_defaults_are_configurable(self):
-        for down, expected in ((set(), None), ({9}, "fast"), ({9, 16}, "slow"), ({16}, None)):
+        for down, expected in ((set(), None), ({9}, "fast"), ({9, 16}, "slow"), ({16}, None),
+                               ({9, 17}, "toggle")):
             reader, calls = self.reader(1234, down)
             self.assertEqual(reader(), expected)
-            self.assertEqual(set(calls), {9, 16})
+            self.assertEqual(set(calls), {9, 16, 17})
         reader, _ = self.reader(1234, {0x70})
         reader.bindings = speed.SpeedBindings(fast=(0x70,), slow=(0x71,))
         self.assertEqual(reader(), "fast")
@@ -153,8 +155,49 @@ class ForegroundTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 speed.SpeedBindings(fast=fast, slow=slow)
 
+    def test_releasing_ctrl_before_tab_does_not_accelerate_again(self):
+        down = {9, 17}
+        reader, _ = self.reader(1234, down)
+        self.assertEqual(reader(), "toggle")
+        down.remove(17)
+        self.assertEqual(reader(), "release")
+        down.clear()
+        self.assertIsNone(reader())
+        down.add(9)
+        self.assertEqual(reader(), "fast")
+
 
 class RampTests(unittest.TestCase):
+    def settle(self, holds, mode, now, seconds=4):
+        end = now + seconds
+        while now < end:
+            holds.step(now, mode, True, True)
+            now += .005
+        return now
+
+    def test_selected_acceleration_targets_hold_release_and_toggle(self):
+        for target in (10, 20, 30):
+            ramp = speed._Ramp(10)
+            holds = speed._Holds(ramp, target)
+            now = self.settle(holds, None, 0)
+            self.assertEqual(ramp.current, 10)
+            now = self.settle(holds, "fast", now)
+            self.assertEqual(ramp.current, target)
+            now = self.settle(holds, None, now)
+            self.assertEqual(ramp.current, 10)
+            now = self.settle(holds, "toggle", now)
+            self.assertTrue(holds.toggled)
+            self.assertEqual(ramp.current, target)
+            now = self.settle(holds, None, now)
+            self.assertEqual(ramp.current, target)
+            now = self.settle(holds, "slow", now)
+            self.assertEqual(ramp.current, 5)
+            now = self.settle(holds, None, now)
+            self.assertEqual(ramp.current, target)
+            now = self.settle(holds, "toggle", now)
+            self.assertFalse(holds.toggled)
+            self.assertEqual(ramp.current, 10)
+
     def run_steps(self, ramp, target, *, start=0.0, duration=3.0):
         edges, previous = [], ramp.button
         now = start
@@ -279,7 +322,7 @@ class SessionTests(unittest.TestCase):
         controls = speed.SpeedControls(True, _pad=pad)
         child = SimpleNamespace(pid=1234, poll=lambda: None)
         with patch.object(speed.sys, "platform", "win32"):
-            session = speed.SpeedSession(child, 1, controls, key_reader=lambda: "fast", foreground_reader=lambda: True).start()
+            session = speed.SpeedSession(child, 2, controls, key_reader=lambda: "fast", foreground_reader=lambda: True).start()
             deadline = time.monotonic() + 1
             while pad.current < 12 and time.monotonic() < deadline:
                 time.sleep(0.005)
@@ -293,7 +336,7 @@ class SessionTests(unittest.TestCase):
 
     def test_rejects_invalid_base_or_nonprocess(self):
         child = SimpleNamespace(pid=1234, poll=lambda: None)
-        for value in (0, 0.5, 3, True, "2"):
+        for value in (0, 0.5, 4, True, "2"):
             with self.assertRaises(ValueError):
                 speed.SpeedSession(child, value, speed.SpeedControls(False))
         with self.assertRaises(ValueError):

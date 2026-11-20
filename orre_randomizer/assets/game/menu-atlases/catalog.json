@@ -47454,6 +47454,52 @@
           "construction": "Measured native rectangles and an analytic gradient; all donor pixels outside rows200-255 retained unchanged. No native pixels enlarged."
         }
       }
+    },
+    {
+      "target": "tex1_640x480_e48f7e16bffcd438_14.png",
+      "game_ids": [
+        "GC6E01",
+        "GC6J01",
+        "GC6P01",
+        "GXXE01",
+        "GXXJ01",
+        "GXXP01"
+      ],
+      "game": "colosseum",
+      "file": null,
+      "bundled_donor": "menu-atlases/genius-sonority-vector-x4.png",
+      "source_sha256": "d14732983fa50b0c3eb75ddddfd71c2c0d4e6fbcf277161e8b4a36a2a6809c4e",
+      "source_native_dimensions": [
+        640,
+        480
+      ],
+      "native_source": "shared/genius_logo.fsys/logo_gs",
+      "transform": {
+        "type": "menu_atlas_registered_image",
+        "version": 1,
+        "target": "tex1_640x480_e48f7e16bffcd438_14.png",
+        "family": "retail-startup-branding",
+        "native_dimensions": [
+          640,
+          480
+        ],
+        "native_guide": {
+          "archive": "genius_logo.fsys",
+          "member": "logo_gs",
+          "member_sha256": "50234c0a0699e608b5f09e4a8d47f48f772e2d084a47dbf1c9a585d0aa4d5f64",
+          "rgba_sha256": "81276aea029554fc919006f1c359a6aa512148f3831b6ed5b0d200ad4986517f"
+        },
+        "author_source": {
+          "kind": "reviewed-retail-wordmark-vector-trace",
+          "native_bitmap_resampled": false,
+          "manifest": "menu-atlases/startup-branding-source.json",
+          "manifest_sha256": "f48ad0ea445622ef86307bfd59d54e56bd000d837102e5ee7337eb7d712dcd99",
+          "artwork_file": "genius-sonority-vector-x4.png",
+          "runtime_validated": false,
+          "construction": "Recorded retail wordmark silhouettes and divider curve authored as Bezier paths; flat measured navy on the original white canvas. No native bitmap is enlarged and no system font is substituted."
+        },
+        "vectors_sha256": "1b41b184db19918840bf3717d1aede21bfc7c8c5e0176080bc7396a7967b4e20"
+      }
     }
   ],
   "review": {

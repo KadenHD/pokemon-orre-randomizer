@@ -91,6 +91,27 @@ class GameFolders(unittest.TestCase):
         self.assertEqual(settings.getint("Enhancements", "MaxAnisotropy"), 4)
         self.assertFalse((self.root / "Config").exists())
 
+    def test_speed_is_a_shortcut_target_and_display_switch_is_reversible(self):
+        folder = self.root / "Party"
+        data = self.manifest()
+        data["settings"].update(speed=2, acceleration=3, display="16:9")
+        profile = configure_profile(folder, data)
+        ini = configparser.ConfigParser()
+        ini.read(profile / "Config/Dolphin.ini")
+        self.assertEqual(ini.getfloat("Core", "EmulationSpeed"), 1)
+        self.assertTrue(ini.getboolean("Display", "Fullscreen"))
+        self.assertEqual(ini.get("Display", "FullscreenDisplayRes"), "Auto")
+        gfx = configparser.ConfigParser()
+        gfx.read(profile / "Config/GFX.ini")
+        self.assertTrue(gfx.getboolean("Settings", "BorderlessFullscreen"))
+        self.assertEqual(gfx.getint("Settings", "AspectRatio"), 1)
+        self.assertFalse(gfx.getboolean("Settings", "wideScreenHack"))
+        data["settings"]["display"] = "4:3"
+        configure_profile(folder, data)
+        gfx.read(profile / "Config/GFX.ini")
+        self.assertEqual(gfx.getint("Settings", "AspectRatio"), 2)
+        self.assertIn(":0xFFA01090:0x4BF5E394", (profile / "GameSettings/GC6P01.ini").read_text())
+
     def test_music_reserves_equal_headroom_and_qa_mute_is_reversible(self):
         folder = self.root / "Party"
         manifest = self.manifest()

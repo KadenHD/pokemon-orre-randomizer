@@ -44,16 +44,20 @@ The visual review also checks words inside resources initially classified as
 icons or illustrations, including the Japanese main menu, START and VS sprites.
 An archive or category name alone does not establish that it contains no text.
 
-The extended November 19 pass registers 228 menu atlases. Preparation of all
-six regional variants produces 328 PNGs, each compared against its approved
-or pinned reference. No identified player-menu label atlas remains unmatched
-in this selected inventory. This is source coverage, not a replay of every
-menu. Thirty-eight other identities still lack a qualified replacement: model
-materials, illustrations and photographs, icons or geometry, effects, debug
-controls and the Genius Sonority startup wordmark. This count describes the
-original 616-key menu sample. The wider archive pass also adds five European
-XD health-notice pages outside that sample. It identifies other stock-material
-gaps, described separately below.
+The extended November 19 pass registered 228 menu atlases. Its preparation of
+all six regional variants produced 328 PNGs, each compared against its approved
+or pinned reference. The November 20 addition brings the catalogue to 229
+recipes: a reviewed vector reconstruction of the Genius Sonority wordmark,
+under its identical native texture key in all six regional discs. This is the
+separate white-background UI resource, not the normal startup movie. Its actual
+UI use has not yet been established. No identified player-menu label atlas
+remains unmatched in the selected inventory. This is source coverage, not a
+replay of every menu.
+Thirty-seven other identities in the original 616-key sample still lack a
+qualified replacement: model materials, illustrations and photographs, icons
+or geometry, effects and debug controls. The wider archive pass also adds five
+European XD health-notice pages outside that sample. It identifies other
+stock-material gaps, described separately below.
 
 ## Wider archive inventory
 
@@ -127,6 +131,15 @@ Movies are excluded, and the six QA-image hashes remain unchanged.
   analytic gradient, not an enlarged native texture. These are source-qualified
   derivatives; preparation does not establish that every sprite is visible in
   the replayed routes.
+- **Genius Sonority wordmark:** a new x4 vector reconstruction retains the
+  retail white canvas, navy color, lettering silhouettes, spacing and curved
+  divider. Its complete paths reproduce offline without a native bitmap or
+  system font. The native member and decoded-image identities match all six
+  regional discs. This is the separate white-background UI sprite, identified
+  as element `0x03A7` in XD. Its actual use remains unproven; it is not declared
+  unused. The normal Genius Sonority startup sequence is a 640x480 THP movie
+  and remains original. This vector is reviewed authored artwork, not a newly
+  discovered official source or upstream pack donor.
 - **Missing shared materials:** the launcher can use exact missing keys from
   an already-required companion pack. The game pack wins over its companion;
   custom overlays win over both. Source installations are unchanged and old
@@ -167,9 +180,10 @@ Movies are excluded, and the six QA-image hashes remain unchanged.
   reconstructed from the game models with exact pinned x4 material donors.
   Native-material and HD renders share pose, camera and visible geometry.
   Frames and backgrounds are newly authored, and their lighting differs from
-  the original CGI. The registered strip is source-qualified; its full Bingo
-  gameplay route has not been replayed under Dolphin. Type charts retain their
-  regional layouts and checked Generation III effectiveness values.
+  the original CGI. A recorded European HD replay displays the card-selection
+  menu and type chart, wins one duel and returns to the grid with its EP result.
+  This does not qualify a complete card or its final result screen. Type charts
+  retain their regional layouts and checked Generation III effectiveness values.
 - **Player-selection artwork:** Colosseum's player portraits are reconstructed
   from the actual Wes and GBA protagonist models. Native and x4 renders share
   framing and geometry; Red and Leaf use recorded shoulder poses. The layouts
@@ -184,7 +198,7 @@ Movies are excluded, and the six QA-image hashes remain unchanged.
 | Element | When the limit applies | Current behavior |
 | --- | --- | --- |
 | Other localized UI atlases | When a screen uses a key absent from both selected packs and the registered derivatives | Uses the original texture. Only registered identities are replaced; adding one atlas does not cover unrelated screens. |
-| Genius Sonority startup wordmark | No verified x4 donor is available in either pinned pack | Keeps the original logo. A smaller web image does not establish an HD replacement. |
+| Separate Genius Sonority UI sprite | The white-background resource is present on all six discs but its actual UI use remains unproven | Its matching key has a reviewed x4 vector drawing. This does not replace the normal startup logo, which is an unchanged 640x480 THP movie. |
 | Western XD end cards | Localized game logos have no qualified x4 counterpart in the selected sources | Keeps the original localized artwork and lettering. These static end cards are separate from the unchanged movie files. |
 | Unqualified bonus, card-reader and debug screens | Their resource exists on disc but its playable route or exact sprite usage has not been established | Uses only registered replacements; other keys remain native. Finding or uploading an atlas does not prove that every cell is displayed. |
 | Generated text in older game folders | The ROM was created before the static glyph-page bridge | Retains native text. Recreate a game folder with the same source, seed and complete settings to add the bridge; updating the launcher cannot rewrite an existing ROM. |

@@ -204,5 +204,59 @@ class MenuSvgAuthoring(unittest.TestCase):
                                 for label in row["labels"]))
 
 
+    def test_startup_wordmark_is_the_same_reviewed_vector_in_all_six_original_discs(self):
+        from scripts.build_hd_geometry_additions import reproduce, SOURCES
+        from orre_randomizer.hd_menu_catalog import _asset, _asset_bytes, menu_image, menu_recipes, SUPPORTED
+        packet, digest = _asset(SOURCES["startup"])
+        self.assertEqual(len(packet["records"]), 1)
+        row = packet["records"][0]
+        self.assertEqual(set(row["game_ids"]), SUPPORTED)
+        self.assertEqual({r["game_id"] for r in row["native_sources"]}, SUPPORTED)
+        self.assertEqual({r["native_rgba_sha256"] for r in row["native_sources"]}, {row["native_RGBA_sha256"]})
+        with TemporaryDirectory() as temporary, patch("PIL.Image.Image.save",
+                side_effect=AssertionError("Keep the authenticated portable PNG container")):
+            output = Path(temporary) / "startup"
+            receipt = reproduce(output, source=SOURCES["startup"])
+            self.assertEqual((output / row["file"]).read_bytes(),
+                             _asset_bytes("menu-atlases/" + row["file"])[0])
+        self.assertEqual(len(receipt["outputs"]), 1)
+        self.assertFalse(receipt["source_ROM_opened"])
+        self.assertEqual(receipt["outputs"][0]["raster_images_remaining"], 0)
+        self.assertFalse(receipt["outputs"][0]["font_rendering_remaining"])
+        for game in SUPPORTED:
+            recipe = menu_recipes(game)[row["target"]]
+            self.assertEqual(recipe["transform"]["author_source"]["manifest_sha256"], digest)
+            image = menu_image(recipe["bundled_donor"], (640, 480)).image
+            self.assertEqual((image.width(), image.height()), (2560, 1920))
+            self.assertEqual(image.pixelColor(0, 0), QColor(255, 255, 255, 255))
+            # A displaced/cropped image, substituted font, or changed brand
+            # color cannot satisfy the exact registered full-frame pixels.
+            self.assertEqual(hashlib.sha256(bytes(image.constBits())).hexdigest(),
+                             row["renderer"]["premultiplied_rgba_sha256"])
+            self.assertEqual(row["metrics"]["core_srgb"], [24, 56, 99])
+
+    def test_startup_authoring_rejects_wrong_frame_color_and_hash_before_output(self):
+        from copy import deepcopy
+        from scripts.build_hd_geometry_additions import reproduce, SOURCES
+        from orre_randomizer.hd_menu_catalog import _asset, _asset_bytes
+        packet, digest = _asset(SOURCES["startup"])
+        for original, replacement in (("0 0 640 480", "0 0 480 640"), ("#183863", "#a02020")):
+            changed = deepcopy(packet)
+            changed["records"][0]["svg"] = changed["records"][0]["svg"].replace(original, replacement)
+            self.assertNotEqual(changed, packet)
+            with self.subTest(change=replacement), TemporaryDirectory() as temporary, patch(
+                    "orre_randomizer.hd_menu_catalog._asset", return_value=(changed, digest)):
+                output = Path(temporary) / "rejected"
+                with self.assertRaises(ValueError):
+                    reproduce(output, source=SOURCES["startup"])
+                self.assertEqual(list(output.iterdir()), [])
+        with TemporaryDirectory() as temporary, patch("orre_randomizer.hd_menu_catalog._asset_bytes",
+                return_value=(b"altered PNG", "0" * 64)), patch(
+                "orre_randomizer.hd_menu_catalog._asset", return_value=(packet, digest)):
+            output = Path(temporary) / "rejected"
+            with self.assertRaisesRegex(ValueError, "Reviewed geometry PNG differs"):
+                reproduce(output, source=SOURCES["startup"])
+            self.assertEqual(list(output.iterdir()), [])
+
 if __name__ == "__main__":
     unittest.main()

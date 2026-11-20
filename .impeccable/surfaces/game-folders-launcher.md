@@ -64,8 +64,11 @@ is unavailable; do not add a permanent path row to the settings panel.
 The fixed 1,100 × 800 px window keeps both settings columns side by side, with
 direct contents and no horizontal or vertical page scrollbar.
 
-Short choices remain visible: Original/HD, 100%/200%, Keyboard/Controller. Hold
-shortcuts use framed key labels and an explanation of the return to base speed.
+Short choices remain visible: Original/HD, corrected 16:9/original 4:3,
+100%/200%/300% acceleration target and Keyboard/Controller. Every game starts
+at 100%. Hold Tab for the chosen target, Shift+Tab for 50%, or Ctrl+Tab to
+toggle acceleration. All three shortcuts use framed key labels. Retain a
+fixed page without scrolling; display sits above controls beside audio.
 Unavailable independent-music states retain truthful help. The option is enabled
 for the verified Windows/Europe revision-0 configuration and checked renderer
 recipe; unsupported configurations leave it disabled and unchecked. No visual treatment claims

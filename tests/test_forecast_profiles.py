@@ -72,6 +72,32 @@ class ForecastProfileTests(unittest.TestCase):
                 with self.subTest(xd=is_xd, previous=previous), self.assertRaises(UserError):
                     parser(encode(sign(payload)))
 
+    def test_published_xd_weather_profiles_and_reports_keep_explicit_settings(self):
+        previous = "xd-castform-weather-portraits-v15"
+        region = xd.REGIONS["GXXP01"]
+        for preserved in (False, True):
+            payload, options = self.payload(True, preserved)
+            payload.update(app_version="2.0.4", engine_version=previous)
+            with self.subTest(preserved=preserved):
+                imported = parse_xd_profile(encode(sign(payload)))
+                self.assertEqual(imported.options, options)
+                self.assertEqual(imported.source_engine_version, previous)
+                self.assertTrue(imported.engine_migration)
+                report = dict(application_version="2.0.4", engine_version=previous,
+                              game_id=region.game_id, revision=region.revision,
+                              source_sha256="a" * 64, source_iso_sha256=region.iso_sha256,
+                              seed=imported.seed, options=asdict(options))
+                self.assertEqual(parse_creation_report(encode(report), is_xd=True).profile,
+                                 imported)
+                with tempfile.TemporaryDirectory() as folder:
+                    exported = save_profile(Path(folder) / "current.json",
+                                            imported.seed, imported.options)
+                self.assertEqual(exported["engine_version"], xd.VERSION)
+                self.assertFalse(parse_xd_profile(encode(exported)).engine_migration)
+                payload["options"].pop("randomize_preserved_properties")
+                with self.assertRaises(UserError):
+                    parse_xd_profile(encode(sign(payload)))
+
     def test_previous_reports_retain_engine_identity_and_complete_settings(self):
         for is_xd in (False, True):
             _, options = self.payload(is_xd, False)

@@ -64,6 +64,10 @@ for the current Orre version is missing, reopening repairs the launcher. For a
 missing older runtime, reinstall that release instead of silently changing the
 party's pack version.
 
+Updating the randomizer does not silently replace the launcher in existing
+game folders. New folders created with v2.0.5 use the revised shortcuts and
+display controls; older folders keep their original runtime and pack pins.
+
 ## Saves and controls
 
 New folders begin with a separate memory card. Orre never silently imports,
@@ -83,11 +87,34 @@ uses the first XInput gamepad. Other controllers can be configured manually.
 there, change the mapping, then close Dolphin before returning to the launcher.
 Custom mappings persist until you switch presets.
 
-The selected base speed is 100% or 200%. Hold Tab for 200%, or Shift+Tab for
-50%; release to restore the base speed. These shortcuts operate only while
-this run's Dolphin window has focus. Dolphin's own speed controls are pulsed
-through a local speed-only controller, so transitions take a short moment.
-Focus loss pauses the owned game; it does not send input to other windows.
+The game always starts at 100%. The 100%/200%/300% selector sets only the
+fast-forward target. Hold **Tab** to use that target, or press **Ctrl + Tab**
+to toggle it on and off. Holding **Shift + Tab** overrides either mode with
+50%; releasing it restores the previous mode. Releasing a modifier before Tab
+does not accidentally trigger another fast hold. Losing focus cancels the
+toggle and pauses this run; returning restores 100% before accepting a new hold.
+These controls never poll keys belonging to another foreground process.
+
+Stock Dolphin has speed-up/down shortcuts in fixed 10% increments and no
+desktop hotkey for an arbitrary fixed multiplier. The launcher still uses its
+local speed-only controller; reaching a target takes a short transition rather
+than an instantaneous jump. Dolphin's on-screen messages are disabled only in
+this isolated profile to suppress the intermediate speed notices. This also
+hides its other OSD notices. Native keyboard shortcuts and gamepad mappings
+remain available.
+
+Both display choices start in **borderless fullscreen** at the desktop
+resolution. **16:9** widens the 3D projection and adjusts the orthographic
+projection to preserve the proportions of 2D elements. **4:3** keeps the native
+projection with side bars on a wider monitor. The generic widescreen hack and
+cropping are disabled. Neither choice edits the ROM or replaces its movies.
+Changes take effect on the next launch, not during a running game.
+The camera hook follows Ralf's codes distributed in Dolphin's
+[GameSettings](https://github.com/dolphin-emu/dolphin/tree/master/Data/Sys/GameSettings);
+regional addresses and the separate 2D correction are checked against the six
+supported revision-0 executables. This does not certify every camera and menu
+in a complete playthrough. Original 4:3 remains available for any scene that
+does not suit widescreen.
 
 The launcher and pack manager use fixed windows with no page scrolling. Short
 choices stay visible as buttons. Download details open separately. The existing

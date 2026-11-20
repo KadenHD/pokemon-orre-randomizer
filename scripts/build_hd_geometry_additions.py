@@ -18,7 +18,8 @@ os.environ.setdefault("QT_QPA_PLATFORM", "offscreen")
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 SOURCE = "menu-atlases/geometry-additions-source.json"
-SOURCES = {"geometry": SOURCE, "warnings": "menu-atlases/xd-warning-pages-source.json"}
+SOURCES = {"geometry": SOURCE, "warnings": "menu-atlases/xd-warning-pages-source.json",
+           "startup": "menu-atlases/startup-branding-source.json"}
 
 
 def reproduce(output: Path, *, source: str = SOURCE):
@@ -54,7 +55,7 @@ def reproduce(output: Path, *, source: str = SOURCE):
         with Image.open(BytesIO(approved)) as reference:
             expected_size, expected = reference.size, reference.convert("RGBA").tobytes()
         actual = rendered.tobytes()
-        if source == SOURCE and (record.get("renderer", {}).get("alpha_conversion")
+        if source != SOURCES["warnings"] and (record.get("renderer", {}).get("alpha_conversion")
                 != metadata["alpha_conversion"] or record["renderer"].get("premultiplied_rgba_sha256")
                 != metadata["premultiplied_rgba_sha256"]):
             raise ValueError("Geometry premultiplied pixels differ from their reviewed native render")

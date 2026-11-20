@@ -61,8 +61,12 @@ block HD preparation; unchanged stock omissions retain stock behavior. HD does
 not add polygons or HQ audio.
 
 The launcher shares the incumbent Colosseum/XD layout and uses their respective
-themes. It offers 100%/200% base speed, hold Tab for 200%, Shift+Tab for 50%,
-keyboard/XInput presets and native Dolphin remapping. Speed shortcuts require
+themes. Every launch starts at 100%; the 100%/200%/300% choice is only the
+fast-forward target. Hold Tab to use it, Shift+Tab for 50%, or Ctrl+Tab to toggle
+fast-forward. Stock Dolphin still uses stepped transitions; isolated OSD
+suppression hides intermediate notices. Offer corrected 16:9 or faithful 4:3
+in borderless fullscreen, keyboard/XInput presets and native Dolphin remapping.
+Speed shortcuts require
 the owned game window to have focus. The optional independent-music setting
 is enabled only for verified Europe revision-0 images on Windows with the
 checked renderer recipe, following bounded combined-output validation.

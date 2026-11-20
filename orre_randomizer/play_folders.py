@@ -25,6 +25,7 @@ from .disc_images import SUFFIXES
 from .hd_packs import PACKS, PackStore, shared_root, checkpoint, required_pack_games
 from .i18n import Message, LANGUAGES
 from .service import Cancelled, UserError, randomize, file_hash
+from .play_display import acceleration_target, display_mode, configure_projection
 
 
 class PlayLock:
@@ -204,7 +205,7 @@ def _write_ini(path: Path, values):
 
 def validate_profile_root(folder):
     profile = folder / "DolphinUser"
-    directories = [profile, *(profile / part for part in ("Config", "GC", "StateSaves", "Logs"))]
+    directories = [profile, *(profile / part for part in ("Config", "GameSettings", "GC", "StateSaves", "Logs"))]
     for path in directories:
         if path.is_symlink() or path.is_junction():
             raise UserError("Le profil Dolphin de cette partie doit rester dans son propre dossier.")
@@ -219,6 +220,8 @@ def configure_profile(folder: Path, manifest, *, load_path=None, muted=False, pa
     profile = folder / "DolphinUser"
     referenced = (paths_for or folder) / "DolphinUser"
     region = {"P": "EUR", "E": "USA", "J": "JAP"}[manifest["game_id"][3]]
+    mode = display_mode(manifest["settings"])
+    configure_projection(profile, manifest["game_id"], mode)
     (profile / "GC").mkdir(parents=True, exist_ok=True)
     native_volume = 100
     if manifest["settings"].get("native_music"):
@@ -226,7 +229,8 @@ def configure_profile(folder: Path, manifest, *, load_path=None, muted=False, pa
         native_volume = round(100 * NATIVE_MUSIC_OUTPUT_GAIN)
     values = {"Core": {"SlotA": 1, "SlotB": 255,
         "MemcardAPath": (referenced / "GC" / f"MemoryCardA.{region}.raw").as_posix(),
-        "EmulationSpeed": manifest["settings"]["speed"], "SIDevice0": 6},
+        "EmulationSpeed": 1, "SIDevice0": 6},
+        "Display": {"Fullscreen": True, "FullscreenDisplayRes": "Auto", "RenderToMain": False},
         "General": {"HotkeysRequireFocus": True, "LoadPath": str(load_path or referenced / "Load")},
         "Analytics": {"Enabled": False, "PermissionAsked": True},
         "DSP": {"Volume": 0 if muted else native_volume,
@@ -237,7 +241,9 @@ def configure_profile(folder: Path, manifest, *, load_path=None, muted=False, pa
         _write_ini(profile / "Config/Dolphin.ini", {"DSP": {"Backend": "Cubeb"}})
     hd = manifest["settings"]["graphics"] == "hd"
     _write_ini(profile / "Config/GFX.ini", {"Settings": {"HiresTextures": hd, "CacheHiresTextures": False,
-        "InternalResolution": 3 if hd else 1},
+        "InternalResolution": 3 if hd else 1, "BorderlessFullscreen": True,
+        "AspectRatio": 1 if mode == "16:9" else 2, "wideScreenHack": False,
+        "Crop": False, "CropCustom": False},
         "Enhancements": {"ForceTextureFiltering": 2 if hd else 0}})
     controls = profile / "Config/GCPadNew.ini"
     marker = profile / "Config/OrreControls.json"
@@ -283,6 +289,8 @@ def load_game(path: Path):
                 or data["game_id"][3:] not in ("P01", "E01", "J01")
                 or data["settings"]["graphics"] not in ("original", "hd")
                 or data["settings"]["speed"] not in (1, 2)
+                or acceleration_target(data["settings"]) not in (1, 2, 3)
+                or display_mode(data["settings"]) not in ("16:9", "4:3")
                 or not isinstance(data["seed"], str) or not 0 < len(data["seed"].encode("utf-8")) <= 256
                 or not isinstance(data["shared"], str) or not Path(data["shared"]).is_absolute()
                 or not isinstance(data["dolphin"], str) or not isinstance(data["pack"], str)):
@@ -673,7 +681,8 @@ def create_game_folder(*, request: PlayFolderRequest, source: Path, destination:
             "pack": pack.key, "language": request.language,
             "packs": {key: PACKS[key].key for key in hd_game_requirements({
                 "game": game, "features": report.get("play_features", {})})},
-            "settings": {"graphics": request.graphics, "speed": 1, "native_music": False},
+            "settings": {"graphics": request.graphics, "speed": 1, "acceleration": 2,
+                         "display": "16:9", "native_music": False},
             "features": report.get("play_features", {})}
         final_rom = folder / manifest["rom"]
         report.update(output=str(final_rom), journal=str(final_rom.with_suffix(final_rom.suffix + ".html")),

@@ -70,9 +70,11 @@ FRAGMENT
                 raise unittest.SkipTest('C compiler unavailable for AUX fragment execution')
             environment = None; library = folder/'aux.so'
             command = [compiler,'-shared','-fPIC','-O2',str(source),'-o',str(library)]
-        result = subprocess.run(command,cwd=folder,env=environment,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True)
+        # MSVC diagnostics may use the Windows OEM code page even when Python
+        # runs in UTF-8 mode. Successful compilation needs no text decoding.
+        result = subprocess.run(command,cwd=folder,env=environment,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
         if result.returncode:
-            raise AssertionError(result.stdout)
+            raise AssertionError(result.stdout.decode('utf-8', errors='backslashreplace'))
         cls.library = C.CDLL(str(library))
         if sys.platform=='win32':
             from _ctypes import FreeLibrary

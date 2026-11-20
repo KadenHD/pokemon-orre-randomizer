@@ -266,3 +266,13 @@ advances, baselines and message layout are retained; the HD lettering uses
 adapted vector typography. It is separate from the application's MIT license.
 The exact upstream revision and file hashes are recorded in
 `orre_randomizer/hd_text_vectors.py` and the interface asset provenance.
+
+## Widescreen camera recipes
+
+The launcher camera hooks are adapted from Ralf's Colosseum widescreen codes
+and the corresponding XD recipe distributed in Dolphin's
+[GameSettings](https://github.com/dolphin-emu/dolphin/tree/master/Data/Sys/GameSettings).
+Orre ports the checked instruction sequence to the other supported revision-0
+regions and adds a separate 2D-proportion correction. Reversible patches use
+retail read-only constants inside the isolated profile; they do not change
+the ROM. Dolphin and its source remain under their respective licenses.

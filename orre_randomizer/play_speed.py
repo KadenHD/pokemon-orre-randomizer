@@ -2,11 +2,12 @@
 
 Stock Dolphin exposes ten-percent speed steps, not an external fixed-speed
 command. A dedicated loopback DSU device emits bounded press/release pulses.
-Release cancels the current ramp and returns to the selected base speed. Focus
+Release cancels the current ramp and returns to normal speed. Focus
 loss pauses this profile; restoration takes priority when focus returns. Native
 keyboard hotkeys retain their own device and bindings. UDP has no acknowledgement: the
 tracked speed is an estimate, and a stalled emulator can miss a pulse. Starting
-a new session always uses the base speed from the isolated profile again.
+a new session always starts at 100%. The selected 100/200/300% value is only
+the acceleration target. Ctrl+Tab latches that target until pressed again.
 """
 from __future__ import annotations
 
@@ -71,18 +72,20 @@ def _native_windows_hotkeys():
 
 @dataclass(frozen=True)
 class SpeedBindings:
-    """Windows virtual-key chords; the slow chord has priority when both match."""
+    """Windows virtual-key chords; modifier chords take priority over plain Tab."""
     fast: tuple[int, ...] = (0x09,)
     slow: tuple[int, ...] = (0x10, 0x09)
+    toggle: tuple[int, ...] = (0x11, 0x09)
 
     def __post_init__(self):
-        for chord in (self.fast, self.slow):
+        chords = (self.fast, self.slow, self.toggle)
+        for chord in chords:
             if (not isinstance(chord, tuple) or not 1 <= len(chord) <= 3
                     or any(type(key) is not int or not 1 <= key <= 0xFE for key in chord)
                     or len(set(chord)) != len(chord)):
                 raise ValueError("speed bindings require one to three distinct Windows virtual keys")
-        if set(self.fast) == set(self.slow):
-            raise ValueError("fast and slow speed bindings must differ")
+        if len({frozenset(chord) for chord in chords}) != len(chords):
+            raise ValueError("speed bindings must differ")
 
 
 def _write_ini(path, values):
@@ -235,7 +238,8 @@ def prepare_speed_controls(profile: Path) -> SpeedControls:
         })
         _write_ini(config / "Hotkeys.ini", {"Hotkeys": hotkeys})
         _write_ini(config / "Dolphin.ini", {"General": {"HotkeysRequireFocus": "True"},
-                                           "Interface": {"PauseOnFocusLost": "True"}})
+                                           "Interface": {"PauseOnFocusLost": "True",
+                                                         "OnScreenDisplayMessages": "False"}})
     except BaseException:
         pad.close()
         raise
@@ -262,9 +266,20 @@ class _ForegroundKeys:
         if not self.focused():
             return None
         # Never read any key state before the foreground ownership check.
-        keys = set(self.bindings.fast) | set(self.bindings.slow)
+        keys = set(self.bindings.fast) | set(self.bindings.slow) | set(self.bindings.toggle)
         down = {key for key in keys if self.user.GetAsyncKeyState(key) & 0x8000}
+        # Do not interpret a modifier released before Tab as a fresh fast hold.
+        if getattr(self, "_chord_down", False):
+            if not down:
+                self._chord_down = False
+            elif not (all(key in down for key in self.bindings.toggle)
+                      or all(key in down for key in self.bindings.slow)):
+                return "release"
+        if all(key in down for key in self.bindings.toggle):
+            self._chord_down = True
+            return "toggle"
         if all(key in down for key in self.bindings.slow):
+            self._chord_down = True
             return "slow"
         if all(key in down for key in self.bindings.fast):
             return "fast"
@@ -297,8 +312,11 @@ class _Ramp:
 
 class _Holds:
     """Defer all non-neutral inputs while background and restore first on return."""
-    def __init__(self, ramp):
+    def __init__(self, ramp, acceleration=20):
         self.ramp = ramp
+        self.acceleration = acceleration
+        self.toggled = False
+        self.toggle_down = False
         self.was_focused = False
         self.pending_restore = False
 
@@ -307,6 +325,7 @@ class _Holds:
             if self.was_focused:
                 self.pending_restore = True
             self.was_focused = False
+            self.toggled = self.toggle_down = False
             self.ramp.button = 0
             self.ramp.until = now + _RELEASE_SECONDS
             return 0
@@ -316,7 +335,11 @@ class _Holds:
             self.ramp.until = now + _RELEASE_SECONDS
         self.was_focused = True
         restore = stopping or self.pending_restore
-        target = self.ramp.base if restore else 20 if mode == "fast" else 5 if mode == "slow" else self.ramp.base
+        if not restore and mode == "toggle" and not self.toggle_down:
+            self.toggled = not self.toggled
+        self.toggle_down = mode == "toggle"
+        target = (self.ramp.base if restore else 5 if mode == "slow" else
+                  self.acceleration if mode == "fast" or self.toggled else self.ramp.base)
         button = self.ramp.step(now, target, connected)
         if self.pending_restore and self.ramp.restored and now >= self.ramp.until:
             self.pending_restore = False
@@ -326,15 +349,15 @@ class _Holds:
 class SpeedSession:
     """Own the prepared DSU device for a supplied, launcher-spawned process.
 
-    Call start() after Popen and close() before replacing the selected base or
+    Call start() after Popen and close() before replacing the selected target or
     leaving the launcher. close() returns whether restoration was completed or
     the child had already exited. Abrupt parent termination cannot be repaired
     by stock Dolphin's one-shot speed API.
     """
-    def __init__(self, process, base_speed, controls: SpeedControls, *,
+    def __init__(self, process, acceleration_speed, controls: SpeedControls, *,
                  bindings: SpeedBindings | None = None, key_reader=None, foreground_reader=None):
-        if type(base_speed) not in (int, float) or base_speed not in (1, 2):
-            raise ValueError("the selected base speed must be 100 or 200 percent")
+        if type(acceleration_speed) not in (int, float) or acceleration_speed not in (1, 2, 3):
+            raise ValueError("the acceleration target must be 100, 200 or 300 percent")
         if type(getattr(process, "pid", None)) is not int or process.pid <= 0 or not callable(getattr(process, "poll", None)):
             raise ValueError("speed sessions require the launcher-owned child process")
         if controls._claimed:
@@ -346,8 +369,8 @@ class SpeedSession:
         self.bindings = bindings or SpeedBindings()
         self._keys = key_reader
         self._foreground = foreground_reader
-        self._ramp = _Ramp(int(base_speed * 10))
-        self._holds = _Holds(self._ramp)
+        self._ramp = _Ramp(10)
+        self._holds = _Holds(self._ramp, int(acceleration_speed * 10))
         self._stop = threading.Event()
         self._thread = None
         self.restored = True

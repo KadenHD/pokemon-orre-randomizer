@@ -35,6 +35,95 @@ historical evidence rather than the current feature specification.
 
 Counts evolve; the Actions run for a release tag records that build's results.
 
+### Launcher speed and display follow-up (2026-11-20)
+
+The v2.0.5 checkout exercises 1,548 tests across 164 isolated modules. The
+development sandbox blocks one Windows junction fixture; its complete
+15-test module passes with normal user permissions. Release CI also runs the
+suite from the extracted source archive, without the local game dumps.
+
+The targeted launcher suite passes 47 tests, with 29 additional HD-folder and
+dependency integration tests. All 12 game/language launcher layouts fit the
+fixed 1,100 x 800 window. Updated English launcher screenshots use the actual
+Qt widgets and demonstration folder names.
+
+Read-only audits match the perspective hook, orthographic return, empty stub
+space, r2 and read-only 0.75 constant in all six supported revision-0 executable
+layouts. Independent PPC tests check the emitted matrix correction, camera
+aspect calculation, branch targets and reverse patches. Wide mode does not
+use game variables or BSS space for new constants.
+
+Silent Dolphin 2609b checks use private profiles and test-image hard links
+that are removed afterward. In Europe Colosseum, the final 300% hold/toggle
+produces about 150 VI/s, with about 50 VI/s after release and 25 VI/s while
+slowing down. Europe XD checks the final 200% target at about 100 VI/s and
+returns to about 50 VI/s. Both final widescreen hooks are observed in live
+memory. Colosseum's native summary menu retains its proportions in 16:9;
+the 4:3 check restores the native instructions and fills a 2,560 x 1,440
+borderless window with side bars. These checks do not certify every camera
+or menu in a full campaign, nor a native visual pass of every region.
+
+A further XD 4:3 run confirms both native projection instructions, 200%
+acceleration and release to 100%, with no source-image change.
+
+The QA audio backend produces no output; volume and mute overrides are also
+applied, without a music companion. Image hashes remain unchanged and owned
+test processes are closed after the bounded checks. The launcher's stock
+Dolphin speed changes remain stepped; hiding OSD does not make them atomic.
+
+### Multi-seed and ancillary-menu follow-up (2026-11-20)
+
+Before the launcher changes, the local suite passed 1,539 tests across
+163 isolated modules. Three symlink checks are skipped because this Windows
+account cannot create them.
+Native audio FIFO compilation and execution pass with the localized compiler.
+
+The offline matrix checks 44 production patch plans: 32 desktop-preset cases,
+six unchanged controls and six advanced boundary cases. Both games use Europe,
+USA and Japan originals. Each European preset is checked with four seeds,
+including Unicode and the maximum accepted seed length. Shared seeds reproduce
+their species, abilities and item draws across the supported regions.
+
+Checks read the final DOL, REL and archive members. They cover the default
+replacement-family rules, excluded legendary draws, retained species,
+original shop Balls, varied randomized treasure contents and unchanged movies.
+Reusing a source after a randomized plan restores all 74 native Colosseum
+treasure records for the Pokemon-only preset. Script interpretation also checks
+Adelbert's contact, gift and Master Ball gates and the bonus quest's eligibility
+across purification counts. These are offline state checks, not 44 campaigns.
+
+The final Bingo lookup fix is checked separately from that matrix. XD's fixed
+rentals use their original species traits through both native lookup paths.
+Final Europe, USA and Japan patch comparisons reproduce the
+previous control plans exactly outside the DOL; all 116 compared archive
+replacements, including the REL, remain byte-identical. The seed draw algorithm
+is unchanged. Independent instruction execution covers the two hooks, complete
+object-accessor prologue/epilogue, ordinary encounters, rental battles, Bingo
+menus and invalid or uninitialized overlay stacks. The second selector shares
+the original table rather than allocating another copy.
+
+A muted European Dolphin replay uses a production-generated XD ISO with types,
+abilities and statistics randomized. Battle Bingo retains Dragonair's Dragon
+type, Shed Skin and 81 HP, and Charmander's 68 HP. The replay covers the card
+menu, grid, one victory, EP consumption, a Master Ball capture, Treecko's Grass
+type and Overgrow, voluntary exit and return to the field menu. A native save
+made during the preceding test reloads normally before this replay. It does
+not qualify completion of an entire Bingo card or its full-clear reward.
+
+Further HD menu replays use existing regional QA images and newly prepared
+texture caches. Japanese XD covers VS artwork, the Group Battle configuration
+screen, Quick Battle team selection, battle HUD, surrender result and menu
+return. Japanese Colosseum covers the main and Quick Battle menus, difficulty,
+four-Pokemon selection, a double-battle HUD and move menu, surrender result
+and menu return. Group Battle is an on-screen check; no physical GBA link or
+multiplayer session is claimed. Original ROMs, donor cards and personal
+emulator profiles remain unchanged. Startup movies retain their original files.
+
+There is no second physical PC test or uninterrupted full-campaign playthrough
+in this follow-up. Source, instruction, checkpoint and menu checks remain
+separate from those qualifications. See [HD coverage](HD_COVERAGE.md) for native
+artwork fallbacks and the separate, unchanged Genius Sonority startup movie.
+
 ### Encounter columns and XD portrait shapes (v1.2.25)
 
 The complete local suite passed 944 tests across 110 isolated modules. Two

@@ -1,5 +1,30 @@
 # Changelog
 
+## Unreleased
+
+## 2.0.5 - 2026-11-20
+
+- Start every launcher session at 100%. Use the selected 100/200/300% only as
+  the Tab fast-forward target, retain Shift+Tab at 50%, and add Ctrl+Tab to
+  toggle acceleration. Suppress Dolphin's OSD in the isolated profile to hide
+  its intermediate 10% speed notices; stock transitions are still stepped.
+- Add remembered 16:9 and original 4:3 display choices in both launchers.
+  Start in borderless fullscreen, with guarded regional camera and 2D
+  projection patches for widescreen; keep the ROM and original movies intact.
+- Fit the revised launcher controls in the fixed window in all six languages.
+- Keep XD's Battle Bingo rental species properties unchanged while selecting
+  a card, preparing its Pokemon, displaying the grid and fighting. Retain the
+  original traits for Battle CDs and training simulations. Ordinary teams and
+  field menus continue to use the chosen randomization rules.
+- Guard the Bingo menu selector against an uninitialized or empty native
+  overlay stack, and preserve explicit settings when importing XD v15 profiles.
+  Keep the seed draw algorithm unchanged.
+- Add a source-qualified x4 vector reconstruction of the retail Genius
+  Sonority wordmark shared by the six supported discs. Record its provenance,
+  offline recipe and limits separately from the unchanged startup movies.
+- Read native compiler diagnostics as bytes in the audio FIFO test harness,
+  preserving errors from non-English Windows toolchains under UTF-8 Python.
+
 ## 2.0.4 - 2026-11-19
 
 - Keep Forecast on Castform and exclude it from other species' randomized

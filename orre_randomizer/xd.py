@@ -47,7 +47,7 @@ from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITE
                        validate_tutorial_matchup)
 from .xd_unown_form import patch_xd_unown_form
 
-VERSION = "xd-castform-weather-portraits-v15"
+VERSION = "xd-fixed-rental-traits-v16"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",

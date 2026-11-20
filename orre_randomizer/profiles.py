@@ -30,6 +30,7 @@ PREVIOUS_PROPERTIES_ENGINE = "shadow-lugia-appearance-v24"
 PREVIOUS_XD_PROPERTIES_ENGINE = "xd-shadow-lugia-appearance-v13"
 PREVIOUS_PRESERVED_ENGINE = "preserved-pokemon-properties-v25"
 PREVIOUS_XD_PRESERVED_ENGINE = "xd-preserved-pokemon-properties-v14"
+PREVIOUS_XD_WEATHER_ENGINE = "xd-castform-weather-portraits-v15"
 LUGIA_APPEARANCE_APP_VERSION = "1.2.20"
 # Both schemas were exported with the same engine version. Only the complete
 # historical bundle may be absent; a partial bundle is a malformed profile.
@@ -317,7 +318,7 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         raise UserError("Profil trop volumineux : la limite est de 64 Ko." if not report
                         else "Rapport trop volumineux : la limite est de 32 Mio.")
     invalid = "Ce fichier ne contient pas de réglages Pokémon XD compatibles."
-    property_engines = (xd.VERSION, PREVIOUS_XD_PRESERVED_ENGINE)
+    property_engines = (xd.VERSION, PREVIOUS_XD_WEATHER_ENGINE, PREVIOUS_XD_PRESERVED_ENGINE)
     recent_engines = (*property_engines, PREVIOUS_XD_PROPERTIES_ENGINE)
     try:
         payload = _decode_json(data)
