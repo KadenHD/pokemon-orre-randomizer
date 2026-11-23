@@ -8,9 +8,13 @@ import shutil
 import subprocess
 import sys
 import tempfile
+import time
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
+# The matrix paints 474 UI states. Hosted Windows CPUs can need more than a
+# minute; retain a finite deadline without dropping any renders or assertions.
+DIAGNOSTIC_TIMEOUT_SECONDS = 180
 sys.path.insert(0, str(ROOT))
 from orre_randomizer import APP_EXECUTABLE
 
@@ -58,10 +62,19 @@ def main():
                        "APPDATA": str(work/"AppData"), "LOCALAPPDATA": str(work/"LocalAppData"),
                        "QT_QPA_PLATFORM": "offscreen"}
         diagnostic = work / "diagnostics.json"
-        result = subprocess.run([str(executable), "--diagnostics", str(diagnostic), "--screenshots",
-                                 "--screenshot-scope", "smoke"],
-                                cwd=work/"unrelated working directory", env=environment,
-                                timeout=60, capture_output=True)
+        started = time.monotonic()
+        try:
+            result = subprocess.run([str(executable), "--diagnostics", str(diagnostic), "--screenshots",
+                                     "--screenshot-scope", "smoke"],
+                                    cwd=work/"unrelated working directory", env=environment,
+                                    timeout=DIAGNOSTIC_TIMEOUT_SECONDS, capture_output=True)
+        except subprocess.TimeoutExpired as error:
+            written = len(list(work.glob("*.png")))
+            raise RuntimeError(
+                f"Packaged diagnostic exceeded {DIAGNOSTIC_TIMEOUT_SECONDS}s "
+                f"after saving {written} screenshots.") from error
+        diagnostic_seconds = time.monotonic() - started
+        print(f"Frozen diagnostic completed in {diagnostic_seconds:.1f}s.", flush=True)
         if result.returncode != 0 or not diagnostic.is_file():
             raise RuntimeError(f"Packaged diagnostic failed ({result.returncode}): " +
                                (diagnostic.read_text("utf-8") if diagnostic.is_file() else "No report"))
@@ -109,6 +122,7 @@ def main():
                 if "screenshot" in state:
                     shutil.copyfile(work/state["screenshot"], evidence/state["screenshot"])
         data.update(edition=args.edition, archive=archives[0],
+                    diagnostic_seconds=round(diagnostic_seconds, 3),
                     archive_sha256=manifest[archives[0]]["sha256"],
                     extracted_to_unicode_path=True, developer_path_removed=True,
                     unrelated_working_directory=True,
