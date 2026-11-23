@@ -83,6 +83,9 @@ def species_catalog(original: bytes, tables: dict) -> dict[int, dict]:
             raise FormatError("invalid original real-species type, ability or base stats")
         result[index] = {"national_dex": national, "types": types, "abilities": abilities,
                          "stats": stats, "total": sum(stats), "offset": pos}
+        result[index]["learnset"] = tuple((original[pos + 0xBA + slot * 4],
+            struct.unpack_from(">H", original, pos + 0xBC + slot * 4)[0])
+            for slot in range(19) if original[pos + 0xBA + slot * 4]) if stride >= 0x108 else ()
     if not result:
         raise FormatError("species table has no real species")
     return result

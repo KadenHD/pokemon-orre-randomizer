@@ -74,7 +74,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "castform-weather-portraits-v26"
+ENGINE_VERSION = "natural-encounter-moves-v27"
 
 
 @dataclass(frozen=True, slots=True)
@@ -113,7 +113,7 @@ def validate_setting_values(options):
             raise UserError("Choisissez un Pokémon de la liste pour {label}.", label=Message(item.metadata["label"]))
         if kind == "bool" and type(value) is not bool:
             raise UserError("Le réglage {label} doit être activé ou désactivé.", label=Message(item.metadata["label"]))
-        if kind == "choice" and (type(value) is not str or value not in {choice[0] for choice in item.metadata["choices"]}):
+        if kind == "choice" and (type(value) not in item.metadata.get("choice_types", (str,)) or value not in {choice[0] for choice in item.metadata["choices"]}):
             raise UserError("Choix inconnu : {label}.", label=Message(item.metadata["label"]))
         if kind in ("int", "float") and (type(value) not in (int, float) or
              kind == "int" and type(value) is not int or not item.metadata["minimum"] <= value <= item.metadata["maximum"]):

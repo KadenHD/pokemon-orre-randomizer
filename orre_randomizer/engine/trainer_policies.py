@@ -197,7 +197,8 @@ def apply_trainer_tables(original: bytes, current: bytes, seed: str, options,
                 if options.randomize_trainer_moves and not any(move >= 355 for move in before_moves):
                     if moves is None:
                         moves = move_catalog(original, tables)
-                    chosen = choose_moves(seed, f"{VERSION}:moves:{i}", catalog[species], row["level"], moves, options)
+                    chosen = choose_moves(seed, f"{VERSION}:moves:{i}", catalog[species], row["level"], moves, options,
+                                          mode=options.randomize_trainer_moves, originals=before_moves)
                     for f, move in zip(MOVE_FIELDS, chosen, strict=True):
                         struct.pack_into(">H", output, pos + f, move)
                         allowed.update((pos + f, pos + f + 1))

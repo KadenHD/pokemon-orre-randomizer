@@ -67,7 +67,11 @@ def damaging(move: dict) -> bool:
 
 
 def choose_moves(seed: str, key: str, species: dict, level: int, moves: dict,
-                 options, count: int = 4, used: set[int] | None = None) -> list[int]:
+                 options, count: int = 4, used: set[int] | None = None, *, mode=True, originals=None) -> list[int]:
+    if mode == "natural":
+        from ..move_modes import natural_moves
+        return natural_moves(species.get("learnset", ()), level,
+                             [0] * count if originals is None else originals, moves)
     allowed = {index for index in moves if not (
         options.ban_self_destruct and index in SELF_DESTRUCT or options.ban_ohko and index in OHKO)}
     if options.no_duplicate_moves:
@@ -232,10 +236,11 @@ def apply_rel_rules(original: bytes, current: bytes, seed: str, options, *, allo
         old_moves = [u16(original, pos + field) for field in MOVE_FIELDS]
         kept = colosseum_encounter_kept(original, pos, options)
         if options.randomize_trainer_moves and not kept:
-            if any(move == 0xFFFF or move >= 355 for move in old_moves):
+            if options.randomize_trainer_moves is True and any(move == 0xFFFF or move >= 355 for move in old_moves):
                 protected.append(row["index"])
             else:
-                new_moves = choose_moves(seed, f"trainer:{row['index']}", catalog[index], level, moves, options)
+                new_moves = choose_moves(seed, f"trainer:{row['index']}", catalog[index], level, moves, options,
+                                         mode=options.randomize_trainer_moves, originals=old_moves)
                 for field, new in zip(MOVE_FIELDS, new_moves):
                     struct.pack_into(">H", output, pos + field, new)
                     allowed.update((pos + field, pos + field + 1))
@@ -387,12 +392,13 @@ def apply_dol_rules(original: bytes, current: bytes, original_rel: bytes, rel: b
                 struct.pack_into(">H", output, pos + 0x92, xp)
                 allowed.update((pos + 0x92, pos + 0x93))
         change = {"key": key, "species": index, "level": level}
-        do_moves = options.randomize_starter_moves if "xp" in target else options.randomize_gift_moves
+        move_mode = options.randomize_starter_moves if "xp" in target else options.randomize_gift_moves
+        do_moves = move_mode
         from ..preserved_pokemon import preserve_properties
         kept = not getattr(options, SPECIAL_OPTIONS[key])
         do_moves = do_moves and not (preserve_properties(options) and kept)
         if do_moves:
-            new_moves = choose_moves(seed, "special:" + key, catalog[index], level, moves, options)
+            new_moves = choose_moves(seed, "special:" + key, catalog[index], level, moves, options, mode=move_mode)
             change["moves"] = new_moves
             if "xp" in target:
                 for slot, move in enumerate(new_moves):

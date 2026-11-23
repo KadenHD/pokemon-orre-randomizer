@@ -29,7 +29,8 @@ class PlayGui(unittest.TestCase):
         def command(folder, data, *, cancel, session_context):
             session_context["spinda_face"] = {"assets": "verified cache"}
             return ["owned Dolphin", "-b"]
-        with patch("orre_randomizer.ui_play.launch_command", side_effect=command):
+        with patch("orre_randomizer.ui_play.launch_command", side_effect=command), \
+             patch("orre_randomizer.save_backups.backup_cards"):
             worker.run()
         self.assertEqual(received, [(["owned Dolphin", "-b"], {"spinda_face": {"assets": "verified cache"}})])
         worker.deleteLater()
@@ -136,6 +137,7 @@ class PlayGui(unittest.TestCase):
                 self.assertEqual(launcher.display.currentData(), "16:9")
                 self.assertFalse(launcher.findChildren(QScrollArea))
                 self.assertLessEqual(launcher.layout().minimumSize().height(), launcher.height())
+                self.assertLessEqual(launcher.layout().minimumSize().width(), launcher.width())
                 self.assertEqual(launcher.minimumSize(), launcher.maximumSize())
             launcher.language_combo.setCurrentIndex(launcher.language_combo.findData("en"))
             launcher.graphics.setCurrentIndex(launcher.graphics.findData("hd"))

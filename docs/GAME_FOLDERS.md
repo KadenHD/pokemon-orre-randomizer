@@ -94,6 +94,11 @@ display controls; older folders keep their original runtime and pack pins.
 
 ## Saves and controls
 
+The next launcher adds automatic card backups and a restore history. Home's
+**My games** and **Storage** tools reference existing folders and account for
+shared files without duplicating the ROM. See [run management](RUN_MANAGEMENT.md)
+for retention, recovery, cleanup scope and challenge codes.
+
 New folders begin with a separate memory card. Orre never silently imports,
 moves or modifies your usual Dolphin saves. New game folders also refuse
 profile junctions or linked memory cards pointing outside their own profile.

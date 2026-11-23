@@ -118,6 +118,15 @@ components:
     typography: "{typography.body}"
     rounded: "{rounded.control}"
     padding: "5px 8px"
+  table-shared:
+    backgroundColor: "{colors.home-field}"
+    textColor: "{colors.home-label}"
+    typography: "{typography.body}"
+    padding: "6px"
+  table-header-shared:
+    backgroundColor: "{colors.home-control}"
+    textColor: "{colors.home-label}"
+    padding: "6px"
 ---
 
 # Design System: Pokémon Orre Randomizer
@@ -145,6 +154,7 @@ audio device. System fonts and accessible Qt controls remain the desktop convent
 - Persistent navigation, visible scrolling and explicit loading states.
 - Shared wording and behavior across all six interface languages.
 - Visible choices, authored navigation icons and proportional controller artwork in the shared launcher flow.
+- Neutral, bounded native tables for local run management, with explicit file-operation states.
 
 ## Colors
 
@@ -156,7 +166,7 @@ changes. The complete XD substitutions remain in `xd_stylesheet()`.
 
 - **Cyan state / teal selection:** focus, checked controls and the active view in Colosseum.
 - **Warm focus / red selection:** the same states in XD.
-- **Neutral silver focus:** home controls and shared HD-pack actions, independent of either game's palette.
+- **Neutral silver focus:** home controls, shared HD-pack actions and run tools, independent of either game's palette.
 
 ### Secondary
 
@@ -256,6 +266,14 @@ Download URLs and hashes open separately in a fixed 900 × 480 px details dialog
 rather than expanding the manager's page. The existing resizable wizard and
 encounter-list scrolling rules remain separate from these fixed surfaces.
 
+Shared run tools also use fixed desktop dialogs: library and storage at
+1,000 × 720 px, backup history at 900 × 600 px, and challenge import/share at
+860 × 560 px. Their angular work panel has 20 px outer and inner margins and
+12 px body spacing. Headings, explanations, status and footer actions stay
+outside the bounded table or code editor; only that data viewport scrolls.
+There is no mobile layout for these dialogs. Their task-specific arrangement
+and entry points are recorded in `.impeccable/surfaces/run-management.md`.
+
 ## Elevation & Depth
 
 Depth comes from darker fields, tonal panels and two angular outlines. The app
@@ -345,6 +363,40 @@ source and download details available beneath the main choices, with progress
 and cancellation separate from the rows. Custom-overlay help qualifies coverage
 as matching textures; the visual system does not imply complete HD coverage.
 
+### Shared run tools
+
+Library, backup history, storage and challenge dialogs retain the neutral
+charcoal/silver palette even when opened by a game-themed launcher. Reuse the
+existing section, body and note roles; these tools do not introduce a new type
+scale. Tables use the recessed home field, a fine outer border, darker selection
+fill, horizontal row separators and a contrasting header face. Stretch columns
+to the viewport, hide vertical row numbers, omit gridlines and alternating fills,
+and keep horizontal scrolling disabled. Library and backup tables select one
+complete row and remain read-only. Long library cell values and folder paths
+remain available in tooltips when their visible text is elided.
+
+**The Explicit Selection Rule.** A highlighted row identifies the working item;
+it does not authorize deletion. Storage candidates begin unchecked. Their
+neutral outlined checkboxes retain Qt interaction and show an actual check mark,
+not color alone. Keep cleanup disabled until a candidate is checked, and confirm
+the selected deletion separately. The launcher's automatic-backup control uses
+the shared checkmark-painted checkbox in its existing game theme.
+
+Keep brief scope and preservation explanations visible beside the data and
+actions. Removing a library reference is distinct from deleting files; restore
+and cleanup have explicit confirmation. Memory-card history does not present
+save states as restorable cards. Challenge export is a read-only code field;
+import uses an editable field, inline validation and an explicit Import action.
+Do not replace these actions with encounter previews or spoilers.
+
+File work runs outside the interface thread. Show an indeterminate progress bar
+and localized status immediately, disable the panel and footer while busy, and
+restore their prior enabled states on completion. Window-close or Escape requests
+cooperative cancellation and waits for the worker before closing; do not imply
+that disabling the footer Close button makes an active operation unclosable.
+Errors remain visible in the status area. Dialog-local translated labels use
+the same six-language catalogs without retaining bindings to destroyed widgets.
+
 ### Presets and dependent controls
 
 The three presets are **Pokémon + moves**, **Pokémon only** and **Unchanged copy**.
@@ -427,8 +479,11 @@ on other steps. Each new attempt clears the previous log and starts collapsed.
 Home keeps neutral music/sound/language controls and game-specific selection
 tiles. Both music and menu sounds start enabled when available and remember
 independent preferences. Audio availability never blocks randomization.
-HD packs and Open a game use the same neutral secondary controls beneath the
-game choices; their shared scope does not inherit either game's accent.
+HD packs, My games, Storage, Import a challenge and Update a launcher use the
+same neutral secondary controls beneath the game choices. Two centered rows
+group HD packs / My games / Storage, then Import a challenge / Update a launcher.
+Each row stacks vertically below 800 px; their shared scope does not inherit
+either game's accent.
 Neutral tooltips, menus, text details, selections and native fallback surfaces
 use the same charcoal/silver palette. Switching into either game and returning
 Home must not retain its colors. The shared HD manager stays neutral regardless
@@ -466,6 +521,7 @@ offer executable self-updates. Other running jobs must finish first.
 - **Do** keep localized text, keyboard focus and accessible control names.
 - **Do** keep navigation visible and scrolling confined to the active content.
 - **Do** distinguish pending, loading, cancelled, failed and current previews.
+- **Do** keep file-operation scope, progress and local-data preservation visible in shared tools.
 
 ### Don't:
 

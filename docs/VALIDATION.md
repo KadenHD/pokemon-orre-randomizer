@@ -4,6 +4,71 @@ This index records the v1.0.0 foundation and subsequent validation follow-ups.
 Dated reports in `docs/` describe their named versions and scenarios; they are
 historical evidence rather than the current feature specification.
 
+## v2.1.0 run tools and encounter move policies (2026-11-23)
+
+Tests use private preferences and temporary synthetic game folders/cards.
+Native-data cases read the original European Colosseum REL/DOL and XD disc;
+muted Dolphin trials use separate generated images and copied memory cards.
+No personal ROM, card, save state or emulator profile was modified.
+
+- Library checks cover registration, search, missing entries, reference removal
+  and launcher metadata. Forgetting a run leaves its game data intact.
+- Card checks cover deduplication, retention, identity/hash rejection, safe
+  restoration, partial-publication rollback, linked paths, active-run locks and
+  external emulator ownership. A launch test creates a real synthetic backup
+  before releasing the command to the mocked launch slot.
+- Storage checks cover hard links, protected data, referenced/recent views,
+  changed candidates, installer locks and a library changed by another app
+  instance. Cleanup deletes only explicitly selected eligible fixture views.
+- Challenge checks cover both option types, exact seeds, Unicode, integrity,
+  unknown engines, layout compatibility and bounded decompression. Invalid
+  imports leave the current game/settings untouched.
+- Native Qt checks cover all six interface languages, bounded dialogs, worker
+  cleanup and the normal 1,040 x 800 Home viewport without scrolling. Screenshots
+  in the run-management guide use demonstration data and muted preferences.
+- Starter regressions select Beldum, Metang and Magikarp in each game with both
+  non-random move modes. Native instructions accept them without requiring a
+  random draw; species mode uses Take Down or Splash as appropriate, with empty
+  unused slots. Colosseum's level-26 Magikarp also has Tackle.
+- Native trainer checks verify that replacements in both games receive their
+  own learned moves at their encounter level. Relearned moves follow native
+  order, while Shadow/scripted slots remain protected. GUI/CLI/profile tests
+  distinguish original, species and random policies and preserve old booleans.
+
+The final isolated pass ran 1,607 tests across all 170 modules in 817.547 seconds
+with no failures. Three existing symbolic-link tests were skipped because this
+Windows account cannot create symbolic links. The new junction and linked-path
+guards passed. CI also runs the suite on Linux and Windows.
+
+Muted European Dolphin trials started a new Colosseum game with Beldum at
+level 26 (Take Down only) and Magikarp at level 25 (Splash and Tackle). XD
+completed the original opening simulator and entered the lab with Beldum at
+level 10, with Take Down and three empty slots. The lab dialogue named Beldum.
+The original opening movies were retained. These are targeted startup and
+summary checks, not complete campaigns or every regional starter combination.
+
+Both runs had a byte-verified card backup before Dolphin started. Attempting
+restoration while the owned Colosseum process was active was refused. XD then
+saved its new game to the copied card; after the test process closed, restoring
+the earlier snapshot reproduced the original card digest and retained a backup
+of the new save. Original image/card/executable hashes and generated-image hashes
+remained unchanged. XD also booted with a newly created isolated profile.
+An initial XD test process did not expose game memory before the startup
+deadline; it was closed, and both the retry and fresh-profile check passed.
+No cause or normal emulator exit is inferred from that abandoned trial.
+
+The extracted Windows app diagnostic checks real SQLite operations, synthetic
+card backup/restoration, both challenge formats and all four dialogs without
+opening a personal run or starting an emulator. The installer is built locally;
+the release workflow tests installation on its clean Windows runner before
+publishing. This does not claim a second physical PC or controller playtest.
+
+The engine identifiers are now `natural-encounter-moves-v27` and
+`xd-natural-encounter-moves-v17`. Older JSON profiles retain their option values
+and report a migration; exact historical reproduction requires the old app.
+Challenge codes require an exact engine/layout match. Existing generated ROMs
+and Pokémon already stored on a memory card are not rewritten by an app update.
+
 ## Automated and packaged checks
 
 - The integrated converter is tested with a synthetic GameCube container across
@@ -99,6 +164,53 @@ The optional upgrade check uses two disposable synthetic runs and a temporary
 shared runtime cache. It starts no emulator, downloads no packs and opens no
 personal ROM or save. A successful report must include `successful: true`,
 `frozen: true` and a successful `launcher_upgrade_check` for both games.
+
+### Existing game-folder migration replay (2026-11-23)
+
+Four existing test folders were copied for the follow-up: Colosseum and XD
+folders created with 2.0.0, and two HD folders created with 2.0.4. Emulator and
+shared-cache paths were isolated before testing. The upgrade APIs were loaded
+from the authenticated published Windows executable; all 203 production
+Python files matched its build record after line-ending normalization.
+
+All four upgrades to 2.0.6 passed. Before starting Dolphin, hash comparisons
+verified 2,542 protected existing files, including ROMs, cards, controls,
+settings and texture references. Seeds and pack pins stayed unchanged, backup
+receipts were created, and repeating each upgrade changed nothing. The native
+launcher stubs also started the exact published cached runtime offscreen.
+
+The 2.0.0 copies loaded existing validation cards through their upgraded run
+profiles. Field, party, summary and move pages were checked in both games;
+Colosseum also reached Miror B.'s scene and battle introduction. Its party
+portraits were checked in both 4:3 and 16:9 after allowing texture loading to
+finish. Captures taken immediately after opening the party can precede the
+last portraits becoming visible.
+
+The original cards in the two 2.0.4 test folders were initialized but contained
+no Story Mode progress. Their unchanged copies produced the game's own
+no-saved-data message. Intact backups were retained, and separate known-positive
+validation cards were used for supplementary resumed-game checks. This does
+not certify continuity of a personally played 2.0.4 campaign.
+
+Both HD copies then loaded those validation cards with their pinned packs at
+3x internal resolution. Party portraits, summary and move pages were checked;
+XD's ability page and return to the field were also captured. Read-only RAM
+samples confirmed the expected display hooks after initialization. Sampled
+host-process peak working sets were about 1.0 GiB for Colosseum and 1.25 GiB
+for XD; these short runs do not establish a memory-leak or VRAM budget.
+
+The 21 targeted game-folder and display tests passed. Final hash comparisons
+confirmed all four source folders and their source cards were unchanged, as
+were the copied ROMs and manifests. No product-code change was needed for
+these checks. The initial legacy DTM bootstrap failed before gameplay;
+subsequent checks used normal boots and isolated controller input instead.
+Large temporary ROM, runtime and texture-view copies were removed after
+verification; validation cards, screenshots and reports were retained.
+
+These are bounded compatibility checks on existing images, not a complete
+campaign or a live encounter with every species. Native emulator screenshots
+and private preservation reports retain the evidence. No personal Dolphin
+window was controlled, and the opening movies stayed inside unchanged ROMs.
 
 ### Launcher speed and display follow-up (2026-11-20)
 

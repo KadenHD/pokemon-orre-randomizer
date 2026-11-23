@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-19T10:41:31.734604Z",
+  "generatedAt": "2026-11-23T17:46:11.776651Z",
   "title": "Design System: Pokémon Orre Randomizer",
   "extensions": {
     "colorMeta": {
@@ -590,12 +590,13 @@
       "sources": {
         "orre_randomizer/ui_theme.py": "9762c88841a8b49c396ed242b24ad811d1c8404f6a6b2a7264d2fde0e704481c",
         "orre_randomizer/ui_game_folder.py": "e459171f1e257764da2c44f23a48a9a1615fe27c6491448eb3be6c4b27691600",
-        "orre_randomizer/ui_play.py": "a273ecd7d69159ad5e467d2388d85f4cbe52cf7342adb08ed2c4b69e8b2df0ab",
-        "orre_randomizer/gui.py": "ddc605e63795f247ce69f81a15c7290927441f0c785822cbec805def3a82de80",
-        "orre_randomizer/ui_home.py": "e61160ed5bec86ae6ffd656d8535f9f2164248ac4a82fa6bf0072ec3872e3150",
-        "orre_randomizer/ui_launcher_update.py": "7a587dfb7f455d33d76b7aaeeaca050d6f74711ebd2b09b3abe3c6e8d54219a4"
+        "orre_randomizer/ui_play.py": "9bcec7c40ca08056bc7c589037276074035de695f51e8a786b9e128a6ceb8788",
+        "orre_randomizer/gui.py": "4469151cd696f22dfe2e5d6c1ce445fca88c88956c2d278e91e42709a3ea5147",
+        "orre_randomizer/ui_home.py": "564ecfc3cff45e99af676dfb2b552dc6bb6cd7f5be68d3ff79ddfe16e4ab9d94",
+        "orre_randomizer/ui_launcher_update.py": "7a587dfb7f455d33d76b7aaeeaca050d6f74711ebd2b09b3abe3c6e8d54219a4",
+        "orre_randomizer/ui_run_tools.py": "a8895aac217c16921b3ff869f4e860ac39f7b185131e19eac080e5ddbcebeee5"
       },
-      "scope": "Home, shared HD manager, tooltips, menus, details, selection and fallback palette",
+      "scope": "Home, shared HD manager, run tools, tooltips, menus, details, selection and fallback palette",
       "workerStates": [
         "preparing",
         "downloading",
@@ -605,6 +606,25 @@
         "installed"
       ],
       "closing": "Cooperative cancellation; close after worker cleanup; reset close request before retry; remove bindings when dialogs are destroyed"
+    },
+    "runTools": {
+      "platform": "PySide6 QWidget",
+      "surface": ".impeccable/surfaces/run-management.md",
+      "authority": "ui_run_tools.py uses PACK_STYLE, the home palette and MenuPanel; HTML previews illustrate native Qt components.",
+      "dialogBounds": {
+        "library": "1000 x 720 px",
+        "storage": "1000 x 720 px",
+        "backups": "900 x 600 px",
+        "challenge": "860 x 560 px"
+      },
+      "layout": "Fixed desktop dialogs; heading, explanations, status and footer stay outside bounded native tables or a code editor. No mobile variant.",
+      "tableBehavior": "Read-only single-row selection, stretched columns, hidden row numbers, no horizontal scrolling, no grid or alternating fills; fine row separators.",
+      "selection": "Highlighted rows identify a working item. Cache cleanup requires separate unchecked-by-default checkboxes, a visible mark and explicit confirmation.",
+      "busy": "Immediately show localized status and indeterminate progress, disable panel and footer, then restore prior enabled states. Window close or Escape requests cooperative cancellation and defers closure until completion.",
+      "preservation": "Forget references without deleting files; restore raw cards explicitly; cleanup only completed unreferenced texture views older than 24 hours. Keep scope notes visible.",
+      "localization": "Six-language catalogs; dialog-owned labels do not retain translation bindings to destroyed widgets.",
+      "evidence": "Native Qt demonstration captures in build/run-management-qa/final; ui_run_tools.py, MenuCheckBox, CacheCheckDelegate and two-row Home utility source remain authoritative for component states.",
+      "homeUtilities": "Two centered rows: HD packs / My games / Storage, then Import challenge / Update launcher. Both rows and the credit fit 1040 x 800 px without scrolling; each row stacks below 800 px."
     }
   },
   "components": [
@@ -737,6 +757,21 @@
       "description": "Preparation is indeterminate; download/extraction report real progress. Cancel stays separate from disabled completion controls.",
       "html": "<div class=\"ds-pack-status\">Downloading HD pack…</div><progress class=\"ds-pack-progress\" value=\"34\" max=\"100\">34%</progress>",
       "css": ".ds-pack-status{color:#eceef2;font:14px \"Segoe UI\",sans-serif;margin-bottom:8px}.ds-pack-progress{width:100%;height:18px;background:#191b1e;border:1px solid #727782;border-radius:3px;accent-color:#535b66}"
+    },
+    {
+      "name": "Shared run table",
+      "kind": "custom",
+      "refersTo": "table-shared",
+      "description": "Neutral read-only native table equivalent with stretched columns and complete-row selection; library and backup data scroll within a bounded viewport.",
+      "html": "<div class=\"ds-run-table-wrap\"><table class=\"ds-run-table\"><thead><tr><th>Game folder</th><th>Game</th><th>Seed</th><th>Version</th><th>Status</th></tr></thead><tbody><tr class=\"ds-run-selected\" tabindex=\"0\" aria-selected=\"true\"><td>Example run</td><td>Colosseum</td><td>example-seed</td><td>Current</td><td>Available</td></tr><tr tabindex=\"0\" aria-selected=\"false\"><td>Second run</td><td>XD</td><td>other-seed</td><td>Current</td><td>Available</td></tr></tbody></table></div>",
+      "css": ".ds-run-table-wrap{height:190px;overflow-y:auto;overflow-x:hidden;border:1px solid #727782;background:#191b1e}.ds-run-table{width:100%;table-layout:fixed;border-collapse:collapse;color:#eceef2;font:14px \"Segoe UI\",sans-serif}.ds-run-table th{background:#202327;padding:6px;border-bottom:1px solid #727782}.ds-run-table td{padding:6px;border-bottom:1px solid #30343a;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;height:38px}.ds-run-table tr.ds-run-selected{background:#30343a}.ds-run-table tbody tr:focus-visible{outline:1px solid #cbd0d8;outline-offset:-1px}"
+    },
+    {
+      "name": "Explicit cache selection",
+      "kind": "input",
+      "description": "Neutral outlined checkbox with a visible check mark, independent from row highlighting. Native candidates begin unchecked; confirmation remains separate.",
+      "html": "<label class=\"ds-cache-select\"><input type=\"checkbox\"/><span>Old unreferenced texture view</span></label>",
+      "css": ".ds-cache-select{display:flex;align-items:center;gap:8px;padding:6px;background:#191b1e;color:#eceef2;font:14px \"Segoe UI\",sans-serif}.ds-cache-select input{appearance:none;position:relative;width:17px;height:17px;margin:0;border:1.5px solid #cbd0d8;border-radius:0;background:#191b1e}.ds-cache-select input:checked{background:#30343a}.ds-cache-select input:checked:after{content:\"\";position:absolute;left:4px;top:1px;width:5px;height:9px;border:solid #eceef2;border-width:0 2px 2px 0;transform:rotate(45deg)}.ds-cache-select input:focus-visible{outline:1px solid #cbd0d8;outline-offset:2px}.ds-cache-select input:disabled{opacity:.55}"
     }
   ],
   "narrative": {
@@ -749,7 +784,8 @@
       "Small authentic portraits beside localized, accessible text.",
       "Persistent navigation, visible scrolling and explicit loading states.",
       "Shared wording and behavior across all six interface languages.",
-      "Visible choices, authored navigation icons and proportional controller artwork in the shared launcher flow."
+      "Visible choices, authored navigation icons and proportional controller artwork in the shared launcher flow.",
+      "Neutral, bounded native tables for local run management, with explicit file-operation states."
     ],
     "rules": [
       {
@@ -763,6 +799,11 @@
         "section": "typography"
       },
       {
+        "name": "The Game Artwork Rule",
+        "body": "Complete missing in-game menus within the original\ngame's visual identity and playable language. Use exact verified HD donors or\nfaithful vector compositions with recorded source and geometry. Preserve atlas\ncells, transparency, icons and frames; never use another language's label merely\nbecause its texture dimensions match. Hardware illustrations use authentic\nphotographs or verified models, with the correct silhouette and controls.\nScale photographs uniformly; do not substitute a generic primitive reconstruction.\nInspect critical lettering in unscaled crops and verify the captured file's\nidentity before reporting a missing label from a resized whole-screen preview.\nTexture coverage and observed runtime\ncoverage are reported separately. Prerecorded movies remain untouched.",
+        "section": "typography"
+      },
+      {
         "name": "The Frame Rule",
         "body": "The double frame belongs to the work panel. Controls use\nfiner borders so the panel, content and current action remain distinct.",
         "section": "elevation"
@@ -773,9 +814,9 @@
         "section": "components"
       },
       {
-        "name": "The Game Artwork Rule",
-        "body": "Complete missing in-game menus within the original\ngame's visual identity and playable language. Use exact verified HD donors or\nfaithful vector compositions with recorded source and geometry. Preserve atlas\ncells, transparency, icons and frames; never use another language's label merely\nbecause its texture dimensions match. Hardware illustrations use authentic\nphotographs or verified models, with the correct silhouette and controls.\nScale photographs uniformly; do not substitute a generic primitive reconstruction.\nTexture coverage and observed runtime\ncoverage are reported separately. Prerecorded movies remain untouched.",
-        "section": "typography"
+        "name": "The Explicit Selection Rule",
+        "body": "A highlighted row identifies the working item;\nit does not authorize deletion. Storage candidates begin unchecked. Their\nneutral outlined checkboxes retain Qt interaction and show an actual check mark,\nnot color alone. Keep cleanup disabled until a candidate is checked, and confirm\nthe selected deletion separately. The launcher's automatic-backup control uses\nthe shared checkmark-painted checkbox in its existing game theme.",
+        "section": "components"
       }
     ],
     "dos": [
@@ -783,7 +824,8 @@
       "**Do** retain each game's logo, palette and bundled interface media.",
       "**Do** keep localized text, keyboard focus and accessible control names.",
       "**Do** keep navigation visible and scrolling confined to the active content.",
-      "**Do** distinguish pending, loading, cancelled, failed and current previews."
+      "**Do** distinguish pending, loading, cancelled, failed and current previews.",
+      "**Do** keep file-operation scope, progress and local-data preservation visible in shared tools."
     ],
     "donts": [
       "**Don't** change shared wording or behavior merely because the theme changes.",

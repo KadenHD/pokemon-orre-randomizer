@@ -1,6 +1,31 @@
 # Changelog
 
-## Unreleased
+## 2.1.0 - 2026-11-23
+
+- Remove XD's starter restriction that required random starting moves for
+  species such as Beldum, Metang and Magikarp.
+- Add original, species level-up and random encounter move choices to both
+  games. The Pokémon-only preset now uses the replacement's level-up moves at
+  its encounter level, with empty slots when it has learned fewer moves.
+  Preserve Shadow moves, special slots and protected species. Pokémon + moves
+  keeps random starting moves. Existing boolean profile settings retain their
+  original meaning; the new engine versions report a migration on old profiles.
+- Add **My games**, a local library of created and added game folders, with
+  search, launcher versions, launch/folder actions and removable references.
+- Back up a run's memory cards before launch by default. Add manual snapshots
+  and verified restoration, retain up to five copies within 256 MiB, and protect
+  active cards with run locks and emulator checks. Save states and ROMs are not
+  part of these backups.
+- Add background storage accounting with hard-link-aware totals and explicit
+  cleanup of old, unreferenced texture views. Preserve ROMs, saves, installed
+  packs, runtimes, music banks and downloads; recheck candidates before deletion.
+- Share compact, checked challenge codes containing the seed, all randomizer
+  rules and engine identity. Import selects the game and rejects incompatible
+  engines, damaged data and oversized compressed payloads.
+- Localize the four tools in all six interface languages and keep their main
+  content and actions within fixed native desktop windows.
+- Verify SQLite, synthetic card backup/restoration, challenge roundtrips and
+  all four dialogs in the extracted Windows app, without opening a personal run.
 
 ## 2.0.6 - 2026-11-23
 

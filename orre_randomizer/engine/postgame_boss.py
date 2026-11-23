@@ -127,7 +127,8 @@ def plan_team(original, current, seed, options):
         key = f"shadow:{SHADOW_ID}" if shadow_id else f"trainer:{PARTY_SLOT + index}"
         randomized = getattr(options, "postgame_randomize_lugia", False) if shadow_id else getattr(options, "postgame_randomize_team", options.randomize_trainers)
         if randomized and options.randomize_trainer_moves:
-            selected = choose_moves(seed, key, final[species], level, moves, options, count=4)
+            selected = choose_moves(seed, key, final[species], level, moves, options, count=4,
+                                    mode=options.randomize_trainer_moves)
         elif shadow_id:
             selected = [177, 94, 105, 56]
         else:

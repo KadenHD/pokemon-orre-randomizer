@@ -21,7 +21,7 @@ from .preferences import application_preferences
 from .resources import application_icon, home_logos, interface_assets
 from .service import Cancelled, UserError
 from .ui_game_folder import show_packs
-from .ui_theme import GameSurface, MenuPanel, STYLE, XD_STYLE, theme_palette
+from .ui_theme import GameSurface, MenuPanel, MenuCheckBox, STYLE, XD_STYLE, theme_palette
 from .ui_workspace import scroll_area
 from .ui_play_controls import ControllerDiagram, VisibleChoices, separator, navigation_icon
 from .play_display import acceleration_target, display_mode
@@ -41,6 +41,9 @@ class LaunchPreparation(QThread):
         try:
             command = launch_command(self.folder, self.manifest, cancel=self.cancel,
                                      session_context=self.session_context)
+            if self.manifest.get("settings", {}).get("save_backups", True):
+                from .save_backups import backup_cards
+                backup_cards(self.folder, self.manifest, locked=True)
             if self.cancel.is_set():
                 raise Cancelled("Opération annulée.")
         except (OSError, ValueError, UserError, Cancelled) as error:
@@ -206,7 +209,7 @@ class GameLauncher(QMainWindow):
         self.column_divider = separator(vertical=True)
         self.columns.addWidget(self.column_divider)
         controls = QVBoxLayout()
-        controls.setSpacing(8)
+        controls.setSpacing(6)
         heading = self.label("Affichage"); heading.setObjectName("subheading")
         controls.addWidget(heading)
         controls.addLayout(display_row)
@@ -232,10 +235,18 @@ class GameLauncher(QMainWindow):
         controls.addWidget(separator())
         heading = self.label("Sauvegardes"); heading.setObjectName("subheading")
         controls.addWidget(heading)
-        controls.addWidget(self.note("Carte mémoire et sauvegardes rapides dans DolphinUser/. Vos autres parties restent séparées."))
         saves = self.button("Ouvrir les sauvegardes")
         saves.clicked.connect(lambda: QDesktopServices.openUrl(QUrl.fromLocalFile(str(self.folder / "DolphinUser"))))
-        controls.addWidget(saves)
+        save_row = QHBoxLayout(); save_row.addWidget(saves)
+        history = self.button("Copies de secours…")
+        from .ui_run_tools import BackupDialog
+        history.clicked.connect(lambda: BackupDialog(self, self.folder).exec())
+        save_row.addWidget(history); controls.addLayout(save_row)
+        self.backup_enabled = MenuCheckBox()
+        self.bind(self.backup_enabled.setText, "Copie automatique avant de jouer")
+        self.bind(self.backup_enabled.setToolTip, "Carte mémoire et sauvegardes rapides dans DolphinUser/. Vos autres parties restent séparées.")
+        self.backup_enabled.setChecked(self.data["settings"].get("save_backups", True))
+        controls.addWidget(self.backup_enabled)
         controls.addStretch(1)
         self.columns.addLayout(controls, 1)
         fields.addLayout(self.columns)
@@ -339,7 +350,8 @@ class GameLauncher(QMainWindow):
         self.data["dolphin"] = str(validate_dolphin(Path(self.dolphin.text())))
         self.data["settings"].update(graphics=self.graphics.currentData(), speed=1,
             acceleration=self.speed.currentData(), display=self.display.currentData(),
-            native_music=self.native_music.isChecked(), controller=self.controller.currentData())
+            native_music=self.native_music.isChecked(), controller=self.controller.currentData(),
+            save_backups=self.backup_enabled.isChecked())
         save_game(self.path, self.data)
 
     def start(self):

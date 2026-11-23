@@ -1,5 +1,6 @@
 """Shared typed settings for the desktop UI, CLI and reproduction reports."""
 from dataclasses import dataclass, field, fields
+from .move_modes import MOVE_CHOICES, MOVE_DESCRIPTION, MoveMode
 
 
 def rule(label: str, group: str, description: str, default: bool = True):
@@ -54,9 +55,9 @@ class Options:
     stones_pyrite: bool = rule("Vendre les six pierres à Pyrite", "Boutiques", "Ajoute les six pierres d’évolution à 2 100 chacune, sans retirer les objets déjà vendus.")
     readable_stone_names: bool = rule("Espacer les noms des pierres", "Boutiques", "Ajoute les espaces manquants dans les noms des pierres. Les noms suivent la langue choisie dans le jeu, indépendamment de celle de l’outil.")
 
-    randomize_trainer_moves: bool = rule("Capacités des dresseurs", "Capacités", "Remplace les capacités ordinaires. Les capacités obscures et les emplacements spéciaux sont conservés.", False)
-    randomize_starter_moves: bool = rule("Capacités de départ des starters", "Capacités", "Change les quatre capacités de chaque starter, même si vous gardez le Pokémon d’origine.", False)
-    randomize_gift_moves: bool = rule("Capacités des Pokémon offerts", "Capacités", "Change les capacités de départ des Pokémon offerts, sans toucher aux autres Pokémon de la même espèce.", False)
+    randomize_trainer_moves: MoveMode = setting(False, "Capacités des dresseurs", "Capacités", MOVE_DESCRIPTION, kind="choice", choices=MOVE_CHOICES, choice_types=(bool, str))
+    randomize_starter_moves: MoveMode = setting(False, "Capacités de départ des starters", "Capacités", MOVE_DESCRIPTION, kind="choice", choices=MOVE_CHOICES, choice_types=(bool, str))
+    randomize_gift_moves: MoveMode = setting(False, "Capacités des Pokémon offerts", "Capacités", MOVE_DESCRIPTION, kind="choice", choices=MOVE_CHOICES, choice_types=(bool, str))
     randomize_learnsets: bool = rule("Capacités apprises par niveau", "Capacités", "Change les capacités apprises. Les niveaux d’apprentissage restent les mêmes.", False)
     ensure_damaging_move: bool = rule("Au moins une capacité offensive", "Capacités", "Chaque ensemble de capacités tiré contient au moins une capacité qui inflige des dégâts.")
     ensure_stab_move: bool = rule("Au moins une capacité du même type", "Capacités", "Inclut une capacité offensive du type actuel du Pokémon, y compris après randomisation des types.")

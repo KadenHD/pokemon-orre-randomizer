@@ -1,18 +1,18 @@
 {
-  "app_version": "2.0.0",
+  "app_version": "2.1.0",
   "language": "en",
   "description": "English application and gameplay captures. Each entry records its capture version; unchanged earlier gameplay images are retained.",
   "files": {
     "home.png": {
-      "bytes": 154479,
-      "sha256": "aca02c3504df720923aa71914432cce650498d2d7038ca673306a2e08a0c3840",
+      "bytes": 157202,
+      "sha256": "31a6ef2aa9958c045049e235a040c40aef1dc45fdad2729261828d04162dfb9b",
       "kind": "application",
       "language": "en",
-      "width": 1100,
-      "height": 850,
-      "captured_in_version": "2.0.6",
-      "description": "Game selection, shared HD packs and explicit launcher upgrade action.",
-      "source": "Actual Qt application with muted private preferences and automatic update checks disabled. No personal settings or ROM opened."
+      "width": 1040,
+      "height": 800,
+      "captured_in_version": "2.1.0",
+      "description": "Game selection and the shared run-management tools.",
+      "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened."
     },
     "colosseum-settings.png": {
       "bytes": 83712,
@@ -510,15 +510,15 @@
       "game": "xd"
     },
     "colosseum-launcher.png": {
-      "bytes": 141279,
-      "sha256": "0fd5cf59fb09f83b63f8cef47f85d7ecfa50638721ae48c6893befb9dd3cbee0",
+      "bytes": 141471,
+      "sha256": "a49b8638c5e722001d044c9738e2241b2b459203944cef583b574cf43b2b1559",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "2.0.5",
-      "description": "Colosseum launcher with acceleration shortcuts, 16:9/4:3 display and isolated saves.",
-      "source": "Actual Qt application, muted private preferences. Demonstration folder and seed; no personal settings or ROM opened. Original graphics selected.",
+      "captured_in_version": "2.1.0",
+      "description": "Colosseum launcher with memory-card backup controls.",
+      "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened.",
       "game": "colosseum",
       "controller_artwork": {
         "authors": [
@@ -530,15 +530,15 @@
       }
     },
     "xd-launcher.png": {
-      "bytes": 112532,
-      "sha256": "60db2d3fc651096f20a81e6086fb67e4da28d6016a58bcd1e0cc64b9b69acf31",
+      "bytes": 111717,
+      "sha256": "4c328253174ef3ff142f7f063dc6521dbad3e82fa93c0aae1d391adefb992d72",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "captured_in_version": "2.0.5",
-      "description": "XD launcher with acceleration shortcuts, 16:9/4:3 display and isolated saves.",
-      "source": "Actual Qt application, muted private preferences. Demonstration folder and seed; no personal settings or ROM opened. Original graphics selected.",
+      "captured_in_version": "2.1.0",
+      "description": "XD launcher with memory-card backup controls.",
+      "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened.",
       "game": "xd",
       "controller_artwork": {
         "authors": [
@@ -656,6 +656,50 @@
       "captured_in_version": "Unreleased",
       "description": "Native and x4 normal/shiny Castform weather portraits for xd.",
       "source": "Original native normal cells and registered HD normal cells, beside source-qualified custom shiny mesh renders from an isolated muted Colosseum European viewer. Same camera and frozen joints, native paint and genuine HD source paint rendered separately. Target-specific square/round frames retained. Native battle routing is qualified separately."
+    },
+    "run-library.png": {
+      "bytes": 30989,
+      "sha256": "a6eb2059feaf396c133bef2f24f9b53ac8773a653682a270d6f4a25f5e31909f",
+      "kind": "application",
+      "language": "en",
+      "width": 1000,
+      "height": 720,
+      "captured_in_version": "2.1.0",
+      "description": "Local library of demonstration game folders.",
+      "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened."
+    },
+    "save-backups.png": {
+      "bytes": 28160,
+      "sha256": "02ad5ec2f7502f6df5a1dce916140e8a72a77d12304346a4a1576abb4939a832",
+      "kind": "application",
+      "language": "en",
+      "width": 900,
+      "height": 600,
+      "captured_in_version": "2.1.0",
+      "description": "Memory-card history using synthetic demonstration cards.",
+      "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened."
+    },
+    "storage.png": {
+      "bytes": 45697,
+      "sha256": "e6415fb6996abf05d62e81bf9736decb1accac9d3876c770111d5732b6dcb68c",
+      "kind": "application",
+      "language": "en",
+      "width": 1000,
+      "height": 720,
+      "captured_in_version": "2.1.0",
+      "description": "Storage inventory and explicit cleanup with demonstration files.",
+      "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened."
+    },
+    "challenge-code.png": {
+      "bytes": 42708,
+      "sha256": "b211837577367a86e946aeb4f9225b05480f22ca44efe5d342f00f09a560a823",
+      "kind": "application",
+      "language": "en",
+      "width": 860,
+      "height": 560,
+      "captured_in_version": "2.1.0",
+      "description": "Portable seed and settings code.",
+      "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened."
     }
   }
 }

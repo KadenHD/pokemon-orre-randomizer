@@ -166,6 +166,21 @@ cache also holds runtime and locally extracted music resources when supported.
 Moving a game folder to another PC requires locating Dolphin and reinstalling
 its shared resources. [Game-folder guide](docs/GAME_FOLDERS.md).
 
+## Manage your runs
+
+Keep existing runs in **My games**, with their seeds, launcher versions and
+direct access to Play, folders and card backups. The launcher can back up its
+memory cards before playing, with up to five copies and verified restoration.
+
+**Storage** shows where the space goes and offers reviewed cleanup of old,
+rebuildable texture views. **Challenge codes** share a seed and all randomizer
+rules without local paths, with engine compatibility checked before import.
+See the [run-management guide](docs/RUN_MANAGEMENT.md).
+
+| My games | Save backups |
+| --- | --- |
+| ![Game library with demonstration runs](docs/images/run-library.png) | ![Memory-card backup history](docs/images/save-backups.png) |
+
 ## Choose what changes
 
 | | Pokémon + moves | Pokémon only |
@@ -180,7 +195,8 @@ its shared resources. [Game-folder guide](docs/GAME_FOLDERS.md).
 | Seeded 5% shiny chance for supported encounters | Enabled | Enabled |
 | XD Poké Spots: fresh 5% shiny chance per new wild encounter | Enabled | Enabled |
 | Accessible evolutions and evolution stones in shops | Enabled | Enabled |
-| Starting moves, level-up learnsets and TMs | Randomized | Preserved |
+| Encounter starting moves | Randomized | Species level-up moves |
+| Level-up learnsets and TMs | Randomized | Preserved |
 | Eligible treasure and shop items (original shop Poké Balls stay available) | Randomized | Preserved |
 | Items already held by opponents, including Shadow Pokémon | Randomized | Preserved |
 | Colosseum's bonus quest | Enabled; fixed team and Shadow Lugia | Enabled; fixed team and Shadow Lugia |
@@ -205,6 +221,16 @@ All random replacements exclude Legendary and Mythical Pokémon, including
 starters, Shadows, gifts and XD's Poké Spots. Enable **Legendary and Mythical
 Pokémon** under **Advanced > Allowed Pokémon** to include them in random draws.
 This filter does not remove fixed story encounters or Colosseum's bonus Lugia.
+
+**Pokémon only** gives each replacement the moves its
+species learns by its encounter level, rather than inheriting the previous
+species' trainer slots. Advanced settings offer three choices for trainers,
+starters and gifts: **Original encounter moves**, **Species level-up moves**
+or **Random moves**. Original mode retains the game's native encounter behavior,
+including fixed trainer slots and native gift routines. Shadow moves and special
+slots remain protected. A species with fewer learned moves may have empty slots;
+Beldum, Metang and Magikarp can be starters without enabling random moves.
+**Pokémon + moves** continues to randomize starting moves in both games.
 
 **Unchanged copy** preserves game data and can convert between ISO, GCM and RVZ. Imported
 profiles keep their saved settings, including defaults from older versions.

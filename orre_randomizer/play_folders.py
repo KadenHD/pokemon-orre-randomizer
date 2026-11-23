@@ -298,6 +298,7 @@ def load_game(path: Path):
                 or data["settings"]["speed"] not in (1, 2)
                 or acceleration_target(data["settings"]) not in (1, 2, 3)
                 or display_mode(data["settings"]) not in ("16:9", "4:3")
+                or type(data["settings"].get("save_backups", True)) is not bool
                 or not isinstance(data["seed"], str) or not 0 < len(data["seed"].encode("utf-8")) <= 256
                 or not isinstance(data["shared"], str) or not Path(data["shared"]).is_absolute()
                 or not isinstance(data["dolphin"], str) or not isinstance(data["pack"], str)):

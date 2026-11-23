@@ -116,6 +116,100 @@ def check_launcher_upgrades(parent: Path) -> dict:
             "personal_runs_opened": False, "emulator_started": False}
 
 
+def check_run_management(parent: Path) -> dict:
+    """Use actual SQLite/card/code operations and widgets with disposable sentinels."""
+    from unittest.mock import patch
+    import time
+    from PySide6.QtCore import QCoreApplication, QEvent, QSettings
+    from PySide6.QtWidgets import QApplication
+    from . import __version__
+    from .challenges import encode_challenge, decode_challenge
+    from .gui import MainWindow
+    from .hd_packs import PACKS
+    from .options import Options
+    from .run_library import RunLibrary
+    from .save_backups import backup_cards, restore_backup, list_backups
+    from .storage import scan_storage
+    from .ui_run_tools import LibraryDialog, BackupDialog, StorageDialog, ChallengeDialog
+    from .xd import XDOptions
+
+    app = QApplication.instance() or QApplication([])
+    with tempfile.TemporaryDirectory(prefix="run-tools-check-", dir=parent) as directory:
+        root = Path(directory)
+        library = RunLibrary(root / "Library")
+        folders = []
+        # The sentinels cannot be launched. Mock only emulator detection so an
+        # unrelated personal Dolphin session is neither queried nor changed.
+        with patch("orre_randomizer.run_safety.dolphin_arguments", return_value=[]):
+            for game, game_id, options in (("colosseum", "GC6E01", Options.none()),
+                                           ("xd", "GXXE01", XDOptions.unchanged())):
+                folder = root / game
+                (folder / "Game").mkdir(parents=True)
+                (folder / "DolphinUser/GC").mkdir(parents=True)
+                rom = folder / "Game/game.iso"; rom.write_bytes(b"synthetic disc, never emulated")
+                card = folder / "DolphinUser/GC/MemoryCardA.USA.raw"
+                original = b"synthetic saved card"; card.write_bytes(original)
+                manifest = {"schema": 1, "orre_version": __version__, "game": game,
+                    "game_id": game_id, "seed": "offline-run-tools", "rom": "Game/game.iso",
+                    "rom_sha256": hashlib.sha256(rom.read_bytes()).hexdigest(),
+                    "shared": str(root / "Shared"), "dolphin": str(root / "never-executed.exe"),
+                    "language": "en", "pack": PACKS[game].key,
+                    "settings": {"graphics": "original", "speed": 1, "native_music": False}}
+                path = folder / "game.json"; path.write_text(json.dumps(manifest), "utf-8")
+                library.register(path)
+                snapshot = backup_cards(folder)
+                card.write_bytes(b"later synthetic progress")
+                restore_backup(folder, snapshot)
+                assert card.read_bytes() == original and len(list_backups(folder)) == 2
+                assert hashlib.sha256(rom.read_bytes()).hexdigest() == manifest["rom_sha256"]
+                decoded_game, profile = decode_challenge(encode_challenge(manifest["seed"], options))
+                assert decoded_game == game and profile.options == options and profile.seed == manifest["seed"]
+                folders.append(folder)
+            assert len(library.entries()) == 2
+            plan = scan_storage(root / "Shared", library.entries())
+            assert plan.categories["roms"] > 0 and not plan.candidates
+
+            settings = QSettings(str(root / "preferences.ini"), QSettings.Format.IniFormat)
+            settings.setValue("interface/music", False); settings.setValue("interface/sounds", False)
+            settings.setValue("launcher/shared", str(root / "Shared"))
+            window = MainWindow(settings=settings, system_languages=["en"],
+                                start_on_home=True, allow_update_checks=False)
+            window.run_library = library
+            states = []
+            try:
+                for cls, args in ((LibraryDialog, ()), (BackupDialog, (folders[0],)),
+                                  (StorageDialog, ()), (ChallengeDialog, ())):
+                    dialog = cls(window, *args)
+                    try:
+                        dialog.show()
+                        deadline = time.monotonic() + 8
+                        while dialog.task is not None:
+                            app.processEvents(); time.sleep(.005)
+                            if time.monotonic() > deadline:
+                                raise RuntimeError("Run-tool diagnostic worker deadline")
+                        app.processEvents()
+                        if cls is LibraryDialog:
+                            assert dialog.list.rowCount() == 2
+                        elif cls is BackupDialog:
+                            assert dialog.list.rowCount() == 2
+                        elif cls is StorageDialog:
+                            assert dialog.plan is not None and not dialog.clean.isEnabled()
+                        else:
+                            decode_challenge(dialog.code.toPlainText())
+                        bounds = dialog.layout().minimumSize()
+                        assert bounds.width() <= dialog.width() and bounds.height() <= dialog.height()
+                        states.append(cls.__name__)
+                    finally:
+                        dialog.close(); dialog.deleteLater()
+                        QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+            finally:
+                window.close(); window.deleteLater()
+                QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+    return {"games": 2, "sqlite_roundtrip": True, "card_restore_verified": True,
+            "challenge_roundtrips": 2, "storage_read_only": True, "dialogs": states,
+            "personal_runs_opened": False, "emulator_started": False}
+
+
 def run_checks(report: Path, *, screenshots: bool = False, screenshot_scope: str = "all") -> dict:
     if screenshot_scope not in {"all", "smoke"}:
         raise ValueError("Unknown diagnostic screenshot scope")
@@ -576,6 +670,7 @@ def run_checks(report: Path, *, screenshots: bool = False, screenshot_scope: str
             window.close()
             window.deleteLater()
             QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+    data["run_management_check"] = check_run_management(report.parent)
     data["successful"] = True
     return data
 

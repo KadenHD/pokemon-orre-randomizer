@@ -156,6 +156,8 @@ def _value(name, options, language, metadata):
         if value<0:
             return translate('Choisissez un Pokémon de la liste pour {label}.',language).format(label=translate(meta['label'],language))
         return SPECIES_NAMES[language].get(value, translate('Tirage avec la seed',language))
+    if meta['kind']=='choice':
+        return next((translate(label,language) for identifier,label in meta['choices'] if identifier==value),str(value))
     if type(value) is bool:
         preserved = {
             'randomize_legendary_shadows': 'Désactivé - espèces d’origine conservées',
@@ -165,8 +167,6 @@ def _value(name, options, language, metadata):
         if not value and name in preserved:
             return translate(preserved[name], language)
         return detail_text('enabled' if value else 'disabled',language)
-    if meta['kind']=='choice':
-        return next((translate(label,language) for identifier,label in meta['choices'] if identifier==value),str(value))
     if meta['kind']=='species_set':
         return translate('{count} espèces exclues',language).format(count=len(value))
     if meta['kind']=='type_set':

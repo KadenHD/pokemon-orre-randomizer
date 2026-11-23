@@ -261,7 +261,7 @@ def patch_gifts(
     families: Mapping[int, int], reserved_families: Collection[int],
     read_archive: Callable[[str], bytes], *, name_banks: Mapping[str, Mapping[int, str]],
     eligible: Collection[int] | None = None, balance: bool = True, replace_species: bool = True,
-    move_randomizer=None, trade_requirements: Mapping[str, int] = GIFT_TRADE_REQUIREMENTS,
+    move_randomizer=None, move_mode=True, trade_requirements: Mapping[str, int] = GIFT_TRADE_REQUIREMENTS,
     hordel_evolution: int | None = None,
 ) -> tuple[bytes, dict[str, bytes], list[dict]]:
     """Apply XD reward settings and synchronize the species requested by Duking."""
@@ -309,7 +309,10 @@ def patch_gifts(
             chosen = choose_species(seed, "xd-gift-sha256-v1:" + key, candidates, original)
             struct.pack_into(">H", updated, offset + 2, chosen)
         if move_randomizer is not None:
-            moves = move_randomizer.moves(seed, f"xd:gift:{key}", chosen, level, moves)
+            if move_mode == "natural":
+                moves = move_randomizer.moves(seed, f"xd:gift:{key}", chosen, level, moves, mode=move_mode)
+            else:
+                moves = move_randomizer.moves(seed, f"xd:gift:{key}", chosen, level, moves)
             for i, move in enumerate(moves):
                 struct.pack_into(">H", updated, move_offset + 2 + i * 4, move)
         used.add(families[chosen])

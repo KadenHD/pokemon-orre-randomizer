@@ -37,6 +37,11 @@ class DiagnosticTests(unittest.TestCase):
                 report = run_checks(root/"diagnostics.json", screenshots=True, screenshot_scope="smoke")
             network.assert_not_called()
             self.assertTrue(report["successful"])
+            tools = report["run_management_check"]
+            self.assertTrue(tools["sqlite_roundtrip"] and tools["card_restore_verified"])
+            self.assertEqual(tools["challenge_roundtrips"], 2)
+            self.assertEqual(len(tools["dialogs"]), 4)
+            self.assertFalse(tools["personal_runs_opened"] or tools["emulator_started"])
             self.assertEqual(report["images"], [])
             self.assertEqual(report["sounds"], [])
             self.assertFalse(report["music_available"])

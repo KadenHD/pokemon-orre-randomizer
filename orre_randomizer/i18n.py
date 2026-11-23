@@ -15,6 +15,8 @@ from .settings_i18n import TEXTS as SETTINGS_TEXTS
 from .xd_i18n import TEXTS as XD_TEXTS
 from .workspace_i18n import TEXTS as WORKSPACE_TEXTS
 from .play_i18n import TEXTS as PLAY_TEXTS
+from .run_i18n import TEXTS as RUN_TEXTS
+from .move_modes import MOVE_CHOICES, MOVE_DESCRIPTION
 
 LANGUAGES = {"fr": "Français", "en": "English", "de": "Deutsch",
              "es": "Español", "it": "Italiano", "ja": "日本語"}
@@ -66,7 +68,12 @@ for code, locale in (("en", en), ("de", de), ("es", es), ("it", it), ("ja", ja))
     locale.TEXTS.update(XD_TEXTS[code])
     locale.TEXTS.update(WORKSPACE_TEXTS[code])
     locale.TEXTS.update(PLAY_TEXTS[code])
+    locale.TEXTS.update(RUN_TEXTS[code])
     locale.OPTION_TEXTS.update(FEATURE_OPTIONS[code])
+    for name in ("randomize_trainer_moves", "randomize_starter_moves", "randomize_gift_moves"):
+        label = locale.OPTION_TEXTS[name][0]
+        locale.OPTION_TEXTS[name] = (label, RUN_TEXTS[code][MOVE_DESCRIPTION],
+                                   tuple(RUN_TEXTS[code][source] for _, source in MOVE_CHOICES))
 
 CATALOGS = {code: _catalog(locale.TEXTS, locale.OPTION_TEXTS)
             for code, locale in (("en", en), ("de", de), ("es", es), ("it", it), ("ja", ja))}

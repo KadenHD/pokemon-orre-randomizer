@@ -1,5 +1,6 @@
 """Seeded transformations for the three verified retail Pokémon XD discs."""
 from __future__ import annotations
+from .move_modes import MoveMode
 
 from collections import defaultdict
 from dataclasses import dataclass, field, fields, replace
@@ -47,7 +48,7 @@ from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITE
                        validate_tutorial_matchup)
 from .xd_unown_form import patch_xd_unown_form
 
-VERSION = "xd-fixed-rental-traits-v16"
+VERSION = "xd-natural-encounter-moves-v17"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -65,7 +66,6 @@ DECKS = ("Story", "Colosseum", "Hundred")
 # Tutorial Teddiursa, Shadow Lugia, and the in-game Togepi trade.
 PROTECTED_SHADOWS = {TUTORIAL_SHADOW: TEDDIURSA, 73: 249, HORDEL_SHADOW: TOGEPI}
 SPOT_SPECIES = {"rock": (27, 207, 332), "oasis": (187, 231, 311), "cave": (41, 382, 194)}
-STARTER_ATTACKS = {1, 10, 16, 17, 22, 33, 40, 41, 52, 55, 64, 71, 84, 93, 98, 122, 145, 181, 189, 301, 310}
 NATIVE_STARTER_MOVES = (33, 39, 44, 28)
 COMMON_FIELDS = {item.name: item for item in fields(Options)}
 
@@ -125,9 +125,9 @@ class XDOptions:
     trainer_theme_mode: str = _shared("trainer_theme_mode")
     trainer_force_evolved: bool = _shared("trainer_force_evolved")
     trainer_evolution_level: int = _shared("trainer_evolution_level")
-    randomize_trainer_moves: bool = _shared("randomize_trainer_moves")
-    randomize_starter_moves: bool = _shared("randomize_starter_moves")
-    randomize_gift_moves: bool = _shared("randomize_gift_moves")
+    randomize_trainer_moves: MoveMode = _shared("randomize_trainer_moves")
+    randomize_starter_moves: MoveMode = _shared("randomize_starter_moves")
+    randomize_gift_moves: MoveMode = _shared("randomize_gift_moves")
     randomize_learnsets: bool = _shared("randomize_learnsets")
     ensure_damaging_move: bool = _shared("ensure_damaging_move")
     ensure_stab_move: bool = _shared("ensure_stab_move")
@@ -289,7 +289,8 @@ def _starter(dol: bytes, offset: int, seed: str, species, edges, families, eligi
              options, move_randomizer, *, fixed_shadow_families=()) -> tuple[bytes, dict]:
     from .preserved_pokemon import preserve_properties
     kept = not options.randomize_starter
-    draw_moves = options.randomize_starter_moves and not (preserve_properties(options) and kept)
+    move_mode = options.randomize_starter_moves
+    draw_moves = move_mode and not (preserve_properties(options) and kept)
     offsets = (0, 8, 0x10, 0x14, 0x18, 0x1C, 0x64)
     signature = (0x38600085, 0x3900000A, 0x38C00021, 0x38A00027, 0x3880002C, 0x3800001C, 0x380004E2)
     if tuple(u32(dol, offset + field) for field in offsets) != signature:
@@ -308,28 +309,26 @@ def _starter(dol: bytes, offset: int, seed: str, species, edges, families, eligi
         candidates = [
             index for index in sorted(stage_pool & eligible)
             if (not options.starter_three_stage_families or families[index] in three_stage)
-            and (draw_moves
-                 or any(0 < level <= 10 and move in STARTER_ATTACKS for level, move in species[index][3]))
             and (not options.diverse_story_families or families[index] not in protected_families)
         ]
         if options.starter_species:
             chosen = next((index for index in eligible if species[index][0] == options.starter_species), None)
             if chosen is None:
                 raise FormatError("the selected XD starter is excluded")
-            if not draw_moves and not any(
-                0 < level <= 10 and move in STARTER_ATTACKS for level, move in species[chosen][3]
-            ):
-                raise FormatError("the selected XD starter needs randomized starting moves")
         else:
             chosen = _pick(seed, "starter", species, 133, candidates=candidates, balance=False)
         if not draw_moves:
+            # Keep the historical native-learnset path for old profiles. A
+            # short learnset is valid: do not demand an attack or random moves.
             moves = list(dict.fromkeys(
                 move for level, move in species[chosen][3] if 0 < level <= 10 and 0 < move <= 354
             ))[-4:]
-            if not set(moves) & STARTER_ATTACKS:
-                moves[0] = next(move for level, move in species[chosen][3] if 0 < level <= 10 and move in STARTER_ATTACKS)
+            moves += [0] * (4 - len(moves))
     if draw_moves:
-        moves = move_randomizer.moves(seed, "xd:starter", chosen, 10, NATIVE_STARTER_MOVES)
+        if move_mode == "natural":
+            moves = move_randomizer.moves(seed, "xd:starter", chosen, 10, NATIVE_STARTER_MOVES, mode=move_mode)
+        else:
+            moves = move_randomizer.moves(seed, "xd:starter", chosen, 10, NATIVE_STARTER_MOVES)
     experience = (experience_at_level(species[chosen][1], 10) if chosen != 133 else u16(dol, offset + 0x66))
     result = bytearray(dol)
     struct.pack_into(">H", result, offset + 2, chosen)
@@ -669,6 +668,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             replace_species=options.randomize_gifts,
             move_randomizer=move_randomizer if options.randomize_gift_moves and (
                 options.randomize_gifts or not preserve_properties(options)) else None,
+            move_mode=options.randomize_gift_moves,
             trade_requirements=trade_requirements, hordel_evolution=hordel_evolution,
         )
     else:

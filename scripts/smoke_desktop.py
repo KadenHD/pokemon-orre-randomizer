@@ -99,6 +99,10 @@ def main():
         assert not any((work/"AppData").rglob("*.ini"))
         evidence = args.report.with_suffix("")
         evidence.mkdir()
+        tools = data["run_management_check"]
+        assert tools["sqlite_roundtrip"] and tools["card_restore_verified"]
+        assert tools["challenge_roundtrips"] == 2 and len(tools["dialogs"]) == 4
+        assert not tools["personal_runs_opened"] and not tools["emulator_started"]
         state_keys = ("home_states", "xd_states", "states", "exclusion_states", "shiny_states", "preview_states", "pack_manager_states")
         for key in state_keys:
             for state in data[key]:

@@ -1131,6 +1131,9 @@ class XDWorkspace(QWidget):
     @Slot(dict)
     def succeeded(self, report):
         self.result = report
+        if report.get("play_folder"):
+            from .run_library import remember_run
+            remember_run(self.window, Path(report["play_folder"]) / "game.json")
         self.launcher_button.setVisible(bool(report.get("play_folder")))
         self.progress.setValue(100)
         self.set_status(Message("ROM créée et vérifiée.\n{path}", path=report["output"]))

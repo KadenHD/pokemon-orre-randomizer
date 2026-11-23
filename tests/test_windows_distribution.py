@@ -61,7 +61,12 @@ class WindowsDistributionTests(unittest.TestCase):
 
     def test_required_game_folder_modules_have_real_source_files(self):
         for name in build_desktop.REQUIRED_RUNTIME_MODULES:
-            self.assertTrue((build_desktop.ROOT / (name.replace(".", "/") + ".py")).is_file(), name)
+            if name.startswith("orre_randomizer."):
+                self.assertTrue((build_desktop.ROOT / (name.replace(".", "/") + ".py")).is_file(), name)
+            else:
+                import importlib.util
+                self.assertTrue(name.startswith("sqlite3"), name)
+                self.assertIsNotNone(importlib.util.find_spec(name), name)
 
     def test_native_music_hashes_match_both_binary_and_current_sources(self):
         with tempfile.TemporaryDirectory() as directory:

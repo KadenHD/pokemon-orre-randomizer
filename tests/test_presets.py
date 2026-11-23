@@ -27,7 +27,10 @@ class PresetTests(unittest.TestCase):
                 self.assertEqual({key for key in full if full[key] != limited[key]}, SCOPE_FIELDS)
                 for name in SCOPE_FIELDS - {"tm_compatibility_mode"}:
                     self.assertTrue(full[name], name)
-                    self.assertFalse(limited[name], name)
+                    if name in {"randomize_trainer_moves", "randomize_starter_moves", "randomize_gift_moves"}:
+                        self.assertEqual(limited[name], "natural", name)
+                    else:
+                        self.assertFalse(limited[name], name)
                 self.assertEqual((full["tm_compatibility_mode"], limited["tm_compatibility_mode"]),
                                  ("random", "original"))
 

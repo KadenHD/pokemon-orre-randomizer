@@ -50,9 +50,14 @@ remain safe before and after changing the interface language.
 
 ## Optional launcher updates
 
-Home places Update a launcher beside Packs HD and Open a game, using the same
-neutral utility-button treatment; below 800 px, these three actions stack
-vertically to avoid horizontal overflow. Selecting `game.json` opens a fixed
+Home places Update a launcher with Packs HD, My games, Storage and Import a
+challenge, using the same neutral utility-button treatment. Two centered rows
+group Packs HD / My games / Storage, then Import a challenge / Update a launcher;
+each row stacks vertically below 800 px to avoid horizontal overflow.
+At the normal 1,040 × 800 px window size, the game choices yield enough height
+for both utility rows and the author credit without vertical scrolling. Retain
+their flexible height rather than adding a second page or hiding actions.
+Selecting `game.json` opens a fixed
 760 × 400 px dialog with the neutral angular frame, current/new versions,
 preservation and backup explanations, Close and an explicit Update action.
 Keep all six languages on one page without scrolling. Elide long folder names
@@ -93,6 +98,12 @@ Short choices remain visible: Original/HD, corrected 16:9/original 4:3,
 at 100%. Hold Tab for the chosen target, Shift+Tab for 50%, or Ctrl+Tab to
 toggle acceleration. All three shortcuts use framed key labels. Retain a
 fixed page without scrolling; display sits above controls beside audio.
+The saves group also offers backup history and an explicit automatic-before-play
+checkbox, using the same checkmark-painted control as other game settings.
+The footer remains Open folder / Play. The neutral history dialog, local library,
+storage inventory and challenge-code flow are routed through
+[`run-management.md`](run-management.md); their additions do not change the
+launcher's fixed two-column composition.
 Unavailable independent-music states retain truthful help. The option is enabled
 for the verified Windows/Europe revision-0 configuration and checked renderer
 recipe; unsupported configurations leave it disabled and unchecked. No visual treatment claims

@@ -31,6 +31,8 @@ PREVIOUS_XD_PROPERTIES_ENGINE = "xd-shadow-lugia-appearance-v13"
 PREVIOUS_PRESERVED_ENGINE = "preserved-pokemon-properties-v25"
 PREVIOUS_XD_PRESERVED_ENGINE = "xd-preserved-pokemon-properties-v14"
 PREVIOUS_XD_WEATHER_ENGINE = "xd-castform-weather-portraits-v15"
+PREVIOUS_MOVE_MODES_ENGINE = "castform-weather-portraits-v26"
+PREVIOUS_XD_MOVE_MODES_ENGINE = "xd-fixed-rental-traits-v16"
 LUGIA_APPEARANCE_APP_VERSION = "1.2.20"
 # Both schemas were exported with the same engine version. Only the complete
 # historical bundle may be absent; a partial bundle is a malformed profile.
@@ -86,7 +88,7 @@ V20_ENGINE_VERSION = "story-field-placement-v20"
 V20_APP_VERSIONS = ("1.2.18", "1.2.19")
 CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, V18_APP_VERSION, *V19_APP_VERSIONS, *V20_APP_VERSIONS,
                         LUGIA_APPEARANCE_APP_VERSION, "1.2.21", "1.2.22", "1.2.23", "1.2.24", "1.2.25", "1.2.26",
-                        "2.0.0", "2.0.1", "2.0.2", __version__)
+                        "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5", "2.0.6", __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -178,8 +180,8 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
     previous = (payload["app_version"] == PREVIOUS_APP_VERSION
                 and payload["engine_version"] == PREVIOUS_ENGINE_VERSION)
     current_engine = (payload["app_version"] in (LUGIA_APPEARANCE_APP_VERSION, "1.2.21", "1.2.22", "1.2.23",
-                                               "1.2.24", "1.2.25", "1.2.26", "2.0.0", "2.0.1", "2.0.2", __version__)
-                      and payload["engine_version"] in (ENGINE_VERSION, PREVIOUS_PRESERVED_ENGINE,
+                                               "1.2.24", "1.2.25", "1.2.26", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5", "2.0.6", __version__)
+                      and payload["engine_version"] in (ENGINE_VERSION, PREVIOUS_MOVE_MODES_ENGINE, PREVIOUS_PRESERVED_ENGINE,
                                                         PREVIOUS_PROPERTIES_ENGINE))
     previous_lugia = (payload["app_version"] in CURRENT_APP_VERSIONS
                       and payload["engine_version"] == PREVIOUS_LUGIA_ENGINE)
@@ -218,7 +220,7 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         raise UserError("Ce profil ne correspond pas aux versions prises en charge de Colosseum.")
     values = payload["options"]
     expected_fields = {item.name for item in fields(Options)}
-    legacy_properties = payload["engine_version"] not in (ENGINE_VERSION, PREVIOUS_PRESERVED_ENGINE)
+    legacy_properties = payload["engine_version"] not in (ENGINE_VERSION, PREVIOUS_MOVE_MODES_ENGINE, PREVIOUS_PRESERVED_ENGINE)
     if legacy_properties:
         expected_fields.remove("randomize_preserved_properties")
     # The shop-only safeguard was added without changing the engine version.
@@ -318,7 +320,7 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         raise UserError("Profil trop volumineux : la limite est de 64 Ko." if not report
                         else "Rapport trop volumineux : la limite est de 32 Mio.")
     invalid = "Ce fichier ne contient pas de réglages Pokémon XD compatibles."
-    property_engines = (xd.VERSION, PREVIOUS_XD_WEATHER_ENGINE, PREVIOUS_XD_PRESERVED_ENGINE)
+    property_engines = (xd.VERSION, PREVIOUS_XD_MOVE_MODES_ENGINE, PREVIOUS_XD_WEATHER_ENGINE, PREVIOUS_XD_PRESERVED_ENGINE)
     recent_engines = (*property_engines, PREVIOUS_XD_PROPERTIES_ENGINE)
     try:
         payload = _decode_json(data)
@@ -423,16 +425,21 @@ def load_creation_report(path: Path, *, is_xd=False) -> CreationReport:
         return parse_creation_report(stream.read(MAX_REPORT_BYTES + 1), is_xd=is_xd)
 
 
-def save_profile(path: Path, seed: str, options: Options | xd.XDOptions) -> dict:
-    path = Path(path)
-    if path.suffix.lower() != ".json":
-        raise UserError("Enregistrez le profil dans un fichier .json.")
+def configuration_data(seed: str, options: Options | xd.XDOptions) -> dict:
     if isinstance(options, xd.XDOptions):
         payload = {"format": XD_PROFILE_FORMAT, "schema_version": SCHEMA_VERSION, "engine_version": xd.VERSION,
                    "seed": validate_seed(seed), "options": asdict(xd.validate_options(options))}
         payload["configuration_sha256"] = hashlib.sha256(_canonical(payload)).hexdigest()
     else:
         payload = profile_data(seed, options)
+    return payload
+
+
+def save_profile(path: Path, seed: str, options: Options | xd.XDOptions) -> dict:
+    path = Path(path)
+    if path.suffix.lower() != ".json":
+        raise UserError("Enregistrez le profil dans un fichier .json.")
+    payload = configuration_data(seed, options)
     content = (json.dumps(payload, ensure_ascii=False, indent=2, allow_nan=False) + "\n").encode("utf-8")
     try:
         with path.open("xb") as stream:

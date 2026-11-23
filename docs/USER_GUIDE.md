@@ -43,6 +43,14 @@ output is decoded and compared with the verified raw output before publication.
 family diversity and a custom 5% shiny chance where supported. Every evolution
 stage is eligible: starters do not need to be base forms or belong to three-stage
 families. Power matching is disabled. Only move, TM and item randomization differ.
+Pokémon only uses the new species' level-up moves at the
+encounter level. It does not shuffle learnsets or TMs. Under **Advanced > Moves**,
+trainers, starters and gifts each offer **Original encounter moves**, **Species
+level-up moves** and **Random moves**. Original mode retains native encounter
+behavior, including fixed trainer slots and the native species-based XD starter
+and Colosseum gift routines. Species mode fills the last learned moves and leaves
+unused slots empty. Shadow moves and special slots stay protected. Beldum,
+Metang and Magikarp do not require random moves to be selected as starters.
 The full preset changes held items and ordinary Ball treasures as well; empty
 held-item slots remain empty and progression items stay protected.
 Both presets keep all Poké Balls already sold in shops. In **Advanced > Shops**,

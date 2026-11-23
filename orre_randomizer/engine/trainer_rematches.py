@@ -169,7 +169,8 @@ def _repair_replacements(original, output, tables, pairs, seed, options, boss_id
                 if moves is None:
                     moves = move_catalog(original, tables)
                 chosen = choose_moves(seed, f"{VERSION}:moves:{index}", catalog[selected],
-                                      output[position + 4], moves, options)
+                                      output[position + 4], moves, options,
+                                      mode=options.randomize_trainer_moves, originals=before_moves)
                 for field, move in zip(MOVE_FIELDS, chosen, strict=True):
                     struct.pack_into(">H", output, position + field, move)
             edits.append({"index": index, "before_species": current, "after_species": selected})

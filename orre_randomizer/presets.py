@@ -9,9 +9,9 @@ Preset = TypeVar("Preset")
 
 
 def without_moves_and_items(options: Preset) -> Preset:
-    """Keep every balance choice while retaining native moves, TMs and items."""
-    return replace(options, randomize_trainer_moves=False, randomize_starter_moves=False,
-                   randomize_gift_moves=False, randomize_learnsets=False,
+    """Use species-appropriate starting moves without shuffling learnsets/TMs/items."""
+    return replace(options, randomize_trainer_moves="natural", randomize_starter_moves="natural",
+                   randomize_gift_moves="natural", randomize_learnsets=False,
                    randomize_tm_moves=False, tm_compatibility_mode="original",
                    randomize_field_items=False, randomize_shop_items=False,
                    randomize_held_items=False)

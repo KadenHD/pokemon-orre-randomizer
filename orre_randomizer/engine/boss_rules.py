@@ -177,7 +177,9 @@ def apply_boss_tables(original: bytes, current: bytes, seed: str, options,
                         if moves is None:
                             moves = move_catalog(original, tables)
                         chosen = choose_moves(seed, f"{VERSION}:moves:{trainer}:{index}",
-                            catalog[species], output[pos + 4], moves, options)
+                            catalog[species], output[pos + 4], moves, options,
+                            mode=options.randomize_trainer_moves,
+                            originals=[u16(output, pos + field) for field in MOVE_FIELDS])
                         for field, move in zip(MOVE_FIELDS, chosen, strict=True):
                             struct.pack_into(">H", output, pos + field, move)
                             allowed.update((pos + field, pos + field + 1))
@@ -202,6 +204,16 @@ def apply_boss_tables(original: bytes, current: bytes, seed: str, options,
                         allowed.add(pos + field)
                 else:
                     change["ev_floor_skipped"] = "would exceed legal total 510; current EVs preserved"
+            from ..preserved_pokemon import colosseum_encounter_kept
+            if options.randomize_trainer_moves == "natural" and not colosseum_encounter_kept(original, pos, options):
+                if moves is None:
+                    moves = move_catalog(original, tables)
+                selected = choose_moves(seed, f"{VERSION}:natural:{trainer}:{index}", catalog[species],
+                    output[pos + 4], moves, options, mode="natural",
+                    originals=[u16(output, pos + field) for field in MOVE_FIELDS])
+                for field, move in zip(MOVE_FIELDS, selected, strict=True):
+                    struct.pack_into(">H", output, pos + field, move)
+                    allowed.update((pos + field, pos + field + 1))
             change.update(new_species_index=species, level_before=before[4], level_after=output[pos + 4],
                           ivs_before=[before[f] for f in IV_FIELDS], ivs_after=[output[pos + f] for f in IV_FIELDS],
                           evs_before=[before[f] for f in EV_FIELDS], evs_after=[output[pos + f] for f in EV_FIELDS])

@@ -115,10 +115,11 @@ def colosseum_known(iso, boot, seed, options, cancel):
         key, index, level = row["key"], row["species"], row["level"]
         target = targets[key]
         native = native_catalog["specials"][key]
-        draw = options.randomize_starter_moves if key in ("umbreon", "espeon") else options.randomize_gift_moves
+        move_mode = options.randomize_starter_moves if key in ("umbreon", "espeon") else options.randomize_gift_moves
         kept = not getattr(options, SPECIAL_OPTIONS[key])
-        draw = draw and not (kept and preserve_properties(options))
-        row["moves"] = (choose_moves(seed, "special:" + key, catalog[index], level, moves, options)
+        draw = move_mode and not (kept and preserve_properties(options))
+        row["moves"] = (choose_moves(seed, "special:" + key, catalog[index], level, moves, options,
+                                    mode=move_mode)
                         if draw else list(native["moves"]))
         if key not in ("umbreon", "espeon") and not draw:
             learned = []
@@ -140,8 +141,10 @@ def colosseum_known(iso, boot, seed, options, cancel):
         at = tables["trainer_pokemon"]["offset"] + row["slot"] * tables["trainer_pokemon"]["stride"]
         native = native_catalog["shadows"][str(row["shadow_id"])]
         actual_moves = native["moves"]
-        if options.randomize_trainer_moves and not preserve_properties(options) and not any(m == 0xFFFF or m >= 355 for m in actual_moves):
-            actual_moves = choose_moves(seed, f"trainer:{row['slot']}", catalog[row["species_index"]], row["level"], moves, options)
+        if (options.randomize_trainer_moves and not preserve_properties(options)
+                and (options.randomize_trainer_moves == "natural" or not any(m == 0xFFFF or m >= 355 for m in actual_moves))):
+            actual_moves = choose_moves(seed, f"trainer:{row['slot']}", catalog[row["species_index"]], row["level"], moves, options,
+                                        mode=options.randomize_trainer_moves, originals=actual_moves)
         rel_out[at + 4] = row["level"]
         for field, move in zip((0x36, 0x3E, 0x46, 0x4E), actual_moves, strict=True):
             struct.pack_into(">H", rel_out, at + field, move)
@@ -241,7 +244,8 @@ def xd_known(iso, boot, seed, options, cancel):
                                    eligible, options, moves)
     for row in gifts:
         if options.randomize_gift_moves and not preserve_properties(options):
-            row["moves"] = moves.moves(seed, "xd:gift:" + row["key"], row["species"], row["level"], row["moves"])
+            row["moves"] = moves.moves(seed, "xd:gift:" + row["key"], row["species"], row["level"], row["moves"],
+                                       mode=options.randomize_gift_moves)
     known_pids = {}
     for row in [starter, *gifts]:
         if row is None:

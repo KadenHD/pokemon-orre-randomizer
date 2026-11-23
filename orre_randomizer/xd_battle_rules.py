@@ -271,8 +271,9 @@ def apply_deck_rules(original, current, name, shadow_slots, seed, options, *, mo
         elif preserve_properties(options):
             kept = not options.randomize_trainers
         if options.randomize_trainer_moves and not kept:
-            after_moves = move_randomizer.moves(seed, f"xd:{name}:trainer:{index}",
-                                               u16(result, pos), result[pos + 2], before_moves)
+            args = (seed, f"xd:{name}:trainer:{index}", u16(result, pos), result[pos + 2], before_moves)
+            after_moves = (move_randomizer.moves(*args, mode="natural") if options.randomize_trainer_moves == "natural"
+                           else move_randomizer.moves(*args))
             if before_moves != after_moves:
                 for offset, move in zip(DPKM_MOVES, after_moves, strict=True):
                     struct.pack_into(">H", result, pos + offset, move)

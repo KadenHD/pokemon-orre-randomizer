@@ -42,6 +42,8 @@ def _species_catalog(rel, symbols, species):
             raise FormatError("invalid XD species properties")
         result[index] = {"national_dex": national, "offset": pos, "types": types,
                          "abilities": abilities, "stats": stats, "total": sum(stats)}
+        result[index]["learnset"] = tuple((rel[entry], u16(rel, entry + 2))
+            for entry in range(pos + 0xC4, pos + 0x110, 4) if rel[entry])
     return result
 
 
@@ -69,9 +71,12 @@ class XDMoveRandomizer:
         self.catalog = _move_catalog(rel, symbols)
         self.options = options
 
-    def moves(self, seed, key, species_id, level, originals):
+    def moves(self, seed, key, species_id, level, originals, *, mode=True):
         """Fill regular slots while preserving any native Shadow or scripted move."""
         result = list(originals)
+        if mode == "natural":
+            from .move_modes import natural_moves
+            return natural_moves(self.species[species_id]["learnset"], level, originals, self.catalog)
         slots = [i for i, value in enumerate(result) if value == 0 or value in self.catalog]
         chosen = choose_moves(seed, f"{VERSION}:{key}", self.species[species_id], level,
                               self.catalog, self.options, len(slots))

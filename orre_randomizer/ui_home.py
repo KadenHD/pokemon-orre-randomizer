@@ -30,7 +30,7 @@ class GameChoice(QPushButton):
         self.setMaximumHeight(680)
 
     def sizeHint(self):
-        return QSize(560, 168) if self.compact else QSize(440, 480)
+        return QSize(560, 168) if self.compact else QSize(440, 400)
 
     def minimumSizeHint(self):
         return QSize(240, 160 if self.compact else 360)
@@ -196,22 +196,36 @@ class GameSelection(QWidget):
             button.clicked.connect(callback)
             self.choices.addWidget(button, 1)
         layout.addLayout(self.choices, 1)
-        self.utilities = utilities = QBoxLayout(QBoxLayout.Direction.LeftToRight)
-        utilities.addStretch(1)
+        self.utilities = utilities = QBoxLayout(QBoxLayout.Direction.TopToBottom)
+        first = QBoxLayout(QBoxLayout.Direction.LeftToRight)
+        second = QBoxLayout(QBoxLayout.Direction.LeftToRight)
+        self.utility_rows = (first, second)
+        for row in self.utility_rows:
+            row.addStretch(1)
         packs = window.button("Packs HD")
         packs.setObjectName("updateDownload")
         packs.clicked.connect(lambda: show_packs(window))
-        utilities.addWidget(packs)
-        open_game = window.button("Ouvrir une partie…")
+        first.addWidget(packs)
+        open_game = window.button("Mes parties")
         open_game.setObjectName("updateDownload")
-        open_game.clicked.connect(window.choose_play_folder)
-        utilities.addWidget(open_game)
+        from .ui_run_tools import show_library, show_storage, show_challenge
+        open_game.clicked.connect(lambda: show_library(window))
+        first.addWidget(open_game)
+        storage = window.button("Stockage")
+        storage.setObjectName("updateDownload")
+        storage.clicked.connect(lambda: show_storage(window))
+        first.addWidget(storage)
+        challenges = window.button("Importer un défi")
+        challenges.setObjectName("updateDownload")
+        challenges.clicked.connect(lambda: show_challenge(window, importing=True))
+        second.addWidget(challenges)
         from .ui_launcher_update import choose_launcher_update
         launcher_update = window.button("Mettre à jour un lanceur…")
         launcher_update.setObjectName("updateDownload")
         launcher_update.clicked.connect(lambda: choose_launcher_update(window))
-        utilities.addWidget(launcher_update)
-        utilities.addStretch(1)
+        second.addWidget(launcher_update)
+        for row in self.utility_rows:
+            row.addStretch(1); utilities.addLayout(row)
         layout.addLayout(utilities)
         self.update_button = QPushButton()
         self.update_button.setObjectName("updateDownload")
@@ -354,7 +368,8 @@ class GameSelection(QWidget):
             controls = (self.scroll, self.colosseum, self.xd, self.window.colosseum, self.window.xd,
                         self.window.profile_menu, self.window.music_toggle, self.window.sound_toggle,
                         self.window.language_combo, self.window.import_profile_button,
-                        self.window.export_profile_button, self.window.import_report_button)
+                        self.window.export_profile_button, self.window.import_report_button,
+                        self.window.share_challenge_button, self.window.import_challenge_button)
             dialog = getattr(self.window, "pack_dialog", None)
             if dialog is not None:
                 controls += (dialog,)
@@ -410,7 +425,8 @@ class GameSelection(QWidget):
         super().resizeEvent(event)
         compact = event.size().width() < 800
         self.choices.setDirection(QBoxLayout.Direction.TopToBottom if compact else QBoxLayout.Direction.LeftToRight)
-        self.utilities.setDirection(QBoxLayout.Direction.TopToBottom if compact else QBoxLayout.Direction.LeftToRight)
+        for row in self.utility_rows:
+            row.setDirection(QBoxLayout.Direction.TopToBottom if compact else QBoxLayout.Direction.LeftToRight)
         for button in (self.colosseum, self.xd):
             button.set_compact(compact)
         # Recompute the nested minimum width in this resize event, before

@@ -289,6 +289,14 @@ class MainWindow(QMainWindow):
         self.import_profile_button.triggered.connect(self.choose_profile)
         self.export_profile_button.triggered.connect(self.choose_profile_destination)
         self.import_report_button.triggered.connect(self.choose_creation_report)
+        menu.addSeparator()
+        from .ui_run_tools import show_challenge
+        self.share_challenge_button = menu.addAction("")
+        self.import_challenge_button = menu.addAction("")
+        self.bind(self.share_challenge_button.setText, "Partager un défi…")
+        self.bind(self.import_challenge_button.setText, "Importer un défi…")
+        self.share_challenge_button.triggered.connect(lambda: show_challenge(self))
+        self.import_challenge_button.triggered.connect(lambda: show_challenge(self, importing=True))
         self.profile_menu.setMenu(menu)
         header.addWidget(self.profile_menu)
         header.addWidget(self.language_combo)
@@ -1757,6 +1765,9 @@ class MainWindow(QMainWindow):
     @Slot(dict)
     def succeeded(self, report):
         self.result = report
+        if report.get("play_folder"):
+            from .run_library import remember_run
+            remember_run(self, Path(report["play_folder"]) / "game.json")
         self.set_status("ROM créée et vérifiée.\n{path}", path=report["output"])
         self.progress_bar.setValue(100)
         self.open_folder.show()
@@ -1837,6 +1848,8 @@ class MainWindow(QMainWindow):
             self.play_poll.setInterval(500)
             self.play_poll.timeout.connect(self.poll_launchers)
         self.play_processes.append(process)
+        from .run_library import remember_run
+        remember_run(self, path, opened=True)
         self.music.stop()
         self.play_poll.start()
 

@@ -30,6 +30,16 @@ def add_options(parser, option_type, prefix=""):
             kwargs["action"] = argparse.BooleanOptionalAction
         elif kind == "choice":
             kwargs["choices"] = [value for value, _ in item.metadata["choices"]]
+            if "choice_types" in item.metadata:
+                def move_mode(value):
+                    modes = {"original": False, "natural": "natural", "random": True}
+                    if value not in modes:
+                        raise argparse.ArgumentTypeError("Choose original, natural or random.")
+                    return modes[value]
+                kwargs.update(type=move_mode, nargs="?", const=True, metavar="{original,natural,random}")
+                parser.add_argument("--no-" + prefix + item.name.replace("_", "-"),
+                    dest=prefix.replace("-", "_") + item.name, action="store_const", const=False,
+                    default=argparse.SUPPRESS, help=argparse.SUPPRESS)
         else:
             kwargs["type"] = {"float": float, "int": int, "species_set": comma_ids, "type_set": comma_ids}[kind]
         parser.add_argument(argument, **kwargs)

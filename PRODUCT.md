@@ -24,7 +24,11 @@ The two randomizing modes share family diversity, all starter evolution stages,
 random abilities and a seeded 5% shiny chance for supported encounters. Species
 draws have no power or starter-pair type matching. Pokémon + moves also draws
 moves, TM compatibility and eligible items without type, power or value matching.
-Pokémon-only preserves moves, TMs and items while retaining evolution access.
+Pokémon-only uses the replacement species' level-up moves at its encounter level,
+while preserving learnsets, TMs and items and retaining evolution access.
+Advanced trainer, starter and gift move choices distinguish native encounter
+behavior, species level-up moves and random draws. Keep Shadow moves and special
+slots protected; do not require random moves to accept a species with few moves.
 XD Shadow shinies use the chosen rate with an optional unlock, enabled in both
 presets. Wild Poké Spots use a separate 5% roll for every new encounter by default,
 with the same appearance on the field, in battle and after capture. Legendary
@@ -112,6 +116,31 @@ their own accurate explanations within the shared workflow.
 Colosseum's Events tab previews its optional postgame Nascour battle and all
 six team members. The original 48 Shadow encounters stay separate from the
 bonus Lugia; its entry is added to the native Snag List after discovery.
+
+## Run management
+
+Home's local library references game folders created or added through the app.
+It supports search, launcher version display, launch/folder actions and card
+backup access. Forgetting a reference never deletes game data; missing folders
+remain visible. A local SQLite index stores references next to preferences.
+
+Updated launchers back up existing raw cards before starting Dolphin by default.
+Keep at most five snapshots within 256 MiB, with card hashes and run identity.
+Restore only while the run and emulator are idle, stage the requested snapshot,
+preserve current cards first and roll back failed publication. Do not include
+ROMs or save states. Retain an explicit per-run opt-out.
+
+Storage inventories registered game data and the selected shared cache off the
+UI thread. Count hard links once. Offer only completed, unreferenced texture
+views older than 24 hours for explicit cleanup; never delete ROMs, saves, packs,
+runtimes, downloads or audio banks. Recheck references, activity and paths.
+
+Challenge codes share all randomization options, the exact seed and engine
+identity without local paths. Bound decompression, verify integrity and reject
+different engines or field layouts before changing controls. Preserve existing
+JSON profile behavior. All four tools use six-language native Qt controls and
+the established neutral shared-resource theme. New game content is outside
+this feature set and requires a separate user request.
 
 ## Product constraints
 
