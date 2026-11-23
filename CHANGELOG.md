@@ -16,6 +16,9 @@
   horizontal overflow in all six languages.
 - Add an opt-in offline packaged diagnostic for launcher upgrades, using
   disposable synthetic runs rather than personal ROMs or saves.
+- Run malformed Windows update-package checks in a separate bounded worker.
+  Retain every path, rollback and preservation assertion and the original
+  per-operation deadlines, without exhausting the updater module's time budget.
 - Audit shiny resources across all six supported revision-0 discs and the
   registered native/x4 custom assets. Clarify that legacy Castform weather
   atlases retain their original colors while the modern shiny forms use

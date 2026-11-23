@@ -50,7 +50,7 @@ class UpdateApplyTests(unittest.TestCase):
 
 
 @unittest.skipUnless(sys.platform == 'win32' and CSC.is_file(), 'requires Windows .NET compiler')
-class WindowsUpdateHelperTests(unittest.TestCase):
+class WindowsUpdateFixture(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.tools = tempfile.TemporaryDirectory(prefix='orre-updater-test-tools-')
@@ -265,6 +265,8 @@ return 0; } }''')
         self.assertEqual((self.target / 'profile.json').read_text(), 'keep profile')
         self.assertEqual((self.target / '_internal/user-note.txt').read_text(), 'keep personal note')
 
+
+class WindowsUpdateHelperTests(WindowsUpdateFixture):
     def test_portable_update_replaces_bundle_restarts_and_preserves_unmanaged_files(self):
         self.make_job()
         self.wait_status('ready')
@@ -357,20 +359,6 @@ return 0; } }''')
         self.assertEqual(read_update_result(self.work / 'status.json')['state'], 'error')
         self.assertIsNone(self.parent.poll())
         self.assertEqual(self.exe.read_bytes(), self.versions['old'])
-
-    def test_traversal_case_collision_rom_entry_and_ntfs_stream_are_rejected(self):
-        for name in ('OrreRandomizer/../escaped.txt', 'OrreRandomizer/_internal/../../escaped.txt',
-                     'OrreRandomizer/orrerandomizer.exe', 'OrreRandomizer/payload.iso',
-                     'OrreRandomizer/_internal/file:stream'):
-            with self.subTest(path=name):
-                self.make_job(extra=(name, b'invalid'))
-                self.helper.wait(timeout=15)
-                self.assertEqual(read_update_result(self.work / 'status.json')['code'], 'package')
-                self.assertIsNone(self.parent.poll())
-                self.assertEqual(self.exe.read_bytes(), self.versions['old'])
-                (self.work / 'status.json').unlink()
-        self.assertFalse((self.root / 'escaped.txt').exists())
-        self.assert_personal_files()
 
     def test_locked_bundle_file_rolls_back_the_replaced_executable(self):
         self.make_job()

@@ -47,8 +47,14 @@ An additional 32-test batch covers both update flows, compact Home layouts and
 offline diagnostics. Home utility actions stack in compact windows, with no
 horizontal overflow in the six-language app-update matrix.
 
-The exported sources pass 1,544 tests across all 166 isolated modules, with 123
-prerequisite-dependent skips. The Windows ZIP passes integrity, asset, runtime
+Malformed Windows update-package checks run in a separate bounded module. Each
+invalid path has its own fresh dummy application and test result; traversal,
+case collisions, ROM payloads and NTFS streams keep their original rejection
+assertions and 15-second helper deadlines. This avoids exhausting one module's
+global budget on a busy runner without extending or removing safety checks.
+
+Release CI checks the exported sources across all 167 isolated modules, with
+explicit skips for prerequisite-dependent cases. The Windows ZIP passes integrity, asset, runtime
 source and private-path audits. Its relocated executable renders 474 UI states
 and retains 210 screenshots with developer tools removed from PATH and private
 preferences. The separate frozen launcher-upgrade diagnostic also passes for
