@@ -184,8 +184,11 @@ class RunManagement(unittest.TestCase):
         self.assertEqual(len(plan.candidates), 1)
         self.assertLess(plan.candidates[0].reclaimable_bytes, plan.candidates[0].logical_bytes)
         before = source.read_bytes()
+        # Windows runners may expose TEMP through its short 8.3 alias. Cleanup
+        # reports canonical paths, captured before the directory is removed.
+        expected_path = str(view.resolve())
         removed = cleanup_caches(plan, [str(view)])
-        self.assertEqual(removed, [str(view)])
+        self.assertEqual(removed, [expected_path])
         self.assertFalse(view.exists())
         self.assertEqual(source.read_bytes(), before)
         self.assertTrue(runtime.is_file())
