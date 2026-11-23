@@ -61,6 +61,61 @@ def check_form_materials() -> dict:
             "rom_opened": False, "external_packs_opened": False}
 
 
+def check_launcher_upgrades(parent: Path) -> dict:
+    """Exercise real upgrades in disposable runs, including the frozen runtime copy.
+
+    Synthetic files deliberately stand in for ROMs and saves: this check never
+    opens a personal run, starts Dolphin or downloads a pack.
+    """
+    from . import __version__
+    from .hd_packs import PACKS
+    from .launcher_updates import upgrade_launcher, upgrade_status
+    from .play_folders import launcher_command
+
+    results = []
+    with tempfile.TemporaryDirectory(prefix="launcher-upgrade-check-", dir=parent) as directory:
+        root = Path(directory)
+        for game, game_id in (("colosseum", "GC6E01"), ("xd", "GXXE01")):
+            folder = root / game
+            folder.mkdir()
+            pins = {name: PACKS[name].key for name in (game, "colosseum")}
+            manifest = {"schema": 1, "orre_version": "0.0.0", "game": game,
+                "game_id": game_id, "seed": "offline-upgrade-check", "rom": "Game/game.iso",
+                "shared": str(root / "Shared"), "dolphin": str(root / "Dolphin.exe"),
+                "language": "en", "pack": PACKS[game].key, "packs": pins,
+                "settings": {"graphics": "original", "speed": 1, "native_music": False}}
+            protected = {"game.json": (json.dumps(manifest, indent=2) + "\n").encode(),
+                "Game/game.iso": b"synthetic disc sentinel, never emulated",
+                "DolphinUser/GC/MemoryCardA.USA.raw": b"synthetic saved game",
+                "DolphinUser/StateSaves/run.sav": b"synthetic state",
+                "DolphinUser/Config/GCPadNew.ini": b"synthetic custom controls",
+                "Textures/NativeReferences/keep.bin": b"synthetic frozen resource"}
+            for name, payload in protected.items():
+                path = folder / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_bytes(payload)
+            native = "Launcher.exe" if os.name == "nt" else "Launcher"
+            (folder / native).write_bytes(b"previous native launcher")
+            descriptor = b"ORRE-LAUNCHER-1\nold runtime sentinel\nold directory sentinel\n"
+            (folder / "launcher-runtime.txt").write_bytes(descriptor)
+            path = folder / "game.json"
+            result = upgrade_launcher(path)
+            assert result["changed"] and result["version"] == __version__
+            assert not upgrade_status(path)["available"]
+            backup = Path(result["backup_directory"])
+            assert (backup / native).read_bytes() == b"previous native launcher"
+            assert (backup / "launcher-runtime.txt").read_bytes() == descriptor
+            command, _ = launcher_command(path)
+            assert Path(command[0]).is_file() and command[-2:] == ["--play-folder", str(path)]
+            for name, payload in protected.items():
+                assert (folder / name).read_bytes() == payload, name
+            results.append({"game": game, "version": result["version"],
+                "protected_files_unchanged": len(protected), "backup_verified": True,
+                "pack_pins_unchanged": True, "current_runtime_resolved": True})
+    return {"runs": results, "frozen_runtime_copy": bool(getattr(sys, "frozen", False)),
+            "personal_runs_opened": False, "emulator_started": False}
+
+
 def run_checks(report: Path, *, screenshots: bool = False, screenshot_scope: str = "all") -> dict:
     if screenshot_scope not in {"all", "smoke"}:
         raise ValueError("Unknown diagnostic screenshot scope")
@@ -531,6 +586,8 @@ def main(arguments=None) -> int:
     parser.add_argument("--screenshots", action="store_true")
     parser.add_argument("--screenshot-scope", choices=("all", "smoke"), default="all",
                         help="Keep every PNG, or only the CI smoke evidence while still rendering every state")
+    parser.add_argument("--launcher-upgrade-check", action="store_true",
+                        help="Also upgrade disposable synthetic runs, including a private runtime copy")
     args = parser.parse_args(arguments)
     # Exclusive creation protects previous evidence. Use a new writable directory.
     try:
@@ -552,6 +609,8 @@ def main(arguments=None) -> int:
         sys.excepthook = record_callback_error
         try:
             result = run_checks(args.report, screenshots=args.screenshots, screenshot_scope=args.screenshot_scope)
+            if args.launcher_upgrade_check:
+                result["launcher_upgrade_check"] = check_launcher_upgrades(args.report.parent)
             if callback_errors:
                 raise RuntimeError("UI callbacks failed: " + "; ".join(callback_errors))
         except Exception as error:

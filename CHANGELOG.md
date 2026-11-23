@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+## 2.0.6 - 2026-11-23
+
+- Add an explicit **Update a launcher...** action on Home. Upgrade a run's
+  launcher without regenerating its ROM or changing its saves, controls,
+  settings or pinned HD packs. Back up the previous launcher files, reject an
+  active run and incompatible pack pins, and roll back a failed publication.
+- Keep launcher preparation cancellable and off the GUI thread. Closing the
+  dialog or app waits for the worker; long folder names retain a readable
+  shortened label and their complete accessible path.
+- Stack Home's utility actions in compact windows and update their layout
+  immediately, keeping both game choices and app-update states free of
+  horizontal overflow in all six languages.
+- Add an opt-in offline packaged diagnostic for launcher upgrades, using
+  disposable synthetic runs rather than personal ROMs or saves.
+- Audit shiny resources across all six supported revision-0 discs and the
+  registered native/x4 custom assets. Clarify that legacy Castform weather
+  atlases retain their original colors while the modern shiny forms use
+  separate registered resources. No missing base-species shiny model was found.
+
 ## 2.0.5 - 2026-11-20
 
 - Start every launcher session at 100%. Use the selected 100/200/300% only as

@@ -47,7 +47,13 @@ The launcher reopens the party independently of the randomizer, retaining its
 graphics, speed, controls and saves. Generated filenames stay in English.
 
 The neutral HD manager installs one pinned, hash-verified pack per game/version.
-Game folders reuse it and retain their recorded runtime and pack after updates.
+Game folders reuse it. App updates retain each folder's recorded runtime and
+pack versions by default. Home also offers an explicit launcher update for an
+existing game folder when the current app supports its pinned packs.
+This updates only the launcher control files, with backups in
+`LauncherBackups/`. The ROM, saves, settings, `game.json` and pack pins remain
+unchanged. Newer launchers cannot be downgraded through this action, and an
+active game must be closed before its launcher can be updated.
 HD sources are original community releases by their authors, recorded with
 exact archive hashes and credits. Retrieve packs automatically from the approved
 HTTPS origin or distribution folder, without asking players to select ZIPs.

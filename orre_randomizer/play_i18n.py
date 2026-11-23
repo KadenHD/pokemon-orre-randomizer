@@ -152,6 +152,26 @@ ROWS.update({
     "Maj + Tab": ("Shift + Tab", "Umschalt + Tab", "Mayús + Tab", "Maiusc + Tab", "Shift + Tab"),
 })
 
+ROWS.update({
+    "Mettre à jour un lanceur…": ("Update a launcher…", "Launcher aktualisieren…", "Actualizar un lanzador…", "Aggiorna un launcher…", "ランチャーを更新…"),
+    "Partie Orre (game.json)": ("Orre game (game.json)", "Orre-Spiel (game.json)", "Partida de Orre (game.json)", "Partita Orre (game.json)", "Orre ゲーム (game.json)"),
+    "Lanceur de la partie": ("Game launcher", "Spiel-Launcher", "Lanzador de la partida", "Launcher della partita", "ゲームのランチャー"),
+    "Mettre à jour le lanceur": ("Update launcher", "Launcher aktualisieren", "Actualizar lanzador", "Aggiorna launcher", "ランチャーを更新"),
+    "La ROM, les sauvegardes, les réglages et les versions des packs sont conservés.": ("Your ROM, saves, settings and pack versions stay unchanged.", "ROM, Spielstände, Einstellungen und Pack-Versionen bleiben erhalten.", "Se conservan la ROM, las partidas, los ajustes y las versiones de los packs.", "ROM, salvataggi, impostazioni e versioni dei pacchetti restano invariati.", "ROM、セーブデータ、設定、パックのバージョンは変更しません。"),
+    "Les anciens fichiers du lanceur seront sauvegardés dans LauncherBackups/.": ("The previous launcher files will be backed up in LauncherBackups/.", "Die bisherigen Launcher-Dateien werden in LauncherBackups/ gesichert.", "Se guardará una copia de los archivos anteriores del lanzador en LauncherBackups/.", "I file precedenti del launcher verranno salvati in LauncherBackups/.", "更新前のランチャーファイルはLauncherBackups/にバックアップします。"),
+    "Fermez le lanceur et Dolphin de cette partie avant de continuer.": ("Close this game's launcher and Dolphin before continuing.", "Schließe den Launcher und Dolphin für dieses Spiel, bevor du fortfährst.", "Cierra el lanzador y Dolphin de esta partida antes de continuar.", "Chiudi il launcher e Dolphin di questa partita prima di continuare.", "続行する前に、このゲームのランチャーとDolphinを閉じてください。"),
+    "Lanceur déjà à jour.": ("The launcher is already up to date.", "Der Launcher ist bereits aktuell.", "El lanzador ya está actualizado.", "Il launcher è già aggiornato.", "ランチャーは最新です。"),
+    "Préparation du nouveau lanceur…": ("Preparing the new launcher…", "Neuer Launcher wird vorbereitet…", "Preparando el nuevo lanzador…", "Preparazione del nuovo launcher…", "新しいランチャーを準備中…"),
+    "Lanceur mis à jour. Vous pouvez rouvrir cette partie.": ("Launcher updated. You can reopen this game.", "Launcher aktualisiert. Du kannst das Spiel wieder öffnen.", "Lanzador actualizado. Puedes volver a abrir la partida.", "Launcher aggiornato. Puoi riaprire la partita.", "ランチャーを更新しました。ゲームを開き直せます。"),
+    "Impossible de mettre à jour le lanceur.": ("Could not update the launcher.", "Der Launcher konnte nicht aktualisiert werden.", "No se pudo actualizar el lanzador.", "Impossibile aggiornare il launcher.", "ランチャーを更新できませんでした。"),
+    "Les fichiers du lanceur doivent rester dans le dossier de partie.": ("Launcher files must stay inside the game folder.", "Die Launcher-Dateien müssen im Spielordner bleiben.", "Los archivos del lanzador deben permanecer en la carpeta de la partida.", "I file del launcher devono restare nella cartella della partita.", "ランチャーファイルはゲームフォルダー内に置いてください。"),
+    "Les fichiers du lanceur sont invalides.": ("The launcher files are invalid.", "Die Launcher-Dateien sind ungültig.", "Los archivos del lanzador no son válidos.", "I file del launcher non sono validi.", "ランチャーファイルが正しくありません。"),
+    "La version de ce lanceur est inconnue.": ("This launcher's version is unknown.", "Die Version dieses Launchers ist unbekannt.", "Se desconoce la versión de este lanzador.", "La versione di questo launcher è sconosciuta.", "このランチャーのバージョンを確認できません。"),
+    "Ce lanceur utilise une version plus récente de l’outil.": ("This launcher uses a newer version of the app.", "Dieser Launcher verwendet eine neuere Version der Anwendung.", "Este lanzador usa una versión más reciente de la aplicación.", "Questo launcher usa una versione più recente dell'app.", "このランチャーは、より新しいバージョンのアプリを使用しています。"),
+    "Cette version de l’outil ne prend pas en charge les packs figés de cette partie.": ("This app version does not support this game's pinned packs.", "Diese Anwendungsversion unterstützt die festgelegten Packs dieses Spiels nicht.", "Esta versión no admite los packs fijados para esta partida.", "Questa versione non supporta i pacchetti fissati per questa partita.", "このアプリは、このゲームで固定されているパックのバージョンに対応していません。"),
+    "Les fichiers de cette partie ont changé. Réessayez après avoir fermé son lanceur.": ("This game's files changed. Close its launcher and try again.", "Die Dateien dieses Spiels wurden geändert. Schließe den Launcher und versuche es erneut.", "Los archivos de esta partida han cambiado. Cierra su lanzador e inténtalo de nuevo.", "I file di questa partita sono cambiati. Chiudi il launcher e riprova.", "ゲームのファイルが変更されました。ランチャーを閉じて再試行してください。"),
+})
+
 _FILES = "Game/ · Launcher.exe · DolphinUser/ · Textures/ · game.json · README.txt"
 ROWS[_FILES] = (_FILES,) * 5  # Generated filenames deliberately remain English.
 

@@ -78,6 +78,10 @@ original **4:3** in borderless fullscreen. Keyboard and XInput controller
 presets can be remapped in Dolphin. See [launcher details](docs/GAME_FOLDERS.md)
 for speed transitions and display compatibility.
 
+Use **Update a launcher...** on Home to update an existing run's launcher
+explicitly. Its ROM, saves, controls and pinned HD packs stay unchanged; the
+previous launcher files are backed up. Opening a run alone retains its version.
+
 | Colosseum launcher | XD launcher |
 | --- | --- |
 | ![Colosseum game launcher](docs/images/colosseum-launcher.png) | ![XD game launcher](docs/images/xd-launcher.png) |
@@ -299,7 +303,8 @@ new rental teams.
 
 Unown's letter comes from the seed in both games. Spinda's spots follow its
 in-game personality value, and the Pokémon sheet shows the exact pattern when
-it can be determined before play. [Forms and shiny rules](docs/SHINIES.md)
+it can be determined before play. See [forms and shiny rules](docs/SHINIES.md)
+and the [six-disc shiny model audit](docs/SHINY_MODEL_COVERAGE.md).
 
 ![Treecko and Totodile arriving by motorcycle at Outskirt Stand](docs/images/colosseum-motorcycle-arrival.gif)
 

@@ -67,7 +67,7 @@ def portrait_coverage_report() -> dict:
             "stock_3d_materials_installed": False,
             "stock_3d_materials_catalogued_separately": True,
             "normal_and_shiny": True, "native_rom_changed": False,
-            "castform_weather_shiny": "Gen3 native weather colours shared with normal",
+            "castform_weather_shiny": "legacy native-source atlases share weather colours; modern shiny variants use separate registered resources",
             "publication_policy": "reviewed native-mesh captures with complete HD material provenance"}
 
 

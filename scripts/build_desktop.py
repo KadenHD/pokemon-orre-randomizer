@@ -24,6 +24,7 @@ RUNTIME_BUILD_RECORD = "_internal/orre_randomizer/_native/build-inputs.json"
 REQUIRED_RUNTIME_MODULES = frozenset((
     "orre_randomizer.play_folders", "orre_randomizer.ui_play", "orre_randomizer.play_music",
     "orre_randomizer.play_display", "orre_randomizer.play_speed",
+    "orre_randomizer.launcher_updates", "orre_randomizer.ui_launcher_update",
     "orre_randomizer.native_music_state", "orre_randomizer.native_music_render",
     "orre_randomizer.native_music_output", "orre_randomizer.native_music_volume",
     "orre_randomizer.hd_images", "orre_randomizer.hd_overlays", "orre_randomizer.hd_spinda_diagram",

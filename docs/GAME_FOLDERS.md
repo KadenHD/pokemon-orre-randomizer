@@ -25,8 +25,10 @@ is built in for both workflows; no DolphinTool path is required.
 Colosseum-My-Run/
   Launcher.exe
   launcher-runtime.txt
+  launcher-version.json       # present after an explicit launcher update
   game.json
   README.txt
+  LauncherBackups/            # previous launcher files, after an update
   Game/
     game.iso                 # or game.gcm / game.rvz
     game.iso.json            # creation report
@@ -63,6 +65,28 @@ Opening a folder from Home retains its verified cached runtime. If a runtime
 for the current Orre version is missing, reopening repairs the launcher. For a
 missing older runtime, reinstall that release instead of silently changing the
 party's pack version.
+
+## Update an existing launcher
+
+Updating the randomizer itself does not silently update existing runs. On
+Home, choose **Update a launcher...**, select the run's `game.json`, review the
+version change and click **Update launcher**. Close that run's launcher and
+Dolphin session first. Preparation runs in the background and can be cancelled;
+closing the dialog or app waits for the worker to finish.
+
+An update replaces only `Launcher.exe`, `launcher-runtime.txt` and
+`launcher-version.json`. The ROM, `game.json`, cards, save states, controls,
+graphics settings, texture references and pack pins remain byte-identical.
+The separate version receipt records the new launcher without changing the
+ROM's creation version. A failure during publication restores the previous
+control files. Each attempt retains a checksum-recorded backup under
+`LauncherBackups/`; the previous shared runtime is also retained.
+
+The selected Orre release must support the run's exact pinned pack versions.
+Incompatible pins and downgrades are refused. This action does not download
+new packs or migrate a run to different artwork. Opening the run later uses
+the explicitly selected runtime; simply opening an older run retains its
+previous version.
 
 Updating the randomizer does not silently replace the launcher in existing
 game folders. New folders created with v2.0.5 use the revised shortcuts and

@@ -35,6 +35,65 @@ historical evidence rather than the current feature specification.
 
 Counts evolve; the Actions run for a release tag records that build's results.
 
+### Launcher upgrades and shiny resource audit (2026-11-23)
+
+Version 2.0.6 adds an explicit launcher upgrade, with 18 targeted backend
+and Qt checks covering protected run files, unchanged pack pins, cancellation,
+active-run locks, concurrent settings changes, version rechecks under the lock,
+rollback, interrupted publication, cache repair and unexpected worker errors.
+All six translated update dialogs fit a fixed 760 x 400 window. Closing the
+dialog or main window waits for the background worker.
+An additional 32-test batch covers both update flows, compact Home layouts and
+offline diagnostics. Home utility actions stack in compact windows, with no
+horizontal overflow in the six-language app-update matrix.
+
+The exported sources pass 1,544 tests across all 166 isolated modules, with 123
+prerequisite-dependent skips. The Windows ZIP passes integrity, asset, runtime
+source and private-path audits. Its relocated executable renders 474 UI states
+and retains 210 screenshots with developer tools removed from PATH and private
+preferences. The separate frozen launcher-upgrade diagnostic also passes for
+both games, verifying the actual runtime copy, backups and six protected files
+per synthetic run without opening a personal ROM or save.
+
+The [six-disc shiny audit](SHINY_MODEL_COVERAGE.md) checks 386 normal/shiny
+field-model pairs per disc, all Unown letters, sampled Spinda PIDs, portraits
+and Colosseum DNA bodies. No base-species model was missing. Current authored
+Lugia and Castform native/x4 assets pass their production loaders and integrity
+contracts; the targeted shiny/artwork suite passes 110 tests. This is exhaustive
+resource coverage, not a live encounter with every species.
+
+Five silent Dolphin 2609b runs add 40 native screenshots: field, party and
+summary pages in USA/Japan editions of both games, plus a USA XD Quick Battle
+through active move selection. Read-only sampling confirms the current regional
+perspective and orthographic branches after loading. The 2D menus retain their
+proportions inside the wide viewport. The test fixtures are existing v2.0.0 QA
+images used to qualify the current display recipe, not a new randomizer-engine
+playthrough. Native textures are used with 3x internal rendering. Some widened
+views can expose the edge of a room or backdrop designed for 4:3.
+
+Each run uses a copied memory card and an isolated profile with **No Audio
+Output**, zero volume and mute overrides. No user Dolphin process is attached.
+The source test images, source cards and Dolphin executable retain their
+hashes, all owned processes close, and the original movies remain unchanged.
+
+A second physical Windows PC is not available in this environment. Relocated
+portable diagnostics on this PC do not replace that hardware check. On a second
+PC, extract the complete Windows ZIP and run the following from its application
+directory in PowerShell. Use a new report name for each attempt:
+
+```powershell
+$report = Join-Path $PWD 'second-pc-diagnostics.json'
+Start-Process -FilePath '.\OrreRandomizer.exe' -WindowStyle Hidden -Wait -ArgumentList @(
+  '--diagnostics', ('"' + $report + '"'), '--launcher-upgrade-check'
+)
+Get-Content -LiteralPath $report
+```
+
+The optional upgrade check uses two disposable synthetic runs and a temporary
+shared runtime cache. It starts no emulator, downloads no packs and opens no
+personal ROM or save. A successful report must include `successful: true`,
+`frozen: true` and a successful `launcher_upgrade_check` for both games.
+
 ### Launcher speed and display follow-up (2026-11-20)
 
 The v2.0.5 checkout exercises 1,548 tests across 164 isolated modules. The

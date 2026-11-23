@@ -106,7 +106,7 @@ def validate_request(request, source: Path, suffix: str, seed: str):
     return folder
 
 
-def _runtime(root: Path):
+def _runtime(root: Path, *, cancel=None):
     if not getattr(sys, "frozen", False):
         python = Path(sys.executable)
         if sys.platform == "win32" and python.with_name("pythonw.exe").is_file():
@@ -129,6 +129,8 @@ def _runtime(root: Path):
         stage = Path(temporary) / "runtime"
         stage.mkdir()
         for name in owned:
+            if cancel is not None and cancel.is_set():
+                raise Cancelled("Opération annulée.")
             relative = Path(name)
             path = source / relative
             if (relative.is_absolute() or ".." in relative.parts or path.is_symlink()
@@ -139,6 +141,8 @@ def _runtime(root: Path):
             shutil.copyfile(path, destination)
         if not (stage / executable.name).is_file():
             raise UserError("L’exécutable du lanceur partagé est absent.")
+        if cancel is not None and cancel.is_set():
+            raise Cancelled("Opération annulée.")
         try:
             stage.rename(target)
         except FileExistsError:
@@ -163,6 +167,8 @@ def install_launcher(folder: Path, shared: Path):
 def launcher_command(path: Path):
     """Retain a verified cached runtime; repair a missing current-version launcher."""
     data = load_game(path)
+    from .launcher_updates import launcher_version
+    version = launcher_version(path.parent, data)
     shared = Path(data["shared"])
     runtime = None
     descriptor = path.parent / "launcher-runtime.txt"
@@ -170,7 +176,6 @@ def launcher_command(path: Path):
         lines = descriptor.read_text("utf-8").splitlines()
         if len(lines) == 3 and lines[0] == "ORRE-LAUNCHER-1":
             executable, directory = Path(lines[1]), Path(lines[2])
-            version = data.get("orre_version", "")
             match = re.fullmatch(re.escape(version) + r"-([a-f0-9]{16})", directory.name) if version else None
             if (match and executable.is_file() and executable.name == APP_EXECUTABLE + ".exe"
                     and not executable.is_symlink() and not directory.is_symlink() and not directory.is_junction()
@@ -179,9 +184,11 @@ def launcher_command(path: Path):
                     and file_hash(executable, threading.Event()).startswith(match[1])):
                 runtime = [str(executable), str(directory)]
     if runtime is None:
-        if data.get("orre_version", __version__) != __version__:
+        if version != __version__:
             raise UserError("Réinstallez la version Orre utilisée pour créer cette partie.")
         install_launcher(path.parent, shared)
+        from .launcher_updates import refresh_receipt
+        refresh_receipt(path.parent, data)
         runtime = _runtime(shared)
     return [runtime[0], *runtime[2:], "--play-folder", str(path.resolve())], runtime[1]
 

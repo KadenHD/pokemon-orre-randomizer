@@ -2,7 +2,7 @@
 version: 1
 slug: "game-folders-launcher"
 primary_target: "orre_randomizer/ui_play.py"
-related_targets: ["orre_randomizer/ui_game_folder.py", "orre_randomizer/ui_play_controls.py", "orre_randomizer/ui_home.py", "orre_randomizer/gui.py", "orre_randomizer/xd_ui.py", "orre_randomizer/ui_theme.py", "orre_randomizer/play_i18n.py"]
+related_targets: ["orre_randomizer/ui_game_folder.py", "orre_randomizer/ui_play_controls.py", "orre_randomizer/ui_home.py", "orre_randomizer/ui_launcher_update.py", "orre_randomizer/gui.py", "orre_randomizer/xd_ui.py", "orre_randomizer/ui_theme.py", "orre_randomizer/play_i18n.py"]
 ---
 
 # Surface: Game-folder creation, shared HD manager and launcher
@@ -47,6 +47,30 @@ cancels cooperatively, waits for worker cleanup, then closes; it must not leave
 an unstarted worker or apply the old close request to the next installation.
 Remove bindings to destroyed dialogs. Closing and reopening the manager must
 remain safe before and after changing the interface language.
+
+## Optional launcher updates
+
+Home places Update a launcher beside Packs HD and Open a game, using the same
+neutral utility-button treatment; below 800 px, these three actions stack
+vertically to avoid horizontal overflow. Selecting `game.json` opens a fixed
+760 × 400 px dialog with the neutral angular frame, current/new versions,
+preservation and backup explanations, Close and an explicit Update action.
+Keep all six languages on one page without scrolling. Elide long folder names
+in the summary; retain the complete path in the tooltip and accessible name.
+
+App updates do not silently replace existing launchers. This separate action
+requires compatible pinned packs and refuses downgrades. It changes only
+`Launcher.exe`/`Launcher`, `launcher-runtime.txt` and `launcher-version.json`.
+Retain the previous control files under `LauncherBackups/`; do not change the
+ROM, saves, settings, `game.json`, textures or pack pins. Previous shared
+runtimes remain available.
+
+Preparation runs off the interface thread. Show progress, disable duplicate
+updates and retain cancellation. Closing the dialog or its parent window
+cancels and waits for worker cleanup before closing. Show a clear completed
+or failed state. An already current launcher keeps Update disabled. An active
+game must be closed before
+the update can proceed.
 
 ## Launcher
 

@@ -66,6 +66,20 @@ class DiagnosticTests(unittest.TestCase):
                     self.assertEqual(main([str(path), *arguments]), 0)
                 run.assert_called_once_with(path, screenshots=True, screenshot_scope=expected)
 
+    def test_disposable_launcher_upgrade_is_explicit_and_failures_fail_the_report(self):
+        import json
+        from orre_randomizer.diagnostics import main
+        for enabled in (False, True):
+            with self.subTest(enabled=enabled), tempfile.TemporaryDirectory() as folder:
+                path = Path(folder) / "diagnostics.json"
+                arguments = [str(path)] + (["--launcher-upgrade-check"] if enabled else [])
+                with patch("orre_randomizer.diagnostics.run_checks", return_value={"successful": True}), \
+                     patch("orre_randomizer.diagnostics.check_launcher_upgrades",
+                           side_effect=RuntimeError("synthetic upgrade failed")) as upgrade:
+                    self.assertEqual(main(arguments), 1 if enabled else 0)
+                self.assertEqual(upgrade.call_count, int(enabled))
+                self.assertEqual(json.loads(path.read_text())["successful"], not enabled)
+
 
 if __name__ == "__main__":
     unittest.main()

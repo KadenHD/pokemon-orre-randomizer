@@ -591,7 +591,9 @@
         "orre_randomizer/ui_theme.py": "9762c88841a8b49c396ed242b24ad811d1c8404f6a6b2a7264d2fde0e704481c",
         "orre_randomizer/ui_game_folder.py": "e459171f1e257764da2c44f23a48a9a1615fe27c6491448eb3be6c4b27691600",
         "orre_randomizer/ui_play.py": "a273ecd7d69159ad5e467d2388d85f4cbe52cf7342adb08ed2c4b69e8b2df0ab",
-        "orre_randomizer/gui.py": "a236e1c8484419faeb6a4010099f809b073456aed7fd67b449a7e71699b7ef07"
+        "orre_randomizer/gui.py": "ddc605e63795f247ce69f81a15c7290927441f0c785822cbec805def3a82de80",
+        "orre_randomizer/ui_home.py": "e61160ed5bec86ae6ffd656d8535f9f2164248ac4a82fa6bf0072ec3872e3150",
+        "orre_randomizer/ui_launcher_update.py": "7a587dfb7f455d33d76b7aaeeaca050d6f74711ebd2b09b3abe3c6e8d54219a4"
       },
       "scope": "Home, shared HD manager, tooltips, menus, details, selection and fallback palette",
       "workerStates": [

@@ -4,15 +4,15 @@
   "description": "English application and gameplay captures. Each entry records its capture version; unchanged earlier gameplay images are retained.",
   "files": {
     "home.png": {
-      "bytes": 155032,
-      "sha256": "601b9906137b51ce02ca1aafc0b2abf1e9326c8896b3322e3842bd5adfff4081",
+      "bytes": 154479,
+      "sha256": "aca02c3504df720923aa71914432cce650498d2d7038ca673306a2e08a0c3840",
       "kind": "application",
       "language": "en",
       "width": 1100,
-      "height": 800,
-      "captured_in_version": "2.0.0",
-      "description": "Game selection and shared HD/game-folder actions.",
-      "source": "Actual Qt application, muted private preferences. Demonstration folder paths/seed; no personal settings or ROM used for UI capture. HD installation status read from the verified private QA cache."
+      "height": 850,
+      "captured_in_version": "2.0.6",
+      "description": "Game selection, shared HD packs and explicit launcher upgrade action.",
+      "source": "Actual Qt application with muted private preferences and automatic update checks disabled. No personal settings or ROM opened."
     },
     "colosseum-settings.png": {
       "bytes": 83712,

@@ -196,7 +196,7 @@ class GameSelection(QWidget):
             button.clicked.connect(callback)
             self.choices.addWidget(button, 1)
         layout.addLayout(self.choices, 1)
-        utilities = QHBoxLayout()
+        self.utilities = utilities = QBoxLayout(QBoxLayout.Direction.LeftToRight)
         utilities.addStretch(1)
         packs = window.button("Packs HD")
         packs.setObjectName("updateDownload")
@@ -206,6 +206,11 @@ class GameSelection(QWidget):
         open_game.setObjectName("updateDownload")
         open_game.clicked.connect(window.choose_play_folder)
         utilities.addWidget(open_game)
+        from .ui_launcher_update import choose_launcher_update
+        launcher_update = window.button("Mettre à jour un lanceur…")
+        launcher_update.setObjectName("updateDownload")
+        launcher_update.clicked.connect(lambda: choose_launcher_update(window))
+        utilities.addWidget(launcher_update)
         utilities.addStretch(1)
         layout.addLayout(utilities)
         self.update_button = QPushButton()
@@ -405,5 +410,10 @@ class GameSelection(QWidget):
         super().resizeEvent(event)
         compact = event.size().width() < 800
         self.choices.setDirection(QBoxLayout.Direction.TopToBottom if compact else QBoxLayout.Direction.LeftToRight)
+        self.utilities.setDirection(QBoxLayout.Direction.TopToBottom if compact else QBoxLayout.Direction.LeftToRight)
         for button in (self.colosseum, self.xd):
             button.set_compact(compact)
+        # Recompute the nested minimum width in this resize event, before
+        # QScrollArea decides whether the previous horizontal row still fits.
+        self.utilities.activate()
+        self.scroll.widget().layout().activate()

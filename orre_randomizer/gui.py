@@ -1876,6 +1876,12 @@ class MainWindow(QMainWindow):
         dialog.show()
 
     def closeEvent(self, event):
+        launcher_update = getattr(self, "launcher_update_dialog", None)
+        if launcher_update is not None and launcher_update.thread is not None:
+            launcher_update.close_parent_after_cancel = True
+            launcher_update.close()
+            event.ignore()
+            return
         pack_dialog = getattr(self, "pack_dialog", None)
         if pack_dialog is not None and pack_dialog.thread is not None:
             pack_dialog.close_parent_after_cancel = True
