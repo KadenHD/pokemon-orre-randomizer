@@ -5,6 +5,10 @@ from PySide6.QtWidgets import QCheckBox, QFrame, QStyle, QStyleOptionButton, QWi
 
 
 class MenuCheckBox(QCheckBox):
+    def __init__(self, *args, check_color=None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.check_color = check_color
+
     def paintEvent(self, event):
         super().paintEvent(event)
         if self.isChecked():
@@ -13,7 +17,8 @@ class MenuCheckBox(QCheckBox):
             box = self.style().subElementRect(QStyle.SubElement.SE_CheckBoxIndicator, option, self)
             painter = QPainter(self)
             painter.setRenderHint(QPainter.RenderHint.Antialiasing)
-            painter.setPen(QPen(QColor("#082b24" if self.isEnabled() else "#c1d8cf"), 2.2))
+            color = self.check_color or ("#082b24" if self.isEnabled() else "#c1d8cf")
+            painter.setPen(QPen(QColor(color), 2.2))
             painter.drawPolyline(QPolygonF([QPointF(box.x()+4, box.y()+9),
                                             QPointF(box.x()+8, box.y()+13),
                                             QPointF(box.x()+15, box.y()+5)]))

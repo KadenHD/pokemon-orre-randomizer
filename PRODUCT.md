@@ -29,6 +29,10 @@ while preserving learnsets, TMs and items and retaining evolution access.
 Advanced trainer, starter and gift move choices distinguish native encounter
 behavior, species level-up moves and random draws. Keep Shadow moves and special
 slots protected; do not require random moves to accept a species with few moves.
+XD's native first capture is Snag-only and guaranteed for Shadow ID 1, so no
+attacking starter is required. Colosseum's automatic natural-mode pair draw
+avoids two verified Teleport/Harden/Splash-only partners; explicit manual picks
+remain available and their narrow risk is recorded without changing moves.
 XD Shadow shinies use the chosen rate with an optional unlock, enabled in both
 presets. Wild Poké Spots use a separate 5% roll for every new encounter by default,
 with the same appearance on the field, in battle and after capture. Legendary
@@ -141,6 +145,14 @@ different engines or field layouts before changing controls. Preserve existing
 JSON profile behavior. All four tools use six-language native Qt controls and
 the established neutral shared-resource theme. New game content is outside
 this feature set and requires a separate user request.
+
+Profiles also offers an explicit local diagnostic export for either game. Review
+the exact allowlisted JSON before saving; choose the failed operation's captured
+settings or the current workspace, and retain an optional seed. Omit invalid or
+sensitive-looking seeds, raw errors/logs, paths, profile extras, ROMs and saves.
+Only a previous successful operation may supply the selected disc's identity;
+the exporter does not open ROMs. It uploads nothing and never overwrites an
+existing report. Keep the shared neutral dialog, native text and all six languages.
 
 ## Product constraints
 

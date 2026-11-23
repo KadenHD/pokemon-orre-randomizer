@@ -115,6 +115,7 @@ def main():
         tools = data["run_management_check"]
         assert tools["sqlite_roundtrip"] and tools["card_restore_verified"]
         assert tools["challenge_roundtrips"] == 2 and len(tools["dialogs"]) == 4
+        assert tools["support_exports"] == 2 and tools["support_dialog_reviewed"]
         assert not tools["personal_runs_opened"] and not tools["emulator_started"]
         state_keys = ("home_states", "xd_states", "states", "exclusion_states", "shiny_states", "preview_states", "pack_manager_states")
         for key in state_keys:

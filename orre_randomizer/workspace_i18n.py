@@ -4,6 +4,12 @@ from .workspace_copy import (COLOSSEUM_PRESET_NATIVE, PRESET_DESCRIPTIONS, PRESE
                              PRESET_LEGENDARIES, PRESET_SHINIES, ROM_USE_NOTICE, XD_PRESET_NATIVE)
 
 ROWS = (
+    ("Les deux starters n’auraient que des capacités sans effet offensif. Élargissez les Pokémon autorisés ou choisissez un partenaire différent.",
+     "Both starters would only have moves with no offensive effect. Allow more Pokémon or choose a different partner.",
+     "Beide Starter hätten nur Attacken ohne offensive Wirkung. Erlaube mehr Pokémon oder wähle einen anderen Partner.",
+     "Los dos Pokémon iniciales solo tendrían movimientos sin efecto ofensivo. Permite más Pokémon o elige otro compañero.",
+     "Entrambi i Pokémon iniziali avrebbero solo mosse senza effetto offensivo. Consenti più Pokémon o scegli un altro compagno.",
+     "最初の2匹が、どちらも攻撃に使えない技だけになってしまいます。選べるポケモンを増やすか、別のパートナーを選んでください。"),
     ("Enregistrez la nouvelle ROM au format .iso, .gcm ou .rvz.",
      "Save the new ROM as .iso, .gcm or .rvz.",
      "Speichere die neue ROM als .iso, .gcm oder .rvz.",

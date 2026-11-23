@@ -2,7 +2,7 @@
 version: 1
 slug: "run-management"
 primary_target: "orre_randomizer/ui_run_tools.py"
-related_targets: ["orre_randomizer/ui_home.py", "orre_randomizer/ui_play.py", "orre_randomizer/gui.py", "orre_randomizer/ui_game_folder.py", "orre_randomizer/ui_theme.py", "orre_randomizer/run_library.py", "orre_randomizer/save_backups.py", "orre_randomizer/storage.py", "orre_randomizer/challenges.py", "orre_randomizer/play_i18n.py"]
+related_targets: ["orre_randomizer/ui_home.py", "orre_randomizer/ui_play.py", "orre_randomizer/gui.py", "orre_randomizer/ui_game_folder.py", "orre_randomizer/ui_theme.py", "orre_randomizer/run_library.py", "orre_randomizer/save_backups.py", "orre_randomizer/storage.py", "orre_randomizer/challenges.py", "orre_randomizer/play_i18n.py", "orre_randomizer/ui_support_report.py", "orre_randomizer/support_report.py", "orre_randomizer/support_i18n.py"]
 ---
 
 # Surface: Local runs, memory-card history, storage and challenge codes
@@ -96,6 +96,27 @@ Copy success appears in the status line. A successful import opens the matching
 game and restores the seed and options while requesting the original ROM.
 Existing JSON profiles keep their separate behavior.
 
+## Diagnostic export
+
+Both games' Profiles menus offer Export diagnostic without adding a Home utility.
+The neutral 860 x 620 px dialog first names what is included and excluded, then
+offers last-failed-attempt/current-settings context and an optional seed. Its
+read-only native JSON viewport shows the exact serialized document, wraps long
+values and has no horizontal scrollbar. Save diagnostic and Close stay outside
+the viewport. The seed checkbox uses the shared visible check-mark control with
+the neutral panel ink. Sensitive-looking or invalid seeds are omitted, visibly
+explained, and cannot be included inadvertently.
+
+Preserve the failed request's seed/options rather than pairing a stale error
+with newly edited controls. Normalized error codes replace raw exception text;
+only verified identity from a successful operation on the same selected source
+may appear. No ROM reading, scanning, uploads or automatic sharing occurs.
+Save through the shared background-file task and retain exclusive publication,
+inline success/failure, keyboard access and the six-language layout contract.
+Wait for running creation, preview and report-check workers before opening.
+Pause pending automatic-preview/report timers throughout the modal lifetime,
+including its nested event loop, then resume normal scheduling after close.
+
 ## Shared states and languages
 
 Use the existing section/body/note roles and six-language catalogs. Dialog labels
@@ -113,11 +134,13 @@ busy, failed and completed states must remain truthful to actual local data.
 
 ## Evidence and limits
 
-Source authority: ui_run_tools.py and its Home, Profiles and launcher integrations.
+Source authority: ui_run_tools.py, ui_support_report.py and their Home, Profiles
+and launcher integrations.
 Real Qt demonstration captures are in build/run-management-qa/round2, including
 English and Japanese tools, French history and the XD launcher. Source remains
 authoritative for checkbox states and the two-row Home utility layout. Preserve
 the established type ramp and game accents rather than deriving new global
 tokens from demonstration data or advisory detection heuristics.
-No mobile layout, full-run gameplay validation, new content or unfinished
-move-mode behavior is established by this surface record.
+This surface record does not establish a mobile layout, full-run gameplay
+validation or new game content. Engine validation is recorded separately in
+docs/VALIDATION.md.

@@ -105,3 +105,34 @@ Existing JSON profiles remain available, including their historical migration
 behavior. Sharing a challenge does not create multiplayer or synchronize saves.
 
 ![Sharing a challenge code](images/challenge-code.png)
+
+## Export a diagnostic
+
+From either game's **Profiles** menu, choose **Export diagnostic...**. Review the
+JSON and choose **Save diagnostic...** to create a local file for a bug report.
+Nothing is uploaded. Existing files are never overwritten.
+Wait for an active creation, preview or report comparison to finish before
+opening the dialog. Pending automatic previews and report comparisons pause
+while the diagnostic is open, then resume after it closes.
+
+The report includes the app and engine versions, game, typed randomizer settings,
+the operation stage and a normalized error category/code. The disc's region and
+revision appear only when a successful preview or creation has already verified
+that selected source. Exporting does not open or inspect the ROM.
+
+After an operation fails, **Last failed operation** keeps the seed and settings
+used for that attempt even if you subsequently edit them. **Current settings**
+exports the current workspace instead. Cancelled or superseded preview attempts
+do not replace the recorded failure. This context is kept only for the current
+app session.
+
+You can exclude the seed. Invalid or sensitive-looking seeds, such as paths,
+email addresses and recognizable credentials, are omitted automatically. This
+heuristic cannot recognize every piece of personal text: review the visible JSON
+before sharing it. Reproducing a draw requires the exact seed, original disc and
+matching engine; omitting the seed limits reproduction.
+
+ROMs, saves, file paths, raw errors, logs and profile extras are excluded. Only
+recognized option fields and their valid typed values are serialized; invalid
+fields are named as omitted rather than copied into free-text diagnostic data.
+The export does not modify the ROM, game folder, settings or save history.

@@ -7,7 +7,8 @@ from unittest.mock import patch
 from orre_randomizer.xd_battle_rules import DPKM_MOVES
 from orre_randomizer.xd_story import (
     TRAINER_REMARK_REWRITES, _tutorial_script, hordel_candidates, trainer_dialogue_edits,
-    tutorial_candidates, validate_tutorial_matchup,
+    TUTORIAL_CAPTURE_OFFSETS, TUTORIAL_CAPTURE_WINDOWS,
+    tutorial_candidates, validate_tutorial_capture,
 )
 from orre_randomizer.engine.analyze_game import FormatError
 
@@ -54,7 +55,7 @@ class XDHordelTests(unittest.TestCase):
 
 
 class XDTutorialTests(unittest.TestCase):
-    def test_only_compatible_tutorial_opponents_are_eligible(self):
+    def test_tutorial_pool_does_not_require_a_starter_attack(self):
         rows = {
             1: {"national_dex": 1, "types": (12, 3), "abilities": (65,), "total": 318},
             92: {"national_dex": 92, "types": (7, 3), "abilities": (26,), "total": 310},
@@ -64,32 +65,43 @@ class XDTutorialTests(unittest.TestCase):
         regular = {"index": 33, "power": 35, "type": 0}
         explosion = {"index": 153, "power": 250, "type": 0}
         rules = SimpleNamespace(species=rows, catalog={33: regular, 153: explosion})
-        self.assertEqual(tutorial_candidates({"moves": [33]}, rows, rules), [1])
-        self.assertEqual(tutorial_candidates({"moves": [153]}, rows, rules), [])
+        self.assertEqual(tutorial_candidates(rows, rules), [1, 92])
+        self.assertEqual(tutorial_candidates({92}, rules), [92])
 
-    def test_fixed_teddiursa_is_checked_against_the_generated_starter_too(self):
-        moves = {33: {"index": 33, "power": 35, "type": 0},
-                 122: {"index": 122, "power": 20, "type": 7},
-                 264: {"index": 264, "power": 150, "type": 1}}
-        rules = SimpleNamespace(species={216: {"types": (0,), "abilities": (53,)}}, catalog=moves)
-        for unusable in ([122], [264], []):
-            with self.subTest(moves=unusable), self.assertRaises(FormatError):
-                validate_tutorial_matchup({"moves": unusable}, 216, rules)
-        validate_tutorial_matchup({"moves": [264, 33]}, 216, rules)
+    def test_native_capture_contract_is_read_only_and_checks_every_window(self):
+        for game, offsets in TUTORIAL_CAPTURE_OFFSETS.items():
+            original = bytearray(max(at + len(value) for at, value in zip(offsets, TUTORIAL_CAPTURE_WINDOWS)))
+            for at, value in zip(offsets, TUTORIAL_CAPTURE_WINDOWS):
+                original[at:at + len(value)] = value
+            before = bytes(original)
+            report = validate_tutorial_capture(original, game)
+            self.assertEqual(original, before)
+            self.assertEqual((report['battle_id'], report['shadow_id']), (224, 1))
+            self.assertTrue(report['native_guaranteed_capture'])
+            self.assertTrue(report['native_snag_only'])
+            self.assertFalse(report['starter_attack_required'])
+            for at in offsets:
+                broken = bytearray(original); broken[at] ^= 1
+                with self.subTest(game=game, offset=at), self.assertRaises(FormatError):
+                    validate_tutorial_capture(broken, game)
+            with self.assertRaises(FormatError):
+                validate_tutorial_capture(before[:offsets[0]], game)
+        with self.assertRaises(FormatError):
+            validate_tutorial_capture(b'', 'not-a-supported-disc')
 
-    def test_fixed_tutorial_uses_final_type_and_ability_immunities(self):
-        attacks = {89: {"index": 89, "power": 100, "type": 4},
-                   85: {"index": 85, "power": 95, "type": 13},
-                   304: {"index": 304, "power": 90, "type": 0}}
-        for target, move in (({"types": (2,), "abilities": (1,)}, 89),
-                             ({"types": (0,), "abilities": (26,)}, 89),
-                             ({"types": (4,), "abilities": (1,)}, 85),
-                             ({"types": (0,), "abilities": (10,)}, 85),
-                             ({"types": (0,), "abilities": (43,)}, 304),
-                             ({"types": (0,), "abilities": (25,)}, 85)):
-            rules = SimpleNamespace(species={216: target}, catalog=attacks)
-            with self.subTest(target=target), self.assertRaises(FormatError):
-                validate_tutorial_matchup({"moves": [move]}, 216, rules)
+    def test_native_capture_window_guarantees_only_shadow_one_or_master_ball(self):
+        from tests.test_xd_shadow_shinies import WrapperMachine, ADDRESS
+        for ball in (1, 4, 9):
+            for shadow in (0, 1, 2, 73, 81):
+                machine = WrapperMachine(TUTORIAL_CAPTURE_WINDOWS[0])
+                machine.reg[24], machine.reg[25], machine.reg[28] = ball, shadow, 0x12345678
+                # Two observed native exits: ordinary catch math vs forced
+                # animation. Do not simulate the ordinary catch probability.
+                machine.store(ADDRESS + 32, 0x4E800020, 4)
+                machine.store(ADDRESS + 0x174, 0x4E800020, 4)
+                machine.run()
+                with self.subTest(ball=ball, shadow=shadow):
+                    self.assertEqual(machine.reg[28], 4 if ball == 1 or shadow == 1 else 0x12345678)
 
     def test_tutorial_script_patch_preserves_all_control_flow_and_state_operands(self):
         for game in ("GXXP01", "GXXE01", "GXXJ01"):
@@ -103,7 +115,7 @@ class XDTutorialTests(unittest.TestCase):
 
 
 class NativeXDStoryFlowTests(unittest.TestCase):
-    def test_native_gastly_starting_moves_cannot_pass_the_fixed_normal_tutorial_check(self):
+    def test_native_gastly_learnset_does_not_disable_the_capture_tutorial(self):
         from orre_randomizer import xd
         from orre_randomizer.engine.analyze_game import parse_rel
         from orre_randomizer.engine.inspect_tables import rel_symbols
@@ -111,7 +123,7 @@ class NativeXDStoryFlowTests(unittest.TestCase):
         root = Path(__file__).resolve().parents[1] / "build/xd-validation"
         if not all((root / tag / "common_rel").exists() for tag in ("eu", "us", "jp")):
             self.skipTest("local extracted XD original tables are unavailable")
-        for tag in ("eu", "us", "jp"):
+        for tag, game in (("eu", "GXXP01"), ("us", "GXXE01"), ("jp", "GXXJ01")):
             original = (root / tag / "common_rel").read_bytes()
             symbols = rel_symbols(original, parse_rel(original))
             species, _, _ = xd._species(original, symbols)
@@ -119,9 +131,12 @@ class NativeXDStoryFlowTests(unittest.TestCase):
             ghost = next(index for index, row in species.items() if row[0] == 92)
             starter = {"moves": [move for level, move in species[ghost][3] if 0 < level <= 10]}
             self.assertIn(122, starter["moves"])
-            with self.subTest(region=tag), self.assertRaises(FormatError):
-                validate_tutorial_matchup(starter, 216, rules)
-            self.assertTrue(tutorial_candidates(starter, species, rules))
+            with self.subTest(region=tag):
+                dol = (root / tag / 'main.dol').read_bytes()
+                before = bytes(dol)
+                self.assertFalse(validate_tutorial_capture(dol, game)['starter_attack_required'])
+                self.assertEqual(dol, before)
+                self.assertTrue(tutorial_candidates(species, rules))
 
     def test_native_trade_and_tutorial_scripts_keep_every_byte_outside_species_or_name_operands(self):
         from orre_randomizer.xd_gifts import _duking_script, _hordel_offer_script

@@ -62,6 +62,7 @@ from .encounter_presentation import colosseum_gift_condition, colosseum_shadow_n
 from .ui_portraits import circular_portrait, unknown_portrait
 from .ui_game_folder import PlayFolderFields, show_packs
 from .play_folders import create_game_folder
+from .support_report import operation_snapshot, remember_failure, remember_verified_disc, request_key
 
 
 class Worker(QObject):
@@ -297,6 +298,11 @@ class MainWindow(QMainWindow):
         self.bind(self.import_challenge_button.setText, "Importer un défi…")
         self.share_challenge_button.triggered.connect(lambda: show_challenge(self))
         self.import_challenge_button.triggered.connect(lambda: show_challenge(self, importing=True))
+        menu.addSeparator()
+        from .ui_support_report import show_support_report
+        self.export_diagnostic_button = menu.addAction("")
+        self.bind(self.export_diagnostic_button.setText, "Exporter un diagnostic…")
+        self.export_diagnostic_button.triggered.connect(lambda: show_support_report(self))
         self.profile_menu.setMenu(menu)
         header.addWidget(self.profile_menu)
         header.addWidget(self.language_combo)
@@ -1388,6 +1394,7 @@ class MainWindow(QMainWindow):
         self.invalidate_preview()
         if self.preview_result is not None:
             return
+        operation_snapshot(self, "preview")
         try:
             if not self.source.text().strip():
                 raise UserError("Choisissez la ROM d’origine pour calculer l’aperçu.")
@@ -1397,6 +1404,7 @@ class MainWindow(QMainWindow):
             if not source.is_file() or source.suffix.lower() not in SUFFIXES:
                 raise UserError("Sélectionnez un fichier ISO, GCM ou RVZ existant.")
         except (UserError, OSError) as error:
+            remember_failure(self, error, False)
             self.preview_failed(error, False)
             return
         self.preview_cancel_event = threading.Event()
@@ -1413,6 +1421,10 @@ class MainWindow(QMainWindow):
 
     def launch_preview(self, arguments, *, owner, succeeded, failed, roulette, progress=None, task=None):
         """Both workspaces use the same responsive preview thread and lifetime."""
+        support_owner = getattr(owner, "workspace", owner)
+        support_snapshot = operation_snapshot(support_owner, "preview", arguments)
+        support_key = request_key(support_owner)
+        self._support_preview_context = support_owner, support_snapshot, support_key
         self.preview_owner = owner
         self.preview_thread = QThread(self)
         self.preview_worker = PreviewWorker(arguments, task)
@@ -1421,12 +1433,18 @@ class MainWindow(QMainWindow):
         self.preview_worker.succeeded.connect(succeeded)
         self.preview_worker.roulette.connect(roulette)
         self.preview_worker.failed.connect(failed)
+        self.preview_worker.failed.connect(self.support_preview_failed)
         if progress is not None:
             self.preview_worker.progress.connect(progress)
         self.preview_worker.finished.connect(self.preview_thread.quit)
         self.preview_worker.finished.connect(self.preview_worker.deleteLater)
         self.preview_thread.finished.connect(self.preview_finished)
         self.preview_thread.start()
+
+    @Slot(object, bool)
+    def support_preview_failed(self, error, cancelled):
+        owner, snapshot, key = self._support_preview_context
+        remember_failure(owner, error, cancelled, snapshot=snapshot, expected_key=key)
 
     @Slot(dict, object)
     def preview_succeeded(self, result, prepared):
@@ -1435,6 +1453,7 @@ class MainWindow(QMainWindow):
             return
         self.preview_result = result
         self.preview_plan = prepared
+        remember_verified_disc(self, result)
         self._preview_message = "Aperçu pour une nouvelle partie. Aucune ROM n’a été créée."
         if result.get("shiny_policy") == "always":
             self._preview_message = "Chromatiques garantis pour une nouvelle partie."
@@ -1579,7 +1598,8 @@ class MainWindow(QMainWindow):
     @Slot()
     def check_report_rom(self, *, owner=None):
         owner = owner or self
-        if owner.report_check is not None or owner.creation_report is None or self.close_after_cancel:
+        if (owner.report_check is not None or owner.creation_report is None or self.close_after_cancel
+                or getattr(self, "_support_modal_open", False)):
             return
         owner.report_check = ReportRomCheck(self, owner.creation_report, Path(owner.source.text().strip()),
                                             None, self.preview_cache)
@@ -1699,6 +1719,7 @@ class MainWindow(QMainWindow):
     def start(self):
         if self.busy or self.home.updating or self.preview_thread is not None:
             return
+        operation_snapshot(self, "creation")
         self.creation_log.reset()
         self.sync_format()
         self.invalidate_preview()
@@ -1715,6 +1736,7 @@ class MainWindow(QMainWindow):
                 source, destination, _ = validate_paths(Path(source_text), Path(dest_text), self.seed.text())
             options = validate_options(self.current_options())
         except (UserError, OSError) as error:
+            remember_failure(self, error, False)
             self.show_error(error, False)
             return
         self.busy = True
@@ -1742,6 +1764,10 @@ class MainWindow(QMainWindow):
                           task=create_game_folder if request is not None else None)
 
     def start_worker(self, arguments, on_progress, on_success, on_error, *, task=None, failure_message=None):
+        support_owner = self.xd if "xd_options" in arguments else self
+        support_snapshot = operation_snapshot(support_owner, "creation", arguments)
+        support_key = request_key(support_owner)
+        self._support_creation_context = support_owner, support_snapshot, support_key
         self.cancel_event = threading.Event()
         self.busy = True
         self.thread = QThread(self)
@@ -1751,10 +1777,16 @@ class MainWindow(QMainWindow):
         self.worker.progress.connect(on_progress)
         self.worker.succeeded.connect(on_success)
         self.worker.failed.connect(on_error)
+        self.worker.failed.connect(self.support_creation_failed)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.finished)
         self.thread.start()
+
+    @Slot(object, bool)
+    def support_creation_failed(self, error, cancelled):
+        owner, snapshot, key = self._support_creation_context
+        remember_failure(owner, error, cancelled, snapshot=snapshot, expected_key=key)
 
     @Slot(int, object)
     def on_progress(self, percent, message):
@@ -1765,6 +1797,7 @@ class MainWindow(QMainWindow):
     @Slot(dict)
     def succeeded(self, report):
         self.result = report
+        remember_verified_disc(self, report)
         if report.get("play_folder"):
             from .run_library import remember_run
             remember_run(self, Path(report["play_folder"]) / "game.json")

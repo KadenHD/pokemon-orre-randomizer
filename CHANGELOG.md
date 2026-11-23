@@ -1,5 +1,39 @@
 # Changelog
 
+## 2.1.1 - 2026-11-23
+
+- Complete XD's natural-starter fix through the full creation pipeline. Retain
+  the native Snag-only first encounter and its guaranteed Shadow-ID-1 capture;
+  do not require an attack or add a random move to Magikarp, Abra or other
+  short/conditional learnsets. Verify the original and final capture contracts
+  for Europe, USA and Japan before publishing a ROM.
+- Prevent automatic Colosseum natural-mode draws from pairing two starters
+  limited to verified Teleport, Harden or Splash effects. Keep each species
+  available with another partner, preserve explicit manual choices and record
+  their narrow safety result. Other move modes retain their draw domain.
+- Evaluate the final randomized learnsets for that safeguard when advanced
+  settings combine natural starters with randomized level-up moves.
+- Add complete native starter planning and real preview/plan consistency tests,
+  plus a bounded developer matrix that records full-image identity, serialized
+  patch digests, policy exclusions and original preservation without writing
+  hundreds of ROMs. Keep generation checks separate from Dolphin playtests.
+- Add **Profiles > Export diagnostic...** in both games. Review an allowlisted
+  local JSON report for the last failure or current settings before saving;
+  the seed is optional and sensitive-looking seeds are omitted. Exclude ROMs,
+  saves, paths, logs and raw error text. Retain all six interface languages,
+  background saving, cancellation and existing-file protection.
+- Preserve automatic-known-preview ownership when recording diagnostic context;
+  pause delayed previews and report comparisons while the export dialog is open.
+- Remove the duplicate tag test matrix and native build. Keep independent
+  exact-commit Windows/Linux main CI, extracted-source tests, frozen-app checks
+  and clean installer installation/uninstallation. Wait for main CI in parallel
+  with packaging and recheck it immediately before publication.
+- Update the user/developer guides, diagnostic screenshot and issue template.
+  New engine identifiers report migrations for older profiles; existing ROMs,
+  saves and game folders are not rewritten by an app update.
+- Retain v2.1.0 profile and creation-report imports in both games, preserving
+  every setting and seed while reporting the engine migration.
+
 ## 2.1.0 - 2026-11-23
 
 - Remove XD's starter restriction that required random starting moves for

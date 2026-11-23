@@ -19,6 +19,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
 WAIT_SECONDS = 120
+MAX_WAIT_SECONDS = 25 * 60
 POLL_SECONDS = 10
 REQUEST_SECONDS = 10
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
@@ -28,6 +29,15 @@ WORKFLOW_PATH = ".github/workflows/tests.yml"
 
 class GateError(RuntimeError):
     """A bounded, sanitized refusal to publish."""
+
+
+def parse_wait_seconds(value: str) -> int:
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{1,4}", value):
+        raise argparse.ArgumentTypeError("Expected an integer main CI wait from 1 to 1500 seconds.")
+    result = int(value)
+    if not 1 <= result <= MAX_WAIT_SECONDS:
+        raise argparse.ArgumentTypeError("Expected an integer main CI wait from 1 to 1500 seconds.")
+    return result
 
 
 def validate_inputs(repository: str, sha: str) -> tuple[str, str]:
@@ -116,19 +126,22 @@ def fetch_runs(repository: str, sha: str, token: str, *, timeout: float) -> dict
 
 
 def require_main_success(repository: str, sha: str, token: str, *,
-                         fetch=fetch_runs, clock=time.monotonic, sleep=time.sleep) -> dict:
+                         fetch=fetch_runs, clock=time.monotonic, sleep=time.sleep,
+                         wait_seconds: int = WAIT_SECONDS) -> dict:
     repository, sha = validate_inputs(repository, sha)
+    if type(wait_seconds) is not int or not 1 <= wait_seconds <= MAX_WAIT_SECONDS:
+        raise GateError(f"The main CI wait must be an integer from 1 to {MAX_WAIT_SECONDS} seconds.")
     if (not isinstance(token, str) or not token or len(token) > 4096
             or any(character.isspace() for character in token)):
         raise GateError("GH_TOKEN is required for the release CI check.")
-    deadline = clock() + WAIT_SECONDS
+    deadline = clock() + wait_seconds
     while True:
         remaining = deadline - clock()
         if remaining <= 0:
-            raise GateError("Independent main CI did not finish within 120 seconds.")
+            raise GateError(f"Independent main CI did not finish within {wait_seconds} seconds.")
         payload = fetch(repository, sha, token, timeout=min(REQUEST_SECONDS, remaining))
         if clock() >= deadline:
-            raise GateError("Independent main CI did not finish within 120 seconds.")
+            raise GateError(f"Independent main CI did not finish within {wait_seconds} seconds.")
         run = latest_main_run(payload, repository, sha)
         if run is None:
             raise GateError("No independent tests.yml push run on main exists for this exact commit.")
@@ -145,11 +158,14 @@ def main(arguments=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repository", default=os.environ.get("GITHUB_REPOSITORY"))
     parser.add_argument("--sha", required=True, help="git rev-parse HEAD from the immutable checkout")
+    parser.add_argument("--wait-seconds", type=parse_wait_seconds, default=WAIT_SECONDS,
+                        help="Bounded main CI wait (1..1500 seconds); default: 120")
     args, unknown = parser.parse_known_args(arguments)
     try:
         if unknown:
             raise GateError("Unsupported release CI check arguments.")
-        result = require_main_success(args.repository, args.sha, os.environ.get("GH_TOKEN"))
+        result = require_main_success(args.repository, args.sha, os.environ.get("GH_TOKEN"),
+                                      wait_seconds=args.wait_seconds)
     except GateError as error:
         print("Release blocked: " + str(error), file=sys.stderr)
         return 1

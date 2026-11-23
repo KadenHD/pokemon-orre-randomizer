@@ -69,17 +69,30 @@ a hosted Windows runner. The public runner uses the committed interface pack and
 
 Check that `pyproject.toml` and `orre_randomizer/__init__.py` declare the same
 version. Push the release commit to `main` and wait for both independent
-**Tests** jobs to succeed. Then push a Git tag named `v<version>` on that commit. The workflow checks
-the version and runs the reusable Linux/Windows test matrix alongside the
-Windows packaging checks. Publication requires both paths to pass, including
-the extracted source tests, packaged app diagnostics and installer smoke test.
-A failure on either operating system prevents publication. Successful runs
-publish the Windows setup EXE, portable Windows ZIP, source ZIP and
+**Tests** jobs to succeed. Then push a Git tag named `v<version>` on that commit.
+Main CI runs the native build, the full Python suite and a second full suite
+from the extracted source archive on both Windows and Linux.
+
+The tag workflow checks the version and builds the Windows package in parallel
+with an API gate for the latest independent `tests.yml` push run on `main` at
+the exact checked-out commit. It uses that successful matrix instead of starting
+another copy of it. The parallel gate can wait up to 25 minutes, within its
+30-minute job deadline, if packaging and main CI overlap. A failed or cancelled
+main run is rejected immediately; a missing main run is also rejected.
+
+The Windows job compiles and tests native runtimes once through the desktop
+builder. It retains a separate audit and full extracted-source test of the
+actual release archives, the relocated frozen-app diagnostic and a clean
+installer install/diagnostic/uninstall trial. Dependency-download caches speed
+up installation without replacing these build and validation steps. A normal
+main push and release therefore run five complete suite passes rather than nine.
+
+Publication requires both the independent-main gate and the Windows package
+job to succeed. Immediately before publishing, the API gate rechecks the latest
+main result for that exact commit, with its usual 120-second deadline. A newer
+failed or pending attempt cannot be replaced by an older success. Successful
+runs publish the Windows setup EXE, portable Windows ZIP, source ZIP and
 `SHA256SUMS.json`.
-Before publication, a separate API gate also requires the latest independent
-`tests.yml` push run on `main` to have succeeded for the checked-out commit.
-Tag workflow tests alone cannot authorize a release when that run is missing,
-pending or failed. The gate waits at most 120 seconds for a pending result.
 
 ```powershell
 $version = python -c "from orre_randomizer import __version__; print(__version__)"

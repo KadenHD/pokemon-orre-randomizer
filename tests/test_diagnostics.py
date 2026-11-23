@@ -41,6 +41,8 @@ class DiagnosticTests(unittest.TestCase):
             self.assertTrue(tools["sqlite_roundtrip"] and tools["card_restore_verified"])
             self.assertEqual(tools["challenge_roundtrips"], 2)
             self.assertEqual(len(tools["dialogs"]), 4)
+            self.assertEqual(tools["support_exports"], 2)
+            self.assertTrue(tools["support_dialog_reviewed"])
             self.assertFalse(tools["personal_runs_opened"] or tools["emulator_started"])
             self.assertEqual(report["images"], [])
             self.assertEqual(report["sounds"], [])

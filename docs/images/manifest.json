@@ -1,5 +1,5 @@
 {
-  "app_version": "2.1.0",
+  "app_version": "2.1.1",
   "language": "en",
   "description": "English application and gameplay captures. Each entry records its capture version; unchanged earlier gameplay images are retained.",
   "files": {
@@ -699,6 +699,17 @@
       "height": 560,
       "captured_in_version": "2.1.0",
       "description": "Portable seed and settings code.",
+      "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened."
+    },
+    "support-diagnostic.png": {
+      "bytes": 38349,
+      "sha256": "b440de8f1da2a018dd300fc77df372bf31bfe01f487de492d0b99b5d531943fa",
+      "kind": "application",
+      "language": "en",
+      "width": 860,
+      "height": 620,
+      "captured_in_version": "2.1.1",
+      "description": "Review an allowlisted offline diagnostic before saving it.",
       "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened."
     }
   }

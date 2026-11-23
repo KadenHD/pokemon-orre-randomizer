@@ -169,6 +169,10 @@ switching languages to see the new labels.
 **Profiles**, beside language and audio, imports/exports portable JSON settings.
 Profiles belong to one game and contain no source/output paths. Reports can also
 restore settings but may contain local paths: review them before sharing.
+For a bug report, use **Profiles > Export diagnostic...** instead. You can review
+the sanitized JSON, choose the last failed attempt or current settings, and omit
+the seed. It excludes paths, ROMs, saves and logs and sends nothing automatically.
+See [diagnostic exports](RUN_MANAGEMENT.md#export-a-diagnostic) for the exact scope.
 After report import, the app compares your selected original with the report;
 input/output paths stay as you chose them. Fixed choices, exclusions and strict
 filters take priority over best-effort cross-group family diversity. Remaining

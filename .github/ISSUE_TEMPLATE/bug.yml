@@ -14,11 +14,11 @@ body:
     id: steps
     attributes:
       label: Steps to reproduce
-      description: "Include the seed, settings or JSON profile. Describe what you expected and what happened."
+      description: "Describe what you expected and what happened. In either game's Profiles menu, Export diagnostic lets you review and save the failed attempt's settings and an optional seed. You can attach that JSON file here."
     validations:
       required: true
   - type: textarea
     id: report
     attributes:
       label: Error message or report excerpts
-      description: "Include the engine version and relevant hashes. Review the content before sharing it."
+      description: "Prefer the reviewed JSON from Profiles > Export diagnostic. It excludes ROMs, saves, local paths and raw logs. Review any additional error excerpts before sharing them."

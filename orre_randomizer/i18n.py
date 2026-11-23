@@ -16,6 +16,7 @@ from .xd_i18n import TEXTS as XD_TEXTS
 from .workspace_i18n import TEXTS as WORKSPACE_TEXTS
 from .play_i18n import TEXTS as PLAY_TEXTS
 from .run_i18n import TEXTS as RUN_TEXTS
+from .support_i18n import TEXTS as SUPPORT_TEXTS
 from .move_modes import MOVE_CHOICES, MOVE_DESCRIPTION
 
 LANGUAGES = {"fr": "Français", "en": "English", "de": "Deutsch",
@@ -69,6 +70,7 @@ for code, locale in (("en", en), ("de", de), ("es", es), ("it", it), ("ja", ja))
     locale.TEXTS.update(WORKSPACE_TEXTS[code])
     locale.TEXTS.update(PLAY_TEXTS[code])
     locale.TEXTS.update(RUN_TEXTS[code])
+    locale.TEXTS.update(SUPPORT_TEXTS[code])
     locale.OPTION_TEXTS.update(FEATURE_OPTIONS[code])
     for name in ("randomize_trainer_moves", "randomize_starter_moves", "randomize_gift_moves"):
         label = locale.OPTION_TEXTS[name][0]

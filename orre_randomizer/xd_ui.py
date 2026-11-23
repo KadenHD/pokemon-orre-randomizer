@@ -676,8 +676,11 @@ class XDWorkspace(QWidget):
         self.refresh_preview_identity()
         if self.preview_result is not None:
             return
+        from .support_report import operation_snapshot, remember_failure
+        operation_snapshot(self, "preview")
         source = self.source.text().strip()
         if not source:
+            remember_failure(self, UserError("Choisissez la ROM d’origine pour calculer l’aperçu."), False)
             self.preview_failed(UserError("Choisissez la ROM d’origine pour calculer l’aperçu."), False)
             return
         from .preview import preview_xd
@@ -686,6 +689,7 @@ class XDWorkspace(QWidget):
             validate_seed(self.seed.text())
             validate_options(self.current_options())
         except UserError as error:
+            remember_failure(self, error, False)
             self.preview_failed(error, False)
             return
         self.preview_key = self.preview_configuration()
@@ -729,6 +733,8 @@ class XDWorkspace(QWidget):
             return
         self.preview_result = result
         self.preview_plan = prepared
+        from .support_report import remember_verified_disc
+        remember_verified_disc(self, result)
         self.preview_message = "Aperçu pour une nouvelle partie. Aucune ROM n’a été créée."
         focus_result = self.preview_cancel.hasFocus()
         self.render_preview()
@@ -1078,6 +1084,8 @@ class XDWorkspace(QWidget):
         if self.window.preview_thread is not None:
             self.set_status("Un calcul est déjà en cours. Réessayez dans un instant.")
             return
+        from .support_report import operation_snapshot, remember_failure
+        operation_snapshot(self, "creation")
         self.creation_log.reset()
         source, destination = (field.text().strip() for field in (self.source, self.destination))
         try:
@@ -1092,6 +1100,7 @@ class XDWorkspace(QWidget):
                 source, destination, _ = validate_paths(Path(source), Path(destination), self.seed.text())
             options = validate_options(self.current_options())
         except (UserError, OSError) as error:
+            remember_failure(self, error, False)
             self.failed(error, False)
             return
         self.refresh_preview_identity()
@@ -1131,6 +1140,8 @@ class XDWorkspace(QWidget):
     @Slot(dict)
     def succeeded(self, report):
         self.result = report
+        from .support_report import remember_verified_disc
+        remember_verified_disc(self, report)
         if report.get("play_folder"):
             from .run_library import remember_run
             remember_run(self.window, Path(report["play_folder"]) / "game.json")

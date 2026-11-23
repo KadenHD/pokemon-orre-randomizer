@@ -175,13 +175,23 @@ memory cards before playing, with up to five copies and verified restoration.
 **Storage** shows where the space goes and offers reviewed cleanup of old,
 rebuildable texture views. **Challenge codes** share a seed and all randomizer
 rules without local paths, with engine compatibility checked before import.
+For a bug report, **Profiles > Export diagnostic...** lets you review a local
+JSON file with the failed attempt's settings and an optional seed. ROMs, saves,
+paths and raw logs stay out of the export; nothing is uploaded automatically.
 See the [run-management guide](docs/RUN_MANAGEMENT.md).
+
+![Review a local diagnostic before sharing it](docs/images/support-diagnostic.png)
 
 | My games | Save backups |
 | --- | --- |
 | ![Game library with demonstration runs](docs/images/run-library.png) | ![Memory-card backup history](docs/images/save-backups.png) |
 
 ## Choose what changes
+
+Natural starter moves stay natural, including empty slots and passive species.
+XD's first Snag-only encounter needs no attack. Colosseum avoids automatically
+pairing two Teleport/Harden/Splash-only starters; explicit manual picks remain
+available. These checks preserve moves rather than adding an attack.
 
 | | Pokémon + moves | Pokémon only |
 | --- | --- | --- |

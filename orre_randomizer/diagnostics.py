@@ -131,6 +131,8 @@ def check_run_management(parent: Path) -> dict:
     from .save_backups import backup_cards, restore_backup, list_backups
     from .storage import scan_storage
     from .ui_run_tools import LibraryDialog, BackupDialog, StorageDialog, ChallengeDialog
+    from .support_report import operation_snapshot, remember_failure, save_report
+    from .ui_support_report import SupportReportDialog
     from .xd import XDOptions
 
     app = QApplication.instance() or QApplication([])
@@ -202,11 +204,33 @@ def check_run_management(parent: Path) -> dict:
                     finally:
                         dialog.close(); dialog.deleteLater()
                         QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+                for game in ("colosseum", "xd"):
+                    (window.show_xd if game == "xd" else window.show_colosseum)()
+                    owner = window.xd if game == "xd" else window
+                    owner.seed.setText("offline-support-check")
+                    operation_snapshot(owner, "creation")
+                    remember_failure(owner, OSError("private diagnostic sentinel, never exported"), False)
+                    dialog = SupportReportDialog(window)
+                    try:
+                        dialog.show(); app.processEvents()
+                        reviewed = json.loads(dialog.preview.toPlainText())
+                        destination = root / (game + "-support.json")
+                        save_report(destination, dialog.document, include_seed=dialog.include_seed.isChecked())
+                        assert json.loads(destination.read_text("utf-8")) == reviewed
+                        assert reviewed["game"] == game and reviewed["seed"] == "offline-support-check"
+                        assert reviewed["operation"]["error"] == {"kind": "io", "code": "file_access_failed"}
+                        assert "private diagnostic sentinel" not in destination.read_text("utf-8")
+                        assert dialog.layout().minimumSize().width() <= dialog.width()
+                        assert dialog.layout().minimumSize().height() <= dialog.height()
+                    finally:
+                        dialog.close(); dialog.deleteLater()
+                        QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
             finally:
                 window.close(); window.deleteLater()
                 QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
     return {"games": 2, "sqlite_roundtrip": True, "card_restore_verified": True,
             "challenge_roundtrips": 2, "storage_read_only": True, "dialogs": states,
+            "support_exports": 2, "support_dialog_reviewed": True,
             "personal_runs_opened": False, "emulator_started": False}
 
 

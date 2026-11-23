@@ -80,7 +80,8 @@ class KnownPreview(QObject):
 
     def active(self):
         panel = self.workspace if self.xd else self.window.colosseum
-        return (not self.window.close_after_cancel and self.window.isVisible()
+        return (not self.window.close_after_cancel and not getattr(self.window, "_support_modal_open", False)
+                and self.window.isVisible()
                 and self.window.game_views.currentWidget() is panel
                 and self.workspace.step == 1 and self.workspace.workspace_tabs.currentIndex() == 1)
 

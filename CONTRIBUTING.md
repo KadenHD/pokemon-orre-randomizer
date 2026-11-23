@@ -28,12 +28,14 @@ The older scripts delegate to the same engine. The CLI and GUI both call
 
 The test runner isolates each module in a fresh process to keep Qt state and
 worker threads from leaking between modules. It reports failures and timeouts,
-with a 90-second module limit and a nine-minute suite limit. GUI tests run
+with a 120-second module limit and a 12-minute suite limit. GUI tests run
 offscreen with sound and music disabled.
 
 Format and safety tests run without a ROM. Integration tests that need a dump or
 a regional image declare the prerequisite and skip when it is unavailable.
 Keep ROMs, raw extracted game data, save files and emulators out of the repository.
+The [starter pipeline matrix](docs/STARTER_PIPELINE_VALIDATION.md) runs complete
+patch plans against explicitly supplied local originals without writing ISO copies.
 The published interface pack is an explicit, hash-verified media allowlist; it is
 not permission to add arbitrary game dumps. Documentation screenshots must use
 clean demo state without personal paths or saves. Media rights are separate from MIT. Include the app version, settings, and relevant hashes in bug

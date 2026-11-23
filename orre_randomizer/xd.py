@@ -45,10 +45,10 @@ from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITE
                        TRAINER_REMARK_REWRITES, patch_eagun_actor,
                        TUTORIAL_SHADOW, hordel_candidates,
                        patch_starter_dialogue, patch_tutorial, trainer_dialogue_edits, tutorial_candidates,
-                       validate_tutorial_matchup)
+                       validate_tutorial_capture)
 from .xd_unown_form import patch_xd_unown_form
 
-VERSION = "xd-natural-encounter-moves-v17"
+VERSION = "xd-native-capture-tutorial-v18"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -695,18 +695,18 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         )
     reserved.update(row["family"] for row in summary["gifts"])
     if options.randomize_tutorial_shadow:
-        candidates = tutorial_candidates(summary["starter"], eligible, move_randomizer)
+        candidates = tutorial_candidates(eligible, move_randomizer)
         protected_families = {families[index] for sid, index in fixed_shadows.items() if sid != TUTORIAL_SHADOW}
         candidates = [index for index in candidates if families[index] not in protected_families]
         if not candidates:
-            raise FormatError("Aucun Pokémon adapté au tutoriel. Élargissez les filtres ou choisissez un starter capable d’attaquer.")
+            raise FormatError("Aucun Pokémon adapté au tutoriel. Élargissez les filtres de Pokémon.")
         if options.diverse_story_families:
             candidates = [index for index in candidates if families[index] not in reserved] or candidates
         chosen = _pick(seed, "tutorial-shadow", species, TEDDIURSA, candidates=candidates)
         fixed_shadows[TUTORIAL_SHADOW] = chosen
         reserved.add(families[chosen])
         gift_updates.update(patch_tutorial(region.game_id, chosen, species[chosen][0], name_banks, read_archive))
-    validate_tutorial_matchup(summary["starter"], fixed_shadows[TUTORIAL_SHADOW], move_randomizer)
+    summary["capture_tutorial"] = validate_tutorial_capture(original_dol, region.game_id)
     # The western archive contains both language variants. Keep them in sync
     # even when the current game build prefers one suffix.
     suffixes = ("", "_EU") if region.game_id != "GXXJ01" else ("",)
@@ -947,6 +947,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             fst_offset = allocate(max(fst_size, fst_max))
             patches.append((0x424, struct.pack(">I", fst_offset)))
             relocated_fst = True
+    # Later runtime patches must retain the same native capture guarantee.
+    validate_tutorial_capture(dol, region.game_id)
     if dol != original_dol:
         patches.append((dol_offset, dol))
 

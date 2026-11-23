@@ -4,6 +4,82 @@ This index records the v1.0.0 foundation and subsequent validation follow-ups.
 Dated reports in `docs/` describe their named versions and scenarios; they are
 historical evidence rather than the current feature specification.
 
+## v2.1.1 complete starter creation and private diagnostics (2026-11-23)
+
+The expanded read-only matrix completed 885 attempts: 875 valid production
+patch plans and ten checks of the existing Shedinja exclusion, with no
+unexpected failure. Each game covered every one of its 385 admitted starter
+species with natural moves. Colosseum checked both constructor slots. Actual
+default presets, two seeds, automatic pairs and one-manual-partner cases were
+checked separately. Full-image hashes of both original European discs remained
+unchanged; this matrix wrote no output ROMs. See
+[the exact matrix scopes and limits](STARTER_PIPELINE_VALIDATION.md).
+
+XD's first capture is natively Snag-only and guaranteed for Shadow ID 1. Native
+instruction checks cover four windows on Europe, USA and Japan layouts, both
+before and after patching. A small instruction interpreter independently checks
+the forced-capture branch. No attack, damaging-move requirement or extra
+Master Ball patch is added for short starter learnsets.
+
+A real Colosseum Pokémon-only seed previously drew Abra with Teleport and
+Silcoon with Harden. Automatic natural-mode pairs now exclude combinations
+limited to those verified harmless effects or Splash. Both species remain
+eligible with another partner; two explicit manual choices stay unchanged.
+This narrow safeguard does not promise every battle can be won. A further
+advanced-case regression combines natural starters, randomized level-up moves
+and story-family diversity: it checks final learnsets rather than native ones.
+The complete production plan passes with an Abra/Silcoon-only candidate pool
+after their learns are randomized, with the original disc hash unchanged.
+
+The initial isolated source pass completed 1,653 tests across 175 modules in
+933.063 seconds, with no failures and three Windows symbolic-link skips.
+Follow-up tests cover the final-learnset projection and migration of genuine
+v2.1.0 exports. Four historical checksum-verified profiles retain every setting and exact
+seed; two historical creation reports retain their verified disc identity.
+Their engine migration is reported; old challenge codes still require their
+original engine. Existing ROMs, saves and caught Pokémon are not rewritten.
+
+The diagnostic export is local and allowlisted. Tests cover typed option
+validation, optional seed omission, sensitive-looking seeds, error
+normalization, cancellation, exclusive publication and file-boundary
+sanitization. Actual Qt checks cover both games, all six languages, pending
+preview ownership and delayed-work suspension while the review dialog is open.
+No personal paths, raw errors, logs, ROM or save bytes are exported.
+
+A muted European XD trial used a prepared checkpoint on a copied card before
+the native Snag Machine handoff. The game supplied the Snag Machine and five
+ordinary Poké Balls normally. Level-10 Magikarp caught the first Shadow Pokémon,
+a level-11 Phanpy with full HP, without selecting an attack; Naps was defeated
+and the original story continued. The party then contained both Pokémon at
+full HP; Magikarp's summary still showed Splash and three empty move slots.
+This is a targeted capture-scene check, not
+a new complete playthrough. The loaded starter-constructor windows in both
+generated trial discs match the final source planners; game-folder bridges
+separately relocate system data. The original opening movies are retained.
+
+The muted European Colosseum trial started a fresh game on a copied card with
+the formerly passive-pair seed. After the original opening, the native party
+contained Sandslash at level 26 and Krabby at level 25. Their summaries showed
+Defense Curl / Sand Attack / Poison Sting / Slash and Leer / Vice Grip /
+Harden / Mud Shot respectively, matching the production plan. This is a native
+startup and summary check; no full campaign or all-region Dolphin claim is made.
+
+The release pipeline retains independent Windows/Linux main tests for the exact
+commit, extracted-source tests, frozen-module/resource audits, the full UI
+diagnostic matrix and clean installer installation/uninstallation. Packaging
+waits for main CI in parallel and rechecks it immediately before publishing;
+only duplicate tag-suite and native-build passes have been removed.
+
+The fresh public source archive passed 1,627 tests across all 176 isolated
+modules in 568.766 seconds. Its 130 declared skips reflect missing local data
+or platform prerequisites in the extracted archive. The frozen Windows app
+then passed its isolated diagnostic in 42.4 seconds, rendering all 474 UI
+states and saving the prescribed 210 captures. Both diagnostic exports were
+reviewed and saved. The archive audit verified 207 bundled application modules,
+51 required runtime modules, resource integrity and absence of private source
+paths. The separate Windows installer compiled without modifying the personal
+installation; installation/uninstallation remains a clean-runner release gate.
+
 ## v2.1.0 run tools and encounter move policies (2026-11-23)
 
 Tests use private preferences and temporary synthetic game folders/cards.

@@ -25,6 +25,7 @@ REQUIRED_RUNTIME_MODULES = frozenset((
     "sqlite3", "sqlite3.dbapi2", "orre_randomizer.run_library", "orre_randomizer.save_backups",
     "orre_randomizer.storage", "orre_randomizer.challenges", "orre_randomizer.run_safety",
     "orre_randomizer.ui_run_tools", "orre_randomizer.run_i18n", "orre_randomizer.move_modes",
+    "orre_randomizer.support_report", "orre_randomizer.ui_support_report", "orre_randomizer.support_i18n",
     "orre_randomizer.play_folders", "orre_randomizer.ui_play", "orre_randomizer.play_music",
     "orre_randomizer.play_display", "orre_randomizer.play_speed",
     "orre_randomizer.launcher_updates", "orre_randomizer.ui_launcher_update",

@@ -5,7 +5,7 @@ import re
 import struct
 
 from .engine.analyze_game import FormatError, check_range, u32
-from .engine.gameplay_rules import OHKO, SELF_DESTRUCT, damaging
+from .engine.gameplay_rules import OHKO
 from .engine.inspect_tables import u16
 from .engine.plusle_actor import companion_scale, load_actor_model, patch_actor
 from .engine.species_rules import LEGENDARY_NATIONAL, WONDER_GUARD
@@ -362,44 +362,45 @@ _REMARK_REQUIRED_MOVES = {
     **dict.fromkeys((0x5E60, 0x5E61), ({241},)),  # Sunny Day
 }
 _SANDSTORM_COMBO_REMARK = 0x5DF7  # Castform's Forecast and the team's Sand Veil abilities
-_IMMUNE_TYPES = {0: 7, 1: 7, 3: 8, 4: 2, 7: 0, 13: 4, 14: 17}
-_ABSORB_ABILITIES = {4: 26, 10: 18, 11: 11, 13: 10}
-_CONDITIONAL_ATTACKS = OHKO | SELF_DESTRUCT | {68, 117, 138, 173, 243, 255, 264}
+# Original rev-0 DOL windows, in order: Shadow ID 1's forced four shakes,
+# encounter 224's Snag-only predicate, its fight/run restriction and Ball pocket.
+# No attack, HP reduction or RNG roll is needed in this native capture scene.
+TUTORIAL_CAPTURE_OFFSETS = {
+    "GXXP01": (0x218204, 0x1F0BA8, 0x1B388, 0x237354),
+    "GXXE01": (0x2163C0, 0x1EEEE8, 0x1B6D8, 0x23545C),
+    "GXXJ01": (0x210D68, 0x1E9BAC, 0x1B3D0, 0x22FD84),
+}
+TUTORIAL_CAPTURE_WINDOWS = tuple(bytes.fromhex(value) for value in (
+    "5700043e28000001418200105720043e280000014082000c3b80000448000158",
+    "5460043e200000e07c0000345403de3e",
+    "5460063e280000004182004c2c1f00004182000c2c1f00034082003c",
+    "5460063f418200187f65db783881001c38600006",
+))
 
 
-def _tutorial_attacks(starter, move_randomizer):
-    return [move_randomizer.catalog[move] for move in starter["moves"]
-            if move in move_randomizer.catalog and move not in _CONDITIONAL_ATTACKS
-            and damaging(move_randomizer.catalog[move])]
+def validate_tutorial_capture(original_dol, game_id):
+    """Fail closed unless the original dedicated capture scene is preserved."""
+    if game_id not in TUTORIAL_CAPTURE_OFFSETS:
+        raise FormatError("unsupported XD capture tutorial region")
+    for offset, expected in zip(TUTORIAL_CAPTURE_OFFSETS[game_id], TUTORIAL_CAPTURE_WINDOWS, strict=True):
+        check_range(original_dol, offset, len(expected), "XD native capture tutorial")
+        if original_dol[offset:offset + len(expected)] != expected:
+            raise FormatError("unexpected XD native capture tutorial instructions")
+    return {"battle_id": 224, "shadow_id": TUTORIAL_SHADOW,
+            "native_snag_only": True, "native_guaranteed_capture": True,
+            "starter_attack_required": False}
 
 
-def _tutorial_can_hit(attacks, opponent):
-    if WONDER_GUARD in opponent["abilities"]:
-        return False
-    return any(_IMMUNE_TYPES.get(move["type"]) not in opponent["types"]
-               and _ABSORB_ABILITIES.get(move["type"]) not in opponent["abilities"]
-               and (move["index"] not in (253, 304) or 43 not in opponent["abilities"])
-               for move in attacks)
-
-
-def validate_tutorial_matchup(starter, opponent, move_randomizer):
-    """Check the fixed tutorial too when only the starter or its traits change."""
-    if not _tutorial_can_hit(_tutorial_attacks(starter, move_randomizer), move_randomizer.species[opponent]):
-        raise FormatError("Aucun Pokémon adapté au tutoriel. Élargissez les filtres ou choisissez un starter capable d’attaquer.")
-
-
-def tutorial_candidates(starter, eligible, move_randomizer):
-    """Exclude opponents that the starter's regular attacks cannot hit."""
+def tutorial_candidates(eligible, move_randomizer):
+    """Keep the existing encounter pool without imposing starter attacks."""
     catalog = move_randomizer.species
-    attacks = _tutorial_attacks(starter, move_randomizer)
     result = []
     for index in sorted(eligible):
         row = catalog[index]
         if (index == TEDDIURSA or row["national_dex"] in LEGENDARY_NATIONAL
                 or row["total"] > 410 or WONDER_GUARD in row["abilities"]):
             continue
-        if _tutorial_can_hit(attacks, row):
-            result.append(index)
+        result.append(index)
     return result
 
 

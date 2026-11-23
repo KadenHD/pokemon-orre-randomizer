@@ -307,10 +307,13 @@ def apply_story_rules(original_rel, base_rel, original_dol, base_dol, seed, opti
                       for row in gifts if row["key"] in gift_hard}
     gift_edges = ordered_family_edges(seed, gift_hard, gift_preferred, families)
 
-    # The duo evaluates final types and BST. These fields can be projected
-    # independently of the encounter, move and item edits in the REL pass.
+    # Project every species field used by the duo independently of encounters.
+    # Natural-pair safety must inspect the same final learns as the constructors,
+    # including advanced combinations with randomized level-up moves.
     starter_rel = base_rel
-    if options.randomize_types or options.randomize_stats:
+    if options.randomize_starter_moves == "natural" and options.randomize_learnsets:
+        starter_rel = apply_species_gameplay(original_rel, base_rel, seed, options, tables)[0]
+    elif options.randomize_types or options.randomize_stats:
         starter_rel = apply_species_rules(original_rel, base_rel, seed, options, tables)[0]
     starter_result, gift_assignments = None, None
     reserved = set()

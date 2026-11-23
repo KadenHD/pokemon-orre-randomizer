@@ -18,10 +18,15 @@ from .randomize_trainers import layout
 from .species_rules import LEGENDARY_NATIONAL, SHEDINJA_NATIONAL, species_catalog
 from .pool_filters import species_excluded
 from .dol_regions import special_targets
+from ..move_modes import natural_moves
 
-VERSION = "starter-pair-stages-v2"
-# Keep the original draw domain so migrated profiles retain their exact picks.
+VERSION = "starter-pair-natural-safety-v3"
+# Keep the historical domain outside automatic natural-move pair selection.
 DRAW_VERSION = "starter-pair-sha256-v1"
+NATURAL_DRAW_VERSION = "starter-pair-natural-safe-sha256-v1"
+# Certify only these native, harmless effects. Raw power 0/1 is insufficient:
+# Transform, Sketch, Counter and indirect/variable damage must remain eligible.
+HARMLESS_NATURAL_EFFECTS = {100: 153, 106: 11, 150: 85}  # Teleport, Harden, Splash
 STARTERS = tuple(target for target in SPECIALS if "xp" in target)
 RULE_DEFAULTS = {"starter_balance_pair": False, "starter_distinct_families": False,
                  "starter_complementary_types": False, "starter_three_stage_families": False}
@@ -52,14 +57,15 @@ def starter_rules_active(options) -> bool:
     randomized = any(_flag(options, "starter_" + target["key"]) for target in STARTERS)
     manual = any(_flag(options, "starter_" + target["key"]) and
                  getattr(options, "starter_" + target["key"] + "_species", 0) for target in STARTERS)
-    return randomized and (_active(rules) or manual)
+    return randomized and (_active(rules) or manual or
+                           getattr(options, "randomize_starter_moves", False) == "natural")
 
 
-def _sample(seed: str, count: int) -> int:
+def _sample(seed: str, count: int, *, domain: str = DRAW_VERSION) -> int:
     raw = seed.encode("utf-8")
     if not 1 <= len(raw) <= 256 or count < 1:
         raise ValueError("invalid starter seed or candidate count")
-    prefix = DRAW_VERSION.encode("ascii") + b"\0" + len(raw).to_bytes(2, "big") + raw + b"\0pair\0"
+    prefix = domain.encode("ascii") + b"\0" + len(raw).to_bytes(2, "big") + raw + b"\0pair\0"
     limit = (1 << 256) // count * count
     counter = 0
     while True:
@@ -124,9 +130,24 @@ def _candidates(target: dict, original_catalog: dict, catalog: dict,
     return sorted(choices)
 
 
+def _harmless_natural_pools(catalog, pools, targets, native_moves):
+    """Prove a narrow passive set from final learns and original move effects."""
+    if native_moves is None:
+        raise FormatError("missing native move catalogue for starter-pair safety")
+    for index, effect in HARMLESS_NATURAL_EFFECTS.items():
+        row = native_moves.get(index, {})
+        if row.get("power") != 0 or row.get("effect") != effect:
+            raise FormatError("unknown native harmless-move effect for starter-pair safety")
+    harmless = set(HARMLESS_NATURAL_EFFECTS) | {0}
+    return tuple({index for index in pool if set(natural_moves(
+        catalog[index]["learnset"], target["level"], [0] * 4, native_moves)) <= harmless}
+        for pool, target in zip(pools, targets, strict=True))
+
+
 def apply_starter_tables(original_dol: bytes, current_dol: bytes, original_rel: bytes,
                          rel: bytes, seed: str, options, tables: dict,
-                         *, targets: tuple[dict, ...] = STARTERS, select_pair=None) -> tuple[bytes, dict]:
+                         *, targets: tuple[dict, ...] = STARTERS, select_pair=None,
+                         native_moves=None) -> tuple[bytes, dict]:
     """Core for a production-validated table layout, also usable by fixtures.
 
     Uniformly sample the complete set of valid ordered pairs. Never retry a
@@ -140,9 +161,10 @@ def apply_starter_tables(original_dol: bytes, current_dol: bytes, original_rel: 
               "levels_preserved": True, "disabled_starters_preserved": True,
               "only_species_and_exp_immediates_changed": True}
     manual = tuple(getattr(options, "starter_" + target["key"] + "_species", 0) for target in targets)
+    natural = getattr(options, "randomize_starter_moves", False) == "natural"
     if any(type(value) is not int or not 0 <= value <= 386 for value in manual):
         raise ValueError("invalid manual starter national dex")
-    if not any(selected) or not (select_pair is not None or _active(rules)
+    if not any(selected) or not (select_pair is not None or _active(rules) or natural
                                 or any(value and enabled for value, enabled in zip(manual, selected))):
         return current_dol, report
 
@@ -193,10 +215,20 @@ def apply_starter_tables(original_dol: bytes, current_dol: bytes, original_rel: 
             or rules["starter_balance_pair"] and abs(a["total"] - b["total"]) > max(50, min(a["total"], b["total"]) // 5))
 
     pairings = {first: [second for second in pools[1] if compatible(first, second)] for first in pools[0]}
+    harmless_pools = _harmless_natural_pools(catalog, pools, targets, native_moves) if natural else (set(), set())
+    protect_pair = natural and any(enabled and not forced for enabled, forced in zip(selected, manual, strict=True))
+    prior_count = sum(map(len, pairings.values()))
+    if protect_pair:
+        pairings = {first: [second for second in seconds if not (
+            first in harmless_pools[0] and second in harmless_pools[1])]
+            for first, seconds in pairings.items()}
     count = sum(map(len, pairings.values()))
     if not count:
+        if protect_pair and prior_count:
+            raise FormatError("Les deux starters n’auraient que des capacités sans effet offensif. Élargissez les Pokémon autorisés ou choisissez un partenaire différent.")
         raise FormatError("Aucun couple de starters ne respecte toutes les règles. Désactivez une contrainte de types, de puissance ou de famille, ou élargissez les espèces autorisées.")
-    ordinal = _sample(seed, count)
+    draw_domain = NATURAL_DRAW_VERSION if protect_pair else DRAW_VERSION
+    ordinal = _sample(seed, count, domain=draw_domain)
     chosen = None
     for first, seconds in pairings.items():
         if ordinal < len(seconds):
@@ -206,6 +238,8 @@ def apply_starter_tables(original_dol: bytes, current_dol: bytes, original_rel: 
     assert chosen is not None
     if select_pair is not None:
         chosen = select_pair(chosen, pairings)
+    if protect_pair and chosen[0] in harmless_pools[0] and chosen[1] in harmless_pools[1]:
+        raise FormatError("story-family allocation returned an unsafe passive starter pair")
 
     output, allowed = bytearray(current_dol), set()
     pair_report = []
@@ -242,9 +276,18 @@ def apply_starter_tables(original_dol: bytes, current_dol: bytes, original_rel: 
                   power_window_source=("original base ancestor BST; final candidate BST"
                     if rules["starter_three_stage_families"] and rules["starter_stage"] == "base" else
                     "original encounter BST; final candidate BST"),
-                  draw_domain=DRAW_VERSION,
+                  draw_domain=draw_domain,
                   draw=("seeded valid pair selected with the story family allocation" if select_pair is not None
                         else "uniform ordered valid pairs; no constraint relaxation"))
+    if natural:
+        report["natural_pair_safety"] = {
+            "automatic_draw_protected": bool(protect_pair),
+            "excluded_pair_count": prior_count - count,
+            "known_harmless_moves": sorted(HARMLESS_NATURAL_EFFECTS),
+            "both_known_harmless": chosen[0] in harmless_pools[0] and chosen[1] in harmless_pools[1],
+            "manual_choices_preserved": True,
+            "scope": "Reject only two proven harmless natural movesets in an automatic draw; not a battle-win guarantee",
+        }
     return result, report
 
 
@@ -253,5 +296,11 @@ def apply_starter_rules(original_dol: bytes, current_dol: bytes, original_rel: b
     """Validate exact regional artifacts before editing starter immediates."""
     targets = tuple(target for target in special_targets(original_dol) if "xp" in target)
     tables, _ = layout(original_rel)
+    native_moves = None
+    if getattr(options, "randomize_starter_moves", False) == "natural":
+        # Lazy import avoids a module-level cycle; gameplay_rules owns the
+        # bounded, regional move-table reader used for actual natural moves.
+        from .gameplay_rules import expanded_layout, move_catalog
+        native_moves = move_catalog(original_rel, expanded_layout(original_rel))
     return apply_starter_tables(original_dol, current_dol, original_rel, rel, seed, options, tables,
-                                targets=targets, select_pair=select_pair)
+                                targets=targets, select_pair=select_pair, native_moves=native_moves)
