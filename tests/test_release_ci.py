@@ -104,38 +104,40 @@ class ReleaseGateTests(unittest.TestCase):
 
         def fetch(*args, timeout):
             calls.append(timeout)
-            return listing(run(status="in_progress", conclusion=None)) if clock.now < 170 else listing(run())
+            # A healthy Actions run took 25m51s. The release gate must wait
+            # beyond its former 25-minute deadline without lengthening requests.
+            return listing(run(status="in_progress", conclusion=None)) if clock.now < 1551 else listing(run())
 
         result = gate.require_main_success(REPOSITORY, SHA, "fixture-token", fetch=fetch,
-            clock=clock.read, sleep=clock.sleep, wait_seconds=1500)
+            clock=clock.read, sleep=clock.sleep, wait_seconds=2100)
         self.assertEqual(result["sha"], SHA)
-        self.assertEqual(clock.now, 170)
+        self.assertEqual(clock.now, 1560)
         self.assertTrue(all(0 < timeout <= 10 for timeout in calls))
 
     def test_long_gate_remains_bounded_and_a_main_failure_stops_immediately(self):
         clock = Clock()
-        with self.assertRaisesRegex(gate.GateError, "within 1500"):
+        with self.assertRaisesRegex(gate.GateError, "within 2100"):
             gate.require_main_success(REPOSITORY, SHA, "fixture-token",
                 fetch=Mock(return_value=listing(run(status="queued", conclusion=None))),
-                clock=clock.read, sleep=clock.sleep, wait_seconds=1500)
-        self.assertEqual(clock.now, 1500)
+                clock=clock.read, sleep=clock.sleep, wait_seconds=2100)
+        self.assertEqual(clock.now, 2100)
         for conclusion in ("failure", "cancelled", "timed_out"):
             clock = Clock()
             with self.subTest(conclusion=conclusion), self.assertRaisesRegex(gate.GateError, "did not succeed"):
                 gate.require_main_success(REPOSITORY, SHA, "fixture-token",
                     fetch=Mock(return_value=listing(run(conclusion=conclusion))),
-                    clock=clock.read, sleep=clock.sleep, wait_seconds=1500)
+                    clock=clock.read, sleep=clock.sleep, wait_seconds=2100)
             self.assertEqual(clock.sleeps, [])
 
     def test_invalid_wait_budgets_are_refused_without_network_or_token_exposure(self):
         secret = "fixture-secret-never-log-this"
-        for budget in (0, -1, 1501, True, 1.5, None, secret):
+        for budget in (0, -1, 2101, True, 1.5, None, secret):
             network = Mock()
             with self.subTest(budget=budget), self.assertRaises(gate.GateError) as caught:
                 gate.require_main_success(REPOSITORY, SHA, secret, fetch=network, wait_seconds=budget)
             network.assert_not_called()
             self.assertNotIn(secret, str(caught.exception))
-        for budget in ("0", "1501", "-1", "1.5", secret):
+        for budget in ("0", "2101", "-1", "1.5", secret):
             output = io.StringIO()
             with self.subTest(cli=budget), redirect_stderr(output), \
                     patch.object(gate, "fetch_runs") as network, self.assertRaises(SystemExit):
@@ -144,7 +146,7 @@ class ReleaseGateTests(unittest.TestCase):
             self.assertNotIn(secret, output.getvalue())
 
     def test_cli_passes_explicit_parallel_budget_and_default_recheck_is_120(self):
-        for extra, expected in (([], 120), (["--wait-seconds", "1500"], 1500)):
+        for extra, expected in (([], 120), (["--wait-seconds", "2100"], 2100)):
             with self.subTest(extra=extra), patch.dict(os.environ, {"GH_TOKEN": "fixture-token"}), \
                     patch.object(gate, "require_main_success", return_value={"run_id": 1, "run_attempt": 1, "sha": SHA}) as check:
                 self.assertEqual(gate.main(["--repository", REPOSITORY, "--sha", SHA, *extra]), 0)
@@ -239,9 +241,9 @@ class ReleaseWorkflowContractTests(unittest.TestCase):
         publish = self.job("publish")
         self.assertIn("needs: [main-ci, windows]", publish)
         self.assertIn("github.event_name == 'push' && github.ref_type == 'tag'", main)
-        self.assertIn("timeout-minutes: 30", main)
+        self.assertIn("timeout-minutes: 40", main)
         self.assertIn("actions: read", main)
-        self.assertIn('--sha "$release_sha" --wait-seconds 1500', main)
+        self.assertIn('--sha "$release_sha" --wait-seconds 2100', main)
         self.assertIn('release_sha="$(git rev-parse HEAD)"', main)
         self.assertIn('python3 scripts/check_release_ci.py --sha "$release_sha"\n', publish)
         self.assertNotIn("--wait-seconds", publish)

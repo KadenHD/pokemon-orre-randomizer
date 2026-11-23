@@ -76,9 +76,11 @@ from the extracted source archive on both Windows and Linux.
 The tag workflow checks the version and builds the Windows package in parallel
 with an API gate for the latest independent `tests.yml` push run on `main` at
 the exact checked-out commit. It uses that successful matrix instead of starting
-another copy of it. The parallel gate can wait up to 25 minutes, within its
-30-minute job deadline, if packaging and main CI overlap. A failed or cancelled
-main run is rejected immediately; a missing main run is also rejected.
+another copy of it. The parallel gate can wait up to 35 minutes, within its
+40-minute job deadline, if packaging and main CI overlap. This covers the main
+test jobs' 30-minute runtime limit with time for setup and runner scheduling.
+A failed or cancelled main run is rejected immediately; a missing main run is
+also rejected.
 
 The Windows job compiles and tests native runtimes once through the desktop
 builder. It retains a separate audit and full extracted-source test of the

@@ -19,7 +19,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
 WAIT_SECONDS = 120
-MAX_WAIT_SECONDS = 25 * 60
+MAX_WAIT_SECONDS = 35 * 60
 POLL_SECONDS = 10
 REQUEST_SECONDS = 10
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
@@ -33,10 +33,10 @@ class GateError(RuntimeError):
 
 def parse_wait_seconds(value: str) -> int:
     if not isinstance(value, str) or not re.fullmatch(r"[0-9]{1,4}", value):
-        raise argparse.ArgumentTypeError("Expected an integer main CI wait from 1 to 1500 seconds.")
+        raise argparse.ArgumentTypeError(f"Expected an integer main CI wait from 1 to {MAX_WAIT_SECONDS} seconds.")
     result = int(value)
     if not 1 <= result <= MAX_WAIT_SECONDS:
-        raise argparse.ArgumentTypeError("Expected an integer main CI wait from 1 to 1500 seconds.")
+        raise argparse.ArgumentTypeError(f"Expected an integer main CI wait from 1 to {MAX_WAIT_SECONDS} seconds.")
     return result
 
 
@@ -159,7 +159,7 @@ def main(arguments=None) -> int:
     parser.add_argument("--repository", default=os.environ.get("GITHUB_REPOSITORY"))
     parser.add_argument("--sha", required=True, help="git rev-parse HEAD from the immutable checkout")
     parser.add_argument("--wait-seconds", type=parse_wait_seconds, default=WAIT_SECONDS,
-                        help="Bounded main CI wait (1..1500 seconds); default: 120")
+                        help=f"Bounded main CI wait (1..{MAX_WAIT_SECONDS} seconds); default: 120")
     args, unknown = parser.parse_known_args(arguments)
     try:
         if unknown:

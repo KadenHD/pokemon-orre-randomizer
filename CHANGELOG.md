@@ -27,7 +27,8 @@
 - Remove the duplicate tag test matrix and native build. Keep independent
   exact-commit Windows/Linux main CI, extracted-source tests, frozen-app checks
   and clean installer installation/uninstallation. Wait for main CI in parallel
-  with packaging and recheck it immediately before publication.
+  with packaging for up to 35 minutes, covering the main jobs' 30-minute limit
+  with startup slack, and recheck it immediately before publication.
 - Update the user/developer guides, diagnostic screenshot and issue template.
   New engine identifiers report migrations for older profiles; existing ROMs,
   saves and game folders are not rewritten by an app update.
