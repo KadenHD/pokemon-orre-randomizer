@@ -141,9 +141,20 @@ Changes take effect on the next launch, not during a running game.
 The camera hook follows Ralf's codes distributed in Dolphin's
 [GameSettings](https://github.com/dolphin-emu/dolphin/tree/master/Data/Sys/GameSettings);
 regional addresses and the separate 2D correction are checked against the six
-supported revision-0 executables. This does not certify every camera and menu
-in a complete playthrough. Original 4:3 remains available for any scene that
-does not suit widescreen.
+supported revision-0 executables. Additional corrections cover selected
+fullscreen clears, fades and full-width backgrounds, including tiled and
+overscan panels. Their geometry is adjusted separately from portraits, text
+and other bounded UI elements. Colosseum's 3D menu backdrops use a correction
+limited to their checked menu cameras, retaining the original artwork and
+native text proportions.
+
+Current Dolphin checks cover selected European revision-0 load/menu and
+summary screens. The six-region instruction checks do not establish equivalent
+runtime coverage. They do not certify every camera, transition or scene in
+either complete game. Native 4:3 remains available.
+
+Both display modes retain the profile's existing cheat preference. The
+launcher adds no cheat-setting override. Global Dolphin settings are unchanged.
 
 The launcher and pack manager use fixed windows with no page scrolling. Short
 choices stay visible as buttons. Download details open separately. The existing
@@ -295,10 +306,18 @@ layout; they are not a substitute for a memory-card save across rebuilt ROMs.
 
 ## Music and game speed
 
-Normal playback uses Dolphin's native audio. **Keep music at 100%** is available
-on Windows for verified Europe revision-0 images and the checked renderer recipe.
+**Keep music at 100%** is checked by default for newly created, supported game
+folders. A missing setting uses the same supported default. Your explicit
+choice is saved for that game and remains unchanged when reopening the launcher.
+Temporary renderer unavailability does not erase that preference.
+Existing folders adopt this behavior when their launcher runtime is explicitly
+updated; updating the application alone retains their earlier runtime.
+
+The option is available on Windows for verified Europe revision-0 images and
+the checked renderer recipe, with the game's music bridge present.
 Other regions, revisions or a renderer with a different recipe leave the option
-disabled. A saved setting cannot enable an unsupported capability.
+disabled and use Dolphin's native audio. A saved setting cannot enable an
+unsupported capability or reduce native audio volume while it is unavailable.
 Other regions can still use the launcher, HD and speed settings with native
 audio.
 

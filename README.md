@@ -86,9 +86,11 @@ previous launcher files are backed up. Opening a run alone retains its version.
 | --- | --- |
 | ![Colosseum game launcher](docs/images/colosseum-launcher.png) | ![XD game launcher](docs/images/xd-launcher.png) |
 
-The optional **Keep music at 100%** companion is available on Windows with
-verified Europe revision-0 images and the checked renderer recipe. It separates gameplay music from
-game speed; sound effects, cries and the complete picture/soundtrack of
+**Keep music at 100%** is checked by default where supported, and your choice
+is saved for each run. The companion is available on Windows with verified
+Europe revision-0 images, the checked renderer recipe and the game's music
+bridge. It separates gameplay music from game speed; sound effects, cries
+and the complete picture/soundtrack of
 prerecorded movies follow the game. It uses the original audio, not a HQ music
 pack. Other configurations retain native audio. See the
 [supported audio configuration and validation](docs/reverse-engineering/NATIVE_MUSIC_HOST.md).

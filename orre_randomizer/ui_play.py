@@ -174,12 +174,12 @@ class GameLauncher(QMainWindow):
         audio.addWidget(self.note("Le jeu démarre toujours à 100 %."))
         self.native_music = QCheckBox()
         self.bind(self.native_music.setText, "Garder la musique à 100 %")
-        self.native_music.setChecked(self.data["settings"].get("native_music", False))
-        from .play_music import music_capability
-        capability = music_capability(self.data["game_id"])
+        self.native_music.setChecked(self.data["settings"].get("native_music", True))
+        from .play_music import music_capability, native_music_available
         metadata = self.data.get("features", {}).get("music", {})
+        capability = music_capability(self.data["game_id"], metadata.get("revision", 0))
         supported = capability.supported and bool(metadata.get("enabled"))
-        available = supported and capability.production_validated
+        available = native_music_available(self.data, capability=capability)
         self.native_music.setEnabled(available)
         if not available:
             self.native_music.setChecked(False)
@@ -350,8 +350,12 @@ class GameLauncher(QMainWindow):
         self.data["dolphin"] = str(validate_dolphin(Path(self.dolphin.text())))
         self.data["settings"].update(graphics=self.graphics.currentData(), speed=1,
             acceleration=self.speed.currentData(), display=self.display.currentData(),
-            native_music=self.native_music.isChecked(), controller=self.controller.currentData(),
+            controller=self.controller.currentData(),
             save_backups=self.backup_enabled.isChecked())
+        # A missing/temporarily unavailable renderer disables playback, not the
+        # saved preference. Keep a user's explicit opt-in or opt-out for later.
+        if self.native_music.isEnabled():
+            self.data["settings"]["native_music"] = self.native_music.isChecked()
         save_game(self.path, self.data)
 
     def start(self):

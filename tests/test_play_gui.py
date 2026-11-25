@@ -227,6 +227,71 @@ class PlayGui(unittest.TestCase):
             launcher.close(); launcher.deleteLater()
             QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
 
+    def test_supported_music_defaults_on_and_explicit_choices_survive_reopening(self):
+        dolphin = self.root / 'Dolphin.exe'; dolphin.write_bytes(b'fake; never executed')
+        for game, game_id in (('colosseum', 'GC6P01'), ('xd', 'GXXP01')):
+            folder = self.root / game; (folder / 'Game').mkdir(parents=True)
+            (folder / 'Game/game.iso').write_bytes(b'owned synthetic fixture')
+            path = folder / 'game.json'
+            data = {'schema': 1, 'game': game, 'game_id': game_id, 'seed': 'test', 'rom': 'Game/game.iso',
+                    'dolphin': str(dolphin), 'shared': str(self.root / 'Shared'), 'pack': PACKS[game].key,
+                    'language': 'en', 'settings': {'graphics': 'original', 'speed': 1},
+                    'features': {'music': {'enabled': True}}}
+            path.write_text(json.dumps(data))
+            with self.subTest(game=game), patch('orre_randomizer.play_music.music_capability',
+                    return_value=MusicCapability(True, 'validated', 'fixture', True, True)):
+                for expected, choice in ((True, True), (True, False), (False, True), (True, True)):
+                    launcher = GameLauncher(path, preferences=self.settings)
+                    try:
+                        self.assertTrue(launcher.native_music.isEnabled())
+                        self.assertEqual(launcher.native_music.isChecked(), expected)
+                        launcher.native_music.setChecked(choice)
+                    finally:
+                        launcher.close(); launcher.deleteLater()
+                        QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+                    self.assertEqual(json.loads(path.read_text())['settings']['native_music'], choice)
+
+    def test_unavailable_renderer_preserves_music_preference_for_its_return(self):
+        dolphin = self.root / 'Dolphin.exe'; dolphin.write_bytes(b'fake; never executed')
+        folder = self.root / 'Temporary renderer failure'; (folder / 'Game').mkdir(parents=True)
+        (folder / 'Game/game.iso').write_bytes(b'owned synthetic fixture')
+        path = folder / 'game.json'
+        data = {'schema': 1, 'game': 'xd', 'game_id': 'GXXP01', 'seed': 'test', 'rom': 'Game/game.iso',
+                'dolphin': str(dolphin), 'shared': str(self.root / 'Shared'), 'pack': PACKS['xd'].key,
+                'language': 'en', 'settings': {'graphics': 'original', 'speed': 1, 'native_music': True},
+                'features': {'music': {'enabled': True}}}
+        path.write_text(json.dumps(data))
+        for supported in (False, True):
+            with self.subTest(supported=supported), patch('orre_randomizer.play_music.music_capability',
+                    return_value=MusicCapability(supported, 'fixture', 'fixture', supported, supported)):
+                launcher = GameLauncher(path, preferences=self.settings)
+                try:
+                    self.assertEqual(launcher.native_music.isEnabled(), supported)
+                    self.assertEqual(launcher.native_music.isChecked(), supported)
+                finally:
+                    launcher.close(); launcher.deleteLater()
+                    QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+                self.assertTrue(json.loads(path.read_text())['settings']['native_music'])
+
+    def test_audio_default_does_not_admit_an_unqualified_disc_revision(self):
+        dolphin = self.root / 'Dolphin.exe'; dolphin.write_bytes(b'fake; never executed')
+        folder = self.root / 'Unsupported audio revision'; (folder / 'Game').mkdir(parents=True)
+        (folder / 'Game/game.iso').write_bytes(b'owned synthetic fixture')
+        path = folder / 'game.json'
+        data = {'schema': 1, 'game': 'xd', 'game_id': 'GXXP01', 'seed': 'test', 'rom': 'Game/game.iso',
+                'dolphin': str(dolphin), 'shared': str(self.root / 'Shared'), 'pack': PACKS['xd'].key,
+                'language': 'en', 'settings': {'graphics': 'original', 'speed': 1},
+                'features': {'music': {'enabled': True, 'revision': 1}}}
+        path.write_text(json.dumps(data))
+        launcher = GameLauncher(path, preferences=self.settings)
+        try:
+            self.assertFalse(launcher.native_music.isEnabled())
+            self.assertFalse(launcher.native_music.isChecked())
+        finally:
+            launcher.close(); launcher.deleteLater()
+            QCoreApplication.sendPostedEvents(None, QEvent.Type.DeferredDelete)
+        self.assertNotIn('native_music', json.loads(path.read_text())['settings'])
+
 
 if __name__ == "__main__":
     unittest.main()

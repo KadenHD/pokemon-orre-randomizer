@@ -1,5 +1,25 @@
 # Changelog
 
+## 2.1.3 - 2026-11-25
+
+- Keep **Keep music at 100%** enabled for new supported game folders and when
+  its saved setting is absent. Retain an explicit disabled choice on reopening
+  and preserve the preference if the qualified renderer is temporarily missing.
+  Use native audio whenever the region, revision or music bridge is unsupported.
+- Improve selected native widescreen clears, fades and window backgrounds,
+  including tiled and overscan panels. Preserve the proportions of bounded UI
+  elements and handle Colosseum's 3D menu backdrops with their qualified menu
+  cameras. Keep the ROM and original movies unchanged. Restore only owned
+  display patches when switching to 4:3.
+- Relocate the extra menu adapters from the low-memory area cleared by XD's
+  anti-Action Replay routine. That routine could overwrite the earlier adapter
+  and stall the display when opening the PDA. Preserve the profile's existing
+  cheat preference in both games and display modes, without a launch override.
+- Bundle the six-region retail display fixture in the source archive. Add
+  instruction-level display checks, launcher preference regressions and
+  profile-preference coverage. Keep targeted European runtime checks separate
+  from static regional checks and complete-playthrough claims.
+
 ## 2.1.2 - 2026-11-25
 
 - Prevent XD's first Chobin encounter from trapping a randomized run after a

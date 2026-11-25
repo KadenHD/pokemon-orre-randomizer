@@ -59,6 +59,23 @@ def require_native_music(game_id: str, revision: int = 0):
     return capability
 
 
+def native_music_available(manifest, *, capability=None) -> bool:
+    """The per-game bridge and the local renderer must both be qualified."""
+    features = manifest.get('features', {})
+    metadata = features.get('music', {}) if isinstance(features, dict) else {}
+    if (not isinstance(metadata, dict) or metadata.get('enabled') is not True
+            or metadata.get('game_id', manifest['game_id']) != manifest['game_id']):
+        return False
+    capability = capability or music_capability(manifest['game_id'], metadata.get('revision', 0))
+    return capability.supported and capability.production_validated
+
+
+def native_music_enabled(manifest) -> bool:
+    """Default to normal-speed music, retaining an explicit per-game opt-out."""
+    return (manifest.get('settings', {}).get('native_music', True) is True
+            and native_music_available(manifest))
+
+
 def validate_music_metadata(metadata):
     """Validate fixed retail addresses and dynamic arena ranges before mapping."""
     from .engine.play_music_bridge import music_bridge_profile

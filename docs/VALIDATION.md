@@ -4,6 +4,87 @@ This index records the v1.0.0 foundation and subsequent validation follow-ups.
 Dated reports in `docs/` describe their named versions and scenarios; they are
 historical evidence rather than the current feature specification.
 
+## v2.1.3 launcher music and display checks (2026-11-25)
+
+After the version update, 135 targeted checks passed across display patches,
+game folders, launcher UI, interface parity, translations, Windows distribution,
+public archives, installer checksums and the independent-main release gate.
+The frozen-app audit now explicitly requires the regional display-data module.
+
+The latest per-module results cover all 180 source test modules: 1,723 tests,
+with 1,720 passing, three skipped, no failures and no errors. Results from
+bounded isolated processes are consolidated by module; a rerun replaces its
+earlier result rather than adding duplicate tests. The three skips concern
+Windows privileges for file symbolic links in artwork, HD hosting and menu
+sound caches. Both directory-junction modules passed their complete reruns
+with fixture filesystem access (20 and 16 tests).
+
+The initial full run reached its whole-suite deadline. The remaining modules
+and earlier failures were completed separately with the declared Pillow 13
+dependency. The global interpreter's Pillow 11.2.1 had caused missing image
+APIs, rejection by the vector-renderer qualification and a pinned font-manifest
+mismatch. The four affected HD modules pass with Pillow 13.0.0. The diagnostic
+GUI module also passes with a complete module deadline. Test workers suppress
+native menu audio; music unit tests supply explicit fake backends.
+
+Music preference checks cover new game folders, an absent setting, explicit
+opt-out, reopening and temporary renderer unavailability. An unsupported
+region/revision, missing music bridge or unqualified renderer retains native
+audio. These are preference and capability checks; they do not extend the
+earlier soundtrack, device or long-session audio validation.
+
+Twenty-six display checks independently execute the emitted PowerPC instructions
+and compare the six revision-0 regional contracts with retail-word fixtures.
+They cover camera and orthographic scaling, fullscreen pass compensation,
+deferred recording/replay, full-width and overscan window geometry, bounded
+sprites, XD's temporary FLASH geometry, Colosseum's resource-selected menu
+cameras, FIFO destination, register/condition preservation and owned-only 4:3
+restoration. The menu-camera lookup checks resource counts, table bounds and
+complete MEM1 pointer ranges before reading camera data. Geometry adapters
+change only their qualified X coordinates; UVs, Y coordinates and unrelated
+sprite records remain native. The extra adapter space is bounded separately
+from the exception-padding cave. Profile tests cover preservation of explicit
+enabled and disabled cheat preferences in every game/region and display mode,
+an absent preference, and the absence of a cheat-setting launch override.
+
+An additional XD PDA trial exposed its anti-Action Replay routine clearing
+the earlier adapter at `0x80002800`. The overwritten instructions could stall
+the display even with Dolphin cheats disabled. The replacement placement uses
+unused permanent executable padding at `0x80004D00`; it does not require a
+cheat-setting restriction. A regression executes both adapters after the native
+anti-Action Replay wipe, without reapplying the per-frame patch.
+
+Final European revision-0 trials used the relocated adapters with original
+textures. Colosseum's 184-byte adapter matched the source for 3,651 consecutive
+samples spanning 11,797 video interrupts, about 236 seconds. Checks covered
+the menu, loading, summary, return to the field, Miror B.'s story area, battle
+entry and the command HUD. XD's adapter matched for 2,256 consecutive samples
+spanning 7,749 video interrupts, about 155 seconds. Its summary, PDA Shadow
+Monitor and return path worked through repeated anti-Action Replay clears.
+XD room transitions and battle endings were not covered by these trials.
+Both sessions stopped normally through Dolphin with `NoAudioOutput` enabled;
+all owned processes were closed.
+
+Earlier HD trials logged 55 custom-asset loading messages for Colosseum and
+133 for XD while checking menu and summary geometry at the old adapter
+placement. Those trials establish HD loading and the observed geometry, not
+final HD runtime coverage at `0x80004D00`. Static checks of ten retained
+HD-patched executables confirm the new cave is unused in those layouts.
+
+Earlier native 4:3 trials restored the live perspective and orthographic
+instructions to `FFA01090` and `4E800020`, with native screen proportions in
+both games. The final source separately tests owned-only restoration of the
+relocated adapters. SHA-256 comparisons kept the original and trial ROMs and
+the source QA cards unchanged.
+
+Static checks for Europe, USA and Japan do not certify all regional screens,
+cameras, transitions or complete playthroughs. Display corrections live in
+the run's isolated emulator profile; the ROM and original movie files remain
+unchanged. The qualified original movie projection calls are preserved.
+
+These are local source and gameplay results. Hosted release jobs separately
+validate the exact commit and final Windows executable and installer.
+
 ## v2.1.2 release preflight (2026-11-25)
 
 After the version update, 102 targeted checks passed for starter progression,

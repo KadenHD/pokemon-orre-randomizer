@@ -27,7 +27,7 @@ REQUIRED_RUNTIME_MODULES = frozenset((
     "orre_randomizer.ui_run_tools", "orre_randomizer.run_i18n", "orre_randomizer.move_modes",
     "orre_randomizer.support_report", "orre_randomizer.ui_support_report", "orre_randomizer.support_i18n",
     "orre_randomizer.play_folders", "orre_randomizer.ui_play", "orre_randomizer.play_music",
-    "orre_randomizer.play_display", "orre_randomizer.play_speed",
+    "orre_randomizer.play_display", "orre_randomizer._display_regions", "orre_randomizer.play_speed",
     "orre_randomizer.launcher_updates", "orre_randomizer.ui_launcher_update",
     "orre_randomizer.native_music_state", "orre_randomizer.native_music_render",
     "orre_randomizer.native_music_output", "orre_randomizer.native_music_volume",
@@ -129,6 +129,7 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
     files += [ROOT / "tests/fixtures/presets" / f"rc2-{game}-{mode}.json"
               for game in ("colosseum", "xd") for mode in ("moves", "species")]
     files.append(ROOT / "tests/fixtures/profiles/xd-v211.json")
+    files.append(ROOT / "tests/fixtures/display_revision0.json")
     files += [ROOT / "orre_randomizer/assets/app" / name
               for name in ("icon.png", "icon.ico", "provenance.json", "logo.png", "logo.json", "controller.png", "controller.json", "README.md")]
     # Explicit local interface pack exported once from the supplied game. Never

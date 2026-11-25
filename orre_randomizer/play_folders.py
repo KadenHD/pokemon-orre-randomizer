@@ -230,8 +230,10 @@ def configure_profile(folder: Path, manifest, *, load_path=None, muted=False, pa
     mode = display_mode(manifest["settings"])
     configure_projection(profile, manifest["game_id"], mode)
     (profile / "GC").mkdir(parents=True, exist_ok=True)
+    from .play_music import native_music_enabled
+    music_enabled = native_music_enabled(manifest)
     native_volume = 100
-    if manifest["settings"].get("native_music"):
+    if music_enabled:
         from .native_music_volume import NATIVE_MUSIC_OUTPUT_GAIN
         native_volume = round(100 * NATIVE_MUSIC_OUTPUT_GAIN)
     values = {"Core": {"SlotA": 1, "SlotB": 255,
@@ -244,7 +246,7 @@ def configure_profile(folder: Path, manifest, *, load_path=None, muted=False, pa
                 "Mute": muted, "Muted": muted},
         "AutoUpdate": {"UpdateTrack": ""}}
     _write_ini(profile / "Config/Dolphin.ini", values)
-    if manifest["settings"].get("native_music"):
+    if music_enabled:
         _write_ini(profile / "Config/Dolphin.ini", {"DSP": {"Backend": "Cubeb"}})
     hd = manifest["settings"]["graphics"] == "hd"
     _write_ini(profile / "Config/GFX.ini", {"Settings": {"HiresTextures": hd, "CacheHiresTextures": False,
@@ -299,6 +301,7 @@ def load_game(path: Path):
                 or acceleration_target(data["settings"]) not in (1, 2, 3)
                 or display_mode(data["settings"]) not in ("16:9", "4:3")
                 or type(data["settings"].get("save_backups", True)) is not bool
+                or type(data["settings"].get("native_music", True)) is not bool
                 or not isinstance(data["seed"], str) or not 0 < len(data["seed"].encode("utf-8")) <= 256
                 or not isinstance(data["shared"], str) or not Path(data["shared"]).is_absolute()
                 or not isinstance(data["dolphin"], str) or not isinstance(data["pack"], str)):
@@ -690,8 +693,10 @@ def create_game_folder(*, request: PlayFolderRequest, source: Path, destination:
             "packs": {key: PACKS[key].key for key in hd_game_requirements({
                 "game": game, "features": report.get("play_features", {})})},
             "settings": {"graphics": request.graphics, "speed": 1, "acceleration": 2,
-                         "display": "16:9", "native_music": False},
+                         "display": "16:9"},
             "features": report.get("play_features", {})}
+        from .play_music import native_music_enabled
+        manifest["settings"]["native_music"] = native_music_enabled(manifest)
         final_rom = folder / manifest["rom"]
         report.update(output=str(final_rom), journal=str(final_rom.with_suffix(final_rom.suffix + ".html")),
                       play_folder=str(folder), launcher=str(folder / ("Launcher.exe" if os.name == "nt" else "Launcher")))

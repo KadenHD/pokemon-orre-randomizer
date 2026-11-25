@@ -14,6 +14,7 @@ from unittest.mock import patch
 from orre_randomizer.play_folders import (PlayFolderRequest, PlayLock, configure_profile,
     create_game_folder, launch_command, launcher_command, load_game, _publish_folder)
 from orre_randomizer.service import Cancelled, UserError
+from orre_randomizer.play_music import MusicCapability
 
 
 class GameFolders(unittest.TestCase):
@@ -124,15 +125,70 @@ class GameFolders(unittest.TestCase):
         configure_profile(folder, manifest)
         self.assertEqual(volume(), 100)
         manifest["settings"]["native_music"] = True
-        configure_profile(folder, manifest)
-        self.assertEqual(volume(), 50)
-        configure_profile(folder, manifest, muted=True)
-        self.assertEqual(volume(), 0)
-        configure_profile(folder, manifest)
-        self.assertEqual(volume(), 50)
+        manifest["features"] = {"music": {"enabled": True}}
+        with patch('orre_randomizer.play_music.music_capability',
+                   return_value=MusicCapability(True, 'validated', 'fixture', True, True)):
+            configure_profile(folder, manifest)
+            self.assertEqual(volume(), 50)
+            configure_profile(folder, manifest, muted=True)
+            self.assertEqual(volume(), 0)
+            configure_profile(folder, manifest)
+            self.assertEqual(volume(), 50)
         manifest["settings"]["native_music"] = False
         configure_profile(folder, manifest)
         self.assertEqual(volume(), 100)
+
+    def test_missing_music_preference_uses_the_supported_default_without_muting_unsupported_audio(self):
+        folder = self.root / 'Audio defaults'
+        manifest = self.manifest()
+        del manifest['settings']['native_music']
+        manifest['features'] = {'music': {'enabled': True}}
+        for game, game_id in (('colosseum', 'GC6P01'), ('xd', 'GXXP01')):
+            manifest.update(game=game, game_id=game_id)
+            for supported in (True, False):
+                with self.subTest(game=game, supported=supported), patch(
+                    'orre_randomizer.play_music.music_capability',
+                    return_value=MusicCapability(supported, 'fixture', 'fixture', supported, supported)):
+                    configure_profile(folder, manifest)
+                    config = configparser.ConfigParser()
+                    config.read(folder / 'DolphinUser/Config/Dolphin.ini')
+                    self.assertEqual(config.getint('DSP', 'Volume'), 50 if supported else 100)
+        manifest['settings']['native_music'] = True
+        with patch('orre_randomizer.play_music.music_capability',
+                   return_value=MusicCapability(False, 'renderer_missing', 'fixture')):
+            configure_profile(folder, manifest)
+            config.read(folder / 'DolphinUser/Config/Dolphin.ini')
+            self.assertEqual(config.getint('DSP', 'Volume'), 100)
+
+    def test_new_game_folders_enable_music_only_with_a_validated_music_bridge(self):
+        for game, game_id in (('colosseum', 'GC6P01'), ('xd', 'GXXP01')):
+            for bridge, validated in ((True, True), (True, False), (False, True)):
+                request = replace(self.request, folder=self.root / f'{game}-{bridge}-{validated}')
+                def completed(**arguments):
+                    arguments['destination'].write_bytes(b'owned new ROM')
+                    return {'game_id': game_id, 'source_unchanged': True,
+                            'output_sha256': hashlib.sha256(b'owned new ROM').hexdigest(),
+                            'summary': {}, 'seed': 'test', 'options': {},
+                            'play_features': {'music': {'enabled': bridge}}}
+                with self.subTest(game=game, bridge=bridge, validated=validated), \
+                     patch('orre_randomizer.play_folders.install_launcher'), \
+                     patch('orre_randomizer.play_folders.randomize', side_effect=completed), \
+                     patch('orre_randomizer.journal.render_journal', return_value='<p>Test</p>'), \
+                     patch('orre_randomizer.play_music.music_capability',
+                           return_value=MusicCapability(True, 'fixture', 'fixture', True, validated)):
+                    create_game_folder(request=request, source=self.source,
+                        destination=Path('game.iso'), seed='test', **({'xd_options': object()} if game == 'xd' else {}))
+                    data = load_game(request.folder / 'game.json')
+                    self.assertEqual(data['settings']['native_music'], bridge and validated)
+
+    def test_non_boolean_music_preferences_are_rejected(self):
+        folder = self.root / 'Invalid audio'; (folder / 'Game').mkdir(parents=True)
+        (folder / 'Game/game.iso').write_bytes(b'owned fixture')
+        for value in ('false', 1, None, []):
+            data = self.manifest(); data['settings']['native_music'] = value
+            path = folder / 'game.json'; path.write_text(json.dumps(data))
+            with self.subTest(value=value), self.assertRaises(UserError):
+                load_game(path)
 
     def test_exclusive_lock_releases_without_deleting_saves(self):
         lock = PlayLock(self.root)
@@ -153,6 +209,45 @@ class GameFolders(unittest.TestCase):
         self.assertIn(str(folder / "DolphinUser"), result)
         self.assertIn("Dolphin.DSP.Volume=0", result)
         self.assertNotIn(str(self.source), result)
+
+    def test_display_modes_preserve_existing_cheat_preferences_in_every_region(self):
+        for game, prefix in (('colosseum', 'GC6'), ('xd', 'GXX')):
+            for region in ('P', 'E', 'J'):
+                for mode in ('16:9', '4:3'):
+                    for enabled in (True, False):
+                        manifest = self.manifest()
+                        manifest.update(game=game, game_id=prefix + region + '01', pack=PACKS[game].key)
+                        manifest['settings']['display'] = mode
+                        folder = self.root / ('Existing-' + manifest['game_id'] + '-' + mode.replace(':', '-') + '-' + str(enabled))
+                        config = folder / 'DolphinUser/Config/Dolphin.ini'
+                        config.parent.mkdir(parents=True)
+                        config.write_text('[Core]\nEnableCheats = ' + str(enabled) + '\nCustomSetting = keep\n', encoding='utf-8')
+                        for operation in (configure_profile, launch_command):
+                            with self.subTest(game=game, region=region, display=mode, enabled=enabled,
+                                              operation=operation.__name__):
+                                result = operation(folder, manifest)
+                                settings = configparser.ConfigParser()
+                                settings.read(config)
+                                self.assertEqual(settings.getboolean('Core', 'EnableCheats'), enabled)
+                                self.assertEqual(settings.get('Core', 'CustomSetting'), 'keep')
+                                if operation is launch_command:
+                                    self.assertFalse(any('EnableCheats' in argument for argument in result))
+                        self.assertEqual(self.source.read_bytes(), b'original')
+
+    def test_display_modes_do_not_add_a_cheat_preference_or_cli_override(self):
+        for game, game_id, mode in (('xd', 'GXXP01', '16:9'), ('xd', 'GXXP01', '4:3'),
+                                    ('colosseum', 'GC6P01', '16:9'), ('colosseum', 'GC6P01', '4:3')):
+            with self.subTest(game=game, mode=mode):
+                manifest = self.manifest()
+                manifest.update(game=game, game_id=game_id, pack=PACKS[game].key)
+                manifest['settings']['display'] = mode
+                folder = self.root / (game + '-' + mode.replace(':', '-'))
+                command = launch_command(folder, manifest)
+                config = configparser.ConfigParser()
+                config.read(folder / 'DolphinUser/Config/Dolphin.ini')
+                self.assertFalse(config.has_option('Core', 'EnableCheats'))
+                self.assertFalse(any('EnableCheats' in argument for argument in command))
+                self.assertIn(str(folder / 'DolphinUser'), command)
 
     def test_failed_job_leaves_no_published_folder_or_original_changes(self):
         def cancelled(**kwargs):
