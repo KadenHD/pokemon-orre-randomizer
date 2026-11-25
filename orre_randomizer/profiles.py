@@ -35,6 +35,7 @@ PREVIOUS_MOVE_MODES_ENGINE = "castform-weather-portraits-v26"
 PREVIOUS_XD_MOVE_MODES_ENGINE = "xd-fixed-rental-traits-v16"
 PREVIOUS_NATURAL_MOVES_ENGINE = "natural-encounter-moves-v27"
 PREVIOUS_XD_NATURAL_MOVES_ENGINE = "xd-natural-encounter-moves-v17"
+PREVIOUS_XD_CAPTURE_ENGINE = "xd-native-capture-tutorial-v18"
 LUGIA_APPEARANCE_APP_VERSION = "1.2.20"
 # Both schemas were exported with the same engine version. Only the complete
 # historical bundle may be absent; a partial bundle is a malformed profile.
@@ -90,7 +91,7 @@ V20_ENGINE_VERSION = "story-field-placement-v20"
 V20_APP_VERSIONS = ("1.2.18", "1.2.19")
 CURRENT_APP_VERSIONS = (*V16_APP_VERSIONS, *V17_APP_VERSIONS, V18_APP_VERSION, *V19_APP_VERSIONS, *V20_APP_VERSIONS,
                         LUGIA_APPEARANCE_APP_VERSION, "1.2.21", "1.2.22", "1.2.23", "1.2.24", "1.2.25", "1.2.26",
-                        "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5", "2.0.6", "2.1.0", __version__)
+                        "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5", "2.0.6", "2.1.0", "2.1.1", __version__)
 COMPATIBLE_APP_VERSIONS = LEGACY_APP_VERSIONS | NATIVE_SHINY_APP_VERSIONS | SEEDED_SHINY_APP_VERSIONS | DETAILS_APP_VERSIONS | {PREVIOUS_APP_VERSION, STAGE_APP_VERSION, POLICY_APP_VERSION, PURIFICATION_APP_VERSION, REGIONAL_APP_VERSION, *CURRENT_APP_VERSIONS}
 LEGACY_GAME = {"id": "GC6P01", "revision": 0, "iso_sha256": ISO_SHA256}
 # Profiles describe portable settings. The creation report identifies the exact
@@ -322,7 +323,8 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         raise UserError("Profil trop volumineux : la limite est de 64 Ko." if not report
                         else "Rapport trop volumineux : la limite est de 32 Mio.")
     invalid = "Ce fichier ne contient pas de réglages Pokémon XD compatibles."
-    property_engines = (xd.VERSION, PREVIOUS_XD_NATURAL_MOVES_ENGINE, PREVIOUS_XD_MOVE_MODES_ENGINE, PREVIOUS_XD_WEATHER_ENGINE, PREVIOUS_XD_PRESERVED_ENGINE)
+    property_engines = (xd.VERSION, PREVIOUS_XD_CAPTURE_ENGINE, PREVIOUS_XD_NATURAL_MOVES_ENGINE,
+                        PREVIOUS_XD_MOVE_MODES_ENGINE, PREVIOUS_XD_WEATHER_ENGINE, PREVIOUS_XD_PRESERVED_ENGINE)
     recent_engines = (*property_engines, PREVIOUS_XD_PROPERTIES_ENGINE)
     try:
         payload = _decode_json(data)

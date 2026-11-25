@@ -113,7 +113,10 @@ try {
         Write-Output 'Verified the installed files, app diagnostics, and uninstall.'
     }
 
-    Move-Item -LiteralPath $installer -Destination $destination
+    # Only publish a tested installer, preserving both existing ZIP records.
+    # The helper refuses overwrites and atomically replaces the checksum file.
+    & python -X utf8 (Join-Path $PSScriptRoot 'release_checksums.py') --release-dir $public --installer $installer
+    if ($LASTEXITCODE -ne 0) { throw "Installer checksum publication failed ($LASTEXITCODE)." }
     Get-FileHash -LiteralPath $destination
 } finally {
     $env:QT_QPA_PLATFORM = $oldPlatform

@@ -21,6 +21,9 @@ jobs:
       - uses: actions/checkout@v7
         with:
           persist-credentials: false
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
       - name: Download the published Windows ZIP
         shell: pwsh
         env:
@@ -30,6 +33,7 @@ jobs:
           if ($env:RELEASE_TAG -cnotmatch '^v\d+\.\d+\.\d+(?:rc\d+)?$') { throw 'Expected a version tag such as v0.20.0 or v0.21.0rc1.' }
           gh release download $env:RELEASE_TAG --repo $env:GITHUB_REPOSITORY --dir dist/public --pattern '*-windows-x64.zip' --pattern 'SHA256SUMS.json'
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Copy-Item -LiteralPath dist/public/SHA256SUMS.json -Destination dist/public/SHA256SUMS.original.json
           $archive = 'pokemon-orre-randomizer-' + $env:RELEASE_TAG.Substring(1) + '-windows-x64.zip'
           if (-not (Test-Path -LiteralPath (Join-Path 'dist/public' $archive) -PathType Leaf)) { throw 'Release and archive versions differ.' }
       - name: Build and test the Windows installer
@@ -40,7 +44,10 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: orre-randomizer-installer
-          path: dist/public/*-setup.exe
+          path: |
+            dist/public/*-setup.exe
+            dist/public/SHA256SUMS.json
+            dist/public/SHA256SUMS.original.json
           if-no-files-found: error
           compression-level: 0
   publish:
@@ -57,4 +64,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           RELEASE_TAG: ${{ inputs.tag }}
-        run: gh release upload "$RELEASE_TAG" release-assets/*-setup.exe --repo "$GITHUB_REPOSITORY"
+        run: |
+          # Refuse a stale manifest and never replace an existing installer.
+          gh release download "$RELEASE_TAG" --repo "$GITHUB_REPOSITORY" --dir published --pattern SHA256SUMS.json
+          cmp published/SHA256SUMS.json release-assets/SHA256SUMS.original.json
+          gh release upload "$RELEASE_TAG" release-assets/*-setup.exe --repo "$GITHUB_REPOSITORY"
+          gh release upload "$RELEASE_TAG" release-assets/SHA256SUMS.json --repo "$GITHUB_REPOSITORY" --clobber

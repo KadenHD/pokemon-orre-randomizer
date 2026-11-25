@@ -128,6 +128,7 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
         files.append(documentation / name)
     files += [ROOT / "tests/fixtures/presets" / f"rc2-{game}-{mode}.json"
               for game in ("colosseum", "xd") for mode in ("moves", "species")]
+    files.append(ROOT / "tests/fixtures/profiles/xd-v211.json")
     files += [ROOT / "orre_randomizer/assets/app" / name
               for name in ("icon.png", "icon.ico", "provenance.json", "logo.png", "logo.json", "controller.png", "controller.json", "README.md")]
     # Explicit local interface pack exported once from the supplied game. Never

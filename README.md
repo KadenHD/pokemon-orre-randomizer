@@ -189,9 +189,11 @@ See the [run-management guide](docs/RUN_MANAGEMENT.md).
 ## Choose what changes
 
 Natural starter moves stay natural, including empty slots and passive species.
-XD's first Snag-only encounter needs no attack. Colosseum avoids automatically
-pairing two Teleport/Harden/Splash-only starters; explicit manual picks remain
-available. These checks preserve moves rather than adding an attack.
+XD's first Snag-only encounter needs no attack. If you lose the first Chobin
+battle in a randomized run, return to him to continue Jovi's scene without
+another compulsory fight. Colosseum avoids automatically pairing two
+Teleport/Harden/Splash-only starters; explicit manual picks remain available.
+These safeguards preserve moves rather than adding an attack.
 
 | | Pokémon + moves | Pokémon only |
 | --- | --- | --- |

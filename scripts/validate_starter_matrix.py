@@ -30,7 +30,7 @@ from orre_randomizer.engine.analyze_game import FormatError
 from orre_randomizer.engine.species_rules import LEGENDARY_NATIONAL
 
 MODES = {"original": False, "natural": "natural", "random": True}
-REPRESENTATIVE_SPECIES = (1, 11, 14, 63, 129, 132, 201, 202, 227, 249, 292, 327, 351, 374, 375, 386)
+REPRESENTATIVE_SPECIES = (1, 11, 14, 63, 129, 132, 201, 202, 227, 235, 249, 292, 327, 351, 374, 375, 386)
 
 
 def excluded_by_preset(national: int, preset: str) -> bool:

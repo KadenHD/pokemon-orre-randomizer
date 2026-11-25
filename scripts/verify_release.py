@@ -1,4 +1,4 @@
-"""Audit local release archives and test the sources away from the game dump."""
+"""Audit local release assets and test the sources away from the game dump."""
 import hashlib
 import argparse
 import json
@@ -17,6 +17,7 @@ from orre_randomizer import APP_EXECUTABLE, REPOSITORY_NAME
 from scripts.release_media import (BINGO_AUTHORING_ROOT, bingo_authoring_media,
                                   documentation_media, game_asset_name_allowed)
 from scripts.build_desktop import REQUIRED_RUNTIME_MODULES, REQUIRED_IMAGE_DECODERS, RUNTIME_BUILD_RECORD
+from scripts.release_checksums import load_manifest, verify_checksum, verify_installer
 
 FORBIDDEN = {".iso", ".rvz", ".gcm", ".fsys", ".dol", ".rel", ".raw", ".gci", ".sav"}
 SOURCE_ROOT = f"{REPOSITORY_NAME}/"
@@ -126,6 +127,18 @@ def verify_source_tests(directory: Path) -> str:
     return stderr.rsplit("\n" + "-" * 70 + "\n", 1)[-1].strip()
 
 
+def verify_manifest_assets(release: Path) -> tuple[dict, dict]:
+    """Check every download before the more expensive ZIP and source audits."""
+    manifest = load_manifest(release / "SHA256SUMS.json")
+    installers = {}
+    for filename, expected in manifest.items():
+        if filename.endswith("-setup.exe"):
+            installers[filename] = verify_installer(release / filename, expected)
+        else:
+            verify_checksum(release / filename, expected)
+    return manifest, installers
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--edition", choices=("local", "public"), default="local")
@@ -134,14 +147,13 @@ def main():
     (ROOT / "build").mkdir(exist_ok=True)
     public = args.edition == "public"
     release = args.release_dir.resolve() if args.release_dir else ROOT / "dist" / ("public" if public else "")
-    manifest = json.loads((release / "SHA256SUMS.json").read_text())
+    manifest, installers = verify_manifest_assets(release)
     checks = []
-    for filename, expected in manifest.items():
+    for filename in manifest:
         path = release / filename
-        if path.name != filename or path.suffix != ".zip":
-            raise RuntimeError("Unsafe archive name")
-        if path.stat().st_size != expected["bytes"] or hashlib.sha256(path.read_bytes()).hexdigest() != expected["sha256"]:
-            raise RuntimeError("Archive hash mismatch")
+        if filename in installers:
+            checks.append(installers[filename])
+            continue
         with zipfile.ZipFile(path) as archive:
             binary = filename.endswith("-windows-x64.zip")
             prefix = (BINARY_ROOT if binary else SOURCE_ROOT) + "orre_randomizer/assets/game/"

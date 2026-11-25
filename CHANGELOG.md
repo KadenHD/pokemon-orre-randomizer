@@ -1,5 +1,28 @@
 # Changelog
 
+## 2.1.2 - 2026-11-25
+
+- Prevent XD's first Chobin encounter from trapping a randomized run after a
+  defeat. Keep the initial battle and victory path intact; talking to Chobin
+  after losing resumes the native Jovi scene without another compulsory battle.
+  Change only the qualified retry instruction, preserving natural moves,
+  Pokémon, later battles and original movies. Leave copy and cosmetic-only
+  configurations unchanged. Make the shared post-battle reply neutral about
+  the winner in all six game languages, retaining native names and controls.
+- Recognize the previous XD engine when importing v2.1.1 profiles and creation
+  reports. Preserve their seed and settings, report the engine migration, and
+  keep old challenge codes tied to their original engine. Include the historical
+  profile fixture in the source archive so migration tests also run there.
+- Include the standalone Windows setup EXE in `SHA256SUMS.json`, retaining both
+  ZIP checksums. Publish the installer and manifest only after the requested
+  build checks pass; reject existing assets and stale manifests. Audit the
+  installer's checksum and Windows header without executing it.
+- Add Smeargle to the developer starter matrix's representative species.
+- Extend sensitive-starter validation to the USA and Japanese releases of both
+  games: complete production plans, native learnset comparisons and separate
+  muted Dolphin new-game/summary checks. Preserve the original movies and
+  distinguish generation results from gameplay coverage.
+
 ## 2.1.1 - 2026-11-23
 
 - Complete XD's natural-starter fix through the full creation pipeline. Retain

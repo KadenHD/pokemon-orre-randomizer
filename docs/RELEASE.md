@@ -94,7 +94,9 @@ job to succeed. Immediately before publishing, the API gate rechecks the latest
 main result for that exact commit, with its usual 120-second deadline. A newer
 failed or pending attempt cannot be replaced by an older success. Successful
 runs publish the Windows setup EXE, portable Windows ZIP, source ZIP and
-`SHA256SUMS.json`.
+`SHA256SUMS.json`. The manifest records the byte size and SHA-256 of all three
+downloads, including the separate setup EXE. Automatic updates also verify the
+selected download against GitHub's release-asset size and SHA-256.
 
 ```powershell
 $version = python -c "from orre_randomizer import __version__; print(__version__)"
@@ -109,7 +111,12 @@ The Windows installer uses the verified public ZIP as its payload. It installs
 for the current user, including the application, replaceable Qt DLLs, and notices.
 The build script downloads a hash-pinned portable Inno Setup compiler into
 `build/`. Its smoke test checks installed files, launches the app diagnostics,
-and uninstalls the test copy.
+and uninstalls the test copy. After compilation and the requested smoke test
+succeed, the script publishes the installer and atomically adds its checksum to
+the manifest, preserving both ZIP records. Existing installers are never replaced.
+If manifest publication fails, it removes only the installer created by that run.
+The release audit accepts manifests made before this step as well as complete
+manifests, verifying the installer's checksum and PE header without running it.
 
 ```powershell
 pwsh -File scripts/build_installer.ps1 -SmokeTest
@@ -117,7 +124,9 @@ pwsh -File scripts/build_installer.ps1 -SmokeTest
 
 For a release that already has a public Windows ZIP, run **Add Windows installer
 to an existing release** and enter its tag. GitHub builds and tests the installer
-from the published ZIP before attaching the new asset.
+from the published ZIP before attaching the new asset and updating the checksum
+manifest. It refuses to overwrite an installer or replace a manifest changed
+during the build. Historical releases are not changed automatically.
 
 ## Local engine and audio validation
 

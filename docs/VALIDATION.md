@@ -4,6 +4,65 @@ This index records the v1.0.0 foundation and subsequent validation follow-ups.
 Dated reports in `docs/` describe their named versions and scenarios; they are
 historical evidence rather than the current feature specification.
 
+## v2.1.2 release preflight (2026-11-25)
+
+After the version update, 102 targeted checks passed for starter progression,
+historical profiles, installer checksums and the independent-main release gate.
+The source builder explicitly includes the genuine v2.1.1 profile fixture.
+A newly built source ZIP passed its checksum and CRC checks; the historical
+profile and distribution modules then passed all 18 checks from a temporary
+extraction outside the checkout. Its archive contains the new progression and
+checksum modules and no ROMs or saves. The extraction was removed afterward.
+
+The gameplay evidence below was collected on the preceding application version
+with the named engine revisions. The release version bump does not repeat or
+extend those Dolphin scopes. Hosted release jobs separately validate the exact
+commit and the final Windows downloads.
+
+## Follow-up validation (2026-11-24)
+
+The [European fresh-start trials](XD_FRESH_START_VALIDATION_2026-11-24.md)
+separate native NEW GAME evidence from prepared checkpoints. A deliberate
+first-Chobin defeat additionally exposed a retry gate that can trap a passive
+starter. The [v19 progression safeguard](XD_FIRST_BATTLE_PROGRESSION_VALIDATION.md)
+documents the narrow script correction, localized reply, regional contracts,
+profile migration and independent native loss replay.
+
+The source suite completed 1,693 tests across all 180 isolated modules. Two
+Windows junction-fixture modules required a rerun with filesystem access;
+both passed completely (31 tests). Three existing symbolic-link privilege
+skips remain. The final localized reply and serialized plans passed the
+16 relevant module, integration and migration checks again. These are local
+source validations, not a new GitHub Actions or published-release result.
+
+The installer build now records the standalone EXE alongside both ZIPs in
+`SHA256SUMS.json`. A real build from the published v2.1.1 Windows payload
+compiled successfully and reproduced the published setup byte for byte.
+The complete three-asset manifest passed the release verifier, and both ZIP
+records remained unchanged. The setup was inspected, not executed; the personal
+installation and published release assets were not modified. The temporary
+copies used for this build were removed after digest verification.
+
+Forty-nine targeted checks cover checksum publication, release CI, Windows
+distribution and updater selection. The publication cases exercise damaged
+inputs, concurrent files, a changed manifest, interrupted publication and
+rollback. The separate starter harness checks also pass.
+
+The [USA/Japan starter campaign](REGIONAL_STARTER_VALIDATION.md) records its
+native-data comparisons and complete production plans separately from emulator
+trials. It completed 144 requests: 128 valid complete plans, 16 expected
+Shedinja exclusions and no unexpected errors. All 96 natural starter rows
+matched the regional original learnsets, including empty slots.
+
+Four muted Dolphin trials then started native new games on separate fresh
+profiles. USA Colosseum showed Ditto 26 and Smeargle 25; Japan Colosseum showed
+Wobbuffet 26 and Metapod 25. USA XD showed Ditto 10, and Japan XD Wobbuffet 10,
+after winning the original simulation. Their move sheets matched the expected
+natural sets. These are regional startup/summary checks, not full playthroughs
+or first-Snag claims. All original regional RVZs and movie files remained
+unchanged. Verified generated images and decoded copies were removed; test
+cards and evidence remain. No personal save or profile was used.
+
 ## v2.1.1 complete starter creation and private diagnostics (2026-11-23)
 
 The expanded read-only matrix completed 885 attempts: 875 valid production

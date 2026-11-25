@@ -47,8 +47,12 @@ from .xd_story import (DRAGONITE_DIALOGUE, STARTER_DIALOGUE_ARCHIVE, STARTER_ITE
                        patch_starter_dialogue, patch_tutorial, trainer_dialogue_edits, tutorial_candidates,
                        validate_tutorial_capture)
 from .xd_unown_form import patch_xd_unown_form
+from .xd_starter_progression import (
+    ARCHIVE as STARTER_PROGRESSION_ARCHIVE, VERSION as STARTER_PROGRESSION_VERSION,
+    patch_starter_progression, validate_starter_progression,
+)
 
-VERSION = "xd-native-capture-tutorial-v18"
+VERSION = "xd-first-battle-progression-v19"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -550,6 +554,16 @@ def _member(archive, members, name):
     return member["index"], decoded_member(archive, member)
 
 
+def starter_progression_active(options: XDOptions) -> bool:
+    """Protect the first story duel when either battler's gameplay can change."""
+    return any((options.randomize_starter, options.randomize_trainers,
+                options.randomize_starter_moves, options.randomize_trainer_moves,
+                options.randomize_learnsets, options.randomize_abilities,
+                options.randomize_types, options.randomize_stats,
+                options.randomize_held_items, options.trainer_force_evolved,
+                options.trainer_level_multiplier != 1.0, options.progressive_levels))
+
+
 def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progress, cancel, *, include_details=False):
     # Use the same bounded ISO reader and cancellation scope as Colosseum.
     from .service import checkpoint, read_exact
@@ -902,6 +916,13 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         dol, summary["castform_weather"] = install_weather_appearances(
             original_dol, dol, region.game_id, read_archive, gift_updates)
         summary["castform_portraits"] = summary["castform_weather"]["portraits"]
+    summary["starter_progression"] = {"version": STARTER_PROGRESSION_VERSION, "enabled": False}
+    native_starter_progression = None
+    if starter_progression_active(options):
+        native_starter_progression = read_archive(STARTER_PROGRESSION_ARCHIVE)
+        current = gift_updates.get(STARTER_PROGRESSION_ARCHIVE, native_starter_progression)
+        gift_updates[STARTER_PROGRESSION_ARCHIVE], summary["starter_progression"] = patch_starter_progression(
+            native_starter_progression, region.game_id, current_archive=current)
     story_families[families[summary["starter"]["species"]]].append("starter")
     for row in summary["decks"]["Story"]["shadows"]:
         story_families[families[row["species"]]].append(f"shadow:{row['shadow_id']}")
@@ -960,6 +981,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         updates[name], _ = repack_fsys(archives[name][0], members)
     for name, payload in updates.items():
         checkpoint(cancel)
+        if name == STARTER_PROGRESSION_ARCHIVE and native_starter_progression is not None:
+            validate_starter_progression(native_starter_progression, payload, region.game_id)
         entry = entries[name]
         offset = entry["disc_offset"]
         if len(payload) > entry["size"]:
