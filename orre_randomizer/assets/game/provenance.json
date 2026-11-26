@@ -269,8 +269,8 @@
       "sha256": "0a5b87a50dd4156bbb1c0ca845b29c21775d5740abf874c0c9669c2dbf05d53c"
     },
     "README.md": {
-      "bytes": 3982,
-      "sha256": "7d1be66c4aacd2a19e6990ef09941fc7eac6e9c2e8ed213f8911e891a0fc28a1"
+      "bytes": 4451,
+      "sha256": "1da3310384f5cbac0584b289bb6658fdbfb226bd0d9d32004dcc6e6ef929a512"
     },
     "interface/xd-logo-en.png": {
       "bytes": 3570,
@@ -2415,6 +2415,154 @@
     "models/deoxys/deoxys-assets.json": {
       "bytes": 162003,
       "sha256": "5c9205bc7805335fd178501ff0f7437b1459094539ec0a8d672cc243b34d60d1"
+    },
+    "types/colosseum-en-19.png": {
+      "bytes": 4053,
+      "sha256": "e871106eadc40dae9ba2e853c73bd6a2d31e370af82312ac9e4c7abe4aa4ecb8"
+    },
+    "types/colosseum-en-19-hd.png": {
+      "bytes": 20581,
+      "sha256": "948a13d3fa68ae47ae5142d3852b031204dfd4f24018c3d45f394c0c93d4c504"
+    },
+    "types/colosseum-de-19.png": {
+      "bytes": 2889,
+      "sha256": "bd434e7ecd63625694b33af1565fdfd3149d480827562078d4c87d299773375b"
+    },
+    "types/colosseum-de-19-hd.png": {
+      "bytes": 13182,
+      "sha256": "8738d8075f822cbd75562076b2c6e30dd2900fb4d59414bf0eb99b15534c10c6"
+    },
+    "types/colosseum-fr-19.png": {
+      "bytes": 3083,
+      "sha256": "2c245071bce947b14f6e0030256efa88a14361466de0193fad95f37bf4a5cfee"
+    },
+    "types/colosseum-fr-19-hd.png": {
+      "bytes": 14505,
+      "sha256": "28fa9c481ade28461047cf945c50cb7cdf3a208ff5096429930a4d4b4435d114"
+    },
+    "types/colosseum-it-19.png": {
+      "bytes": 3781,
+      "sha256": "0d24f55a30541d65ae2889731baaa701054047a205f69d7ca7bc077d1ff49e7d"
+    },
+    "types/colosseum-it-19-hd.png": {
+      "bytes": 17070,
+      "sha256": "b73c31aab3632a0c2add3d9f729fb67a3746220433630f18d7f4fcf4f7332415"
+    },
+    "types/colosseum-es-19.png": {
+      "bytes": 3931,
+      "sha256": "15e50bd9dd2c63dbf9283626c00e4e9689ac38e66dde3001bcfcf9fb90fe5e9c"
+    },
+    "types/colosseum-es-19-hd.png": {
+      "bytes": 21160,
+      "sha256": "fc740732f1223aa60fec6ea92ed2d3e5c1483effc914bb08aed18d0ee484c99c"
+    },
+    "types/colosseum-ja-19.png": {
+      "bytes": 3524,
+      "sha256": "238f7290380cfe231f5b74d634a99030a8dd2c334eb902fc8fc5e38f2179af14"
+    },
+    "types/colosseum-ja-19-hd.png": {
+      "bytes": 19615,
+      "sha256": "edd007a425033d375532ad4f8abf8bc1cf4c3ce490b5dfeb0e679da029cfff9a"
+    },
+    "types/xd-en-19.png": {
+      "bytes": 2250,
+      "sha256": "a3734ad6e373e71b708d7be6280c0f4c6132be0affb72f13a924d306f0dffe1f"
+    },
+    "types/xd-en-19-hd.png": {
+      "bytes": 9866,
+      "sha256": "8ee0c6b87de20f031337e23ba0031c61fd88d41cb427070488cc18405021dc56"
+    },
+    "types/xd-en-19-small.png": {
+      "bytes": 1088,
+      "sha256": "cc3989c470dd4ccac102f97d14b658175a6d3bd7264230f95be023fc7a2be5a3"
+    },
+    "types/xd-en-19-small-hd.png": {
+      "bytes": 4717,
+      "sha256": "9f6f4002348b17885587b1bbf033f380ea1db18486a8dc34d95cf6d92bedd9ba"
+    },
+    "types/xd-de-19.png": {
+      "bytes": 1629,
+      "sha256": "7214455fa7de2cfd4da7f06bc438bb05962fd24b58bf30d2466c57c8f6bba5be"
+    },
+    "types/xd-de-19-hd.png": {
+      "bytes": 5969,
+      "sha256": "004b9abf26d2ce74961a8675ecae8abd89bad6df36dd9cc434f5566a5a8562aa"
+    },
+    "types/xd-de-19-small.png": {
+      "bytes": 1101,
+      "sha256": "4b8fcca0b180d6f44b58a7739d98a26f459f2275e05eaa10030585c60f49d503"
+    },
+    "types/xd-de-19-small-hd.png": {
+      "bytes": 4616,
+      "sha256": "ec8e117bbb1b97acce02707a42a8712cbc6e82eaa34959e783bbc8fbd4819cf9"
+    },
+    "types/xd-fr-19.png": {
+      "bytes": 1802,
+      "sha256": "f24fc3c7d80cb4bdc6280c3c94132da98d9a9cdc87c780aa39f0ded54a06cf60"
+    },
+    "types/xd-fr-19-hd.png": {
+      "bytes": 6522,
+      "sha256": "b7c4e9872dd1891092536f92514b212624f91e260fd2a6e06f0cced2502b96f5"
+    },
+    "types/xd-fr-19-small.png": {
+      "bytes": 1176,
+      "sha256": "5ba89f8d326ca7de97542a6f0b8b5e5372a7f1d4e0f25a2e616f1e5653eb69bd"
+    },
+    "types/xd-fr-19-small-hd.png": {
+      "bytes": 5145,
+      "sha256": "9fa27d4854bcaf6fc00ed7cf798cc79f8e4b6030a6dfbddc5bc57432cf2ac51c"
+    },
+    "types/xd-it-19.png": {
+      "bytes": 2779,
+      "sha256": "1a7734e2c01716e0180a0cbde2c9261777e8aa4a9ea0b7442306da9b2bb67d6d"
+    },
+    "types/xd-it-19-hd.png": {
+      "bytes": 11515,
+      "sha256": "023d8ae6d4fe237ee59373366c03cf56090b4aac1315b6f54bb36549486d7142"
+    },
+    "types/xd-it-19-small.png": {
+      "bytes": 1084,
+      "sha256": "5025159e9f4e64bb5abebcc18e1eefc4f09cb79c6c66388f7f8a8e3c05022036"
+    },
+    "types/xd-it-19-small-hd.png": {
+      "bytes": 4386,
+      "sha256": "4ccf09f186ef216f3f6690007cbc2eb8f1e15926c7cb34c435fa98b250b1a78f"
+    },
+    "types/xd-es-19.png": {
+      "bytes": 2165,
+      "sha256": "0e9e101762be1404c7ee5cac62c5989410655e65f115bb25584d8c44ce75810b"
+    },
+    "types/xd-es-19-hd.png": {
+      "bytes": 10418,
+      "sha256": "8b55427bc734d96e2bf3836f5207185b1a42ae2b92a4f369ee2197283684a074"
+    },
+    "types/xd-es-19-small.png": {
+      "bytes": 1106,
+      "sha256": "cdd8f2fb10bdbc693ef85389db2e2be980a5012939a578c2f1e5e1d39c8a5109"
+    },
+    "types/xd-es-19-small-hd.png": {
+      "bytes": 4351,
+      "sha256": "d7174f218519afa6380dea9aca15e7e4829407d2aa955ec9f1a5bdeaafe96bdf"
+    },
+    "types/xd-ja-19.png": {
+      "bytes": 2463,
+      "sha256": "45a1ba66d859422428c9bf1d507906bac5d97a76bfd76565d285192ff323498d"
+    },
+    "types/xd-ja-19-hd.png": {
+      "bytes": 10282,
+      "sha256": "7f8ace4352aa5ff33a24c0424e8b8f19249ae4d3cf3bb2d86c29a3f96e9b41f3"
+    },
+    "types/xd-ja-19-small.png": {
+      "bytes": 903,
+      "sha256": "1c07e840c7c433f84615e2e3554c1fc0b3a424b6d699a1b1e5b4bb4b14757279"
+    },
+    "types/xd-ja-19-small-hd.png": {
+      "bytes": 3569,
+      "sha256": "f3a75b2e7c788178f23438f1a02aa07ca647ba970543feb6d725bf07d1d3e8cb"
+    },
+    "types/fairy-badges.json": {
+      "bytes": 11382,
+      "sha256": "43105eec0c92026b461945d5008f780b51a1c656ebd1f7fd3ea6dda3dd4e496d"
     }
   },
   "additional_sources": [
@@ -2759,5 +2907,6 @@
       "This art approval is distinct from a Dolphin menu runtime witness. GPU PNG bytes may vary across graphics drivers."
     ]
   },
-  "deoxys_assets_metadata": "models/deoxys/deoxys-assets.json"
+  "deoxys_assets_metadata": "models/deoxys/deoxys-assets.json",
+  "fairy_badges_metadata": "types/fairy-badges.json"
 }

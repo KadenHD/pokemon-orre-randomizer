@@ -8,7 +8,7 @@ from .engine.analyze_game import FormatError, check_range, u32
 from .engine.gameplay_rules import choose_moves, damaging, pick
 from .engine.inspect_tables import u16
 from .engine.species_rules import (
-    CASTFORM_NATIONAL, FORECAST, SHEDINJA_NATIONAL, VALID_TYPES, WONDER_GUARD, _redistribute,
+    CASTFORM_NATIONAL, FORECAST, SHEDINJA_NATIONAL, READABLE_TYPES, VALID_TYPES, WONDER_GUARD, _redistribute,
 )
 from .engine.tm_rules import ORIGINAL_HM_MOVES, ORIGINAL_TM_MOVES, UNSAFE_OFFENSE
 
@@ -37,14 +37,16 @@ def _species_catalog(rel, symbols, species):
         types = tuple(rel[pos + 0x30:pos + 0x32])
         abilities = tuple(rel[pos + 0x32:pos + 0x34])
         stats = tuple(u16(rel, pos + field) for field in STAT_FIELDS)
-        if (u16(rel, pos + 0xE) != national or not set(types) <= VALID_TYPES
+        if (u16(rel, pos + 0xE) != national or not set(types) <= READABLE_TYPES
                 or not abilities[0] or max(abilities) > 77 or not all(0 < value <= 255 for value in stats)):
             raise FormatError("invalid XD species properties")
         result[index] = {"national_dex": national, "offset": pos, "types": types,
                          "abilities": abilities, "stats": stats, "total": sum(stats)}
         result[index]["learnset"] = tuple((rel[entry], u16(rel, entry + 2))
             for entry in range(pos + 0xC4, pos + 0x110, 4) if rel[entry])
-    return result
+    from .fairy_gameplay import current_context
+    fairy = current_context("xd")
+    return fairy.project_species(result, rel) if fairy is not None else result
 
 
 def _move_catalog(rel, symbols):
@@ -60,7 +62,9 @@ def _move_catalog(rel, symbols):
             result[index] = {"index": index, "pp": rel[pos + 1], "type": rel[pos + 2],
                              "power": rel[pos + 0x19], "accuracy": rel[pos + 4],
                              "effect": u16(rel, pos + 0x1C)}
-    return result
+    from .fairy_gameplay import current_context
+    fairy = current_context("xd")
+    return fairy.project_moves(result, rel) if fairy is not None else result
 
 
 class XDMoveRandomizer:
@@ -85,7 +89,7 @@ class XDMoveRandomizer:
         return result
 
 
-def detail_catalog(rel, dol, symbols, game_id, edges, move_randomizer):
+def detail_catalog(rel, dol, symbols, game_id, edges, move_randomizer, *, fairy_report=None):
     from .engine.inspect_tables import localized_names
     from .locales.detail_names import ABILITY_NAMES, MOVE_NAMES
     from .locales.selection_names import SPECIES_NAMES
@@ -140,6 +144,13 @@ def detail_catalog(rel, dol, symbols, game_id, edges, move_randomizer):
         }
     tm = TM_OFFSETS[game_id]
     tms = [{"tm": i + 1, "move": u16(dol, tm + 8 * i + 6)} for i in range(50)]
+    if fairy_report is not None:
+        from .pokemon_details import append_fairy_details
+        append_fairy_details(species, moves, tms, dol, fairy_report, game_id)
+    if any(str(row["move"]) not in moves for row in tms):
+        raise FormatError("XD TM details refer to a move that is not installed")
+    if any(str(row["move"]) not in moves for sheet in species.values() for row in sheet["learnset"]):
+        raise FormatError("XD learning details refer to a move that is not installed")
     return {"species": species, "moves": moves, "tms": tms}
 
 
@@ -177,10 +188,16 @@ def patch_species_gameplay(rel, symbols, seed, species, families, options, *, pr
     """Apply optional species rules, retaining Castform's exclusive Forecast ability."""
     report = {"version": VERSION, "types_changed": 0, "abilities_changed": 0,
               "base_stats_changed": 0, "learnset_moves_changed": 0}
+    from .fairy_gameplay import current_context
+    fairy = current_context("xd")
+    if fairy is not None:
+        rel = fairy.apply_baseline(bytes(rel))
+        report["fairy_baseline"] = fairy.summary()
     if not (options.randomize_types or options.randomize_abilities or options.randomize_stats
             or options.randomize_learnsets):
         return rel, report
     catalog = _species_catalog(rel, symbols, species)
+    type_pool = VALID_TYPES | ({19} if fairy is not None and any(19 in row["types"] for row in catalog.values()) else set())
     ability_pool = {value for row in catalog.values() for value in row["abilities"]} - {0, WONDER_GUARD, FORECAST}
     output = bytearray(rel)
     for index, row in catalog.items():
@@ -190,8 +207,8 @@ def patch_species_gameplay(rel, symbols, seed, species, families, options, *, pr
         shedinja = row["national_dex"] == SHEDINJA_NATIONAL
         if options.randomize_types and not shedinja:
             key = f"types:{families[index] if options.types_family_consistent else index}"
-            first = _draw(seed, f"{key}:primary", VALID_TYPES)
-            second = (_draw(seed, f"{key}:secondary", VALID_TYPES - {first})
+            first = _draw(seed, f"{key}:primary", type_pool)
+            second = (_draw(seed, f"{key}:secondary", type_pool - {first})
                       if len(set(row["types"])) == 2 else first)
             output[pos + 0x30:pos + 0x32] = bytes((first, second))
             report["types_changed"] += (first, second) != row["types"]
@@ -219,6 +236,13 @@ def patch_species_gameplay(rel, symbols, seed, species, families, options, *, pr
 
 def patch_tm_gameplay(rel, dol, symbols, game_id, seed, species, options, *, preserve_species=(), selected_species=None):
     """Shuffle native TM moves and description IDs, then update compatibility if requested."""
+    from .fairy_gameplay import current_context
+    fairy = current_context("xd")
+    if fairy is not None:
+        from .fairy_integration import apply_tm_gameplay
+        return apply_tm_gameplay(fairy.original_rel, rel, fairy.original_dol, dol, seed, options, game_id,
+            species_table={"offset": symbols[88]["offset"], "count": 415, "stride": SPECIES_STRIDE},
+            preserve_species=preserve_species, selected_species=selected_species)
     shuffle, mode = options.randomize_tm_moves, options.tm_compatibility_mode
     report = {"version": VERSION, "tm_compatibility_mode": mode, "tms_moved": 0,
               "species_compatibility_changed": 0}

@@ -51,6 +51,12 @@ REQUIRED_RUNTIME_MODULES = frozenset((
     "orre_randomizer.deoxys_resources", "orre_randomizer.deoxys_runtime", "orre_randomizer.deoxys_portraits",
     "orre_randomizer.engine.deoxys_generation", "orre_randomizer.engine.dna_deoxys_keypad",
     "orre_randomizer.xd_deoxys", "orre_randomizer.xd_deoxys_runtime", "orre_randomizer.xd_deoxys_generation",
+    "orre_randomizer.fairy_data", "orre_randomizer.fairy_gameplay", "orre_randomizer.fairy_content",
+    "orre_randomizer.fairy_integration", "orre_randomizer.fairy_runtime", "orre_randomizer.fairy_tms",
+    "orre_randomizer.fairy_messages", "orre_randomizer.fairy_badges", "orre_randomizer.fairy_evolution",
+    "orre_randomizer.fairy_move_effects",
+    "orre_randomizer.fairy_transfer",
+    "orre_randomizer.fairy_message_layout",
 ))
 REQUIRED_IMAGE_DECODERS = frozenset(("PIL.DdsImagePlugin", "PIL.PngImagePlugin"))
 
@@ -91,6 +97,8 @@ def runtime_build_inputs() -> dict:
     """Content identities only; the record never contains local absolute paths."""
     files = list((ROOT / "orre_randomizer").rglob("*.py"))
     files += [ROOT / "orre_randomizer/_native" / name for name in (*NATIVE_RUNTIME_NAMES, "orre_musyx.json")]
+    files += [ROOT / 'orre_randomizer/assets/rules/fairy' / name
+              for name in ('catalog.json', 'transfer-messages.json', 'LICENSE-PokeAPI.txt', 'README.md')]
     files += [ROOT / name for name in ("scripts/desktop.spec", "scripts/desktop_entry.py", "scripts/build_desktop.py", "scripts/release_media.py",
         "scripts/build_native.py", "scripts/build_music.py", "pyproject.toml", "requirements-build.txt",
         "native/music/patches.json", "native/music/renderer_adapter.c", "orre_randomizer/windows_update.ps1",
@@ -120,6 +128,8 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
         files += [path for path in (ROOT / folder / "src").rglob("*.rs") if path.is_file()]
     files += [path for path in (ROOT / "native/music").rglob("*") if path.is_file() and path.suffix in {".c", ".h", ".json", ".md", ".txt"}]
     files.append(ROOT / "docs/reverse-engineering/baseline.json")
+    files += [ROOT / "orre_randomizer/assets/rules/fairy" / name
+              for name in ("catalog.json", "transfer-messages.json", "LICENSE-PokeAPI.txt", "README.md", ".gitattributes")]
     files.append(ROOT / "scripts/EXTRA_PORTRAIT_CAPTURE.md")
     files += [ROOT / "scripts/vs_menu_artwork" / name for name in
               ("README.md", "scene-recipe.json", "genuine-gba-reference.json")]
@@ -135,6 +145,7 @@ def source_files(*, include_game_assets: bool = True) -> list[Path]:
     files += [ROOT / "tests/fixtures/presets" / f"rc2-{game}-{mode}.json"
               for game in ("colosseum", "xd") for mode in ("moves", "species")]
     files.append(ROOT / "tests/fixtures/profiles/xd-v211.json")
+    files += [ROOT / "tests/fixtures/profiles" / f"{game}-v214.json" for game in ("colosseum", "xd")]
     files.append(ROOT / "tests/fixtures/display_revision0.json")
     files += [ROOT / "orre_randomizer/assets/app" / name
               for name in ("icon.png", "icon.ico", "provenance.json", "logo.png", "logo.json", "controller.png", "controller.json", "README.md")]

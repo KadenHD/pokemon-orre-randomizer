@@ -49,6 +49,15 @@ def _ordinary_items(rel: bytes, start: int) -> dict[int, tuple[str, int]]:
     return items
 
 
+def _acquisition_items(rel: bytes, start: int, options) -> dict[int, tuple[str, int]]:
+    items = _ordinary_items(rel, start)
+    if getattr(options, 'enable_fairy_type', False):
+        from .fairy_tms import extra_item_catalog
+        items = {**items, **{index: (row['category'], row['price'])
+                             for index, row in extra_item_catalog().items()}}
+    return items
+
+
 def _table_offsets(original: bytes) -> tuple[int, int]:
     native = parse_rel(original)
     symbols = rel_symbols(original, native)
@@ -79,7 +88,7 @@ def apply_field_items(original: bytes, current: bytes, seed: str, options) -> tu
     if current[treasure:treasure + length] != original[treasure:treasure + length]:
         raise FormatError("XD treasure table has already been changed")
 
-    catalogue = _ordinary_items(original, items)
+    catalogue = _acquisition_items(original, items, options)
     output = bytearray(current)
     for index in range(TREASURE_COUNT):
         row = treasure + index * TREASURE_SIZE
@@ -115,7 +124,7 @@ def apply_shop_items(original: bytes, current: bytes, game_id: str, seed: str, o
     if tuple(shop["index"] for shop in shops if (shop["type"], shop["subtype"]) == (0, 0)) != CASH_SHOPS:
         raise FormatError("unexpected XD cash shop descriptors")
 
-    items = _ordinary_items(original, item_table)
+    items = _acquisition_items(original, item_table, options)
     catalogue = {item: {"category": category, "price": price, "safe": True}
                  for item, (category, price) in items.items()}
     selected = {item for index in CASH_SHOPS for item in shops[index]["items"]}

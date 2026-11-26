@@ -10,9 +10,10 @@ from pathlib import Path
 import re
 import shutil
 import tempfile
+from threading import Event
 import uuid
 
-from .play_folders import PlayLock, load_game, validate_profile_root
+from .play_folders import PlayLock, load_game, validate_profile_root, _publish_folder
 from .run_safety import assert_dolphin_idle
 from .service import UserError
 
@@ -158,7 +159,12 @@ def _copy_cards(folder, manifest, *, reason):
         (stage / "snapshot.json").write_text(json.dumps(metadata, indent=2), "utf-8")
         assert_dolphin_idle(folder, manifest)
         destination = root / name
-        stage.rename(destination)
+        if os.name == "nt":
+            # Reuse the bounded atomic publication used by game folders:
+            # Windows scanners may briefly retain newly written files.
+            _publish_folder(stage, destination, Event())
+        else:
+            stage.rename(destination)
     retained, size = 0, 0
     for snapshot in list_backups(folder):
         size += snapshot["bytes"]

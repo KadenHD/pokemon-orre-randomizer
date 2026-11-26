@@ -69,7 +69,7 @@ def effective_setting_names(options):
         'accessible_event_gifts','postgame_shadow_lugia','evolve_trade','evolve_trade_items','evolve_coquiperl',
         'evolve_day_night','evolve_beauty','stones_phenac','stones_pyrite','readable_stone_names',
         'randomize_trainer_moves','randomize_starter_moves','randomize_gift_moves','randomize_learnsets',
-        'randomize_abilities','randomize_stats','randomize_types','randomize_held_items',
+        'randomize_abilities','randomize_stats','enable_fairy_type','randomize_types','randomize_held_items',
         'randomize_tm_moves','randomize_field_items','randomize_shop_items','boss_stronger',
         'boss_team_variety','custom_shinies','keep_shadow_lugia_after_purification')
     selected = {name for name in actions if getattr(options,name)}

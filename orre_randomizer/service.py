@@ -68,13 +68,14 @@ from .native_codec import backend, cancellation_scope, CodecCancelled
 from .options import Options, SPECIAL_OPTIONS
 from .i18n import Message, LANGUAGES
 from . import xd, disc_images
+from .fairy_content import scoped_content
 
 ISO_SIZE = 1_459_978_240
 ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "saved-deoxys-forms-v29"
+ENGINE_VERSION = "fairy-type-v30"
 
 
 @dataclass(frozen=True, slots=True)
@@ -119,7 +120,7 @@ def validate_setting_values(options):
              kind == "int" and type(value) is not int or not item.metadata["minimum"] <= value <= item.metadata["maximum"]):
             raise UserError("Valeur hors limites : {label}.", label=Message(item.metadata["label"]))
         if kind in ("species_set", "type_set"):
-            allowed = set(range(1, 387)) if kind == "species_set" else set(range(18)) - {9}
+            allowed = set(range(1, 387)) if kind == "species_set" else (set(range(18)) - {9}) | {19}
             if not isinstance(value, (list, tuple)) or any(type(i) is not int or i not in allowed for i in value):
                 raise UserError("Liste d’exclusions invalide : {label}.", label=Message(item.metadata["label"]))
             normalized[item.name] = tuple(sorted(set(value)))
@@ -444,6 +445,7 @@ build_xd_patches = _cancellable_compression(xd.build_patches)
 
 
 @_cancellable_compression
+@scoped_content
 def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                   progress: Progress, cancel: threading.Event) -> tuple[list[tuple[int, bytes]], dict]:
     """Rebuild only known archives in the same safe gap used by the validated v3."""
@@ -499,6 +501,9 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         if eagun_gift is not None:
             summary["eagun_gift_link"] = eagun_gift
         rel, dol, summary["tms"] = apply_tm_rules(original, rel, original_dol, dol, seed, options)
+        if options.enable_fairy_type:
+            from .fairy_content import install_content
+            rel, dol, summary['fairy'] = install_content(rel, dol, summary['tms'])
         spinda_seeds = (colo_spinda_seeds(original, rel, original_dol, dol, seed, trainer_aliases,
                                         trainer_special_aliases=eagun_aliases) if options.has_changes else {})
         postgame_plan = ()
@@ -644,6 +649,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             annotate_catalog(summary['detail_catalog'], summary['deoxys_forms'])
         progress(25, "Compression des données du jeu…")
         new_common = repack_fsys(common, common_replacements)[0] if common_replacements else common
+        fairy_archives = {}
+        if options.enable_fairy_type:
+            from .fairy_content import append_badge_archives
+            new_common, fairy_archives, summary['fairy']['badge_archives'] = append_badge_archives(
+                new_common, lambda name: lugia_models[name] if name in lugia_models else archive(name))
         checkpoint(cancel)
         old = by_name["common.fsys"]
         next_offset = min((e["disc_offset"] for e in entries if e["disc_offset"] > old["disc_offset"]), default=ISO_SIZE)
@@ -679,7 +689,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                                           shadow_lugia_samples=lugia_samples,
                                           deoxys_samples=deoxys_samples) if lab_appearances else {})
         scene_updates.update(lugia_models)
-        if options.stone_shops or options.randomize_shop_items:
+        scene_updates.update(fairy_archives)
+        if options.stone_shops or options.randomize_shop_items or options.enable_fairy_type:
             summary["shop_archives"] = []
             shop_archives = shop_archive_names(original)
             for i, name in enumerate(sorted(shop_archives)):

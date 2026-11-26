@@ -1,5 +1,5 @@
 {
-  "app_version": "2.1.1",
+  "app_version": "2.1.5",
   "language": "en",
   "description": "English application and gameplay captures. Each entry records its capture version; unchanged earlier gameplay images are retained.",
   "files": {
@@ -735,6 +735,54 @@
       "captured_in_version": "2.1.4",
       "description": "The reusable Meteorite and its native English item description.",
       "source": "Actual muted Dolphin session with an isolated test ROM and copied memory card. Controlled Deoxys party for form testing; native item use. Original ROMs and personal saves unchanged."
+    },
+    "colosseum-fairy-settings.png": {
+      "bytes": 75177,
+      "sha256": "db03470c9e2927486a41772235542ed21ff239ef356bcb235a07de336f565873",
+      "kind": "application",
+      "language": "en",
+      "game": "colosseum",
+      "width": 1040,
+      "height": 800,
+      "captured_in_version": "2.1.5",
+      "description": "Optional Fairy setting, separate from type randomization.",
+      "source": "Actual Qt widgets with muted private preferences; no personal ROM, save or settings opened."
+    },
+    "xd-fairy-settings.png": {
+      "bytes": 49354,
+      "sha256": "dd7c0c6dbb7bfcbd0d250e2ef868617106fda33c889132c0d346d808b171c686",
+      "kind": "application",
+      "language": "en",
+      "game": "xd",
+      "width": 1040,
+      "height": 800,
+      "captured_in_version": "2.1.5",
+      "description": "Optional Fairy setting, separate from type randomization.",
+      "source": "Actual Qt widgets with muted private preferences; no personal ROM, save or settings opened."
+    },
+    "colosseum-fairy-moves.png": {
+      "bytes": 106993,
+      "sha256": "0d30cddb30560830e98261bb9d67d6728ade3fc0d3988344e6c6f66a232a71cb",
+      "kind": "application",
+      "language": "en",
+      "game": "colosseum",
+      "width": 860,
+      "height": 740,
+      "captured_in_version": "2.1.5",
+      "description": "Final Fairy typing, move descriptions and natural learning in the Pokemon sheet.",
+      "source": "Actual muted Qt widgets, using a catalog authenticated against the installed native test ROM. No personal ROM, save or preferences changed."
+    },
+    "xd-fairy-moves.png": {
+      "bytes": 103274,
+      "sha256": "445c8b9fde2e76ad5c21c827811aff839911662c77cba6e8ea2ff29d1a5b8dd0",
+      "kind": "application",
+      "language": "en",
+      "game": "xd",
+      "width": 860,
+      "height": 740,
+      "captured_in_version": "2.1.5",
+      "description": "Final Fairy typing, move descriptions and natural learning in the Pokemon sheet.",
+      "source": "Actual muted Qt widgets, using a catalog authenticated against the installed native test ROM. No personal ROM, save or preferences changed."
     }
   }
 }

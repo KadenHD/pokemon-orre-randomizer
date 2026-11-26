@@ -90,6 +90,9 @@ def apply_trainer_tables(original: bytes, current: bytes, seed: str, options,
     final_pool = {i for i in eligible if not children[i]}
     output, allowed = bytearray(current), set()
     moves = None
+    from ..fairy_gameplay import current_context
+    fairy = current_context('colosseum')
+    added_moves = set(fairy.moves) if fairy is not None else set()
 
     def ranked(values, key):
         # Keyed independent draws; stable ordering and no process-global RNG.
@@ -194,7 +197,7 @@ def apply_trainer_tables(original: bytes, current: bytes, seed: str, options,
                 if output[pos] == 1 and not catalog[species]["abilities"][1]:
                     output[pos] = 0
                 allowed.update((pos, pos + 0xA, pos + 0xB, *range(pos + 0x14, pos + 0x18)))
-                if options.randomize_trainer_moves and not any(move >= 355 for move in before_moves):
+                if options.randomize_trainer_moves and not any(move >= 355 and move not in added_moves for move in before_moves):
                     if moves is None:
                         moves = move_catalog(original, tables)
                     chosen = choose_moves(seed, f"{VERSION}:moves:{i}", catalog[species], row["level"], moves, options,

@@ -9,7 +9,7 @@ from orre_randomizer.service import transform_dol, transform_rel, validate_optio
 
 class OptionValidationTests(unittest.TestCase):
     def test_typed_options_and_empty_preset(self):
-        self.assertEqual(len(fields(Options)), 91)
+        self.assertEqual(len(fields(Options)), 92)
         self.assertTrue(all(type(getattr(Options(), f.name)) is bool for f in fields(Options) if f.metadata["kind"] == "bool"))
         self.assertFalse(Options.none().has_changes)
         self.assertTrue(Options.recommended().has_changes)

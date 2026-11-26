@@ -190,11 +190,16 @@ def _messages(ids):
     return dict(ids)
 
 
-def _bank(language, ids):
+def _bank(language, ids, *, game_id=None):
     """Native GSmsgOpen bank: group0, native font/tag, sorted index directory."""
     order = sorted(MESSAGE_KEYS, key=ids.__getitem__)
-    output = bytearray(struct.pack(">HBBH2sII", 0, 0, 0 if language == "ja" else 1,
-                                   len(order), _LANG_TAGS[language], 0, 0))
+    font = 0 if language == "ja" and (game_id is None or game_id in ("GC6P01", "GC6E01")) else 1
+    if game_id == "GC6J01":
+        # Japanese Colosseum's original GSmsg renderer reads u16 fontId at+6;
+        # Western Colosseum and every XD region read the byte at+3 instead.
+        output = bytearray(struct.pack(">HHHHII", 0, 0, len(order), font, 0, 0))
+    else:
+        output = bytearray(struct.pack(">HBBH2sII", 0, 0, font, len(order), _LANG_TAGS[language], 0, 0))
     output.extend(bytes(8 * len(order)))
     for index, key in enumerate(order):
         struct.pack_into(">II", output, 16 + 8 * index, ids[key], len(output))
@@ -212,7 +217,14 @@ def _bank_refresh(address, functions, banks, game_id):
     for pointer in banks.values():
         _load(c, 3, pointer)
         c.call(functions["bank_close"])
-    if "language" in functions:
+    # Japanese and USA discs are monolingual. Their inherited/global language
+    # preference can differ from the actual ROM (XD JP's getter defaults toEN).
+    # Only PAL's native getter selects among its supported game languages.
+    if game_id.endswith("J01"):
+        c.emit(0x38600001)
+    elif game_id.endswith("E01"):
+        c.emit(0x38600002)
+    elif "language" in functions:
         c.call(functions["language"])
     else:
         c.emit(0x38600000 | (1 if game_id == "GC6J01" else 2))
@@ -459,7 +471,7 @@ def install_meteorite(original_dol: bytes, current_dol: bytes, game_id: str, *,
     banks = {}
     for language in LANGUAGES:
         banks[language] = ram + len(code)
-        code.extend(_bank(language, ids))
+        code.extend(_bank(language, ids, game_id=game_id))
     choices = ram + len(code)
     code.extend(struct.pack(">4I", *(ids[form] for form in FORM_ORDER)) + bytes(16))
     refresh = ram + len(code)

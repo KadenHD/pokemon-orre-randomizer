@@ -51,7 +51,9 @@ def move_catalog(original: bytes, tables: dict) -> dict[int, dict]:
                          "effect": u16(original, pos + 0x1A)}
     if len(result) < 300:
         raise FormatError("unexpected original regular move catalog")
-    return result
+    from ..fairy_gameplay import current_context
+    fairy = current_context("colosseum")
+    return fairy.project_moves(result, original) if fairy is not None else result
 
 
 def expanded_layout(original: bytes) -> dict:
@@ -64,6 +66,17 @@ def expanded_layout(original: bytes) -> dict:
 def damaging(move: dict) -> bool:
     # Seismic Toss/Night Shade are deterministic level damage despite raw power 1.
     return move["power"] > 1 or move["index"] in {69, 101}
+
+
+def physical(move: dict) -> bool:
+    """Qualified new moves carry their category; legacy moves keep Gen III's rule."""
+    category = move.get("damage_class")
+    return category == "physical" if category is not None else move["type"] <= 8
+
+
+def _has_special_moves(values, catalog) -> bool:
+    """Preserve native markers while recognizing explicitly prepared moves."""
+    return any(move == 0xFFFF or move >= 355 and move not in catalog for move in values)
 
 
 def choose_moves(seed: str, key: str, species: dict, level: int, moves: dict,
@@ -102,7 +115,7 @@ def choose_moves(seed: str, key: str, species: dict, level: int, moves: dict,
         elif options.moves_mode == "balanced" and slot == 1:
             attack, special = species["stats"][1], species["stats"][3]
             preferred = {i for i in available if damaging(moves[i]) and
-                         ((moves[i]["type"] <= 8) == (attack >= special))}
+                         (physical(moves[i]) == (attack >= special))}
             available = preferred or available
         result.append(pick(seed, f"moves:{key}:{slot}", available))
     return result
@@ -139,7 +152,11 @@ def apply_species_gameplay(original, current, seed, options, tables=None, *, sel
     """Shared per-species properties and learns; no encounter species draw."""
     tables = expanded_layout(original) if tables is None else tables
     summary, allowed = {}, set()
-    before_species = current
+    from ..fairy_gameplay import current_context
+    fairy = current_context("colosseum")
+    before_species = fairy.apply_baseline(current) if fairy is not None else current
+    if fairy is not None:
+        summary["fairy_baseline"] = fairy.summary()
     modified_species, species_summary = apply_species_rules(original, before_species, seed, options, tables, selected_species=selected_species)
     allowed.update(i for i, (a, b) in enumerate(zip(before_species, modified_species)) if a != b)
     output = bytearray(modified_species)
@@ -153,8 +170,9 @@ def apply_species_gameplay(original, current, seed, options, tables=None, *, sel
         for index, meta in catalog.items():
             if index in preserved or selected_species is not None and index not in selected_species:
                 continue
-            slots = [(slot, original[meta["offset"] + 0xBA + slot * 4],
-                      u16(original, meta["offset"] + 0xBC + slot * 4)) for slot in range(19)]
+            reference = fairy.baseline_rel if fairy is not None else original
+            slots = [(slot, reference[meta["offset"] + 0xBA + slot * 4],
+                      u16(reference, meta["offset"] + 0xBC + slot * 4)) for slot in range(19)]
             active = [(slot, level, move) for slot, level, move in slots if level and move in moves]
             chosen = set()
             for ordinal, (slot, level, old) in enumerate(active):
@@ -236,7 +254,7 @@ def apply_rel_rules(original: bytes, current: bytes, seed: str, options, *, allo
         old_moves = [u16(original, pos + field) for field in MOVE_FIELDS]
         kept = colosseum_encounter_kept(original, pos, options)
         if options.randomize_trainer_moves and not kept:
-            if options.randomize_trainer_moves is True and any(move == 0xFFFF or move >= 355 for move in old_moves):
+            if options.randomize_trainer_moves is True and _has_special_moves(old_moves, moves):
                 protected.append(row["index"])
             else:
                 new_moves = choose_moves(seed, f"trainer:{row['index']}", catalog[index], level, moves, options,
@@ -250,7 +268,7 @@ def apply_rel_rules(original: bytes, current: bytes, seed: str, options, *, allo
         if options.randomize_held_items and not kept and old_item not in (0, 0xFFFF):
             new_pool = held_pool - {old_item}
             actual_moves = [u16(output, pos + field) for field in MOVE_FIELDS]
-            if not any(m in moves and damaging(moves[m]) and moves[m]["type"] <= 8 for m in actual_moves):
+            if not any(m in moves and damaging(moves[m]) and physical(moves[m]) for m in actual_moves):
                 new_pool -= {186}  # Choice Band requires a physical attacking move.
             new = pick(seed, f"item:{row['index']}", new_pool)
             struct.pack_into(">H", output, pos + 0x12, new)
@@ -282,6 +300,10 @@ def apply_rel_rules(original: bytes, current: bytes, seed: str, options, *, allo
 
 
 def apply_story_rules(original_rel, base_rel, original_dol, base_dol, seed, options):
+    from ..fairy_gameplay import current_context
+    fairy = current_context("colosseum")
+    if fairy is not None:
+        base_rel = fairy.apply_baseline(base_rel)
     tables = expanded_layout(original_rel)
     families = evolution_families(original_rel, tables)[0]
     targets = special_targets(original_dol)

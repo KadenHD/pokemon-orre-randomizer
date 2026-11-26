@@ -342,6 +342,12 @@ def _raw_member(archive: bytes, member: dict) -> bytes:
 
 def _selected(name: str, member: dict, is_xd: bool) -> str | None:
     ident = int(member["identifier_raw"], 16)
+    if name == 'common.fsys' and member['name'].startswith('orre_fairy_'):
+        from .fairy_badges import LARGE_RESOURCES, SMALL_RESOURCES
+        resources = set(LARGE_RESOURCES.values()) | (set(SMALL_RESOURCES.values()) if is_xd else set())
+        if ident not in resources:
+            raise OverlayError('An added Fairy badge has an unregistered resource identity')
+        return 'fairy_badge'
     if not is_xd and name in ("poke_face.fsys", "pkx_deoxys.fsys", "pkx_rare_deoxys.fsys"):
         from .deoxys_resources import FACE_RESOURCES, MODEL_RESOURCES
         if name == "poke_face.fsys" and ident in FACE_RESOURCES.values():
@@ -1001,7 +1007,9 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
             deoxys = deoxys_hd_contract()
             report['deoxys_forms'] = dict(deoxys)
             report['required_packs'].append('xd')
-        extra = {'pkx_deoxys.fsys', 'pkx_rare_deoxys.fsys'} if imported_deoxys else None
+        extra = {'pkx_deoxys.fsys', 'pkx_rare_deoxys.fsys'} if imported_deoxys else set()
+        if (asset_context or {}).get('fairy', {}).get('enabled'):
+            extra.add('common.fsys')
         for archive_name, archive in _disc_archives(source, is_xd=is_xd, extra_names=extra):
             _checkpoint(cancel)
             if progress:
@@ -1016,7 +1024,17 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                     raise OverlayError('Imported Deoxys resources require their native/HD contract')
                 _checkpoint(cancel)
                 raw = _raw_member(archive, member)
-                if role in ("portrait", "retail_portrait", "retail_form", "castform_portrait", "deoxys_portrait"):
+                if role == 'fairy_badge':
+                    from .fairy_badges import LARGE_RESOURCES, SMALL_RESOURCES, native_texture, texture_dimensions
+                    ident = int(member['identifier_raw'], 16)
+                    small = ident in SMALL_RESOURCES.values()
+                    resources = SMALL_RESOURCES if small else LARGE_RESOURCES
+                    language = next(language for language, value in resources.items() if value == ident)
+                    if raw != native_texture(report['game'], language, small=small):
+                        raise OverlayError('The added Fairy badge differs from its native/HD contract')
+                    width, height = texture_dimensions(small=small)
+                    textures = (_Texture(width, height, 6, raw[128:]),)
+                elif role in ("portrait", "retail_portrait", "retail_form", "castform_portrait", "deoxys_portrait"):
                     textures = (_face(raw),)
                 elif role in ("battle", "castform_battle", "deoxys_battle"):
                     textures = _dat_textures(_pkx_dat(raw, is_xd))
@@ -1074,7 +1092,13 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
         portrait_reference = None
         for asset in assets.values():
             base = asset["base_key"]
-            if asset.get("castform_roles"):
+            if asset['role'] == 'fairy_badge':
+                from .fairy_badges import hd_overrides
+                if base.removesuffix('.png') not in hd_overrides(report['game']):
+                    raise OverlayError('The added Fairy badge has no registered x4 artwork')
+                asset['hd'] = {'native_source': 'authored native and independent vector x4 badge',
+                               'transform': {'type': 'fairy-badge', 'game': report['game'], 'native_key': base}}
+            elif asset.get("castform_roles"):
                 native_image = _load_reference(target, asset["native"])
                 asset["hd"], gap = _castform_hd_origin(castform_game, asset, bytes(native_image.constBits()))
                 if gap:
@@ -1157,6 +1181,13 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
             report["assets"].append(asset)
         report["asset_count"] = len(assets)
         report["texture_count"] = len(assets)
+        if (asset_context or {}).get('fairy', {}).get('enabled'):
+            expected_badges = 12 if is_xd else 6
+            found = [r for r in report['resources'] if r['role'] == 'fairy_badge']
+            if len(found) != expected_badges:
+                raise OverlayError('The complete six-language Fairy badge resource set is missing')
+            report['fairy_badges'] = {'resources': len(found), 'native_and_x4': True,
+                                     'native_bitmap_upscaled_for_hd': False}
         if castform_game:
             report["castform_shinies"] = {"version": 1, "game_id": castform_game,
                 "resources": sum(row["role"] in _CASTFORM_ROLES for row in report["resources"]),
@@ -1823,6 +1854,25 @@ def prepare_hd_overlays(native_directory: Path, destination: Path, *, pack_roots
         origin = asset.get("hd")
         if not origin:
             report["missing_assets"].append({"file": asset["file"], "reason": "No registered pack-derived HD asset"})
+            continue
+        if origin.get('transform', {}).get('type') == 'fairy-badge':
+            from .fairy_badges import hd_overrides
+            from .artwork import _png_pixels
+            game = origin['transform'].get('game')
+            if game != report['game'] or origin['transform'].get('native_key') != asset['base_key']:
+                raise OverlayError('Invalid Fairy badge game or texture binding')
+            png = hd_overrides(game).get(asset['base_key'].removesuffix('.png'))
+            if png is None:
+                raise OverlayError('The Fairy badge x4 artwork is unavailable')
+            expected = asset['native']['width'] * 4, asset['native']['height'] * 4
+            _png_pixels(png, expected)
+            target.mkdir(parents=True, exist_ok=True)
+            _write(target / asset['file'], png)
+            report['files'].append({'file': asset['file'], 'sha256': hashlib.sha256(png).hexdigest(),
+                'width': expected[0], 'height': expected[1], 'bytes': len(png),
+                'native_format': asset['native_format'], 'hd_source': {
+                    'kind': 'authored-vector-fairy-badge', 'source_scale': 4, 'output_scale': 4,
+                    'native_reference': asset['native'], 'transform': origin['transform']}})
             continue
         custom_roles = set(asset.get("castform_roles", [])) | castform_roles.get(asset["file"], set())
         if asset.get("role") in _CASTFORM_ROLES:

@@ -125,6 +125,32 @@ class CallbackMachine(ItemMachine):
 
 
 class MeteoriteContractTests(unittest.TestCase):
+    def test_monolingual_refresh_ignores_an_unrelated_global_language(self):
+        banks = {language: 0x81600000 + i * 0x1000 for i, language in enumerate(LANGUAGES)}
+        for game, selected in (("GC6J01", "ja"), ("GXXJ01", "ja"),
+                               ("GC6E01", "en"), ("GXXE01", "en"),
+                               ("GC6P01", "fr"), ("GXXP01", "fr")):
+            machine = ItemMachine(_bank_refresh(ADDRESS, FUNCTIONS, banks, game), ADDRESS)
+            machine.native_targets = set(FUNCTIONS.values())
+            called = []
+            def native(target):
+                called.append((target, machine.reg[3]))
+                machine.reg[3] = 4 if target == FUNCTIONS["language"] else 0
+            machine.native = native
+            machine.run()
+            self.assertEqual([value for target, value in called if target == FUNCTIONS["bank_open"]], [banks[selected]])
+            self.assertEqual(sum(target == FUNCTIONS["language"] for target, _ in called), 1 if game.endswith("P01") else 0)
+
+    def test_regional_bank_headers_match_native_font_readers(self):
+        for game, language in product(("GC6P01", "GC6E01", "GC6J01", "GXXP01", "GXXE01", "GXXJ01"), LANGUAGES):
+            bank = _bank(language, MESSAGE_IDS, game_id=game)
+            font = struct.unpack_from(">H", bank, 6)[0] if game == "GC6J01" else bank[3]
+            expected = 0 if language == "ja" and game in ("GC6P01", "GC6E01") else 1
+            self.assertEqual(font, expected)
+            self.assertEqual(struct.unpack_from(">H", bank, 4)[0], len(MESSAGE_IDS))
+            if game == "GC6J01":
+                self.assertEqual(bank[:4], bytes(4))
+
     def test_native_banks_are_sorted_utf16_and_cover_six_languages(self):
         for language in LANGUAGES:
             bank = _bank(language, MESSAGE_IDS)
@@ -431,7 +457,8 @@ class MeteoriteRetailQualifications(unittest.TestCase):
                 machine.pc, machine.lr = ADDRESS, 0x81234560
                 machine.run()
                 self.assertEqual(machine.read(system + groups_offset), foreign)
-                self.assertEqual(machine.read(foreign + 8), banks[language])
+                active_language = language if game.endswith('P01') else 'en'
+                self.assertEqual(machine.read(foreign + 8), banks[active_language])
                 machine.pc, machine.lr = lookup, 0x81234560
                 machine.reg[3] = MESSAGE_IDS['name']
                 machine.run()
@@ -441,7 +468,7 @@ class MeteoriteRetailQualifications(unittest.TestCase):
                     value = machine.read(pointer + i * 2, 2)
                     if value == 0: break
                     raw.extend(value.to_bytes(2, 'big'))
-                self.assertEqual(raw.decode('utf-16-be'), METEORITE_TEXT[language]['name'])
+                self.assertEqual(raw.decode('utf-16-be'), METEORITE_TEXT[active_language]['name'])
 
     def test_all_six_regions_keep_other_native_bytes_and_safe_callback_relocation(self):
         for family in ('colosseum', 'xd'):

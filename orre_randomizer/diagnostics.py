@@ -474,7 +474,7 @@ def run_checks(report: Path, *, screenshots: bool = False, screenshot_scope: str
                         dialog.show()
                         app.processEvents()
                         assert dialog.value() == selected
-                        assert dialog.items.count() == (386 if kind == "species_set" else 17)
+                        assert dialog.items.count() == (386 if kind == "species_set" else 18)
                         assert dialog.buttons.isVisible() and dialog.search.isVisible()
                         state = {"language": language, "width": width, "kind": kind, "selection_retained": True}
                         if screenshots:

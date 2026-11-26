@@ -264,6 +264,26 @@ and Colosseum's Pyrite Town theme. The corresponding game sources, capture
 intervals, transformations and file hashes are recorded in the
 [music asset metadata](orre_randomizer/assets/game/music/).
 
+## Fairy reference data and badge artwork
+
+The optional Fairy rules use a selected dataset from
+[PokeAPI/pokeapi](https://github.com/PokeAPI/pokeapi/tree/de6760be38b60a3024f1d9054330ff265f0dc619),
+pinned to commit `de6760be38b60a3024f1d9054330ff265f0dc619`. Its
+[BSD 3-clause license](orre_randomizer/assets/rules/fairy/LICENSE-PokeAPI.txt),
+source identities and extraction policy accompany the bundled dataset in
+[`assets/rules/fairy`](orre_randomizer/assets/rules/fairy/README.md).
+The reference is Brilliant Diamond / Shining Pearl; no external data is fetched
+when generating a game. Names and game descriptions retain their original rights.
+The separate `transfer-messages.json` records six original XD refusal messages
+used to keep unsupported new moves out of GBA transfers. That game text remains
+outside the PokeAPI BSD license and the project's MIT code license.
+
+The six-language Fairy badges are newly authored vector artwork following each
+game's original badge layout. Native and x4 images are rendered independently,
+using the Noto Sans JP font and its SIL Open Font License. Their source recipe,
+font identity, dimensions and image hashes are recorded in
+[`fairy-badges.json`](orre_randomizer/assets/game/types/fairy-badges.json).
+
 ## HD text typography
 
 The optional HD text renderer uses Noto Sans JP by Google and Adobe, distributed

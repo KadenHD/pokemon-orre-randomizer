@@ -28,7 +28,7 @@ The older scripts delegate to the same engine. The CLI and GUI both call
 
 The test runner isolates each module in a fresh process to keep Qt state and
 worker threads from leaking between modules. It reports failures and timeouts,
-with a 120-second module limit and a 12-minute suite limit. GUI tests run
+with a 120-second module limit and a 15-minute suite limit. GUI tests run
 offscreen with sound and music disabled.
 
 Format and safety tests run without a ROM. Integration tests that need a dump or

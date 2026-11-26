@@ -2,6 +2,20 @@
 LANGS = ("en", "de", "es", "it", "ja")
 # Each row follows LANGS. French labels and descriptions live in Options.
 OPTION_ROWS = {
+ "randomize_tm_moves": (
+  ("Shuffle TM moves", "TM-Attacken mischen", "Mezclar los movimientos de MT", "Mescola le mosse MT", "わざマシンを入れ替える"),
+  ("Shuffles TM moves and their descriptions. All eight HMs stay unchanged.",
+   "Mischt die TM-Attacken mit ihren Beschreibungen. Alle acht VMs bleiben unverändert.",
+   "Mezcla los movimientos de las MT con sus descripciones. Las ocho MO no cambian.",
+   "Mescola le mosse delle MT con le loro descrizioni. Le otto MN restano invariate.",
+   "わざマシンのわざと説明文を入れ替えます。8つのひでんマシンは変更しません。")),
+ "enable_fairy_type": (
+  ("Add the Fairy type", "Feen-Typ hinzufügen", "Añadir el tipo Hada", "Aggiungi il tipo Folletto", "フェアリータイプを追加"),
+  ("Adds Fairy-type matchups. Updates the affected Pokémon and moves, with additional learnsets and TMs.",
+   "Fügt den Feen-Typ und seine Wechselwirkungen hinzu. Aktualisiert betroffene Pokémon und Attacken sowie ihre Lernlisten und TMs.",
+   "Añade el tipo Hada y sus relaciones de daño. Actualiza los Pokémon y movimientos afectados, con nuevos aprendizajes y MT.",
+   "Aggiunge il tipo Folletto e le sue affinità. Aggiorna i Pokémon e le mosse interessati, con nuovi apprendimenti e MT.",
+   "フェアリータイプとタイプ相性を追加します。対象のポケモンと技のタイプを更新し、習得技とわざマシンを追加します。")),
  "legacy_shop_scope": (
   ("Legacy shop scope", "Früherer Ladenumfang", "Ámbito de tiendas anterior", "Ambito precedente dei negozi", "旧バージョンのショップ範囲"),
   ("Keep the six-shop scope of imported legacy profiles. This field is retained only to reproduce those runs.",

@@ -25,7 +25,9 @@ else:
     from test_processes import windows_test_job
 
 MODULE_TIMEOUT = 120
-SUITE_TIMEOUT = 12 * 60
+# Leave headroom for the complete Qt matrix on slower Windows runners.
+# Each module keeps its separate 120-second limit and crash watchdog.
+SUITE_TIMEOUT = 15 * 60
 
 
 def worker(pattern: str, report: Path, timeout: float) -> int:

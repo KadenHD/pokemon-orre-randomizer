@@ -56,3 +56,10 @@ license. Exact sources, transformations and file hashes are recorded in
 `provenance.json` and the per-asset metadata.
 
 This pack contains no ROM, save, scenario data or Dolphin installation.
+
+The added Fairy type has six localized badge designs for each game. Colosseum
+uses its original large capsule layout; XD also has a separate small battle
+badge. Native and x4 images are rendered independently from vector geometry and
+Noto Sans JP lettering, without enlarging a native bitmap. Their recipe, source
+font hash, exact dimensions and image hashes are in `types/fairy-badges.json`.
+Original type badges, including their native abbreviations, are unchanged.

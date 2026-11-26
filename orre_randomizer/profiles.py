@@ -36,6 +36,8 @@ PREVIOUS_XD_MOVE_MODES_ENGINE = "xd-fixed-rental-traits-v16"
 PREVIOUS_NATURAL_MOVES_ENGINE = "natural-encounter-moves-v27"
 PREVIOUS_XD_NATURAL_MOVES_ENGINE = "xd-natural-encounter-moves-v17"
 PREVIOUS_XD_CAPTURE_ENGINE = "xd-native-capture-tutorial-v18"
+PREVIOUS_DEOXYS_ENGINE = "saved-deoxys-forms-v29"
+PREVIOUS_XD_DEOXYS_ENGINE = "xd-saved-deoxys-forms-v21"
 LUGIA_APPEARANCE_APP_VERSION = "1.2.20"
 # Both schemas were exported with the same engine version. Only the complete
 # historical bundle may be absent; a partial bundle is a malformed profile.
@@ -183,8 +185,8 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
     previous = (payload["app_version"] == PREVIOUS_APP_VERSION
                 and payload["engine_version"] == PREVIOUS_ENGINE_VERSION)
     current_engine = (payload["app_version"] in (LUGIA_APPEARANCE_APP_VERSION, "1.2.21", "1.2.22", "1.2.23",
-                                               "1.2.24", "1.2.25", "1.2.26", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5", "2.0.6", "2.1.0", __version__)
-                      and payload["engine_version"] in (ENGINE_VERSION, PREVIOUS_NATURAL_MOVES_ENGINE, PREVIOUS_MOVE_MODES_ENGINE, PREVIOUS_PRESERVED_ENGINE,
+                                               "1.2.24", "1.2.25", "1.2.26", "2.0.0", "2.0.1", "2.0.2", "2.0.3", "2.0.4", "2.0.5", "2.0.6", "2.1.0", "2.1.1", "2.1.2", "2.1.3", "2.1.4", __version__)
+                      and payload["engine_version"] in (ENGINE_VERSION, PREVIOUS_DEOXYS_ENGINE, PREVIOUS_NATURAL_MOVES_ENGINE, PREVIOUS_MOVE_MODES_ENGINE, PREVIOUS_PRESERVED_ENGINE,
                                                         PREVIOUS_PROPERTIES_ENGINE))
     previous_lugia = (payload["app_version"] in CURRENT_APP_VERSIONS
                       and payload["engine_version"] == PREVIOUS_LUGIA_ENGINE)
@@ -223,7 +225,14 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         raise UserError("Ce profil ne correspond pas aux versions prises en charge de Colosseum.")
     values = payload["options"]
     expected_fields = {item.name for item in fields(Options)}
-    legacy_properties = payload["engine_version"] not in (ENGINE_VERSION, PREVIOUS_NATURAL_MOVES_ENGINE, PREVIOUS_MOVE_MODES_ENGINE, PREVIOUS_PRESERVED_ENGINE)
+    legacy_properties = payload["engine_version"] not in (ENGINE_VERSION, PREVIOUS_DEOXYS_ENGINE, PREVIOUS_NATURAL_MOVES_ENGINE, PREVIOUS_MOVE_MODES_ENGINE, PREVIOUS_PRESERVED_ENGINE)
+    legacy_fairy = payload["engine_version"] != ENGINE_VERSION
+    if legacy_fairy:
+        if type(values) is dict and "enable_fairy_type" in values:
+            if values["enable_fairy_type"] is not False:
+                raise UserError("Paramètres du profil incomplets ou inconnus. Réexportez-le avec la même version.")
+        else:
+            expected_fields.remove("enable_fairy_type")
     if legacy_properties:
         expected_fields.remove("randomize_preserved_properties")
     # The shop-only safeguard was added without changing the engine version.
@@ -274,6 +283,8 @@ def _parse_configuration(payload: dict, *, report_region: Region | None = None) 
         if type(digest) is not str or digest != expected:
             raise UserError("L’empreinte du profil ne correspond pas à son contenu. Réexportez le profil d’origine.")
     values = dict(values)
+    if legacy_fairy:
+        values["enable_fairy_type"] = False
     if legacy_properties:
         values["randomize_preserved_properties"] = True
     if legacy_shop_policy:
@@ -323,7 +334,7 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         raise UserError("Profil trop volumineux : la limite est de 64 Ko." if not report
                         else "Rapport trop volumineux : la limite est de 32 Mio.")
     invalid = "Ce fichier ne contient pas de réglages Pokémon XD compatibles."
-    property_engines = (xd.VERSION, PREVIOUS_XD_CAPTURE_ENGINE, PREVIOUS_XD_NATURAL_MOVES_ENGINE,
+    property_engines = (xd.VERSION, PREVIOUS_XD_DEOXYS_ENGINE, PREVIOUS_XD_CAPTURE_ENGINE, PREVIOUS_XD_NATURAL_MOVES_ENGINE,
                         PREVIOUS_XD_MOVE_MODES_ENGINE, PREVIOUS_XD_WEATHER_ENGINE, PREVIOUS_XD_PRESERVED_ENGINE)
     recent_engines = (*property_engines, PREVIOUS_XD_PROPERTIES_ENGINE)
     try:
@@ -350,6 +361,13 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         options = payload["options"]
         seed = payload["seed"]
         expected = {item.name for item in fields(xd.XDOptions)}
+        legacy_fairy = payload["engine_version"] != xd.VERSION
+        if legacy_fairy:
+            if type(options) is dict and "enable_fairy_type" in options:
+                if options["enable_fairy_type"] is not False:
+                    raise ValueError
+            else:
+                expected.remove("enable_fairy_type")
         legacy_properties = payload["engine_version"] not in property_engines
         recent_engine = payload["engine_version"] in recent_engines
         if legacy_properties:
@@ -381,6 +399,8 @@ def parse_xd_profile(data: bytes, *, report=False) -> Profile:
         if type(options) is not dict or set(options) != expected:
             raise ValueError
         options = dict(options)
+        if legacy_fairy:
+            options["enable_fairy_type"] = False
         if legacy_properties:
             options["randomize_preserved_properties"] = True
         if legacy_shop_policy:

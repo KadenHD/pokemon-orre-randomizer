@@ -63,6 +63,15 @@ def _protected(raw: int, catalog: dict, options, *, shop: bool = False) -> bool:
             or shop and options.shop_keep_healing and row["category"] == "healing")
 
 
+def acquisition_catalog(original_dol: bytes, options) -> dict:
+    """Add enabled, real TM items without mutating the cached native catalogue."""
+    catalog = item_catalog(original_dol)
+    if not getattr(options, 'enable_fairy_type', False):
+        return catalog
+    from ..fairy_tms import extra_item_catalog
+    return {**catalog, **extra_item_catalog()}
+
+
 def _candidates(raw: int, catalog: dict, options) -> list[int]:
     old = catalog[raw]
     return [index for index, row in catalog.items() if row["safe"]
@@ -116,7 +125,7 @@ def apply_field_items(original: bytes, current: bytes, original_dol: bytes,
     start, count, stride = symbols[60]["offset"], u32(original, symbols[61]["offset"]), 0x1C
     if (start, count, start + count * stride) != (region.treasure_offset, 74, symbols[62]["offset"]):
         raise FormatError("unexpected validated regional treasure table")
-    catalog, output, allowed = item_catalog(original_dol), bytearray(current), set()
+    catalog, output, allowed = acquisition_catalog(original_dol, options), bytearray(current), set()
     for index in range(count):
         pos = start + index * stride + 0xE
         old = u16(original, pos)
@@ -142,7 +151,7 @@ def patch_cash_shops(current: bytes, original_dol: bytes, seed: str, options) ->
     if any((before[index]["type"], before[index]["subtype"]) != ((2, 0) if index < 3 else (0, 0))
            for index in cash_shops):
         raise FormatError("cash shop descriptors differ from the verified regional table")
-    catalog = item_catalog(original_dol)
+    catalog = acquisition_catalog(original_dol, options)
     stocks = [row["items"].copy() for row in before]
     selected = {raw for index in cash_shops for raw in stocks[index]}
     protected = {raw for raw in selected if _protected(raw, catalog, options, shop=True)}
@@ -184,10 +193,18 @@ def patch_item_archive(source: bytes, original_dol: bytes, seed: str, options) -
         raise FormatError("shop REL and item DOL regions differ")
     current, stone_report = stone_patch(original, options.stone_shops) if options.stone_shops else (original, None)
     current, shop_report = patch_cash_shops(current, original_dol, seed, options) if options.randomize_shop_items else (current, None)
+    fairy_report = None
+    if getattr(options, "enable_fairy_type", False):
+        from ..fairy_gameplay import current_context
+        from ..fairy_integration import add_tm_shop_stock
+        content = current_context(shop_region.game_id)
+        if content is None or content.original_dol != original_dol:
+            raise FormatError("Additional Fairy TMs require the matching active game content")
+        current, fairy_report = add_tm_shop_stock(original, current, shop_region.game_id)
     if current == original:
-        return source, {"stones": stone_report, "randomized_stock": shop_report}
+        return source, {"stones": stone_report, "randomized_stock": shop_report, "fairy_tms": fairy_report}
     rebuilt, checks = repack_fsys(source, {0: current})
     if any(not row["decoded_byte_identical"] for row in checks[1:]):
         raise FormatError("shop rules changed another archive member")
-    return rebuilt, {"stones": stone_report, "randomized_stock": shop_report,
+    return rebuilt, {"stones": stone_report, "randomized_stock": shop_report, "fairy_tms": fairy_report,
                      "other_archive_members_identical": True}

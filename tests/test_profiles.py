@@ -447,6 +447,7 @@ class ProfileTests(unittest.TestCase):
         parsed = parse_profile(self.encode(payload))
         self.assertEqual(parsed.seed, payload['seed'])
         expected = dict(payload['options'], diverse_story_families=False,
+                        enable_fairy_type=False,
                         postgame_shadow_lugia=False, keep_shadow_lugia_after_purification=False,
                         randomize_legendary_shadows=True, randomize_preserved_properties=True,
                         postgame_randomize_team=payload['options']['randomize_trainers'],

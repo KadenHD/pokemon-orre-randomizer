@@ -4,6 +4,41 @@ This index records the v1.0.0 foundation and subsequent validation follow-ups.
 Dated reports in `docs/` describe their named versions and scenarios; they are
 historical evidence rather than the current feature specification.
 
+## v2.1.5 optional Fairy rules (2026-11-26)
+
+The local source campaign covered all 208 isolated modules and 1,975 tests,
+with no outstanding failures. Three Windows symbolic-link privilege checks
+were skipped. Bounded reruns replaced earlier sandbox and file-lock failures;
+these totals describe the final result per module, not a single uninterrupted
+test command. All 127 Fairy checks passed without skips. Both randomized
+presets passed complete production patch generation for all six regional
+releases of the two games, using original source discs without writing output
+ISOs or changing those discs.
+
+Muted Dolphin trials on private European ROM and memory-card copies covered
+all seven added moves in both games, their animations and PP consumption,
+native TM purchases and teaching, evolution learning, replacement, refusal,
+cancellation, saving and cold reload. Identity and shiny status were checked
+separately from displayed models. Additional USA and Japanese checks covered
+loading, localized names, descriptions and type badges in both games.
+Colosseum Japan also passed a live Disarming Voice and Dragon Rage immunity
+check. An XD comparison used the same ISO, saved state and internal resolution
+with texture replacements enabled and disabled to verify its separate x4 Fairy
+badge. Original opening videos were retained, and owned test emulators stopped.
+
+The rebuilt development Windows application passed its complete frozen audit:
+474 interface states and 210 saved screenshots, plus native libraries and
+source-to-package integrity checks. Its source archive passed all 208 modules
+with 1,940 tests and 176 expected skips where private retail files were absent.
+Windows HD archive and automatic save-backup publication checks cover transient
+file locks, existing destinations and bounded atomic publication.
+
+These are bounded scenarios, not complete playthroughs or every animation in
+every regional release. The added-move GBA transfer refusal has native table
+and PowerPC tests; a connected GBA session has not been tested. Hosted release
+jobs separately test the exact release commit and rebuild and audit its final
+Windows executable, installer and archives. See [Fairy rules](FAIRY_TYPE.md).
+
 ## v2.1.4 Deoxys forms and Meteorite (2026-11-26)
 
 The local source campaign covered all 194 isolated test modules, with 1,830

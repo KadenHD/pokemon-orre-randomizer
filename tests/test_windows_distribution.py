@@ -97,6 +97,8 @@ class WindowsDistributionTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             names = ["orre_randomizer/example.py", "orre_randomizer/assets/game/provenance.json",
+                *["orre_randomizer/assets/rules/fairy/" + name for name in
+                  ('catalog.json', 'transfer-messages.json', 'LICENSE-PokeAPI.txt', 'README.md')],
                 *["orre_randomizer/_native/" + n for n in (*build_desktop.NATIVE_RUNTIME_NAMES, "orre_musyx.json")],
                 "scripts/desktop.spec", "scripts/desktop_entry.py", "scripts/build_desktop.py", "scripts/release_media.py",
                 "scripts/build_native.py", "scripts/build_music.py", "pyproject.toml", "requirements-build.txt",

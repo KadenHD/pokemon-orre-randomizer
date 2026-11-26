@@ -202,7 +202,7 @@ class PokemonSheet(QDialog):
                 text = QVBoxLayout()
                 text.setSpacing(2)
                 text.addWidget(text_label(move_text))
-                description = descriptions.get(str(move["move"]))
+                description = move.get('descriptions', {}).get(language) or descriptions.get(str(move["move"]))
                 if isinstance(description, str) and description:
                     text.addWidget(text_label(description, "note"))
                 badge = move_type_label(game, language, move)

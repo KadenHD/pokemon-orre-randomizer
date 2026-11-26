@@ -180,6 +180,55 @@ class HostingPreparation(unittest.TestCase):
         self.assertEqual(list(self.output.iterdir()), [])
         self.assert_no_stage()
 
+    def test_windows_access_denied_on_existing_directory_is_a_collision(self):
+        self.output.mkdir()
+        sentinel = self.output / "keep.txt"
+        sentinel.write_text("keep")
+        error = PermissionError(errno.EACCES, "Access denied", str(self.output))
+        error.winerror = 5
+        with patch.object(hosting.os, "name", "nt"), \
+             patch.object(hosting.os, "rename", side_effect=error):
+            with self.assertRaises(FileExistsError) as caught:
+                hosting._publish(self.root / "stage", self.output)
+        self.assertIs(caught.exception.__cause__, error)
+        self.assertEqual(sentinel.read_text(), "keep")
+
+    def test_windows_access_denied_without_a_target_remains_an_access_error(self):
+        error = PermissionError(errno.EACCES, "Access denied", str(self.output))
+        error.winerror = 5
+        with patch.object(hosting.os, "name", "nt"), \
+             patch.object(hosting.os, "rename", side_effect=error) as rename, \
+             patch.object(hosting.time, "monotonic", side_effect=(100, 106)):
+            with self.assertRaises(PermissionError) as caught:
+                hosting._publish(self.root / "stage", self.output)
+        self.assertIs(caught.exception, error)
+        rename.assert_called_once()
+        self.assertFalse(self.output.exists())
+
+    def test_windows_transient_lock_retries_atomic_publication(self):
+        stage = self.root / "stage"
+        stage.mkdir()
+        (stage / "keep.txt").write_text("prepared archive")
+        original = os.rename
+        error = PermissionError(errno.EACCES, "Temporary sharing lock")
+        error.winerror = 32
+        calls = []
+
+        def rename(source, destination):
+            calls.append(source)
+            if len(calls) == 1:
+                raise error
+            original(source, destination)
+
+        with patch.object(hosting.os, "name", "nt"), \
+             patch.object(hosting.os, "rename", side_effect=rename), \
+             patch.object(hosting.time, "sleep") as wait:
+            hosting._publish(stage, self.output)
+        self.assertEqual(len(calls), 2)
+        wait.assert_called_once_with(.1)
+        self.assertEqual((self.output / "keep.txt").read_text(), "prepared archive")
+        self.assertFalse(stage.exists())
+
     def test_symlink_source_and_parent_are_refused(self):
         linked = self.root / "source-link.zip"
         try:

@@ -53,7 +53,11 @@ def _display_localized_name(name: str, reference: str | None, language: str) -> 
 
 
 def _display_move_name(row: dict, language: str) -> str:
-    reference = MOVE_NAMES.get(language, {}).get(row.get("move"))
+    if row.get("canonical_move_id") in (574, 577, 583, 584, 585, 605, 608):
+        from .fairy_data import move_name
+        reference = move_name(row["canonical_move_id"], language)
+    else:
+        reference = MOVE_NAMES.get(language, {}).get(row.get("move"))
     return _display_localized_name(display_name(row, language), reference, language)
 
 
@@ -70,8 +74,45 @@ def _name_map(identifier: int, names: dict, fallback: dict) -> dict[str, str]:
 
 
 def _type_names(types) -> dict[str, list[str]]:
-    return {language: [TYPE_NAMES[language].get(index, "???") for index in dict.fromkeys(types)]
+    from .fairy_data import type_name
+    return {language: [type_name(language) if index == 19 else TYPE_NAMES[language].get(index, "???") for index in dict.fromkeys(types)]
             for language in LANGUAGES}
+
+
+def append_fairy_details(species: dict, moves: dict, tms: list, dol: bytes,
+                         report: dict, game_id: str) -> dict:
+    """Add only rows/TMs verified in this final DOL, never a prepared preview guess."""
+    from .fairy_tms import read_installed_content
+    from .fairy_gameplay import catalog_from_rows, current_context
+    from .fairy_data import move_name, move_description
+    if report.get("game_id") != game_id:
+        raise FormatError("Fairy details and installed runtime belong to different games")
+    installed = read_installed_content(dol, report)
+    context = current_context(game_id)
+    if context is not None and installed["moves"] != context.move_rows:
+        raise FormatError("Installed Fairy moves differ from the generation reference")
+    catalog = catalog_from_rows(game_id, installed["moves"])
+    for index, row in catalog.items():
+        canonical = row["canonical_move_id"]
+        moves[str(index)] = {"move": index, "canonical_move_id": canonical,
+            "names": {language: move_name(canonical, language) for language in LANGUAGES},
+            "descriptions": {language: move_description(canonical, language) for language in LANGUAGES},
+            "type": row["type"], "type_names": _type_names([row["type"]]),
+            "pp": row["pp"], "power": row["power"], "accuracy": row["accuracy"],
+            "damage_class": row["damage_class"], "effect": row["effect"],
+            "native_row_verified": True}
+    native = {row["tm"]: row["move"] for row in tms}
+    actual = {row["tm"]: row["move"] for row in installed["tms"]}
+    if any(actual.get(number) != move for number, move in native.items()):
+        raise FormatError("Fairy TM details disagree with the native final table")
+    if set(actual) != set(range(1, 58)):
+        raise FormatError("Fairy TM details do not contain all 57 machines")
+    tms[:] = [dict(row) for row in installed["tms"]]
+    for sheet in species.values():
+        compatibility = installed["compatibility"][sheet["national_dex"]]
+        sheet["compatible_tms"] = [number for number in sheet["compatible_tms"] if number <= 50]
+        sheet["compatible_tms"].extend(51 + index for index, enabled in enumerate(compatibility) if enabled)
+    return installed
 
 
 def evolution_text(method: int, condition: int, *, language: str = "fr",
@@ -95,7 +136,7 @@ def evolution_text(method: int, condition: int, *, language: str = "fr",
 def build_detail_catalog(original_rel: bytes, final_rel: bytes, original_dol: bytes,
                          final_dol: bytes, *, tables: dict | None = None,
                          symbols: list | None = None, names: dict | None = None,
-                         dol_info=None, summary: dict | None = None) -> dict:
+                         dol_info=None, summary: dict | None = None, fairy_report: dict | None = None) -> dict:
     """Build a JSON-only snapshot once, after every gameplay transformation.
 
     Production layout selection fingerprints the original artifacts. Explicit
@@ -177,12 +218,16 @@ def build_detail_catalog(original_rel: bytes, final_rel: bytes, original_dol: by
             position = offset + 0xBA + slot * 4
             level, move = final_rel[position], u16(final_rel, position + 2)
             if level and move:
-                if str(move) not in moves:
-                    raise FormatError("invalid final level-up move")
                 sheet["learnset"].append({"level": level, "move": move})
     check_range(final_dol, region.tm_table_offset, 50 * 8, "final TM table")
     tms = [{"tm": number + 1, "move": u16(final_dol, region.tm_table_offset + number * 8 + 6)}
            for number in range(50)]
+    if fairy_report is None:
+        fairy_report = (summary or {}).get("fairy", {}).get("additional_tms")
+    if fairy_report is not None:
+        append_fairy_details(species, moves, tms, final_dol, fairy_report, getattr(region, "game_id", None))
+    if any(str(row["move"]) not in moves for sheet in species.values() for row in sheet["learnset"]):
+        raise FormatError("invalid final level-up move")
     if any(str(row["move"]) not in moves for row in tms):
         raise FormatError("invalid final TM move")
     trainers = []
@@ -310,6 +355,8 @@ def encounter_details(catalog: dict, species_index: int, *, level: int | None = 
             continue
         row = catalog["moves"].get(str(index))
         if row is None:
+            if 375 <= index <= 381:
+                raise FormatError("The additional Fairy move is not present in this final ROM snapshot")
             row = {"move": index, "names": {language: detail_text("move_marker", language, id=index)
                     for language in LANGUAGES}, "special_marker": True}
         selected.append(copy.deepcopy(row))
@@ -386,7 +433,7 @@ def detail_sections(details: dict, language: str, *, include_move_types: bool = 
     sections["evolutions"] = evolutions
     sections["learnset"] = [detail_text("level", language, level=row["level"]) + " · "
                             + _display_move_name(row["details"], language) for row in details["learnset"]]
-    sections["tms"] = [detail_text("tms", language) + f" {row['tm']:02d} · "
+    sections["tms"] = [detail_text("tm", language) + f" {row['tm']:02d} · "
                        + _display_move_name(row["details"], language) for row in details["tms"]]
     for key in ("learnset", "tms"):
         if not sections[key]:

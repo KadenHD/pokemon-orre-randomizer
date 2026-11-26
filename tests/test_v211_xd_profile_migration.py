@@ -29,7 +29,7 @@ class V211XDProfileMigrationTests(unittest.TestCase):
                 self.assertEqual(old.source_engine_version, 'xd-native-capture-tutorial-v18')
                 self.assertTrue(old.engine_migration)
                 self.assertEqual(old.seed, payload['seed'])
-                self.assertEqual(json.loads(json.dumps(asdict(old.options))), payload['options'])
+                self.assertEqual(json.loads(json.dumps(asdict(old.options))), {**payload['options'], 'enable_fairy_type': False})
                 current = profiles.configuration_data(old.seed, old.options)
                 self.assertEqual(current['engine_version'], xd.VERSION)
                 self.assertNotEqual(current['engine_version'], payload['engine_version'])
@@ -42,7 +42,7 @@ class V211XDProfileMigrationTests(unittest.TestCase):
         self.assertEqual(report.region.game_id, payload['game_id'])
         self.assertEqual(report.source_sha256, payload['source_sha256'])
         self.assertEqual(report.profile.seed, payload['seed'])
-        self.assertEqual(json.loads(json.dumps(asdict(report.profile.options))), payload['options'])
+        self.assertEqual(json.loads(json.dumps(asdict(report.profile.options))), {**payload['options'], 'enable_fairy_type': False})
         self.assertTrue(report.profile.engine_migration)
 
     def test_old_challenge_codes_still_require_their_exact_engine(self):

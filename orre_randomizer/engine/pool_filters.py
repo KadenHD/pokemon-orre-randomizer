@@ -1,7 +1,7 @@
 """Replacement exclusions use National Dex IDs and original Gen III types."""
 from functools import lru_cache
 
-VALID_TYPES = frozenset(range(18)) - {9}
+VALID_TYPES = (frozenset(range(18)) - {9}) | {19}
 
 
 @lru_cache(maxsize=128)

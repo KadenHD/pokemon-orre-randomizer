@@ -655,7 +655,7 @@ class RealV210ProfileMigrationTests(unittest.TestCase):
             parser = profiles.parse_xd_profile if name.startswith('xd') else profiles.parse_profile
             with self.subTest(profile=name):
                 result = parser(encoded(payload))
-                self.assertEqual(option_values(result.options), payload['options'])
+                self.assertEqual(option_values(result.options), {**payload['options'], 'enable_fairy_type': False})
                 self.assertEqual(result.seed, payload['seed'])
                 self.assertEqual(result.source_engine_version, payload['engine_version'])
                 self.assertTrue(result.engine_migration)
@@ -672,7 +672,7 @@ class RealV210ProfileMigrationTests(unittest.TestCase):
         for name, payload in EXPORTED['reports'].items():
             with self.subTest(game=name):
                 report = profiles.parse_creation_report(encoded(payload), is_xd=name == 'xd')
-                self.assertEqual(option_values(report.profile.options), payload['options'])
+                self.assertEqual(option_values(report.profile.options), {**payload['options'], 'enable_fairy_type': False})
                 self.assertEqual(report.profile.seed, payload['seed'])
                 self.assertEqual(report.region.game_id, payload['game_id'])
                 self.assertEqual(report.source_sha256, payload['source_sha256'])

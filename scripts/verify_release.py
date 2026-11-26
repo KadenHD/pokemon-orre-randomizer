@@ -22,7 +22,7 @@ from scripts.release_checksums import load_manifest, verify_checksum, verify_ins
 FORBIDDEN = {".iso", ".rvz", ".gcm", ".fsys", ".dol", ".rel", ".raw", ".gci", ".sav"}
 SOURCE_ROOT = f"{REPOSITORY_NAME}/"
 BINARY_ROOT = f"{APP_EXECUTABLE}/_internal/"
-SOURCE_TEST_TIMEOUT = 13 * 60
+SOURCE_TEST_TIMEOUT = 16 * 60
 
 
 def reject_private_build_paths(payload: bytes, name: str):

@@ -1,5 +1,31 @@
 # Changelog
 
+## 2.1.5 - 2026-11-26
+
+- Add an opt-in Fairy setting shared by Colosseum and XD, disabled in both
+  presets. Update 18 existing species and three native moves while keeping
+  generation III's other type matchups and the separate Shadow type.
+- Add Disarming Voice, Draining Kiss, Play Rough, Fairy Wind, Moonblast,
+  Dazzling Gleam and Baby-Doll Eyes with approved existing animations, native
+  localized help, level-up additions and evolution-learning events.
+- Add ordinary TM51-TM57 items, cash-shop stock and a single 57-TM shuffle with
+  matching descriptions and compatibility. Keep the eight native HMs intact.
+- Add six-language native and independently rendered x4 Fairy badges, including
+  XD's small battle badges, and use the installed data in previews and sheets.
+- Keep older profiles' Fairy setting disabled and isolate content preparation
+  inside each generation or known-encounter preview worker.
+- Use the singular TM label before numbered entries in sheets and journals.
+- Use Colosseum Japan's native badge tables and message font field. Keep new
+  move text and Meteorite text in the ROM's language on Japanese and USA discs;
+  European discs retain their in-game language selection.
+- Report a concurrently created HD hosting directory as an existing destination
+  on Windows, while preserving it and keeping unrelated access errors visible.
+  Retry brief Windows locks when publishing prepared HD archives.
+- Leave headroom for the complete test suite on Windows runners, keeping the
+  module watchdog and every test. Align source-audit and release-gate deadlines.
+- Retry brief Windows file locks when publishing an automatic save backup.
+  Keep publication atomic and stop after the existing bounded retry window.
+
 ## 2.1.4 - 2026-11-26
 
 - Add Deoxys's Attack, Defense and Speed forms to Colosseum using XD's models

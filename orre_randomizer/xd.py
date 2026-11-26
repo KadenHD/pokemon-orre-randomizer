@@ -1,6 +1,7 @@
 """Seeded transformations for the three verified retail Pokémon XD discs."""
 from __future__ import annotations
 from .move_modes import MoveMode
+from .fairy_content import scoped_content
 
 from collections import defaultdict
 from dataclasses import dataclass, field, fields, replace
@@ -52,7 +53,7 @@ from .xd_starter_progression import (
     patch_starter_progression, validate_starter_progression,
 )
 
-VERSION = "xd-saved-deoxys-forms-v21"
+VERSION = "xd-fairy-type-v22"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -143,6 +144,7 @@ class XDOptions:
     abilities_family_consistent: bool = _shared("abilities_family_consistent")
     randomize_stats: bool = _shared("randomize_stats")
     preserve_stat_totals: bool = _shared("preserve_stat_totals")
+    enable_fairy_type: bool = _shared("enable_fairy_type")
     randomize_types: bool = _shared("randomize_types")
     types_family_consistent: bool = _shared("types_family_consistent")
     randomize_held_items: bool = _shared("randomize_held_items")
@@ -238,6 +240,9 @@ def _table(rel: bytes, symbols: list[dict], index: int, count: int, stride: int)
 
 
 def _species(rel: bytes, symbols: list[dict]):
+    from .fairy_gameplay import current_context
+    fairy = current_context('xd')
+    source = fairy.baseline_rel if fairy is not None and rel == fairy.original_rel else rel
     table = _table(rel, symbols, 88, 415, 0x124)
     species = {}
     edges = defaultdict(list)
@@ -249,7 +254,7 @@ def _species(rel: bytes, symbols: list[dict]):
             continue
         species[index] = (
             national, rel[position], sum(rel[position + 0x8F:position + 0x9A:2]),
-            tuple((rel[pos], u16(rel, pos + 2)) for pos in
+            tuple((source[pos], u16(source, pos + 2)) for pos in
                   range(position + 0xC4, position + 0xC4 + 19 * 4, 4)),
         )
         families[index] = index
@@ -325,7 +330,8 @@ def _starter(dol: bytes, offset: int, seed: str, species, edges, families, eligi
             # Keep the historical native-learnset path for old profiles. A
             # short learnset is valid: do not demand an attack or random moves.
             moves = list(dict.fromkeys(
-                move for level, move in species[chosen][3] if 0 < level <= 10 and 0 < move <= 354
+                move for level, move in species[chosen][3] if 0 < level <= 10 and
+                (0 < move <= 354 or (getattr(options, 'enable_fairy_type', False) and move in move_randomizer.catalog))
             ))[-4:]
             moves += [0] * (4 - len(moves))
     if draw_moves:
@@ -564,6 +570,7 @@ def starter_progression_active(options: XDOptions) -> bool:
                 options.trainer_level_multiplier != 1.0, options.progressive_levels))
 
 
+@scoped_content
 def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progress, cancel, *, include_details=False):
     # Use the same bounded ISO reader and cancellation scope as Colosseum.
     from .service import checkpoint, read_exact
@@ -626,10 +633,13 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
     protected = xd_species(options, native_story, families=families)
     new_rel, summary["species_gameplay"] = patch_species_gameplay(
         new_rel, symbols, seed, species, families, options, preserve_species=protected)
-    if any(summary["species_gameplay"][field] for field in ("types_changed", "abilities_changed", "base_stats_changed")):
+    if options.enable_fairy_type or any(summary["species_gameplay"][field] for field in ("types_changed", "abilities_changed", "base_stats_changed")):
         dol, summary["battle_simulator"] = protect_simulator_species(original_dol, dol, rel, symbols, region.game_id)
     new_rel, dol, summary["tm_gameplay"] = patch_tm_gameplay(
         new_rel, dol, symbols, region.game_id, seed, species, options, preserve_species=protected)
+    if options.enable_fairy_type:
+        from .fairy_content import install_content
+        new_rel, dol, summary['fairy'] = install_content(new_rel, dol, summary['tm_gameplay'])
     new_rel, summary["field_items"] = apply_field_items(rel, new_rel, seed, options)
     move_randomizer = XDMoveRandomizer(new_rel, symbols, species, options)
     if options.randomize_starter or options.randomize_starter_moves:
@@ -854,7 +864,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                 updated_dialogue[name] = sorted(messages)
         if updated_dialogue:
             summary["story_dialogue"] = updated_dialogue
-    if options.stone_shops or options.randomize_shop_items:
+    if options.stone_shops or options.randomize_shop_items or options.enable_fairy_type:
         shop_suffixes = ("", "_fr", "_ge", "_it", "_sp") if region.game_id == "GXXP01" else ("",)
         for suffix in shop_suffixes:
             name = f"pocket_menu{suffix}.fsys"
@@ -875,6 +885,12 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                 if "shop_items" in summary and summary["shop_items"] != shop_report:
                     raise FormatError("localized XD cash stocks disagree")
                 summary["shop_items"] = shop_report
+            if options.enable_fairy_type:
+                from .fairy_integration import add_tm_shop_stock
+                patched, fairy_shop_report = add_tm_shop_stock(original_menu, patched, region.game_id)
+                if 'fairy_tms_shop' in summary and summary['fairy_tms_shop'] != fairy_shop_report:
+                    raise FormatError('Localized XD Fairy TM stocks disagree')
+                summary['fairy_tms_shop'] = fairy_shop_report
             archives[name] = archive, {}
             if patched != original_menu:
                 replacements[name] = {member["index"]: patched}
@@ -939,7 +955,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             original_dol, dol, region.game_id, read_archive, gift_updates,
             seed=seed, options=options)
     if include_details:
-        summary["detail_catalog"] = detail_catalog(new_rel, dol, symbols, region.game_id, edges, move_randomizer)
+        summary["detail_catalog"] = detail_catalog(new_rel, dol, symbols, region.game_id, edges, move_randomizer,
+            fairy_report=summary.get('fairy', {}).get('additional_tms'))
     story_families = defaultdict(list)
     if has_changes:
         from .castform_weather import install_weather_appearances
@@ -1025,6 +1042,14 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         if name in updates:
             raise FormatError("overlapping XD archive edits")
         updates[name], _ = repack_fsys(archives[name][0], members)
+    if options.enable_fairy_type:
+        from .fairy_content import append_badge_archives
+        common_name = 'common.fsys'
+        updated_common, badges, summary['fairy']['badge_archives'] = append_badge_archives(
+            updates.get(common_name, common),
+            lambda name: updates[name] if name in updates else read_archive(name))
+        updates[common_name] = updated_common
+        updates.update(badges)
     for name, payload in updates.items():
         checkpoint(cancel)
         if name == STARTER_PROGRESSION_ARCHIVE and native_starter_progression is not None:

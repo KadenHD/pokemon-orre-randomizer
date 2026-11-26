@@ -118,6 +118,41 @@ class RunManagement(unittest.TestCase):
         self.assertTrue(any(c["reason"] == "before-restore" for c in copies))
         self.assertTrue(any((self.folder / "SaveBackups" / c["name"] / self.card.name).read_bytes() == b"newer card" for c in copies))
 
+    @unittest.skipUnless(os.name == "nt", "Windows file sharing")
+    def test_backup_retries_a_transient_windows_lock_without_changing_card(self):
+        original = Path.rename
+        attempts = []
+        blocked = PermissionError("temporary Windows file lock")
+        blocked.winerror = 5
+
+        def rename(stage, destination):
+            if stage.name.startswith(".snapshot-"):
+                attempts.append(stage)
+                if len(attempts) == 1:
+                    raise blocked
+            return original(stage, destination)
+
+        with patch.object(Path, "rename", rename):
+            name = backup_cards(self.folder)
+        self.assertEqual(len(attempts), 2)
+        self.assertEqual(self.card.read_bytes(), b"first card data")
+        self.assertEqual((self.folder / "SaveBackups" / name / self.card.name).read_bytes(), b"first card data")
+        self.assertFalse(list((self.folder / "SaveBackups").glob(".snapshot-*")))
+
+    @unittest.skipUnless(os.name == "nt", "Windows file sharing")
+    def test_backup_persistent_windows_lock_is_bounded_and_leaves_no_partial_backup(self):
+        blocked = PermissionError("persistent Windows file lock")
+        blocked.winerror = 32
+        with patch.object(Path, "rename", side_effect=blocked) as rename, \
+             patch("orre_randomizer.play_folders.time.monotonic", side_effect=(100, 106)):
+            with self.assertRaises(PermissionError) as caught:
+                backup_cards(self.folder)
+        self.assertIs(caught.exception, blocked)
+        rename.assert_called_once()
+        self.assertEqual(self.card.read_bytes(), b"first card data")
+        self.assertEqual(list_backups(self.folder), [])
+        self.assertFalse(list((self.folder / "SaveBackups").glob(".snapshot-*")))
+
     def test_damaged_backup_and_wrong_run_are_refused_before_replacing_card(self):
         first = backup_cards(self.folder)
         snapshot = self.folder / "SaveBackups" / first

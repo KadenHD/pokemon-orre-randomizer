@@ -24,6 +24,7 @@ _ROWS = {
     "colosseum_shadow_rush": ("Charge noire", "Shadow Rush", "Cryptoschlag", "Ataque oscuro", "Ombroraffica", "ダークラッシュ"),
     "learnset": ("Apprentissages par niveau", "Level-up moves", "Attacken durch Levelaufstieg", "Movimientos por nivel", "Mosse per livello", "レベルアップで覚えるわざ"),
     "tms": ("CT", "TMs", "TMs", "MT", "MT", "わざマシン"),
+    "tm": ("CT", "TM", "TM", "MT", "MT", "わざマシン"),
     "types": ("Types", "Types", "Typen", "Tipos", "Tipi", "タイプ"),
     "shadow_type": ("Obscur", "Shadow", "Crypto", "Oscuro", "Ombra", "ダーク"),
     "spinda_pattern": ("Motif des taches", "Spot pattern", "Fleckenmuster", "Patrón de manchas", "Motivo delle macchie", "ぶち模様"),

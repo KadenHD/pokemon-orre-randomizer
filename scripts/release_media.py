@@ -46,6 +46,8 @@ def game_asset_name_allowed(name):
 
 
 DOCUMENTATION_IMAGES = frozenset(("home.png", "colosseum-settings.png",
+                                 "colosseum-fairy-settings.png", "xd-fairy-settings.png",
+                                 "colosseum-fairy-moves.png", "xd-fairy-moves.png",
                                  "colosseum-deoxys-forms.png", "xd-deoxys-forms.png",
                                  "run-library.png", "save-backups.png", "storage.png", "challenge-code.png", "support-diagnostic.png",
                                  "colosseum-launcher.png", "xd-launcher.png", "hd-packs.png", "hd-custom-lugia-portraits.png",

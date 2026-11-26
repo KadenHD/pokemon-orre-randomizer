@@ -11,6 +11,7 @@ import re
 import sys
 import tempfile
 import threading
+import time
 from urllib.parse import urlsplit
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -73,8 +74,19 @@ def _copy_archive(source: Path, destination: Path, cancel):
 def _publish(stage: Path, output: Path):
     """Atomically rename a directory while refusing even a concurrent empty target."""
     if os.name == "nt":
-        os.rename(stage, output)  # Windows rename never replaces an existing target.
-        return
+        deadline = time.monotonic() + 5
+        while True:
+            try:
+                os.rename(stage, output)  # Never replace an existing target.
+                return
+            except PermissionError as error:
+                # Windows reports an existing directory as ACCESS_DENIED on
+                # some filesystems; scanners can also briefly lock new files.
+                if getattr(error, "winerror", None) in (5, 32) and os.path.lexists(output):
+                    raise FileExistsError(errno.EEXIST, "Destination already exists", str(output)) from error
+                if getattr(error, "winerror", None) not in (5, 32) or time.monotonic() >= deadline:
+                    raise
+                time.sleep(.1)
     library = ctypes.CDLL(None, use_errno=True)
     if sys.platform.startswith("linux"):
         rename = getattr(library, "renameat2", None)

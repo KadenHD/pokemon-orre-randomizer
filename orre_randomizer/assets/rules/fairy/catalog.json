@@ -1,0 +1,2414 @@
+{
+  "schema": 1,
+  "version": "fairy-bdsp-pokeapi-v1",
+  "source_repository": "PokeAPI/pokeapi",
+  "source_commit": "de6760be38b60a3024f1d9054330ff265f0dc619",
+  "reference_version_group": {
+    "id": 23,
+    "identifier": "brilliant-diamond-shining-pearl"
+  },
+  "coverage": {
+    "national_species": 386,
+    "fairy_retyped_species": 18,
+    "existing_retyped_moves": 3,
+    "new_moves": 7
+  },
+  "id_namespaces": {
+    "species": "National Dex; never a GameCube internal species index",
+    "types": "PokeAPI type IDs; require an explicit native conversion",
+    "moves": "Canonical move IDs; new moves require an explicit native allocation"
+  },
+  "type_names": {
+    "en": "Fairy",
+    "fr": "Fée",
+    "de": "Fee",
+    "es": "Hada",
+    "it": "Folletto",
+    "ja": "フェアリー"
+  },
+  "species": {
+    "35": {
+      "modern_types": [
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "36": {
+      "modern_types": [
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "39": {
+      "modern_types": [
+        1,
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "40": {
+      "modern_types": [
+        1,
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "122": {
+      "modern_types": [
+        14,
+        18
+      ],
+      "native_generation_three_types": [
+        14
+      ]
+    },
+    "173": {
+      "modern_types": [
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "174": {
+      "modern_types": [
+        1,
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "175": {
+      "modern_types": [
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "176": {
+      "modern_types": [
+        18,
+        3
+      ],
+      "native_generation_three_types": [
+        1,
+        3
+      ]
+    },
+    "183": {
+      "modern_types": [
+        11,
+        18
+      ],
+      "native_generation_three_types": [
+        11
+      ]
+    },
+    "184": {
+      "modern_types": [
+        11,
+        18
+      ],
+      "native_generation_three_types": [
+        11
+      ]
+    },
+    "209": {
+      "modern_types": [
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "210": {
+      "modern_types": [
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "280": {
+      "modern_types": [
+        14,
+        18
+      ],
+      "native_generation_three_types": [
+        14
+      ]
+    },
+    "281": {
+      "modern_types": [
+        14,
+        18
+      ],
+      "native_generation_three_types": [
+        14
+      ]
+    },
+    "282": {
+      "modern_types": [
+        14,
+        18
+      ],
+      "native_generation_three_types": [
+        14
+      ]
+    },
+    "298": {
+      "modern_types": [
+        1,
+        18
+      ],
+      "native_generation_three_types": [
+        1
+      ]
+    },
+    "303": {
+      "modern_types": [
+        9,
+        18
+      ],
+      "native_generation_three_types": [
+        9
+      ]
+    }
+  },
+  "moves": {
+    "186": {
+      "identifier": "sweet-kiss",
+      "is_new": false,
+      "type": 18,
+      "power": null,
+      "pp": 10,
+      "accuracy": 75,
+      "priority": 0,
+      "target": "selected-pokemon",
+      "damage_class": "status",
+      "canonical_effect_id": 50,
+      "effect_chance": null,
+      "drain_percent": 0,
+      "healing_percent": 0,
+      "flags": [
+        "mirror",
+        "protect",
+        "reflectable"
+      ],
+      "stat_changes": [],
+      "names": {
+        "en": "Sweet Kiss",
+        "fr": "Doux Baiser",
+        "de": "Bitterkuss",
+        "es": "Beso Dulce",
+        "it": "Dolcebacio",
+        "ja": "てんしのキッス"
+      },
+      "descriptions": {
+        "en": "The user kisses the target with a sweet, angelic cuteness that causes confusion.",
+        "fr": "Le lanceur envoie un bisou si mignon et désarmant qu’il plonge l’ennemi dans la confusion.",
+        "de": "Anwender küsst das Ziel, das durch diese Niedlichkeit verwirrt wird.",
+        "es": "Da un beso con tal dulzura que causa confusión.",
+        "it": "Chi la usa bacia il bersaglio con una dolcezza angelica, confondendolo.",
+        "ja": "てんしのように かわいく キスしてあいてを こんらん させる。"
+      }
+    },
+    "204": {
+      "identifier": "charm",
+      "is_new": false,
+      "type": 18,
+      "power": null,
+      "pp": 20,
+      "accuracy": 100,
+      "priority": 0,
+      "target": "selected-pokemon",
+      "damage_class": "status",
+      "canonical_effect_id": 59,
+      "effect_chance": null,
+      "drain_percent": 0,
+      "healing_percent": 0,
+      "flags": [
+        "mirror",
+        "protect",
+        "reflectable"
+      ],
+      "stat_changes": [
+        {
+          "stat_id": 2,
+          "change": -2
+        }
+      ],
+      "names": {
+        "en": "Charm",
+        "fr": "Charme",
+        "de": "Charme",
+        "es": "Encanto",
+        "it": "Fascino",
+        "ja": "あまえる"
+      },
+      "descriptions": {
+        "en": "The user gazes at the target rather charmingly, making it less wary. This harshly lowers the target’s Attack stat.",
+        "fr": "Le lanceur fait les yeux doux pour berner l’ennemi et beaucoup réduire son Attaque.",
+        "de": "Betört das Ziel und reduziert dessen Angriffs-Wert stark.",
+        "es": "Engatusa al objetivo y reduce mucho su Ataque.",
+        "it": "Ammalia il bersaglio con lo sguardo per renderlo meno cauto. Ne riduce molto l’Attacco.",
+        "ja": "かわいく みつめて ゆだんを さそいあいての こうげきを がくっと さげる。"
+      }
+    },
+    "236": {
+      "identifier": "moonlight",
+      "is_new": false,
+      "type": 18,
+      "power": null,
+      "pp": 5,
+      "accuracy": null,
+      "priority": 0,
+      "target": "user",
+      "damage_class": "status",
+      "canonical_effect_id": 133,
+      "effect_chance": null,
+      "drain_percent": 0,
+      "healing_percent": 50,
+      "flags": [
+        "heal",
+        "snatch"
+      ],
+      "stat_changes": [],
+      "names": {
+        "en": "Moonlight",
+        "fr": "Rayon Lune",
+        "de": "Mondschein",
+        "es": "Luz Lunar",
+        "it": "Lucelunare",
+        "ja": "つきのひかり"
+      },
+      "descriptions": {
+        "en": "The user restores its own HP. The amount of HP regained varies with the weather.",
+        "fr": "Un soin qui restaure des PV au lanceur. Son efficacité varie en fonction de la météo.",
+        "de": "Füllt KP des Anwenders auf. Die Menge hängt vom Wetter ab.",
+        "es": "Restaura PS del usuario. La cantidad varía según el tiempo que haga.",
+        "it": "Chi la usa recupera PS. Il numero di PS recuperati dipende dalle condizioni atmosferiche.",
+        "ja": "じぶんの ＨＰを かいふく する。てんきに よってかいふくの りょうが へんか する。"
+      }
+    },
+    "574": {
+      "identifier": "disarming-voice",
+      "is_new": true,
+      "type": 18,
+      "power": 40,
+      "pp": 15,
+      "accuracy": null,
+      "priority": 0,
+      "target": "all-opponents",
+      "damage_class": "special",
+      "canonical_effect_id": 381,
+      "effect_chance": null,
+      "drain_percent": 0,
+      "healing_percent": 0,
+      "flags": [
+        "authentic",
+        "mirror",
+        "protect",
+        "sound"
+      ],
+      "stat_changes": [],
+      "names": {
+        "en": "Disarming Voice",
+        "fr": "Voix Enjôleuse",
+        "de": "Säuselstimme",
+        "es": "Voz Cautivadora",
+        "it": "Incantavoce",
+        "ja": "チャームボイス"
+      },
+      "descriptions": {
+        "en": "Letting out a charming cry, the user does emotional damage to opposing Pokémon. This attack never misses.",
+        "fr": "Laisse s’échapper une voix enchanteresse qui inflige des dégâts psychiques à l’ennemi. Touche à coup sûr.",
+        "de": "Der Anwender stößt einen bezirzenden Ruf aus, mit dem er gegnerische Pokémon in seinen Bann schlägt und ihnen mentalen Schaden zufügt. Trifft garantiert.",
+        "es": "Obnubila a los oponentes con su fascinante voz y les provoca daños emocionales. Siempre acierta al objetivo.",
+        "it": "Chi la usa infligge un danno spirituale ai nemici nei paraggi con una voce suadente. L’attacco andrà immancabilmente a segno.",
+        "ja": "みわくの なきごえを だして あいてにせいしんてきな ダメージを あたえる。こうげきは かならず めいちゅう する。"
+      }
+    },
+    "577": {
+      "identifier": "draining-kiss",
+      "is_new": true,
+      "type": 18,
+      "power": 50,
+      "pp": 10,
+      "accuracy": 100,
+      "priority": 0,
+      "target": "selected-pokemon",
+      "damage_class": "special",
+      "canonical_effect_id": 349,
+      "effect_chance": null,
+      "drain_percent": 75,
+      "healing_percent": 0,
+      "flags": [
+        "contact",
+        "heal",
+        "mirror",
+        "protect"
+      ],
+      "stat_changes": [],
+      "names": {
+        "en": "Draining Kiss",
+        "fr": "Vampibaiser",
+        "de": "Diebeskuss",
+        "es": "Beso Drenaje",
+        "it": "Assorbibacio",
+        "ja": "ドレインキッス"
+      },
+      "descriptions": {
+        "en": "The user steals the target’s HP with a kiss. The user’s HP is restored by over half of the damage taken by the target.",
+        "fr": "Aspire la force vitale de l’ennemi par un baiser. Rend au lanceur un nombre de PV supérieur ou égal à la moitié des dégâts infligés.",
+        "de": "Der Anwender stiehlt dem Ziel mit einem Kuss KP. Die Höhe der Heilung beträgt mehr als die Hälfte des beim Ziel angerichteten Schadens.",
+        "es": "El usuario absorbe PS del objetivo con un beso y restaura su propia energía en una cantidad igual o superior a la mitad del daño infligido.",
+        "it": "Chi la usa assorbe energia dal bersaglio con un bacio, recuperando così PS in quantità pari a più della metà del danno inferto.",
+        "ja": "キッスによって あいてから ＨＰをすいとる。 あたえた ダメージのはんぶんいじょう ＨＰを かいふくする。"
+      }
+    },
+    "583": {
+      "identifier": "play-rough",
+      "is_new": true,
+      "type": 18,
+      "power": 90,
+      "pp": 10,
+      "accuracy": 90,
+      "priority": 0,
+      "target": "selected-pokemon",
+      "damage_class": "physical",
+      "canonical_effect_id": 69,
+      "effect_chance": 10,
+      "drain_percent": 0,
+      "healing_percent": 0,
+      "flags": [
+        "contact",
+        "mirror",
+        "protect"
+      ],
+      "stat_changes": [
+        {
+          "stat_id": 2,
+          "change": -1
+        }
+      ],
+      "names": {
+        "en": "Play Rough",
+        "fr": "Câlinerie",
+        "de": "Knuddler",
+        "es": "Carantoña",
+        "it": "Carineria",
+        "ja": "じゃれつく"
+      },
+      "descriptions": {
+        "en": "The user plays rough with the target and attacks it. This may also lower the target’s Attack stat.",
+        "fr": "Attaque l’ennemi avec un câlin. Peut diminuer son Attaque.",
+        "de": "Der Anwender knuddelt das Ziel und greift es an. Senkt eventuell den Angriffs-Wert des Zieles.",
+        "es": "El Pokémon que lo usa le hace cucamonas al objetivo y lo ataca. Puede disminuir el Ataque del objetivo.",
+        "it": "Chi la usa attacca il bersaglio con delle carinerie. Può anche ridurne l’Attacco.",
+        "ja": "あいてに じゃれついてこうげきする。 あいてのこうげきを さげる ことがある。"
+      }
+    },
+    "584": {
+      "identifier": "fairy-wind",
+      "is_new": true,
+      "type": 18,
+      "power": 40,
+      "pp": 30,
+      "accuracy": 100,
+      "priority": 0,
+      "target": "selected-pokemon",
+      "damage_class": "special",
+      "canonical_effect_id": 1,
+      "effect_chance": null,
+      "drain_percent": 0,
+      "healing_percent": 0,
+      "flags": [
+        "mirror",
+        "protect"
+      ],
+      "stat_changes": [],
+      "names": {
+        "en": "Fairy Wind",
+        "fr": "Vent Féérique",
+        "de": "Feenbrise",
+        "es": "Viento Feérico",
+        "it": "Vento di Fata",
+        "ja": "ようせいのかぜ"
+      },
+      "descriptions": {
+        "en": "The user stirs up a fairy wind and strikes the target with it.",
+        "fr": "Déchaîne un vent magique qui cingle l’ennemi.",
+        "de": "Lässt eine Feenbrise aufkommen, die das Ziel erfasst und ihm Schaden zufügt.",
+        "es": "El Pokémon que lo usa desata un vendaval feérico que arremete contra el objetivo.",
+        "it": "Chi la usa solleva un vento fatato che investe il bersaglio.",
+        "ja": "ようせいのかぜを おこしあいてに ふきつけて こうげきする。"
+      }
+    },
+    "585": {
+      "identifier": "moonblast",
+      "is_new": true,
+      "type": 18,
+      "power": 95,
+      "pp": 15,
+      "accuracy": 100,
+      "priority": 0,
+      "target": "selected-pokemon",
+      "damage_class": "special",
+      "canonical_effect_id": 72,
+      "effect_chance": 30,
+      "drain_percent": 0,
+      "healing_percent": 0,
+      "flags": [
+        "mirror",
+        "protect"
+      ],
+      "stat_changes": [
+        {
+          "stat_id": 4,
+          "change": -1
+        }
+      ],
+      "names": {
+        "en": "Moonblast",
+        "fr": "Pouvoir Lunaire",
+        "de": "Mondgewalt",
+        "es": "Fuerza Lunar",
+        "it": "Forza Lunare",
+        "ja": "ムーンフォース"
+      },
+      "descriptions": {
+        "en": "Borrowing the power of the moon, the user attacks the target. This may also lower the target’s Sp. Atk stat.",
+        "fr": "Attaque l’ennemi grâce au pouvoir de la lune. Peut diminuer son Attaque Spéciale.",
+        "de": "Der Anwender macht sich die Kraft des Mondes zunutze, um anzugreifen. Gelegentlich wird dabei der Spezial-Angriff des Zieles gesenkt.",
+        "es": "Invoca el poder de la luna para atacar al objetivo. Puede disminuir el Ataque Especial del objetivo.",
+        "it": "Chi la usa sfrutta il potere della luna per attaccare il bersaglio. Può anche ridurne l’Attacco Speciale.",
+        "ja": "つきの パワーを かりてあいてを こうげきする。 あいてのとくこうを さげる ことがある。"
+      }
+    },
+    "605": {
+      "identifier": "dazzling-gleam",
+      "is_new": true,
+      "type": 18,
+      "power": 80,
+      "pp": 10,
+      "accuracy": 100,
+      "priority": 0,
+      "target": "all-opponents",
+      "damage_class": "special",
+      "canonical_effect_id": 1,
+      "effect_chance": null,
+      "drain_percent": 0,
+      "healing_percent": 0,
+      "flags": [
+        "mirror",
+        "protect"
+      ],
+      "stat_changes": [],
+      "names": {
+        "en": "Dazzling Gleam",
+        "fr": "Éclat Magique",
+        "de": "Zauberschein",
+        "es": "Brillo Mágico",
+        "it": "Magibrillio",
+        "ja": "マジカルシャイン"
+      },
+      "descriptions": {
+        "en": "The user damages opposing Pokémon by emitting a powerful flash.",
+        "fr": "Libère une puissante décharge lumineuse qui inflige des dégâts à l’ennemi.",
+        "de": "Der Anwender feuert einen mächtigen Lichtblitz ab, der gegnerischen Pokémon Schaden zufügt.",
+        "es": "Inflige daño a los oponentes con una potente luz.",
+        "it": "Chi la usa emette una luce potentissima che infligge danni ai nemici intorno.",
+        "ja": "きょうりょくな ひかりを はなちあいてに ダメージを あたえる。"
+      }
+    },
+    "608": {
+      "identifier": "baby-doll-eyes",
+      "is_new": true,
+      "type": 18,
+      "power": null,
+      "pp": 30,
+      "accuracy": 100,
+      "priority": 1,
+      "target": "selected-pokemon",
+      "damage_class": "status",
+      "canonical_effect_id": 365,
+      "effect_chance": null,
+      "drain_percent": 0,
+      "healing_percent": 0,
+      "flags": [
+        "mirror",
+        "protect",
+        "reflectable"
+      ],
+      "stat_changes": [
+        {
+          "stat_id": 2,
+          "change": -1
+        }
+      ],
+      "names": {
+        "en": "Baby-Doll Eyes",
+        "fr": "Regard Touchant",
+        "de": "Kulleraugen",
+        "es": "Ojitos Tiernos",
+        "it": "Occhioni Teneri",
+        "ja": "つぶらなひとみ"
+      },
+      "descriptions": {
+        "en": "The user stares at the target with its baby-doll eyes, which lowers the target’s Attack stat. This move always goes first.",
+        "fr": "Fixe l’ennemi d’un air très attendrissant qui le touche et diminue son Attaque. Agit en priorité.",
+        "de": "Bei dieser Erstschlag-Attacke erobert der Anwender das Herz des Zieles, indem er es mit Kulleraugen ansieht, und senkt dabei dessen Angriffs-Wert.",
+        "es": "Lanza una mirada al objetivo con ojos acaramelados, con lo que logra que su Ataque se reduzca. Este movimiento tiene prioridad alta.",
+        "it": "Chi la usa rivolge i propri occhioni languidi al bersaglio, riducendone l’Attacco. Questa mossa ha priorità alta.",
+        "ja": "つぶらなひとみで あいてを みつめてこうげきを さげる。かならず せんせい こうげき できる。"
+      }
+    }
+  },
+  "learning": {
+    "1": [
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "25": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 5
+      }
+    ],
+    "26": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 3
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 6
+      }
+    ],
+    "29": [
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "35": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 3
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 5
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 24,
+        "order": null
+      },
+      {
+        "move": 585,
+        "method": 1,
+        "level": 44,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "36": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 3
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 5
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 1,
+        "order": 11
+      },
+      {
+        "move": 585,
+        "method": 1,
+        "level": 1,
+        "order": 16
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "37": [
+      {
+        "move": 608,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "39": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 1
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 4
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 40,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "40": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 1
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 4
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 1,
+        "order": 15
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "43": [
+      {
+        "move": 585,
+        "method": 1,
+        "level": 28,
+        "order": null
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 36,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "44": [
+      {
+        "move": 585,
+        "method": 1,
+        "level": 32,
+        "order": null
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 44,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "45": [
+      {
+        "move": 585,
+        "method": 1,
+        "level": 1,
+        "order": 9
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 1,
+        "order": 11
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "52": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 44,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "53": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 54,
+        "order": null
+      }
+    ],
+    "58": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 48,
+        "order": null
+      }
+    ],
+    "59": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 1,
+        "order": 12
+      }
+    ],
+    "63": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "64": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "65": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "72": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "73": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "77": [
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "92": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "93": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "94": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "96": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "97": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "102": [
+      {
+        "move": 236,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "113": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 1
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 4
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "120": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "121": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "122": [
+      {
+        "move": 605,
+        "method": 1,
+        "level": 44,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "124": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 1
+      }
+    ],
+    "133": [
+      {
+        "move": 608,
+        "method": 1,
+        "level": 15,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 45,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "134": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 8
+      },
+      {
+        "move": 608,
+        "method": 1,
+        "level": 15,
+        "order": null
+      }
+    ],
+    "135": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 8
+      },
+      {
+        "move": 608,
+        "method": 1,
+        "level": 15,
+        "order": null
+      }
+    ],
+    "136": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 7
+      },
+      {
+        "move": 608,
+        "method": 1,
+        "level": 15,
+        "order": null
+      }
+    ],
+    "143": [
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "151": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "161": [
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      },
+      {
+        "move": 608,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "163": [
+      {
+        "move": 585,
+        "method": 1,
+        "level": 33,
+        "order": null
+      }
+    ],
+    "164": [
+      {
+        "move": 585,
+        "method": 1,
+        "level": 43,
+        "order": null
+      }
+    ],
+    "170": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "171": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "172": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 8,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 20,
+        "order": null
+      },
+      {
+        "move": 574,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "173": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 8,
+        "order": null
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 12,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 20,
+        "order": null
+      }
+    ],
+    "174": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 8,
+        "order": null
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 12,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 20,
+        "order": null
+      }
+    ],
+    "175": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 4,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 12,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "176": [
+      {
+        "move": 584,
+        "method": 1,
+        "level": 0,
+        "order": null
+      },
+      {
+        "move": 584,
+        "method": 1,
+        "level": 1,
+        "order": 1
+      },
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 4
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 12,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "177": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "178": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "182": [
+      {
+        "move": 585,
+        "method": 1,
+        "level": 1,
+        "order": 9
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 1,
+        "order": 11
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "183": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 9,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 21,
+        "order": null
+      }
+    ],
+    "184": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 9,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 25,
+        "order": null
+      }
+    ],
+    "187": [
+      {
+        "move": 584,
+        "method": 1,
+        "level": 10,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "188": [
+      {
+        "move": 584,
+        "method": 1,
+        "level": 10,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "189": [
+      {
+        "move": 584,
+        "method": 1,
+        "level": 10,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "196": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 7
+      },
+      {
+        "move": 608,
+        "method": 1,
+        "level": 15,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "197": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 9
+      },
+      {
+        "move": 608,
+        "method": 1,
+        "level": 15,
+        "order": null
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 30,
+        "order": null
+      }
+    ],
+    "200": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "202": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      }
+    ],
+    "203": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "209": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 7
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 37,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "210": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 8
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 43,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "216": [
+      {
+        "move": 608,
+        "method": 1,
+        "level": 1,
+        "order": 4
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 36,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "217": [
+      {
+        "move": 608,
+        "method": 1,
+        "level": 1,
+        "order": 8
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 9
+      }
+    ],
+    "231": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 33,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "232": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 12
+      }
+    ],
+    "238": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 36,
+        "order": null
+      }
+    ],
+    "241": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 45,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 50,
+        "order": null
+      }
+    ],
+    "242": [
+      {
+        "move": 186,
+        "method": 1,
+        "level": 1,
+        "order": 1
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 4
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "251": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "261": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 46,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "262": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 56,
+        "order": null
+      }
+    ],
+    "263": [
+      {
+        "move": 608,
+        "method": 1,
+        "level": 15,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "264": [
+      {
+        "move": 608,
+        "method": 1,
+        "level": 1,
+        "order": 4
+      }
+    ],
+    "269": [
+      {
+        "move": 236,
+        "method": 1,
+        "level": 17,
+        "order": null
+      }
+    ],
+    "280": [
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 577,
+        "method": 1,
+        "level": 12,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 24,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "281": [
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 577,
+        "method": 1,
+        "level": 12,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 28,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "282": [
+      {
+        "move": 605,
+        "method": 1,
+        "level": 0,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 1,
+        "level": 1,
+        "order": 1
+      },
+      {
+        "move": 585,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 5
+      },
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 7
+      },
+      {
+        "move": 577,
+        "method": 1,
+        "level": 12,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "285": [
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "287": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 38,
+        "order": null
+      }
+    ],
+    "288": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 1,
+        "order": 12
+      }
+    ],
+    "289": [
+      {
+        "move": 583,
+        "method": 1,
+        "level": 1,
+        "order": 10
+      }
+    ],
+    "293": [
+      {
+        "move": 574,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "298": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 9,
+        "order": null
+      }
+    ],
+    "299": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "300": [
+      {
+        "move": 574,
+        "method": 1,
+        "level": 13,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 25,
+        "order": null
+      },
+      {
+        "move": 608,
+        "method": 1,
+        "level": 43,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 46,
+        "order": null
+      }
+    ],
+    "301": [
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 7
+      },
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 11
+      },
+      {
+        "move": 608,
+        "method": 1,
+        "level": 1,
+        "order": 16
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 1,
+        "order": 17
+      }
+    ],
+    "302": [
+      {
+        "move": 236,
+        "method": 2,
+        "level": 0,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "303": [
+      {
+        "move": 584,
+        "method": 1,
+        "level": 4,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 48,
+        "order": null
+      }
+    ],
+    "311": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 25,
+        "order": null
+      },
+      {
+        "move": 186,
+        "method": 2,
+        "level": 0,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "312": [
+      {
+        "move": 186,
+        "method": 2,
+        "level": 0,
+        "order": null
+      },
+      {
+        "move": 204,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "313": [
+      {
+        "move": 236,
+        "method": 1,
+        "level": 19,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 43,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "314": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 9,
+        "order": null
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 19,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 1,
+        "level": 43,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "315": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "333": [
+      {
+        "move": 574,
+        "method": 1,
+        "level": 4,
+        "order": null
+      },
+      {
+        "move": 585,
+        "method": 1,
+        "level": 40,
+        "order": null
+      },
+      {
+        "move": 583,
+        "method": 2,
+        "level": 0,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "334": [
+      {
+        "move": 574,
+        "method": 1,
+        "level": 1,
+        "order": 6
+      },
+      {
+        "move": 585,
+        "method": 1,
+        "level": 44,
+        "order": null
+      },
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "337": [
+      {
+        "move": 585,
+        "method": 1,
+        "level": 1,
+        "order": 1
+      },
+      {
+        "move": 236,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      }
+    ],
+    "343": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "344": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "350": [
+      {
+        "move": 574,
+        "method": 1,
+        "level": 4,
+        "order": null
+      }
+    ],
+    "353": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "354": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "358": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "359": [
+      {
+        "move": 583,
+        "method": 2,
+        "level": 0,
+        "order": null
+      }
+    ],
+    "360": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 6
+      }
+    ],
+    "368": [
+      {
+        "move": 577,
+        "method": 1,
+        "level": 11,
+        "order": null
+      }
+    ],
+    "370": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      },
+      {
+        "move": 577,
+        "method": 1,
+        "level": 9,
+        "order": null
+      },
+      {
+        "move": 186,
+        "method": 1,
+        "level": 31,
+        "order": null
+      },
+      {
+        "move": 608,
+        "method": 1,
+        "level": 37,
+        "order": null
+      }
+    ],
+    "380": [
+      {
+        "move": 204,
+        "method": 1,
+        "level": 1,
+        "order": 2
+      }
+    ],
+    "385": [
+      {
+        "move": 605,
+        "method": 4,
+        "level": 0,
+        "order": null
+      }
+    ]
+  },
+  "fairy_matchups": [
+    {
+      "attack_type": 1,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 2,
+      "defense_type": 18,
+      "percent": 50
+    },
+    {
+      "attack_type": 3,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 4,
+      "defense_type": 18,
+      "percent": 200
+    },
+    {
+      "attack_type": 5,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 6,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 7,
+      "defense_type": 18,
+      "percent": 50
+    },
+    {
+      "attack_type": 8,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 9,
+      "defense_type": 18,
+      "percent": 200
+    },
+    {
+      "attack_type": 10,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 11,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 12,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 13,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 14,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 15,
+      "defense_type": 18,
+      "percent": 100
+    },
+    {
+      "attack_type": 16,
+      "defense_type": 18,
+      "percent": 0
+    },
+    {
+      "attack_type": 17,
+      "defense_type": 18,
+      "percent": 50
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 1,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 2,
+      "percent": 200
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 3,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 4,
+      "percent": 50
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 5,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 6,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 7,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 8,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 9,
+      "percent": 50
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 10,
+      "percent": 50
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 11,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 12,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 13,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 14,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 15,
+      "percent": 100
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 16,
+      "percent": 200
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 17,
+      "percent": 200
+    },
+    {
+      "attack_type": 18,
+      "defense_type": 18,
+      "percent": 100
+    }
+  ],
+  "provenance": {
+    "move_flavor_text.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/move_flavor_text.csv",
+      "sha256": "de633840c49991a5a180453f311b1ce3c517fb70998f5e95be2bf4bf17dac63b",
+      "bytes": 7759047,
+      "rows": 72559,
+      "selected_rows": 621
+    },
+    "pokemon_moves.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/pokemon_moves.csv",
+      "sha256": "24e0ace4ae8841e8879864b11247a5ad7058f34898b53f89df541284fc0847df",
+      "bytes": 11230342,
+      "rows": 665810,
+      "selected_rows": 223,
+      "national_species_with_any_baseline_move": 386
+    },
+    "LICENSE-PokeAPI.txt": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/LICENSE.md",
+      "bytes": 1621,
+      "sha256": "1c04595dc662981c20956ae4251dfa7b62b475c345eddf98bc9b904cb2373f2c"
+    },
+    "moves.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/moves.csv",
+      "bytes": 42366,
+      "sha256": "bda125c910e66d1117e7c9547f981aa137d9fb70fe1cba417d8c85590618d7eb"
+    },
+    "move_effect_prose.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/move_effect_prose.csv",
+      "bytes": 253898,
+      "sha256": "f6d9bf0d28433a010a8b8b6a0a14d1ef72fbfcb997717f71b0e34483b7ee9697"
+    },
+    "move_flags.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/move_flags.csv",
+      "bytes": 235,
+      "sha256": "1ebc43dfcbc635afcf4d34913158dbfd4cccbca0a496055c4a03e7ee5b9bc4d4"
+    },
+    "move_flag_map.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/move_flag_map.csv",
+      "bytes": 11840,
+      "sha256": "399cf005933418f406b94729903bd1528e9088bddc3bc1966be6c442a625da1b"
+    },
+    "move_meta.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/move_meta.csv",
+      "bytes": 20555,
+      "sha256": "93b92d5bddf4fc1536ca0a647c20453bf92e6389010f33ca6fc4c5e9c54363be"
+    },
+    "move_meta_stat_changes.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/move_meta_stat_changes.csv",
+      "bytes": 2091,
+      "sha256": "489edd9ee45ea7e60c99c5a860c4c0957b337af21f8ae9bf03dd121fd548d5ab"
+    },
+    "move_names.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/move_names.csv",
+      "bytes": 204666,
+      "sha256": "4c7956f12f3fdbaa6897ac61f8235d2d9ecb78d8428247692b4d56eb486e6ad4"
+    },
+    "pokemon_move_methods.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/pokemon_move_methods.csv",
+      "bytes": 199,
+      "sha256": "20a2fb09936d94ecf95144d9d5753ca2c172f591709c148779b8ee8c5796155a"
+    },
+    "pokemon_types.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/pokemon_types.csv",
+      "bytes": 19058,
+      "sha256": "f1fc4bfd657a034ea3bf6972423b10276424aa068577b304a78a08996425ba05"
+    },
+    "pokemon_types_past.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/pokemon_types_past.csv",
+      "bytes": 428,
+      "sha256": "02553c38e3871f99c7ed809b944066fea3f42ef6bccd4daba19274aca01fbff0"
+    },
+    "type_efficacy.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/type_efficacy.csv",
+      "bytes": 2883,
+      "sha256": "cdd7de4066680414d0a2433af805f139f425d6350cbf998ecab559a0fe8ff587"
+    },
+    "type_names.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/type_names.csv",
+      "bytes": 2874,
+      "sha256": "bb92d0439a08b7dae00909a8db6d1af27422959f13f6c5e9ae065b99730cf863"
+    },
+    "versions.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/versions.csv",
+      "bytes": 907,
+      "sha256": "70083465865a6a69a9aad2be3fc3915078c6ff740f14a090b1367d8ec9cfc3cd"
+    },
+    "version_groups.csv": {
+      "url": "https://raw.githubusercontent.com/PokeAPI/pokeapi/de6760be38b60a3024f1d9054330ff265f0dc619/data/v2/csv/version_groups.csv",
+      "bytes": 726,
+      "sha256": "28da8d89d8eb4966941f81a9e62b3990510ed4d76dd774158246551a8e7707a7"
+    }
+  },
+  "rights": {
+    "data_repository_license": "BSD-3-Clause; see LICENSE-PokeAPI.txt",
+    "game_names_and_flavor_text": "Game-derived Pokémon names and text remain subject to their original rights.",
+    "no_endorsement": true
+  }
+}

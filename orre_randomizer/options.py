@@ -69,6 +69,7 @@ class Options:
     abilities_family_consistent: bool = rule("Mêmes talents dans une famille", "Talents", "Les membres d’une famille partagent les talents tirés. Chaque espèce garde un ou deux talents selon son cas d’origine.")
     randomize_stats: bool = rule("Redistribuer les statistiques", "Statistiques", "Répartit à nouveau les PV, l’Attaque, la Défense, l’Attaque Spéciale, la Défense Spéciale et la Vitesse. Munja garde 1 PV de base.", False)
     preserve_stat_totals: bool = rule("Garder le total des statistiques", "Statistiques", "Répartit le total d’origine. Si cette option est désactivée, tire un nouveau total entre 250 et 680.")
+    enable_fairy_type: bool = rule("Ajouter le type Fée", "Types", "Ajoute le type Fée et ses affinités. Met à jour les Pokémon et capacités concernés, avec de nouveaux apprentissages et CT.", False)
     randomize_types: bool = rule("Changer les types", "Types", "Change les types de chaque espèce, en gardant un ou deux types. Munja conserve ses types.", False)
     types_family_consistent: bool = rule("Mêmes types dans une famille", "Types", "Les membres d’une famille d’évolution partagent les types tirés.")
     allow_gen1: bool = rule("Génération I", "Pokémon autorisés", "Autorise les Pokémon n° 1 à 151 du Pokédex national.")
@@ -91,7 +92,7 @@ class Options:
     capture_rate_multiplier: float = setting(1.0, "Taux de capture des obscurs ×", "Niveaux et capture", "Multiplie les taux de capture des obscurs, jusqu’à un maximum de 255.", kind="float", minimum=0.25, maximum=5.0, step=0.25)
     minimum_catch_rate: int = setting(0, "Taux de capture minimum", "Niveaux et capture", "0 : aucun minimum ajouté. Une autre valeur relève les taux de capture inférieurs à ce seuil.", kind="int", minimum=0, maximum=255, step=5)
 
-    randomize_tm_moves: bool = rule("Mélanger les capacités des 50 CT", "CT", "Échange les capacités des 50 CT et leurs descriptions. Les huit CS restent inchangées.", False)
+    randomize_tm_moves: bool = rule("Mélanger les capacités des CT", "CT", "Échange les capacités des CT et leurs descriptions. Les huit CS restent inchangées.", False)
     tm_compatibility_mode: str = setting("original", "Compatibilité des CT", "CT", "Choisissez si chaque Pokémon garde ses CT d’origine, suit ses types actuels, apprend toutes les CT ou reçoit des compatibilités au hasard. Les CS restent inchangées.", kind="choice", choices=(("original", "D’origine"), ("type", "Selon les types"), ("universal", "Toutes les CT"), ("random", "Au hasard")))
     tm_ensure_offensive: bool = rule("Au moins une CT offensive compatible", "CT", "Lors d’un changement de compatibilité, garantit au moins une CT qui inflige des dégâts. Ne s’applique pas au mode d’origine.")
     randomize_field_items: bool = rule("Changer les objets des coffres", "Objets trouvés", "Remplace les objets ordinaires des coffres. Garde les quantités, les objets clés et les pierres. Les récompenses de l’histoire restent inchangées.", False)
@@ -134,7 +135,7 @@ class Options:
     def has_changes(self) -> bool:
         active = ("randomize_trainers", "randomize_shadows", *SPECIAL_OPTIONS.values(),
                   "randomize_trainer_moves", "randomize_starter_moves", "randomize_gift_moves",
-                  "randomize_learnsets", "randomize_abilities", "randomize_stats", "randomize_types", "randomize_held_items",
+                  "randomize_learnsets", "randomize_abilities", "randomize_stats", "enable_fairy_type", "randomize_types", "randomize_held_items",
                   "randomize_tm_moves", "randomize_field_items", "randomize_shop_items", "boss_stronger", "boss_team_variety", "trainer_force_evolved", "custom_shinies", "accessible_event_gifts", "postgame_shadow_lugia", "keep_shadow_lugia_after_purification")
         return (any(getattr(self, name) for name in active) or self.readable_stone_names or bool(self.evolution_groups) or bool(self.stone_shops)
                 or (any(value != 1.0 for value in (self.early_level_multiplier, self.mid_level_multiplier, self.late_level_multiplier)) if self.progressive_levels else self.trainer_level_multiplier != 1.0)

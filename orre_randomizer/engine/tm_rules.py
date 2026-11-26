@@ -234,6 +234,13 @@ def apply_tm_rules(original_rel: bytes, current_rel: bytes, original_dol: bytes,
         raise FormatError("provided TM table layout differs from the fingerprinted original")
     if len(species_catalog(original_rel, expected)) != 386:
         raise FormatError("unexpected original real-species count for TM rules")
+    from ..fairy_gameplay import current_context
+    if current_context('colosseum') is not None:
+        from ..fairy_integration import apply_tm_gameplay
+        from ..preserved_pokemon import colosseum_species
+        return apply_tm_gameplay(original_rel, current_rel, original_dol, current_dol, seed, options,
+            dol_region.game_id, species_table=expected['species'],
+            preserve_species=colosseum_species(original_rel, expected, options))
     return apply_tm_tables(original_rel, current_rel, original_dol, current_dol, seed, options, expected,
                            tm_offset=dol_region.tm_table_offset, item_offset=dol_region.item_table_offset,
                            native_languages=rel_region.native_languages)

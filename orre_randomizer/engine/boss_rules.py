@@ -118,6 +118,9 @@ def apply_boss_tables(original: bytes, current: bytes, seed: str, options,
     families = evolution_families(original, tables)[0]
     references = _references(original, tables)
     moves = None
+    from ..fairy_gameplay import current_context
+    added_moves = current_context('colosseum')
+    added_moves = set(added_moves.moves) if added_moves is not None else set()
     seen = set()
     for boss in sorted(bosses, key=lambda row: row["trainer_id"]):
         trainer = boss["trainer_id"]
@@ -140,8 +143,10 @@ def apply_boss_tables(original: bytes, current: bytes, seed: str, options,
             reason = ("shadow" if original[pos + 3] else
                       "shared trainer slot" if references.get(index) != [trainer] else
                       "special move marker" if any(u16(original, pos + f) == 0xFFFF or
-                          u16(original, pos + f) >= 355 or u16(current, pos + f) == 0xFFFF or
-                          u16(current, pos + f) >= 355 for f in MOVE_FIELDS) else None)
+                          (u16(original, pos + f) >= 355 and u16(original, pos + f) not in added_moves) or
+                          u16(current, pos + f) == 0xFFFF or
+                          (u16(current, pos + f) >= 355 and u16(current, pos + f) not in added_moves)
+                          for f in MOVE_FIELDS) else None)
             if reason:
                 report["skipped"].append({"trainer_id": trainer, "index": index, "reason": reason})
             else:

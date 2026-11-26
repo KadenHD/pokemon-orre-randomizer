@@ -140,9 +140,13 @@ def patch_gift_moves(original_dol: bytes, current_dol: bytes,
         return current_dol, {"enabled": False, "gift_hooks": []}
     if set(moves_by_key) - set(GIFT_BASES):
         raise FormatError("unrecognized gift routine requested")
+    from ..fairy_gameplay import current_context
+    fairy = current_context("colosseum")
+    extra_moves = set(fairy.moves) if fairy is not None else set()
     for moves in moves_by_key.values():
         if (not isinstance(moves, (list, tuple)) or len(moves) != 4 or
-                any(type(move) is not int or not 0 <= move <= 354 or move == 165 for move in moves)):
+                any(type(move) is not int or not (0 <= move <= 354 or move in extra_moves)
+                    or move == 165 for move in moves)):
             raise FormatError("gift hooks require four ordinary move IDs or empty slots, excluding Struggle/shadow moves")
     region = _validate_original(original_dol, current_dol)
     gift_bases = {target['key']: target['base'] for target in special_targets(original_dol)}

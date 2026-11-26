@@ -124,6 +124,9 @@ def _repair_replacements(original, output, tables, pairs, seed, options, boss_id
     stages = evolution_stage_info(original, tables)
     edits, unresolved, handled = [], [], set()
     moves = None
+    from ..fairy_gameplay import current_context
+    fairy = current_context('colosseum')
+    added_moves = set(fairy.moves) if fairy is not None else set()
     for pair in pairs:
         diverse = variety and pair["captured_trainer"] in boss_ids
         common = [u16(output, _position(output, tables["trainer_pokemon"], index) + 0xA)
@@ -165,7 +168,7 @@ def _repair_replacements(original, output, tables, pairs, seed, options, boss_id
             if output[position] == 1 and not catalog[selected]["abilities"][1]:
                 output[position] = 0
             before_moves = [u16(output, position + field) for field in MOVE_FIELDS]
-            if options.randomize_trainer_moves and not any(move >= 355 for move in before_moves):
+            if options.randomize_trainer_moves and not any(move >= 355 and move not in added_moves for move in before_moves):
                 if moves is None:
                     moves = move_catalog(original, tables)
                 chosen = choose_moves(seed, f"{VERSION}:moves:{index}", catalog[selected],

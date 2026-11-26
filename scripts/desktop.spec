@@ -25,6 +25,9 @@ if not (app_assets / 'icon.ico').is_file():
 data_files = [(str(app_assets / name), 'orre_randomizer/assets/app')
               for name in ('icon.ico', 'provenance.json', 'logo.png', 'logo.json', 'controller.png', 'controller.json')]
 data_files.append((str(root / 'orre_randomizer/windows_update.ps1'), 'orre_randomizer'))
+data_files += [(str(root / 'orre_randomizer/assets/rules/fairy' / name),
+                'orre_randomizer/assets/rules/fairy')
+               for name in ('catalog.json', 'transfer-messages.json', 'LICENSE-PokeAPI.txt', 'README.md')]
 data_files += [(str(launcher), 'orre_randomizer/_native'),
                (str(music_codec.with_suffix('.json')), 'orre_randomizer/_native')]
 if os.environ.get('ORRE_BUNDLE_GAME_ASSETS', os.environ.get('COLOSSEUM_BUNDLE_GAME_ASSETS', '1')) == '1':

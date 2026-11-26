@@ -277,6 +277,16 @@ lists its final evolution requirements, with normal or shiny portraits.
 | --- | --- |
 | ![Simple settings in Colosseum](docs/images/colosseum-simple.png) | ![Simple settings in XD](docs/images/xd-settings.png) |
 
+### Optional Fairy rules
+
+Add Fairy matchups, updated species typings and seven moves with TMs and natural
+learning in both games. Enable **Add the Fairy type** in **Advanced > Types**;
+it stays off in both presets. See the [Fairy rules and validation](docs/FAIRY_TYPE.md).
+
+| Colosseum | XD |
+| --- | --- |
+| ![Fairy typing and moves in Colosseum](docs/images/colosseum-fairy-moves.png) | ![Fairy typing and moves in XD](docs/images/xd-fairy-moves.png) |
+
 ### Preview your run
 
 Check your starters, gifts and Shadow Pokémon before creating the ROM. Both

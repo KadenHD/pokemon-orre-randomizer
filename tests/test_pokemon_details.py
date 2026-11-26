@@ -68,6 +68,14 @@ def catalog_fixture():
 
 
 class DetailTests(unittest.TestCase):
+    def test_numbered_tm_uses_the_singular_label_in_each_language(self):
+        sheet = encounter_details(catalog_fixture(), 1)
+        sheet['tms'][0]['tm'] = 51
+        for language, prefix in zip(LANGUAGES, ('CT', 'TM', 'TM', 'MT', 'MT', 'わざマシン'), strict=True):
+            with self.subTest(language=language):
+                self.assertTrue(detail_sections(sheet, language)['tms'][0].startswith(prefix + ' 51 · '))
+        self.assertEqual(TEXTS['en']['tms'], 'TMs')
+
     def test_final_types_stats_abilities_evolution_and_moves_are_read(self):
         original, final, dol, tables, names, region = fixture()
         catalog = build_detail_catalog(original, final, dol, dol, tables=tables, symbols=[], names=names, dol_info=region)

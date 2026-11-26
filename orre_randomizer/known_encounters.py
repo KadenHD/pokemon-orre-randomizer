@@ -11,6 +11,7 @@ from .engine.survey_assets import fst_inventory
 from .engine.shiny_rules import seeded_status
 from .engine.unown_form import unown_form
 from .preserved_pokemon import preserve_properties
+from .fairy_content import scoped_content
 
 
 def _read(iso, boot, region, cancel):
@@ -46,6 +47,7 @@ def _closure(catalog, initial):
     return selected
 
 
+@scoped_content
 def colosseum_known(iso, boot, seed, options, cancel):
     from .service import checkpoint
     from .engine.regions import region_for_boot
@@ -105,9 +107,16 @@ def colosseum_known(iso, boot, seed, options, cancel):
     rel, _ = patch_evolutions(original, tables, options.evolution_groups)
     rel, _ = apply_species_gameplay(original, rel, seed, options, selected_species=selected)
     info = dol_layout(native_dol)
-    rel, dol, _ = apply_tm_tables(original, rel, native_dol, native_dol, seed, options,
-        expanded_layout(original), tm_offset=info.tm_table_offset, item_offset=info.item_table_offset,
-        native_languages=region_for_rel(original).native_languages, selected_species=selected)
+    if options.enable_fairy_type:
+        from .fairy_integration import apply_tm_gameplay
+        from .preserved_pokemon import colosseum_species
+        rel, dol, tm_report = apply_tm_gameplay(original, rel, native_dol, native_dol, seed, options,
+            region.game_id, species_table=tables['species'], selected_species=selected,
+            preserve_species=colosseum_species(original, tables, options))
+    else:
+        rel, dol, tm_report = apply_tm_tables(original, rel, native_dol, native_dol, seed, options,
+            expanded_layout(original), tm_offset=info.tm_table_offset, item_offset=info.item_table_offset,
+            native_languages=region_for_rel(original).native_languages, selected_species=selected)
     catalog = species_catalog(rel, tables)
     moves = move_catalog(original, expanded_layout(original))
     dol = bytearray(dol)
@@ -150,7 +159,12 @@ def colosseum_known(iso, boot, seed, options, cancel):
             struct.pack_into(">H", rel_out, at + field, move)
     summary = dict(special_gameplay={"specials": specials}, final_shadow_picks=shadows,
                    postgame_shadow_lugia=dict(enabled=options.postgame_shadow_lugia, team=event_team))
-    summary["detail_catalog"] = build_detail_catalog(original, bytes(rel_out), native_dol, bytes(dol), summary=summary)
+    if options.enable_fairy_type:
+        from .fairy_content import install_content
+        final_rel, final_dol, summary['fairy'] = install_content(bytes(rel_out), bytes(dol), tm_report, preview=True)
+    else:
+        final_rel, final_dol = bytes(rel_out), bytes(dol)
+    summary["detail_catalog"] = build_detail_catalog(original, final_rel, native_dol, final_dol, summary=summary)
     decisions = dict(specials={}, shadows={}, trainer_slots={})
     for row in specials:
         decisions["specials"][row["key"]] = seeded_status(seed, "special:" + row["key"], options.shiny_chance_percent)
@@ -162,6 +176,7 @@ def colosseum_known(iso, boot, seed, options, cancel):
     return summary
 
 
+@scoped_content
 def xd_known(iso, boot, seed, options, cancel):
     from . import xd
     from .service import checkpoint
@@ -234,7 +249,7 @@ def xd_known(iso, boot, seed, options, cancel):
     protected = xd_species(options, story, families=families)
     rel, _ = patch_species_gameplay(rel, symbols, seed, species, families, options,
                                     preserve_species=protected, selected_species=selected)
-    rel, dol, _ = patch_tm_gameplay(rel, native_dol, symbols, region.game_id, seed, species, options,
+    rel, dol, tm_report = patch_tm_gameplay(rel, native_dol, symbols, region.game_id, seed, species, options,
                                    preserve_species=protected, selected_species=selected)
     moves = XDMoveRandomizer(rel, symbols, species, options)
     starter = None
@@ -257,8 +272,13 @@ def xd_known(iso, boot, seed, options, cancel):
         if row["species"] == SPINDA and xd.effective_xd_setting_names(options):
             known_pids[key] = spinda_pid_seed(seed, "xd:" + key)
     checkpoint(cancel)
+    fairy_report = None
+    if options.enable_fairy_type:
+        from .fairy_content import install_content
+        rel, dol, fairy_report = install_content(rel, bytes(dol), tm_report, preview=True)
     return dict(starter=starter, decks={"Story": {"shadows": shadows}}, gifts=gifts, poke_spots=spots,
                 national_ids={str(i): row[0] for i, row in species.items()},
                 unown_form=unown_form(seed) if xd.effective_xd_setting_names(options) else 0,
                 spinda_pid={"known_reward_pids": known_pids},
-                detail_catalog=detail_catalog(rel, dol, symbols, region.game_id, edges, moves))
+                detail_catalog=detail_catalog(rel, dol, symbols, region.game_id, edges, moves,
+                    fairy_report=fairy_report['additional_tms'] if fairy_report is not None else None))

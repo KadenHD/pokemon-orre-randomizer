@@ -18,6 +18,9 @@ from ..i18n import Message
 VERSION = "species-properties-sha256-v1"
 STAT_OFFSETS = (0x85, 0x87, 0x89, 0x8B, 0x8D, 0x8F)
 VALID_TYPES = frozenset(range(18)) - {9}  # Mystery is not a real PAL species type.
+# A final patched table can contain Fairy. This is a reader allowance, not a
+# default randomization pool: native-only profiles retain VALID_TYPES exactly.
+READABLE_TYPES = VALID_TYPES | {19}
 WONDER_GUARD = 25
 SHEDINJA_NATIONAL = 292
 FORECAST = 59
@@ -79,7 +82,7 @@ def species_catalog(original: bytes, tables: dict) -> dict[int, dict]:
         types = tuple(original[pos + 0x30:pos + 0x32])
         abilities = tuple(original[pos + 0x32:pos + 0x34])
         stats = tuple(original[pos + field] for field in STAT_OFFSETS)
-        if not set(types) <= VALID_TYPES or not abilities[0] or not all(stats):
+        if not set(types) <= READABLE_TYPES or not abilities[0] or not all(stats):
             raise FormatError("invalid original real-species type, ability or base stats")
         result[index] = {"national_dex": national, "types": types, "abilities": abilities,
                          "stats": stats, "total": sum(stats), "offset": pos}
@@ -88,7 +91,9 @@ def species_catalog(original: bytes, tables: dict) -> dict[int, dict]:
             for slot in range(19) if original[pos + 0xBA + slot * 4]) if stride >= 0x108 else ()
     if not result:
         raise FormatError("species table has no real species")
-    return result
+    from ..fairy_gameplay import current_context
+    fairy = current_context("colosseum")
+    return fairy.project_species(result, original) if fairy is not None else result
 
 
 def candidate_species(original: bytes, tables: dict, old: int, options,

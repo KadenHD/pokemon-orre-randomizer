@@ -55,7 +55,7 @@ class ExclusionValidationTests(unittest.TestCase):
         self.assertEqual(set(SPECIES_NAMES), set(LANGUAGES))
         for language in LANGUAGES:
             self.assertEqual(set(SPECIES_NAMES[language]), set(range(1, 387)))
-            self.assertEqual(set(TYPE_NAMES[language]), set(range(18)) - {9})
+            self.assertEqual(set(TYPE_NAMES[language]), (set(range(18)) - {9}) | {19})
         from orre_randomizer.locales.species_ja import SPECIES_NAMES as previous_ja
         self.assertEqual(SPECIES_NAMES["ja"], previous_ja)
 
@@ -150,7 +150,7 @@ class ExclusionGuiTests(unittest.TestCase):
             self.window.language_combo.setCurrentIndex(self.window.language_combo.findData(language))
             self.assertEqual(self.window.current_options(), options)
             dialog = self.dialog("type_set", options.excluded_types)
-            self.assertEqual(dialog.items.count(), 17)
+            self.assertEqual(dialog.items.count(), 18)
             self.assertEqual(dialog.value(), options.excluded_types)
             self.assertEqual(dialog.items.item(0).text(), TYPE_NAMES[language][0])
             dialog.close()

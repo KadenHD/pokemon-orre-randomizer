@@ -1,0 +1,5 @@
+# Catalog bytes are fingerprinted by fairy_data.py on every host.
+catalog.json -text
+transfer-messages.json -text
+LICENSE-PokeAPI.txt -text
+README.md text eol=lf

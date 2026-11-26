@@ -19,7 +19,7 @@ from urllib.request import HTTPRedirectHandler, Request, build_opener
 
 
 WAIT_SECONDS = 120
-MAX_WAIT_SECONDS = 35 * 60
+MAX_WAIT_SECONDS = 40 * 60
 POLL_SECONDS = 10
 REQUEST_SECONDS = 10
 MAX_RESPONSE_BYTES = 2 * 1024 * 1024
