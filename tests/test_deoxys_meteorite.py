@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+from itertools import product
 import struct
 import unittest
 from pathlib import Path
@@ -256,14 +257,15 @@ class MeteoriteContractTests(unittest.TestCase):
             self.assertEqual([args[0] for target, args in machine.calls if target == FUNCTIONS['bank_open']], [banks[LANGUAGES[selected - 1]]])
 
     def test_xd_item_filter_only_changes_meteorite_field_actions_in_all_regions(self):
-        from orre_randomizer.deoxys_meteorite import _read
         continuation, table, context = 0x80010000, 0x80700000, 0x80710000
-        for letter, region in [('P', 'eu'), ('E', 'us'), ('J', 'jp')]:
+        # The emitted filter accepts a qualified lwz r3,SDA(r13) instruction.
+        # Exercise signed displacement boundaries without private retail files;
+        # MeteoriteRetailQualifications separately verifies original getters.
+        for letter, displacement in product('PEJ', (-32768, -4, 0, 4, 32764)):
             game = f'GXX{letter}01'
-            original = (ROOT / f'build/xd-validation/{region}/main.dol').read_bytes()
             functions = _QUALIFIED[game][1]
             use = functions['use'][0]
-            load = struct.unpack('>I', _read(original, functions['item_getter'][0] + 0x44, 4))[0]
+            load = 0x806D0000 | (displacement & 0xFFFF)
             code = _action_filter(ADDRESS, continuation, 0xBB210014, use,
                                   xd_context=context, item_table_load=load)
             rows = [(1, use, 0), (2, use + 0x100, 0), (3, use + 0x200, 0), (4, 0, 0)]

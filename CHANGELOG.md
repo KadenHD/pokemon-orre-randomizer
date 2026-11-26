@@ -15,6 +15,8 @@
 - Follow the saved form in XD's Purify Chamber using its original animated
   sprites, including shiny variants. Keep native uppercase item/form labels
   and size the translated form menu to fit its choices.
+- Keep the XD item-action contract test independent of private retail inputs,
+  including positive and negative small-data pointer displacements.
 
 ## 2.1.3 - 2026-11-25
 
