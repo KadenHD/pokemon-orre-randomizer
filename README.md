@@ -367,6 +367,20 @@ At XD's Poké Spots, you can spot a shiny in the field before you battle it.
 [Story-scene support](docs/reverse-engineering/STORY_GIFT_SCENES.md) ·
 [Showcase seeds](docs/images/manifest.json)
 
+### Deoxys forms
+
+All four Deoxys forms are available in Colosseum, with a reusable
+**METEORITE** to both games. Each randomized Deoxys starts with a form chosen
+by the seed. Use the item from your Bag to change it whenever you want outside
+battle, including a Shadow Deoxys. Its shiny status and Shadow progress stay
+intact, and the item is not consumed. Models and portraits support Original
+and HD play folders.
+[How forms and the Meteorite work](docs/DEOXYS_FORMS.md)
+
+| Pokémon Colosseum | Pokémon XD |
+| --- | --- |
+| ![Choosing a Deoxys form with the Meteorite in Colosseum](docs/images/colosseum-deoxys-forms.png) | ![Reusable Meteorite in XD's Bag](docs/images/xd-deoxys-forms.png) |
+
 ### Choose your shiny odds
 
 Both randomizing presets start at **5%** for supported encounters. Set your

@@ -154,7 +154,7 @@ def _cry_caption(source, *, changes, language):
 def patch_eagun_scenes(original, current, dol, game_id, read_archive, updates,
                        trainer_shinies, guaranteed_shiny, *, unown_form_index=0,
                        spinda_seeds=None, spinda_default=None, gift_partner=None,
-                       special_shinies=None):
+                       special_shinies=None, deoxys_forms=None):
     tables, symbols, position = _partner_position(original, game_id)
     species = tables["species"]
     slot = PARTNER_SLOT
@@ -182,7 +182,9 @@ def patch_eagun_scenes(original, current, dol, game_id, read_archive, updates,
                   if spinda_seeds and spinda_mode is not None else None)
     model = load_actor_model(dol, game_id, u32(original, chosen_species + 0x2C), read_archive,
                              scale=scale, shiny=shiny, unown_form_index=unown_form_index,
-                             spinda_pid=spinda_pid) if replace_model else None
+                             spinda_pid=spinda_pid, deoxys_form=(deoxys_forms or {}).get(
+                                 'special:' + GIFT_KEY if gift_linked else f'trainer:{slot}', 0)
+                             if chosen == 410 else 0) if replace_model else None
     changes = {u32(original, original_species + 0x18): u32(original, chosen_species + 0x18)}
     names = localized_names(original, symbols)[0] if chosen != _PIKACHU else {}
     changed_archives, visibility = [], None

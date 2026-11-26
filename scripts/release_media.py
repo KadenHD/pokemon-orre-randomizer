@@ -5,8 +5,11 @@ import struct
 from pathlib import PurePosixPath, PureWindowsPath
 
 
-GAME_ASSET_EXCEPTIONS = frozenset(("models/dark-lugia-colosseum-v1.pkx", "fonts/NotoSansJP.ttf",
-                                   "fonts/OFL-NotoSansJP.txt"))
+GAME_ASSET_EXCEPTIONS = frozenset(("models/dark-lugia-colosseum-v1.pkx",
+                                   "models/deoxys/xd-attack-normal.pkx", "models/deoxys/xd-attack-shiny.pkx",
+                                   "models/deoxys/xd-defense-normal.pkx", "models/deoxys/xd-defense-shiny.pkx",
+                                   "models/deoxys/xd-speed-normal.pkx", "models/deoxys/xd-speed-shiny.pkx",
+                                   "fonts/NotoSansJP.ttf", "fonts/OFL-NotoSansJP.txt"))
 
 BINGO_AUTHORING_ROOT = "scripts/bingo_menu_artwork/"
 BINGO_AUTHORING_LAYERS = frozenset(
@@ -43,6 +46,7 @@ def game_asset_name_allowed(name):
 
 
 DOCUMENTATION_IMAGES = frozenset(("home.png", "colosseum-settings.png",
+                                 "colosseum-deoxys-forms.png", "xd-deoxys-forms.png",
                                  "run-library.png", "save-backups.png", "storage.png", "challenge-code.png", "support-diagnostic.png",
                                  "colosseum-launcher.png", "xd-launcher.png", "hd-packs.png", "hd-custom-lugia-portraits.png",
                                  "hd-colosseum-text.png", "hd-xd-text.png", "hd-xd-vs.png", "castform-live-portraits.png",

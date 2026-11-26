@@ -319,8 +319,14 @@ def save_game(path: Path, data):
 
 
 def hd_game_requirements(manifest):
-    return required_pack_games(manifest["game"],
-        manifest.get("features", {}).get("overlays", {}).get("required_packs", []))
+    features = manifest.get('features', {})
+    overlays = features.get('overlays', {})
+    extra = list(overlays.get('required_packs', []))
+    if (manifest['game'] == 'colosseum' and
+            any(isinstance(data, dict) and data.get('enabled') is True
+                for data in (features.get('deoxys_forms'), overlays.get('deoxys_forms')))):
+        extra.append('xd')
+    return required_pack_games(manifest['game'], extra)
 
 
 def missing_hd_packs(manifest):
@@ -401,6 +407,18 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
                         {"active": False, "files": [], "catalogue_sha256": None})
     if has_castform_shinies and not castform_recipes["active"]:
         raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.")
+    has_deoxys = (native.get('game', manifest['game']) == 'colosseum'
+                  and isinstance(native.get('deoxys_forms'), dict)
+                  and native['deoxys_forms'].get('enabled') is True)
+    deoxys = None
+    if has_deoxys:
+        from .hd_overlays import deoxys_hd_contract
+        try:
+            deoxys = deoxys_hd_contract()
+            if any(native['deoxys_forms'].get(key) != value for key, value in deoxys.items()):
+                raise ValueError('Imported Deoxys native references use another asset registry')
+        except (OSError, ValueError) as error:
+            raise UserError("Recréez ce dossier de partie pour préparer les nouveaux visuels HD.") from error
     required = hd_game_requirements({**manifest, "features": {"overlays": native}})
     store = PackStore(Path(manifest["shared"]))
     for game in required:
@@ -418,6 +436,8 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
                                separators=(",", ":")).encode("ascii"))
     identity.update(json.dumps(castform_recipes, sort_keys=True,
                                separators=(",", ":")).encode("ascii"))
+    if has_deoxys:
+        identity.update(json.dumps(deoxys, sort_keys=True, separators=(',', ':')).encode('ascii'))
     text_manifest = root / TEXT_MANIFEST
     text_feature = manifest.get("features", {}).get("text_hd_bridge")
     if text_feature and (not text_manifest.is_file()
@@ -497,14 +517,26 @@ def prepare_custom_hd(folder, manifest, *, cancel=None):
         result["extra_form_portraits"] = forms
         result["extra_form_materials"] = materials
         result["castform_shiny_artwork"] = castform
+        imported = {'active': False, 'files': {}}
+        if has_deoxys:
+            from .hd_overlays import prepare_deoxys_hd
+            checkpoint(cancel)
+            try:
+                imported = prepare_deoxys_hd(native['deoxys_forms'],
+                    {game: store.location(PACKS[game]) for game in required}, stage)
+            except (OSError, ValueError) as error:
+                raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.") from error
+            result['deoxys_imported_artwork'] = imported
         known = {item["file"]: item["sha256"] for item in result["files"]}
-        for name, digest in (*forms["files"].items(), *materials["files"].items(), *castform["files"].items()):
+        for name, digest in (*forms["files"].items(), *materials["files"].items(),
+                             *castform["files"].items(), *imported['files'].items()):
             if name in known:
                 if known[name] != digest:
                     raise UserError("Les visuels HD personnalisés n’ont pas pu être préparés.")
                 continue
             result["files"].append({"file": name, "sha256": digest,
-                                    "hd_source": {"kind": "custom-castform-shiny-artwork" if name in castform["files"]
+                                    "hd_source": {"kind": 'registered-imported-deoxys' if name in imported['files']
+                                                  else "custom-castform-shiny-artwork" if name in castform["files"]
                                                   else "catalogued-extra-form-material" if name in materials["files"]
                                                   else "catalogued-extra-form-portrait"}})
             known[name] = digest
@@ -618,6 +650,9 @@ def _prepare_extras(source_iso, output_iso, boot, stage, shared, progress, cance
         raise Cancelled("Opération annulée.") from error
     features["overlays"] = {"schema": 2, "count": overlays["texture_count"],
         "required_packs": overlays.get("required_packs", []), "hd_ready": False}
+    if overlays.get('deoxys_forms'):
+        features['deoxys_forms'] = overlays['deoxys_forms']
+        features['overlays']['deoxys_forms'] = overlays['deoxys_forms']
     if features.get("spinda_face"):
         from .hd_spinda_face import capture_native_face_assets
         references = stage / "Textures/NativeReferences/SpindaFace"

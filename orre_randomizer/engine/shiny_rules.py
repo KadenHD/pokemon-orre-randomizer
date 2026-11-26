@@ -34,6 +34,7 @@ PID_CALLS = {"celebi-event": 0x80134940, "pikachu-event": 0x80134A50,
              "ho-oh": 0x80134B70, "plusle": 0x80134C5C,
              "espeon": 0x80134D54, "umbreon": 0x80134E7C,
              "trainers": 0x801FEC98}
+_SPECIAL_PID_KEYS = frozenset(PID_CALLS) - {"trainers"}
 COIN_RANGE = 1 << 32
 TRAINER_INDEX_HOOK = 0x801FE83C
 TRAINER_INDEX_WORD = 0x7C7C1B78
@@ -117,7 +118,12 @@ def _emit_spinda_lookup(c, tables, trainer_slot_count=TRAINER_SLOT_COUNT):
     c.label("spinda_ready")
 
 
-def _emit_spinda_trainer_owner(c, trainer_gift_owners=None):
+def _emit_spinda_trainer_owner(c, trainer_gift_owners=None, *, species_guard=False):
+    if species_guard:
+        # Private encounter tables may also contain Deoxys. Preserve that
+        # specimen's actual caller OT; only Spinda uses a fixed motif owner.
+        c.emit(0xA1630000, 0x280B0000 | SPINDA)
+        c.conditional(0x40820000, "spinda_owner_ready")
     c.emit(0x281E0000)  # Never change a catchable Shadow's owner.
     c.conditional(0x40820000, "spinda_owner_ready")
     c.emit(0x28080000)
@@ -214,7 +220,7 @@ def _spinda_rng_offset(original, current, region):
 def _pid_wrapper(address: int, threshold: int | None, *, trainers=False,
                  region: DolLayout = PAL, spinda_pid=None, spinda_seed=None,
                  spinda_tables=None, trainer_slot_count=TRAINER_SLOT_COUNT,
-                 trainer_gift_owners=None) -> bytes:
+                 trainer_gift_owners=None, owner_species_guard=False) -> bytes:
     if threshold is not None and (type(threshold) is not int or not 0 <= threshold <= COIN_RANGE):
         raise ValueError("invalid shiny coin threshold")
     c = _Code(address)
@@ -249,7 +255,7 @@ def _pid_wrapper(address: int, threshold: int | None, *, trainers=False,
         c.emit(0x3D000000 | (spinda_seed >> 16), 0x61080000 | (spinda_seed & 0xFFFF))
     c.emit(0x80610008, 0x8081000C, 0x80A10010, 0x80E10018)
     if spinda_tables is not None:
-        _emit_spinda_trainer_owner(c, trainer_gift_owners)
+        _emit_spinda_trainer_owner(c, trainer_gift_owners, species_guard=owner_species_guard)
     c.call(spinda_pid if spinda_seed is not None or spinda_tables is not None else region.pid_generator)
     c.emit(0x80010044, 0x7C0803A6, 0x38210040, 0x4E800020)
     return c.finish()
@@ -284,7 +290,8 @@ def _index_trampoline(address: int, *, region: DolLayout = PAL) -> bytes:
 
 def _seeded_trainer_wrapper(address: int, trainer_flags: int, shadow_flags: int,
                             *, region: DolLayout = PAL, spinda_pid=None, spinda_tables=None,
-                            trainer_slot_count=TRAINER_SLOT_COUNT, trainer_gift_owners=None) -> bytes:
+                            trainer_slot_count=TRAINER_SLOT_COUNT, trainer_gift_owners=None,
+                            owner_species_guard=False) -> bytes:
     c = _Code(address)
     c.emit(0x9421FFC0, 0x7C0802A6, 0x90010044,
            0x90610008, 0x9081000C, 0x90A10010, 0x90E10018)
@@ -314,7 +321,7 @@ def _seeded_trainer_wrapper(address: int, trainer_flags: int, shadow_flags: int,
         _emit_spinda_lookup(c, spinda_tables, trainer_slot_count)
     c.emit(0x80610008, 0x8081000C, 0x80A10010, 0x80E10018)
     if spinda_tables is not None:
-        _emit_spinda_trainer_owner(c, trainer_gift_owners)
+        _emit_spinda_trainer_owner(c, trainer_gift_owners, species_guard=owner_species_guard)
     c.call(spinda_pid if spinda_tables is not None else region.pid_generator)
     c.emit(0x80010044, 0x7C0803A6, 0x38210040, 0x4E800020)
     return c.finish()
@@ -326,19 +333,33 @@ def _word(data, offset):
 
 def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | None = None,
                       trainer_aliases: tuple[tuple[int, int], ...] = (),
-                      spinda_seeds=None, trainer_special_aliases=()) -> tuple[bytes, dict]:
+                      spinda_seeds=None, trainer_special_aliases=(), deoxys_seeds=None) -> tuple[bytes, dict]:
     spinda_seeds = spinda_seeds or {}
+    deoxys_seeds = {} if deoxys_seeds is None else deoxys_seeds
+    if not isinstance(deoxys_seeds, dict) or set(spinda_seeds) & set(deoxys_seeds):
+        raise ValueError("Deoxys and Spinda encounter seed keys must be disjoint mappings")
     gift_owners = colo_trainer_gift_owners(trainer_special_aliases)
     if gift_owners and not getattr(options, "accessible_event_gifts", False):
         raise ValueError("trainer/gift identity link requires accessible event gifts")
     gift_owners = {slot: owner for slot, owner in gift_owners.items() if f"trainer:{slot}" in spinda_seeds}
     custom = options.custom_shinies
     trainer_slot_count = TRAINER_SLOT_COUNT + (6 if getattr(options, "postgame_shadow_lugia", False) else 0)
-    if not custom and not spinda_seeds:
+    for key, value in deoxys_seeds.items():
+        if not isinstance(key, str) or type(value) is not int or not 1 <= value <= 0xFFFFFFFF:
+            raise ValueError("Invalid Deoxys encounter seed")
+        prefix, _, suffix = key.partition(":")
+        valid = (prefix == "trainer" and suffix.isdecimal() and suffix.isascii() and int(suffix) < trainer_slot_count
+                 or prefix == "shadow" and suffix.isdecimal() and suffix.isascii() and 1 <= int(suffix) < SHADOW_COUNT
+                 or prefix == "special" and suffix in _SPECIAL_PID_KEYS)
+        if not valid:
+            raise ValueError("Invalid Deoxys native generation key")
+    pid_seeds = {**spinda_seeds, **deoxys_seeds}
+    if not custom and not pid_seeds:
         return current, {"version": VERSION, "enabled": False}
     threshold = chance_threshold(options.shiny_chance_percent) if custom else None
     seeded = custom and options.seeded_shinies
-    spinda_trainers = any(not key.startswith("special:") for key in spinda_seeds)
+    spinda_trainers = any(not key.startswith("special:") for key in pid_seeds)
+    deoxys_trainers = any(not key.startswith("special:") for key in deoxys_seeds)
     spinda_ordinary = any(key.startswith("trainer:") for key in spinda_seeds)
     needs_index = seeded or spinda_trainers
     if seeded:
@@ -381,6 +402,11 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
             base + 0x248: 0x7FD7F378, base + 0x424: 0x4182003C,
             base + 0x438: 0x40820028, base + 0x440: region.shadow_pid_fetch_words[0],
             base + 0x45C: 0x48000034, base + 0x4D0: region.shadow_pid_fetch_words[1]})
+    if deoxys_trainers:
+        tag_site = region.trainer_function + 0x51C
+        signatures.update({tag_site: 0x7FE3FB78,
+            tag_site + 4: _word(original, tag_site + 4 - TEXT_TO_RAM),
+            tag_site + 8: 0x38600001, tag_site + 12: 0xBA61004C})
     for address, expected in signatures.items():
         if any(_word(data, address - TEXT_TO_RAM) != expected for data in (original, current)):
             raise FormatError(f"native shiny signature changed at {address:#x}")
@@ -413,16 +439,21 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
     gift_addresses = {}
     trainer_address = None
     spinda_pid, spinda_tables = None, None
-    if spinda_seeds:
+    if pid_seeds:
         spinda_pid = SECTION_RAM + len(code)
-        code.extend(_spinda_pid_call(spinda_pid, _spinda_rng_offset(original, current, region), region))
+        rng_offset = _spinda_rng_offset(original, current, region)
+        if deoxys_seeds:
+            from .deoxys_generation import deoxys_pid_call
+            code.extend(deoxys_pid_call(spinda_pid, rng_offset, region, _spinda_pid_call))
+        else:
+            code.extend(_spinda_pid_call(spinda_pid, rng_offset, region))
     if spinda_trainers:
         trainer_seeds = SECTION_RAM + len(code)
         code.extend(struct.pack(f">{trainer_slot_count}I", *(
-            spinda_seeds.get(f"trainer:{i}", 0) for i in range(trainer_slot_count))))
+            pid_seeds.get(f"trainer:{i}", 0) for i in range(trainer_slot_count))))
         shadow_seeds = SECTION_RAM + len(code)
         code.extend(struct.pack(f">{SHADOW_COUNT}I", *(
-            spinda_seeds.get(f"shadow:{i}", 0) for i in range(SHADOW_COUNT))))
+            pid_seeds.get(f"shadow:{i}", 0) for i in range(SHADOW_COUNT))))
         code.extend(bytes((-len(code)) % 32))
         spinda_tables = trainer_seeds, shadow_seeds
     if seeded:
@@ -442,13 +473,14 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
         for key, shiny in specials.items():
             gift_addresses[key] = SECTION_RAM + len(code)
             code.extend(_pid_wrapper(gift_addresses[key], COIN_RANGE if shiny else 0, region=region,
-                                     spinda_pid=spinda_pid, spinda_seed=spinda_seeds.get(f"special:{key}")))
+                                     spinda_pid=spinda_pid, spinda_seed=pid_seeds.get(f"special:{key}")))
         index_address = SECTION_RAM + len(code)
         code.extend(_index_trampoline(index_address, region=region))
         trainer_address = SECTION_RAM + len(code)
         code.extend(_seeded_trainer_wrapper(trainer_address, trainer_flags, shadow_flags, region=region,
                                             spinda_pid=spinda_pid, spinda_tables=spinda_tables,
-                                            trainer_slot_count=trainer_slot_count, trainer_gift_owners=gift_owners))
+                                            trainer_slot_count=trainer_slot_count, trainer_gift_owners=gift_owners,
+                                            owner_species_guard=bool(deoxys_seeds)))
         decisions = {"specials": specials,
                      "shadows": {str(i): bool(value) for i, value in enumerate(shadow_data)},
                      "trainer_slots": {str(i): bool(value) for i, value in enumerate(trainer_data)}}
@@ -462,7 +494,7 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
             code.extend(_pid_wrapper(gift_address, threshold, region=region))
             gift_addresses = {key: gift_address for key in PID_CALLS if key != "trainers"}
         for key in PID_CALLS:
-            spinda_seed = spinda_seeds.get(f"special:{key}")
+            spinda_seed = pid_seeds.get(f"special:{key}")
             if spinda_seed is not None:
                 gift_addresses[key] = SECTION_RAM + len(code)
                 code.extend(_pid_wrapper(gift_addresses[key], threshold, region=region,
@@ -474,7 +506,8 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
             trainer_address = SECTION_RAM + len(code)
             code.extend(_pid_wrapper(trainer_address, threshold, trainers=True, region=region,
                                      spinda_pid=spinda_pid, spinda_tables=spinda_tables,
-                                     trainer_slot_count=trainer_slot_count, trainer_gift_owners=gift_owners))
+                                     trainer_slot_count=trainer_slot_count, trainer_gift_owners=gift_owners,
+                                     owner_species_guard=bool(deoxys_seeds)))
     ot_address = None
     if custom:
         ot_address = SECTION_RAM + len(code)
@@ -484,6 +517,12 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
         owner_call, party_return, native_ot = _spinda_party_call(original, current, region)
         party_hook = SECTION_RAM + len(code)
         code.extend(_spinda_party_owner(party_hook, party_return, native_ot, gift_owners))
+    deoxys_tag_hook = None
+    if deoxys_trainers:
+        from .deoxys_generation import trainer_form_tag
+        deoxys_tag_hook = SECTION_RAM + len(code)
+        code.extend(trainer_form_tag(deoxys_tag_hook, tag_site + 4, spinda_tables,
+                                    game_id=region.game_id, trainer_slot_count=trainer_slot_count))
     reserved_end = SECTION_RAM + len(code)
     if reserved_end % 32 or reserved_end >= 0x81700000:
         raise FormatError("shiny code exceeds supported arena reservation")
@@ -517,6 +556,10 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
         offset = owner_call - TEXT_TO_RAM
         struct.pack_into(">I", output, offset, branch(owner_call, party_hook, link=True))
         ranges.append((offset, offset + 4))
+    if deoxys_tag_hook is not None:
+        offset = tag_site - TEXT_TO_RAM
+        struct.pack_into(">I", output, offset, branch(tag_site, deoxys_tag_hook))
+        ranges.append((offset, offset + 4))
     if any(a != b and not any(lo <= i < hi for lo, hi in ranges)
            for i, (a, b) in enumerate(zip(current, output))):
         raise FormatError("shiny patch exceeded its exact whitelist")
@@ -545,12 +588,21 @@ def apply_shiny_rules(original: bytes, current: bytes, options, *, seed: str | N
     if spinda_pid is not None:
         generated_call = region.trainer_function + 0x42C
         stored_call = region.trainer_function + 0x440
-        report["spinda_pid"] = {
-            "resolver": spinda_pid, "seeds": spinda_seeds,
-            "shadow_generated": _branch_target(generated_call, _word(original, generated_call - TEXT_TO_RAM)),
-            "stored_shadow_pid": _branch_target(stored_call, _word(original, stored_call - TEXT_TO_RAM)),
-        }
-        if party_hook is not None:
+        if deoxys_seeds:
+            report["deoxys_pid"] = {"resolver": spinda_pid, "seeds": deoxys_seeds,
+                "form_rule": "saved Para1Amari = DEC0 | form",
+                "native_pid_generator_retried": False, "caller_owner_retained": True,
+                "native_rng_sequence_unchanged": True, "returned_native_pid_not_rewritten": True,
+                "trainer_tag_hook": deoxys_tag_hook,
+                "trainer_tag_site": tag_site if deoxys_tag_hook is not None else None,
+                "cached_shadow_pid_path_tagged": deoxys_tag_hook is not None}
+        if spinda_seeds:
+            report["spinda_pid"] = {
+                "resolver": spinda_pid, "seeds": spinda_seeds,
+                "shadow_generated": _branch_target(generated_call, _word(original, generated_call - TEXT_TO_RAM)),
+                "stored_shadow_pid": _branch_target(stored_call, _word(original, stored_call - TEXT_TO_RAM)),
+            }
+        if party_hook is not None and spinda_seeds:
             report["spinda_pid"]["ordinary_trainer_ot"] = ORDINARY_SPINDA_OT
             if gift_owners:
                 report["spinda_pid"]["trainer_gift_owners"] = gift_owners

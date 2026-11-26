@@ -296,7 +296,7 @@ def append_postgame_trainer_details(catalog: dict, final_rel: bytes, event: dict
 
 
 def encounter_details(catalog: dict, species_index: int, *, level: int | None = None,
-                      moves=None, shadow: bool = False) -> dict:
+                      moves=None, shadow: bool = False, deoxys_form: int | None = None) -> dict:
     """Select an immutable sheet, adding encounter-specific moves when known."""
     try:
         result = copy.deepcopy(catalog["species"][str(species_index)])
@@ -333,6 +333,10 @@ def encounter_details(catalog: dict, species_index: int, *, level: int | None = 
                           "source_names": dict(source["names"])})
             pending.append((branch["target_species"], ancestors | {current}))
     result["evolution_chain"] = chain
+    if deoxys_form is not None:
+        from .deoxys_presentation import decorate_encounter
+        decorate_encounter({'species': species_index, 'key': 'sheet', 'details': result},
+            {**catalog.get('deoxys_forms', {}), 'encounters': {'special:sheet': deoxys_form}}, artwork=False)
     return result
 
 

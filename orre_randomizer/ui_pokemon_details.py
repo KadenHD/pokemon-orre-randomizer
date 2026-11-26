@@ -118,6 +118,9 @@ class PokemonSheet(QDialog):
         metadata = [f"#{details['national_dex']:03d}"]
         if level is not None:
             metadata.append(tr("level", level=level))
+        if 'deoxys_form' in details:
+            from .deoxys import form_label
+            metadata.append(form_label(details['deoxys_form'], language))
         identity.addWidget(text_label(" · ".join(metadata), "note"))
         types = QHBoxLayout()
         types.setSpacing(5)

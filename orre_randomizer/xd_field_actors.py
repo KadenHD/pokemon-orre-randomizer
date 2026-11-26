@@ -43,7 +43,7 @@ _GLOOM_CRY = bytes.fromhex("02010000 000084ed 02010000 0000002c 02010000 0000000
 
 def _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, normal_scale, *,
                  shiny=False, height_limit=None, unown_form_index=0, spinda_pid=None,
-                 shadow_lugia=False):
+                 shadow_lugia=False, deoxys_form=0):
     national = species[chosen][0]
     scale = companion_scale(national, normal_scale)
     entry = species_table + 0x124 * chosen
@@ -63,7 +63,8 @@ def _field_model(rel, species_table, species, dol, game_id, read_archive, chosen
     if spinda_pid is not None:
         report["spinda_pid"] = spinda_pid
     return (load_actor_model(dol, game_id, model_id, read_archive, scale=scale, shiny=shiny,
-                             unown_form_index=unown_form_index, spinda_pid=spinda_pid), report)
+                             unown_form_index=unown_form_index, spinda_pid=spinda_pid,
+                             deoxys_form=deoxys_form if chosen == 410 else 0), report)
 
 
 def _lighthouse_rel(raw, common, common_models):
@@ -104,7 +105,7 @@ def _lighthouse_script(raw, chosen):
 
 
 def patch_lighthouse_dancers(original, current, rel, symbols, species, dol, game_id, read_archive, updates,
-                             *, unown_form_index=0, spinda_pids=None):
+                             *, unown_form_index=0, spinda_pids=None, deoxys_forms=None):
     row = 0x20 + LIGHTHOUSE_TRAINER * 0x38
     start = 0x20 + u32(original, 0x14)
     indices = [u16(original, row + 0x1C + slot * 2) for slot in range(5)]
@@ -133,7 +134,8 @@ def patch_lighthouse_dancers(original, current, rel, symbols, species, dol, game
         else:
             model, actor = _field_model(rel, symbols[88]["offset"], species, dol, game_id, read_archive, pokemon, 0.8,
                                         unown_form_index=unown_form_index,
-                                        spinda_pid=(spinda_pids or {}).get(indices[index]))
+                                        spinda_pid=(spinda_pids or {}).get(indices[index]),
+                                        deoxys_form=(deoxys_forms or {}).get(indices[index], 0))
         models[ident] = (f"orre_lighthouse_dancer_{index + 1}", model)
         report.append(actor)
     updates[LIGHTHOUSE_ARCHIVE] = append_actor_models(
@@ -163,7 +165,8 @@ def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_
     # framing by limiting large replacements to a 7.2-decimeter field model.
     model, report = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
                                  shiny=shiny and not dynamic_palette, height_limit=7.2,
-                                 unown_form_index=unown_form_index, shadow_lugia=shadow_lugia)
+                                 unown_form_index=unown_form_index, shadow_lugia=shadow_lugia,
+                                 deoxys_form=shadow.get('deoxys_form', 0))
     # Both the room actor and the scripted model request resolve this shared
     # resource. Its stock references belong to this one Gateon scene.
     source = updates[_SHARED_ACTORS] if _SHARED_ACTORS in updates else read_archive(_SHARED_ACTORS)
@@ -189,7 +192,7 @@ def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_
 
 
 def patch_wakin_partner(original, current, rel, species_table, species, dol, game_id, read_archive, updates,
-                        *, unown_form_index=0, spinda_pids=None):
+                        *, unown_form_index=0, spinda_pids=None, deoxys_forms=None):
     trainer = 0x20 + WAKIN_TRAINER * 0x38
     start = 0x20 + u32(original, 0x14)
     indices = [u16(original, trainer + 0x1C + slot * 2) for slot in range(2)]
@@ -201,7 +204,8 @@ def patch_wakin_partner(original, current, rel, species_table, species, dol, gam
         return None
     model, report = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
                                  height_limit=8.0, unown_form_index=unown_form_index,
-                                 spinda_pid=(spinda_pids or {}).get(indices[0]))
+                                 spinda_pid=(spinda_pids or {}).get(indices[0]),
+                                 deoxys_form=(deoxys_forms or {}).get(indices[0], 0))
 
     def cry(raw):
         if raw.count(_GLOOM_CRY) != 1:

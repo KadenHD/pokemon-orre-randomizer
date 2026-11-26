@@ -1291,8 +1291,12 @@ class MainWindow(QMainWindow):
             status = self.text("{rate} % : statut chromatique tiré en jeu.", rate=rate)
         return status
 
-    def preview_species_name(self, row):
-        return display_species_name(row.get("national_dex"), self.language, row.get("name_" + self.language))
+    def preview_species_name(self, row, *, include_form=True):
+        name = display_species_name(row.get("national_dex"), self.language, row.get("name_" + self.language))
+        if include_form and 'deoxys_form' in row:
+            from .deoxys import form_label
+            name += ' · ' + form_label(row['deoxys_form'], self.language)
+        return name
 
     def preview_row_name(self, row, *, rich=False):
         name = self.preview_species_name(row)
@@ -1915,7 +1919,7 @@ class MainWindow(QMainWindow):
         if self.detail_window is not None:
             self.detail_window.close()
         xd = self.game_views.currentWidget() is self.xd
-        dialog = PokemonSheet(self, row, self.preview_species_name(row), self.preview_portrait(row, xd=xd),
+        dialog = PokemonSheet(self, row, self.preview_species_name(row, include_form=False), self.preview_portrait(row, xd=xd),
                               self.language, xd=xd)
         dialog.finished.connect(lambda _result: setattr(self, "detail_window", None))
         self.detail_window = dialog

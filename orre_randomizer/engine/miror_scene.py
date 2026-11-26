@@ -41,7 +41,7 @@ def synchronize_cave_team(original, current):
 
 
 def patch_cave_dancers(source, dol, game_id, dancers, shiny, species_table, rel, archive, *,
-                       unown_form_index=0, spinda_pids=(None,) * 4):
+                       unown_form_index=0, spinda_pids=(None,) * 4, deoxys_forms=(0,) * 4):
     members = parse_fsys(source)["members"]
     room = next(row for row in members if row["identifier_raw"].endswith("1c00"))
     template = next(row for row in members if row["name"] == "runpappa")
@@ -65,7 +65,8 @@ def patch_cave_dancers(source, dol, game_id, dancers, shiny, species_table, rel,
         else:
             model = load_actor_model(dol, game_id, u32(rel, pos + 0x2C), archive,
                                      scale=companion_scale(national, 0.8), shiny=is_shiny,
-                                     unown_form_index=unown_form_index, spinda_pid=spinda_pid)
+                                     unown_form_index=unown_form_index, spinda_pid=spinda_pid,
+                                     deoxys_form=deoxys_forms[slot] if species == 410 else 0)
         models.append((resource_id, model))
     return append_actor_models(
         source, {room["index"]: bytes(character_data), template["index"]: models[0][1]},

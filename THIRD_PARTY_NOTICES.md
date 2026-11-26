@@ -238,6 +238,13 @@ Additional Castform and Deoxys form portraits use the original model geometry
 with pack-derived or separately authored x4 materials. Their normal and shiny
 renders, framing, material sources and hashes are recorded in
 `orre_randomizer/assets/game/models/extra-portraits/extra-portraits.json`.
+
+The Deoxys forms imported into Colosseum retain XD's original standard/rare
+meshes, skeletons and DAT animation tracks. Their container adapters and
+separately rendered native/x4 head and whole-body images are recorded in
+[`deoxys-assets.json`](orre_randomizer/assets/game/models/deoxys/deoxys-assets.json).
+The x4 material recipes use the pinned XD HD pack credited above. These
+game-derived resources remain outside the source code's MIT license.
 The authoring and composition scripts are included with the application source.
 These rendered game assets remain separate from the code's MIT license.
 

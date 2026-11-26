@@ -160,7 +160,9 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
                      *, scale: float = 1.0, shiny: bool = False,
                      attachment_offset: tuple[float, float, float] | None = None,
                      unown_form_index: int = 0, spinda_pid: int | None = None,
-                     native_field_motions: bool = False) -> bytes:
+                     native_field_motions: bool = False, deoxys_form: int = 0) -> bytes:
+    if type(deoxys_form) is not int or not 0 <= deoxys_form < 4:
+        raise FormatError("invalid field Deoxys form")
     xd = game_id in _XD_MODEL_TABLE
     if xd:
         table = _XD_MODEL_TABLE[game_id]
@@ -207,8 +209,33 @@ def load_actor_model(dol: bytes, game_id: str, model_id: int, archive: Callable[
             raise FormatError("missing retail Spinda spot textures")
         spinda_texture = spinda_face_texture(decoded_member(payload, textures["face"]),
                                              decoded_member(payload, textures["buti_a"]), spinda_pid)
+    imported_deoxys = model_id == 410 and deoxys_form != 0
     recipe = None
-    if shiny:
+    if imported_deoxys:
+        from ..deoxys import FORM_ORDER
+        chosen = FORM_ORDER[deoxys_form]
+        if xd:
+            suffix = {'attack': 'atk', 'defense': 'def', 'speed': 'sp'}[chosen]
+            chosen_archive = archive('pkx_deoxys_' + suffix + ('_c' if shiny else '') + '.fsys')
+            chosen_members = [m for m in parse_fsys(chosen_archive)['members']
+                              if m['identifier_raw'].endswith('1e00')]
+            if len(chosen_members) != 1:
+                raise FormatError('missing native XD Deoxys form model')
+            pkx = decoded_member(chosen_archive, chosen_members[0])
+        else:
+            from ..deoxys_assets import xd_models
+            from ..deoxys_resources import convert_deoxys_model
+            if shiny:
+                rare_archive = archive('pkx_rare_deoxys.fsys')
+                templates = [m for m in parse_fsys(rare_archive)['members']
+                             if int(m['identifier_raw'], 16) == 0x128B1E00]
+                if len(templates) != 1:
+                    raise FormatError('missing native Colosseum rare Deoxys template')
+                pkx = decoded_member(rare_archive, templates[0])
+            pkx = convert_deoxys_model(xd_models()[chosen, bool(shiny)], pkx,
+                                       form=chosen, shiny=bool(shiny))
+        native = None
+    if shiny and not imported_deoxys:
         # A subset of species (including Charizard and Ho-Oh) have a retail
         # shiny model. Other species use a recipe in the ordinary PKX.
         rare = "pkx_rarecoil.fsys" if name == "pkx_coil.fsys" else name.replace("pkx_", "pkx_rare_", 1)

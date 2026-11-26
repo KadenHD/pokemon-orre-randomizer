@@ -60,7 +60,7 @@ def _patch_program(source, actors):
 
 
 def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions, guaranteed_shiny,
-                          *, unown_form_index=0, spinda_seeds=None, spinda_default=None):
+                          *, unown_form_index=0, spinda_seeds=None, spinda_default=None, deoxys_forms=None):
     """Use the final starter constructor operands, preserving any untouched rider."""
     chosen = {}
     for slot, target in enumerate(special_targets(original_dol)[:2]):
@@ -73,7 +73,7 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
             spinda_seed = (spinda_seeds or {}).get(f"special:{target['key']}")
             if shiny_decisions.get(target["key"], spinda_default) is None:
                 spinda_seed = None
-            chosen[slot] = species, shiny, spinda_seed
+            chosen[slot] = species, shiny, spinda_seed, (deoxys_forms or {}).get('special:' + target['key'], 0)
     if not chosen:
         return None
 
@@ -89,7 +89,7 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
     game = dol_layout(original_dol).game_id
     models, actors, report = {}, {}, []
     front_is_large = False
-    for slot, (species, shiny, spinda_seed) in chosen.items():
+    for slot, (species, shiny, spinda_seed, deoxys_form) in chosen.items():
         if species not in catalog:
             raise FormatError("invalid starter species for Outskirt Stand")
         row = catalog[species]
@@ -110,7 +110,8 @@ def patch_starter_arrival(original_dol, dol, rel, read_archive, shiny_decisions,
             front_is_large = national in OVERSIZED_FIELD_SPECIES or height > 18
         payload = load_actor_model(original_dol, game, u32(rel, row["offset"] + 0x2C),
                                    read_archive, scale=scale, shiny=shiny,
-                                   attachment_offset=(outward, lift, -outward), unown_form_index=unown_form_index)
+                                   attachment_offset=(outward, lift, -outward), unown_form_index=unown_form_index,
+                                   deoxys_form=deoxys_form if species == 410 else 0)
         if spinda_seed is not None:
             payload = mark_spinda_starter_actor(payload, slot, spinda_seed, shiny)
         resource = 0x7DF00400 + (slot << 16)

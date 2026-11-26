@@ -74,7 +74,7 @@ ISO_SHA256 = "1e3b4aa806ac3367cca13496f7701137e9437e7bac0101f75b9b137633a10aa9"
 DOL_SIZE = 4_096_576
 CHUNK = 8 * 1024 * 1024
 Progress = Callable[[int, str], None]
-ENGINE_VERSION = "natural-starter-pair-safety-v28"
+ENGINE_VERSION = "saved-deoxys-forms-v29"
 
 
 @dataclass(frozen=True, slots=True)
@@ -501,22 +501,37 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         rel, dol, summary["tms"] = apply_tm_rules(original, rel, original_dol, dol, seed, options)
         spinda_seeds = (colo_spinda_seeds(original, rel, original_dol, dol, seed, trainer_aliases,
                                         trainer_special_aliases=eagun_aliases) if options.has_changes else {})
+        postgame_plan = ()
         if options.postgame_shadow_lugia:
             from .engine.spinda import SPINDA, spinda_pid_seed
-            for row in plan_postgame_lugia_team(original, rel, seed, options):
+            postgame_plan = plan_postgame_lugia_team(original, rel, seed, options)
+            for row in postgame_plan:
                 if row["species"] == SPINDA:
                     spinda_seeds[row["key"]] = spinda_pid_seed(seed, "colo:" + row["key"]) or 1
+        from .engine.deoxys_generation import colo_deoxys_seeds
+        from .deoxys import encounter_forms
+        deoxys_seeds = (colo_deoxys_seeds(original, rel, original_dol, dol, seed, trainer_aliases,
+            trainer_special_aliases=eagun_aliases, extra_rows=postgame_plan) if options.has_changes else {})
+        deoxys_encounters = encounter_forms(deoxys_seeds)
         dol, shiny_report = apply_shiny_rules(original_dol, dol, options, seed=seed,
                                               trainer_aliases=trainer_aliases, spinda_seeds=spinda_seeds,
-                                              trainer_special_aliases=eagun_aliases)
+                                              trainer_special_aliases=eagun_aliases, deoxys_seeds=deoxys_seeds)
         summary["shinies"] = shiny_report
+        deoxys_display = None
+        deoxys_shadow_forms = {int(key.split(':')[1]): value for key, value in deoxys_encounters.items()
+                                if key.startswith('shadow:')}
+        if options.has_changes:
+            from .deoxys_display import install_display_reader
+            dol, deoxys_display = install_display_reader(original_dol, dol, region.game_id)
         dol, summary["quality_of_life"] = apply_qol_rules(original_dol, dol, options)
         if options.has_changes:
             from .engine.postgame_boss import bonus_shadow_species
             dol, summary["snag_list"] = apply_snag_list_identities(
                 original_dol, dol, region.game_id, custom_shadow_shinies=options.custom_shinies,
                 postgame_shadow_lugia=options.postgame_shadow_lugia,
-                bonus_species=bonus_shadow_species(original, seed, options))
+                bonus_species=bonus_shadow_species(original, seed, options),
+                deoxys_forms=deoxys_shadow_forms,
+                deoxys_reader=deoxys_display['address'])
         if options.readable_stone_names:
             rel, summary["item_names"] = apply_item_name_spacing(original, rel)
         else:
@@ -527,11 +542,14 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         lab_appearances = dna_appearances(original, rel, options, shiny_report)
         samples = {}
         lugia_samples = dna_shadow_lugia_samples(original, rel, lab_appearances)
+        from .engine.dna_lab import dna_deoxys_samples
+        deoxys_samples = dna_deoxys_samples(original, rel, lab_appearances, deoxys_encounters)
         if lab_appearances:
             samples = dna_spinda_samples(original, rel, lab_appearances, options, shiny_report)
             dol = patch_dna_analyzer(original_dol, dol, lab_appearances, spinda_samples=samples,
                                      spinda_pid=shiny_report.get("spinda_pid"),
-                                     shadow_lugia_samples=lugia_samples)
+                                     shadow_lugia_samples=lugia_samples, deoxys_samples=deoxys_samples,
+                                     deoxys_reader=deoxys_display['address'] if deoxys_display else None)
         form = unown_form(seed)
         if options.has_changes:
             dol = patch_unown_form(original_dol, dol, form)
@@ -542,19 +560,27 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                           and options.shiny_chance_percent not in (0, 100) else guaranteed_shiny)
         arrival = patch_starter_arrival(original_dol, dol, original, archive,
                                         decisions.get("specials", {}), guaranteed_shiny, unown_form_index=form,
-                                        spinda_seeds=spinda_seeds, spinda_default=spinda_default)
+                                        spinda_seeds=spinda_seeds, spinda_default=spinda_default,
+                                        deoxys_forms=deoxys_encounters)
         if arrival and any(row.get("spinda_live_pid") for row in arrival[1]):
             dol = apply_colo_spinda_starters(original_dol, dol, shiny_report["spinda_pid"]["resolver"], archive)
         if samples or lugia_samples:
             dol = apply_dna_keypad_runtime(original_dol, dol, archive, samples, shiny_report.get("spinda_pid"),
                 shadow_lugia_samples=lugia_samples, appearances=lab_appearances,
                 keep_after_purification=options.keep_shadow_lugia_after_purification)
+        if deoxys_samples:
+            from .engine.dna_deoxys_keypad import apply_deoxys_keypad_runtime
+            dol, deoxys_keypad = apply_deoxys_keypad_runtime(original_dol, dol, archive,
+                deoxys_samples, lab_appearances, deoxys_reader=deoxys_display['address'])
+            summary['dna_deoxys_keypad'] = deoxys_keypad
         summary = final_report_summary(original, base_rel, rel, original_dol, dol, seed, options, summary)
         if lab_appearances:
             summary["dna_lab"] = {
                 str(old): {"species": species, "shiny": shiny}
                 for old, (species, shiny) in lab_appearances.items()
             }
+        if deoxys_samples:
+            summary['dna_deoxys_samples'] = {str(old): [sid, form] for old, (sid, form) in deoxys_samples.items()}
         if options.diverse_story_families:
             families = evolution_families(original, layout(original)[0])[0]
             members = {}
@@ -595,6 +621,27 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             dol, summary["castform_weather"] = install_weather_appearances(
                 original_dol, dol, region.game_id, archive, lugia_models)
             summary["castform_portraits"] = summary["castform_weather"]["portraits"]
+            from .deoxys_assets import portrait_pixels, xd_models
+            from .deoxys_resources import append_deoxys_resources
+            from .deoxys_runtime import install_deoxys_forms
+            from .deoxys_portraits import install_deoxys_portraits
+            from .deoxys_presentation import annotate_catalog, form_stat_tables
+            form_stats = form_stat_tables(seed, options, species_catalog(rel, layout(original)[0])[410]['stats'])
+            resource_report = append_deoxys_resources(region.game_id, archive, lugia_models,
+                xd_models=xd_models(), portrait_pixels=portrait_pixels)
+            dol, model_report = install_deoxys_forms(original_dol, dol, region.game_id, base_stats=form_stats)
+            dol, face_report = install_deoxys_portraits(original_dol, dol, region.game_id)
+            from .deoxys_meteorite import install_meteorite
+            dol, _, meteorite = install_meteorite(original_dol, dol, region.game_id)
+            summary['deoxys_forms'] = {'enabled': True, 'encounters': deoxys_encounters,
+                'base_stats': form_stats, 'resources': resource_report, 'models': model_report,
+                'portraits': face_report, 'native_and_hd': True,
+                'initial_form_source': 'versioned seed per encounter', 'required_hd_packs': ['xd']}
+            summary['deoxys_forms']['meteorite'] = meteorite
+            summary['deoxys_forms']['display_reader'] = deoxys_display
+            summary['deoxys_forms']['dna_samples'] = {str(old): {'shadow_id': sid, 'initial_form': form}
+                                                       for old, (sid, form) in deoxys_samples.items()}
+            annotate_catalog(summary['detail_catalog'], summary['deoxys_forms'])
         progress(25, "Compression des données du jeu…")
         new_common = repack_fsys(common, common_replacements)[0] if common_replacements else common
         checkpoint(cancel)
@@ -629,7 +676,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         cursor = align(common_offset + len(new_common) if relocated else sys_end, 0x8000)
         scene_updates = (dna_room_updates(original, region.game_id, archive, lab_appearances,
                                           unown_form_index=form, spinda_samples=samples,
-                                          shadow_lugia_samples=lugia_samples) if lab_appearances else {})
+                                          shadow_lugia_samples=lugia_samples,
+                                          deoxys_samples=deoxys_samples) if lab_appearances else {})
         scene_updates.update(lugia_models)
         if options.stone_shops or options.randomize_shop_items:
             summary["shop_archives"] = []
@@ -660,7 +708,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             partner = patch_eagun_scenes(original, rel, original_dol, region.game_id, archive,
                                           scene_updates, trainer_shinies, guaranteed_shiny, unown_form_index=form,
                                           spinda_seeds=spinda_seeds, spinda_default=spinda_default,
-                                          gift_partner=eagun_gift, special_shinies=decisions.get("specials", {}))
+                                          gift_partner=eagun_gift, special_shinies=decisions.get("specials", {}),
+                                          deoxys_forms=deoxys_encounters)
             if partner is not None:
                 summary["eagun_field_partner"] = partner
                 for report in summary["event_gifts"]["archives"]:
@@ -675,6 +724,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             scene_updates[MIROR_CAVE] = patch_cave_dancers(
                 archive(MIROR_CAVE), original_dol, region.game_id, dancers, shiny_dancers,
                 layout(original)[0]["species"], rel, archive, unown_form_index=form, spinda_pids=dancer_pids,
+                deoxys_forms=tuple(deoxys_encounters.get(f'trainer:{slot}', 0) for slot, _ in dancer_slots),
             )
             summary["miror_cave_dancers"] = list(dancers)
             summary["miror_cave_shiny_models"] = list(shiny_dancers)
@@ -692,7 +742,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                 spinda_pid = (colo_spinda_gift_pid(spinda_seeds, "plusle", spinda_mode)
                               if spinda_mode is not None else None)
                 model = load_actor_model(original_dol, region.game_id, model_id, archive, scale=scale, shiny=shiny,
-                                         unown_form_index=form, spinda_pid=spinda_pid, native_field_motions=True)
+                                         unown_form_index=form, spinda_pid=spinda_pid, native_field_motions=True,
+                                         deoxys_form=deoxys_encounters.get('special:plusle', 0) if species_id == 410 else 0)
                 for name in PLUSLE_DIALOGUE_ARCHIVES:
                     checkpoint(cancel)
                     room = scene_updates[name] if name in scene_updates else archive(name)
@@ -746,7 +797,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             summary["postgame_shadow_lugia"]["scene"] = patch_postgame_lugia_archives(
                 original, archive, scene_updates, options,
                 shiny=summary["postgame_shadow_lugia"]["team"][-1]["shiny"],
-                species=event_species, original_dol=original_dol, seed=seed)
+                species=event_species, original_dol=original_dol, seed=seed,
+                deoxys_form=deoxys_encounters.get('shadow:96', 0) if event_species == 410 else 0)
             species_names = None
             if event_species != 249:
                 names = localized_names(original, rel_symbols(original, parse_rel(original)))[0]

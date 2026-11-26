@@ -53,7 +53,8 @@ def _original_completion_stub(address, getter):
 
 
 def _colo_identity_stub(address, setter, saved_pid, generated, player_pointer, captured,
-                        *, custom_shadow_shinies=False, shadow_register=20):
+                        *, custom_shadow_shinies=False, shadow_register=20, deoxys_forms=None,
+                        deoxys_reader=None, game_id='GC6P01'):
     if shadow_register not in (20, 28):
         raise FormatError("invalid native Snag List identity register")
     selected = 0x7C030378 | shadow_register << 21 | shadow_register << 11  # mr r3, selected
@@ -80,13 +81,17 @@ def _colo_identity_stub(address, setter, saved_pid, generated, player_pointer, c
     code.label("assign")
     code.emit(0x80610008, 0x8081000C)
     code.call(setter)
+    if deoxys_forms:
+        from .deoxys_display import emit_fake_form
+        emit_fake_form(code, game_id, deoxys_forms, deoxys_reader, shadow_register=shadow_register)
     code.emit(0x80010024, 0x7C0803A6, 0x38210020, 0x4E800020)
     code.label("native_tail")
     code.emit(branch(address + len(code.words) * 4, setter))
     return code.finish()
 
 
-def _xd_identity_stub(address, generator, player_lookup, generated, *, custom_shadow_shinies=False):
+def _xd_identity_stub(address, generator, player_lookup, generated, *, custom_shadow_shinies=False,
+                       deoxys_forms=None, deoxys_reader=None, game_id='GXXP01'):
     code = _Code(address)
     code.emit(0x28030000)
     code.conditional(0x41820000, "native_tail")
@@ -113,6 +118,10 @@ def _xd_identity_stub(address, generator, player_lookup, generated, *, custom_sh
     code.emit(0x80610008, 0x8081000C, 0x80A10010, 0x80C10014, 0x80E10018)
     code.call(generator)
     code.label("return")
+    if deoxys_forms:
+        from .deoxys_display import emit_fake_form
+        emit_fake_form(code, game_id, deoxys_forms, deoxys_reader, shadow_register=30,
+                       result_stack=0x1C, write_pid=True)
     code.emit(0x80010044, 0x7C0803A6, 0x38210040, 0x4E800020)
     code.label("native_tail")
     code.emit(branch(address + len(code.words) * 4, generator))
@@ -198,7 +207,8 @@ def _append_colo(original, current, region, hook, expected, builder):
 
 
 def apply_snag_list_identities(original, current, game_id, *, custom_shadow_shinies=False,
-                               postgame_shadow_lugia=False, bonus_species=_LUGIA):
+                               postgame_shadow_lugia=False, bonus_species=_LUGIA,
+                               deoxys_forms=None, deoxys_reader=None):
     """Patch temporary list models only; a missing/generated-false record stays native."""
     if game_id in _COLO_HOOKS:
         region = dol_layout(original)
@@ -221,7 +231,8 @@ def apply_snag_list_identities(original, current, game_id, *, custom_shadow_shin
                 raise FormatError("unexpected Colosseum Snag List display window")
         output, hooks = _append_colo(original, current, region, hook, expected[5],
             lambda address: _colo_identity_stub(address, setter, saved_pid, generated, region.player_pointer,
-                                                captured, custom_shadow_shinies=custom_shadow_shinies))
+                                                captured, custom_shadow_shinies=custom_shadow_shinies,
+                                                deoxys_forms=deoxys_forms, deoxys_reader=deoxys_reader, game_id=game_id))
         if postgame_shadow_lugia:
             cache_hook = _COLO_CACHE_HOOKS[game_id]
             cache_position = cache_hook - TEXT_TO_RAM
@@ -275,7 +286,8 @@ def apply_snag_list_identities(original, current, game_id, *, custom_shadow_shin
                 raise FormatError("unexpected native Colosseum Snag List navigation identity")
         output, navigation_hooks = _append_colo(original, output, region, navigation, navigation_window[5],
             lambda address: _colo_identity_stub(address, setter, saved_pid, generated, region.player_pointer,
-                captured, custom_shadow_shinies=custom_shadow_shinies, shadow_register=28))
+                captured, custom_shadow_shinies=custom_shadow_shinies, shadow_register=28,
+                deoxys_forms=deoxys_forms, deoxys_reader=deoxys_reader, game_id=game_id))
         hooks.extend(navigation_hooks)
         navigation_model = navigation + 0x68
         navigation_model_position = navigation_model - TEXT_TO_RAM
@@ -302,7 +314,8 @@ def apply_snag_list_identities(original, current, game_id, *, custom_shadow_shin
         output, hooks = append_xd_dol_text(original, current, game_id, (
             (hook, expected[5], lambda address, _continuation: _xd_identity_stub(
                 address, layout.pid_generator, layout.player_lookup, XD_SHADOW_STATE[game_id].shadow_seen,
-                custom_shadow_shinies=custom_shadow_shinies)),
+                custom_shadow_shinies=custom_shadow_shinies,
+                deoxys_forms=deoxys_forms, deoxys_reader=deoxys_reader, game_id=game_id)),
         ), link=True)
     else:
         raise FormatError("unsupported Snag List game")

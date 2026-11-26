@@ -48,6 +48,12 @@ each new encounter's shiny result. The preview can show a guaranteed result at
 
 ## Preview and saves
 
+Since v2.1.4, Deoxys's initial form is also chosen from the seed in
+both games. A separate saved form tag keeps a Meteorite form change independent
+of its PID, shiny status and Shadow progress. Colosseum gains XD's three extra
+forms, including matching normal/shiny portraits and full-body DNA artwork in
+Original and HD modes. See [Deoxys forms](DEOXYS_FORMS.md) for item use and scope.
+
 Known results use normal/shiny portraits decoded from the ROM, including the
 evolution portraits. Shadow Lugia uses its original dark portrait or a matching
 recolored white shiny portrait; its provenance is in the bundled model manifest.

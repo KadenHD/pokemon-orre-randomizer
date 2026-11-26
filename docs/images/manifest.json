@@ -711,6 +711,30 @@
       "captured_in_version": "2.1.1",
       "description": "Review an allowlisted offline diagnostic before saving it.",
       "source": "Actual Qt widgets, muted private preferences and synthetic demonstration data. No personal ROM, save or settings opened."
+    },
+    "colosseum-deoxys-forms.png": {
+      "bytes": 685140,
+      "sha256": "d669357c47b75ad4c63e5ea96cf55e11480d9dabb946f2ef1ea4d54e101aae80",
+      "kind": "gameplay",
+      "language": "en",
+      "game": "colosseum",
+      "width": 1444,
+      "height": 1056,
+      "captured_in_version": "2.1.4",
+      "description": "Reusable Meteorite and the native uppercase four-form menu.",
+      "source": "Actual muted Dolphin session with an isolated test ROM and copied memory card. Controlled Deoxys party for form testing; native item use. Original ROMs and personal saves unchanged."
+    },
+    "xd-deoxys-forms.png": {
+      "bytes": 94046,
+      "sha256": "8249fc8355e418f93e35a8cdd32f836b06b4826040f899ddf0feffd0581e0fed",
+      "kind": "gameplay",
+      "language": "en",
+      "game": "xd",
+      "width": 722,
+      "height": 528,
+      "captured_in_version": "2.1.4",
+      "description": "The reusable Meteorite and its native English item description.",
+      "source": "Actual muted Dolphin session with an isolated test ROM and copied memory card. Controlled Deoxys party for form testing; native item use. Original ROMs and personal saves unchanged."
     }
   }
 }

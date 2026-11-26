@@ -163,7 +163,7 @@ def _tile_art(template: bytes, body: bytes, width: int, height: int, number: int
 
 def patch_dna_keypad(source: bytes, bodies_archive: bytes,
                      mapping: Mapping[int, tuple[int, bool]], *, unown_form_index: int = 0,
-                     spinda_samples=(), shadow_lugia_samples=()) -> bytes:
+                     spinda_samples=(), shadow_lugia_samples=(), deoxys_samples=()) -> bytes:
     """Update the tiles' images while retaining their native comparison keys."""
     if set(mapping) != set(DNA_KEYPAD_SPECIES):
         raise FormatError("unexpected DNA keypad species mapping")
@@ -185,7 +185,7 @@ def patch_dna_keypad(source: bytes, bodies_archive: bytes,
     if sha256(original_dat) != _DAT_SHA256:
         raise FormatError("unexpected original DNA keypad model")
     updated = bytearray(original_dat)
-    if spinda_samples or shadow_lugia_samples:
+    if spinda_samples or shadow_lugia_samples or deoxys_samples:
         if (len(original_dat) != _KEYPAD_DAT_SIZE or any(original_dat[0x18:0x20])
                 or struct.unpack_from(">III", original_dat, _ATLAS_DESCRIPTOR) != _ATLAS_SIGNATURE):
             raise FormatError("unexpected DNA keypad atlas")
@@ -194,8 +194,19 @@ def patch_dna_keypad(source: bytes, bodies_archive: bytes,
         original_dat[start:end] for start, end in _tile_rows(896, 512)))
     bodies = {member["name"]: member for member in parse_fsys(bodies_archive)["members"]}
     for position, species, shiny, duplicate in changes:
-        body = _body_pixels(bodies_archive, bodies, species, shiny, unown_form_index)
+        selected = deoxys_samples.get(DNA_KEYPAD_SPECIES[position]) if deoxys_samples else None
+        form = selected[1] if selected is not None else 0
+        if selected is not None and (species != 410 or type(form) is not int or not 0 <= form < 4):
+            raise FormatError('Invalid Deoxys DNA keypad form')
+        if form:
+            from ..deoxys_assets import body_pixels
+            from .dna_artwork import outline_dna_body
+            body = outline_dna_body(body_pixels(('attack', 'defense', 'speed')[form - 1], shiny), 64)
+        else:
+            body = _body_pixels(bodies_archive, bodies, species, shiny, unown_form_index)
         rect = _SPINDA_BODY_ART_RECT if species == SPINDA and DNA_KEYPAD_SPECIES[position] in spinda_samples else _BODY_ART_RECT
+        if form:
+            rect = _CUSTOM_BODY_ART_RECT
         image = _tile_art(template, body, _BODY_SIZE, _BODY_SIZE,
                           position + 1 if duplicate else 0, rect=rect)
         for row, (start, end) in enumerate(_tile_rows(*_TILE_ORIGINS[position])):

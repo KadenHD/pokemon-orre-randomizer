@@ -18,7 +18,7 @@ POSITION = (-32.0, 0.0, 0.0)
 
 
 def append_field_model(source, original_common, *, shiny, species=249, original_dol=None,
-                       read_archive=None, seed="postgame-lugia"):
+                       read_archive=None, seed="postgame-lugia", deoxys_form=0):
     """Clone only a room-local DAT; never replace the global model or Pikachu."""
     symbols = rel_symbols(original_common, parse_rel(original_common))
     if u32(original_common, symbols[73]["offset"]) != 150:
@@ -45,7 +45,7 @@ def append_field_model(source, original_common, *, shiny, species=249, original_
         scale = companion_scale(national, 0.65)
         field = load_actor_model(original_dol, region_for_rel(original_common).game_id, species,
                                  read_archive, scale=scale, shiny=bool(shiny),
-                                 unown_form_index=unown_form(seed))
+                                 unown_form_index=unown_form(seed), deoxys_form=deoxys_form if species == 410 else 0)
         idle, source_hash = None, None
     # Nascour was already appended using this verified room-local donor entry.
     output = append_actor_models(source, {}, source, 0x03240400,

@@ -456,7 +456,7 @@ def patch_starter_dialogue(source, game_id, national, name_banks):
 
 
 def patch_eagun_actor(original, current, rel, species_table, species, dol, game_id, read_archive, updates,
-                      *, unown_form_index=0, spinda_pids=None):
+                      *, unown_form_index=0, spinda_pids=None, deoxys_forms=None):
     row = 0x20 + _EAGUN_TRAINER * 0x38
     index = u16(original, row + 0x1C)
     position = 0x20 + u32(original, 0x14) + 0x20 * index
@@ -470,7 +470,8 @@ def patch_eagun_actor(original, current, rel, species_table, species, dol, game_
     model_id = u16(rel, species_table + 0x124 * chosen + 0x2E)
     spinda_pid = (spinda_pids or {}).get(index)
     model = load_actor_model(dol, game_id, model_id, read_archive, scale=scale,
-                             unown_form_index=unown_form_index, spinda_pid=spinda_pid)
+                             unown_form_index=unown_form_index, spinda_pid=spinda_pid,
+                             deoxys_form=(deoxys_forms or {}).get(index, 0) if chosen == 410 else 0)
     for archive in EAGUN_ACTOR_ARCHIVES:
         source = updates[archive] if archive in updates else read_archive(archive)
         source = patch_actor(source, model, identifier="0x18830400", name="pikachu")

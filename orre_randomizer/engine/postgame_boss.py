@@ -467,7 +467,7 @@ def localized_dialogue(language, names, *, species_name=None):
     return tuple(texts)
 
 def patch_archives(original_rel, read_archive, updates, options, *, shiny=None, species=LUGIA,
-                   original_dol=None, seed="postgame-lugia"):
+                   original_dol=None, seed="postgame-lugia", deoxys_form=0):
     if not getattr(options, "postgame_shadow_lugia", False):
         return {"version": VERSION, "enabled": False}
     region = region_for_rel(original_rel).game_id
@@ -514,7 +514,7 @@ def patch_archives(original_rel, read_archive, updates, options, *, shiny=None, 
             from .postgame_scene_model import append_field_model
             current, detail["lugia_model"] = append_field_model(
                 current, original_rel, shiny=shiny, species=species, original_dol=original_dol,
-                read_archive=read_archive, seed=seed)
+                read_archive=read_archive, seed=seed, deoxys_form=deoxys_form)
         updates[name] = current
         reports.append({"archive": name, "sha256": sha256(current), "details": detail})
     return {"version": VERSION, "enabled": True, "archives": reports, "story_completion_flags": events.STORY_FLAGS,

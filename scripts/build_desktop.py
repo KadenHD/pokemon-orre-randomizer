@@ -45,6 +45,12 @@ REQUIRED_RUNTIME_MODULES = frozenset((
     "orre_randomizer.castform_shiny_palette", "orre_randomizer.hd_castform_shinies",
     "orre_randomizer.engine.dna_hd_tiles", "orre_randomizer.engine.dna_spinda_hd",
     "orre_randomizer.engine.spinda_diagram",
+    "orre_randomizer.deoxys", "orre_randomizer.deoxys_assets", "orre_randomizer.deoxys_identity",
+    "orre_randomizer.deoxys_display", "orre_randomizer.deoxys_presentation",
+    "orre_randomizer.deoxys_meteorite",
+    "orre_randomizer.deoxys_resources", "orre_randomizer.deoxys_runtime", "orre_randomizer.deoxys_portraits",
+    "orre_randomizer.engine.deoxys_generation", "orre_randomizer.engine.dna_deoxys_keypad",
+    "orre_randomizer.xd_deoxys", "orre_randomizer.xd_deoxys_runtime", "orre_randomizer.xd_deoxys_generation",
 ))
 REQUIRED_IMAGE_DECODERS = frozenset(("PIL.DdsImagePlugin", "PIL.PngImagePlugin"))
 

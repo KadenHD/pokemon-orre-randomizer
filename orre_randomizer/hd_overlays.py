@@ -57,6 +57,7 @@ _CASTFORM_ARCHIVES = {"pkx_powalen_w.fsys": 0x7DA11E00,
                       "pkx_powalen_i.fsys": 0x7DA31E00}
 _CASTFORM_FACES = frozenset((0x7DA11200, 0x7DA21200, 0x7DA31200))
 _CASTFORM_ROLES = frozenset(("castform_battle", "castform_portrait"))
+_DEOXYS_ROLES = frozenset(("deoxys_battle", "deoxys_portrait", "deoxys_field"))
 _LUGIA_RECONSTRUCTED_MATERIALS = {
     "tex1_32x32_f135b3b243a3e441_14.png": (32, 0x6E50, 0x6EC0, 0x40081, "reflection-environment"),
     "tex1_16x16_a70005786d19905c_14.png": (16, 0x6F9C, 0x700C, 0x30010, "mouth-interior"),
@@ -341,6 +342,12 @@ def _raw_member(archive: bytes, member: dict) -> bytes:
 
 def _selected(name: str, member: dict, is_xd: bool) -> str | None:
     ident = int(member["identifier_raw"], 16)
+    if not is_xd and name in ("poke_face.fsys", "pkx_deoxys.fsys", "pkx_rare_deoxys.fsys"):
+        from .deoxys_resources import FACE_RESOURCES, MODEL_RESOURCES
+        if name == "poke_face.fsys" and ident in FACE_RESOURCES.values():
+            return "deoxys_portrait"
+        if name != "poke_face.fsys" and ident in MODEL_RESOURCES.values():
+            return "deoxys_battle"
     if _CASTFORM_ARCHIVES.get(name) == ident:
         return "castform_battle"
     if name == "poke_face.fsys":
@@ -421,6 +428,64 @@ def _castform_game_id(source: Path, is_xd: bool) -> str:
     if identity not in SUPPORTED or not identity.startswith("GXX" if is_xd else "GC6"):
         raise OverlayError("Custom Castform resource has an invalid regional disc identity.")
     return identity
+
+
+def deoxys_hd_contract() -> dict:
+    """Qualify the complete imported appearance set without any source ROM."""
+    from .deoxys_assets import asset_manifest, artwork_png, hd_face_recipes, xd_models
+    from .deoxys_resources import FORMS, deoxys_hd_material_coverage
+    directory, _ = asset_manifest()
+    xd_models(directory)
+    for form in FORMS:
+        for shiny in (False, True):
+            for hd in (False, True):
+                for role in ('head', 'body'):
+                    artwork_png(form, shiny=shiny, hd=hd, role=role, directory=directory)
+    coverage = deoxys_hd_material_coverage()
+    recipes = json.dumps(coverage, sort_keys=True, separators=(',', ':')).encode('utf-8')
+    return {'version': 1, 'enabled': True, 'game': 'colosseum',
+            'asset_registry_sha256': hashlib.sha256((directory / 'deoxys-assets.json').read_bytes()).hexdigest(),
+            'material_recipes_sha256': hashlib.sha256(recipes).hexdigest(),
+            'material_keys': sorted(coverage['materials']),
+            'portrait_keys': sorted(hd_face_recipes(directory)), 'required_packs': ['xd'],
+            'native_bitmap_upscaled_for_hd': False}
+
+
+def _deoxys_origin(asset, contract, pixels):
+    key = asset['base_key']
+    if key in contract['portrait_keys']:
+        from .deoxys_assets import hd_face_recipes
+        recipe = hd_face_recipes()[key]
+        if (hashlib.sha256(pixels).hexdigest() != recipe['native_rgba_sha256']
+                or (asset['native']['width'], asset['native']['height']) != (42, 84)):
+            raise OverlayError('Imported Deoxys portrait changed its qualified native pixels')
+        role = 'portrait'
+    elif key in contract['material_keys']:
+        role = 'material'
+    else:
+        return None
+    return {'game': 'xd', 'file': key, 'native_source': 'Original XD Deoxys form imported into Colosseum',
+            'transform': {'type': 'imported-deoxys', 'role': role, 'native_key': key,
+                          'asset_registry_sha256': contract['asset_registry_sha256'],
+                          'material_recipes_sha256': contract['material_recipes_sha256'],
+                          'native_rgba_sha256': hashlib.sha256(pixels).hexdigest()}}
+
+
+def prepare_deoxys_hd(contract, pack_roots, destination):
+    """Generate authenticated imported maps and square face atlases together."""
+    from .deoxys_assets import prepare_hd_faces
+    from .deoxys_resources import prepare_deoxys_hd_materials
+    expected = deoxys_hd_contract()
+    if not isinstance(contract, dict) or any(contract.get(key) != value for key, value in expected.items()):
+        raise OverlayError('Imported Deoxys native/HD registry changed; recreate this game folder')
+    materials = prepare_deoxys_hd_materials(pack_roots, Path(destination))
+    portraits = prepare_hd_faces(destination)
+    files = dict(materials['files'])
+    for name, digest in portraits['files'].items():
+        if name in files and files[name] != digest:
+            raise OverlayError('Conflicting imported Deoxys HD texture identities')
+        files[name] = digest
+    return {'active': True, 'contract': expected, 'materials': materials, 'portraits': portraits, 'files': files}
 
 
 def _castform_hd_origin(game_id, asset, pixels):
@@ -638,6 +703,7 @@ def _dna_variants(texture: _Texture, reference_iso: Path, context: Mapping | Non
     from .engine.spinda import SPINDA
     from .engine.unown_form import unown_suffix
     mapping = {int(old): (row["species"], row["shiny"]) for old, row in context["dna_lab"].items()}
+    deoxys = {int(old): tuple(row) for old, row in context.get('dna_deoxys_samples', {}).items()}
     if set(mapping) != set(DNA_KEYPAD_SPECIES):
         raise OverlayError("Incomplete DNA dual-version asset context.")
     form = int(context.get("unown_form", 0))
@@ -647,7 +713,8 @@ def _dna_variants(texture: _Texture, reference_iso: Path, context: Mapping | Non
     member = next(m for m in original_members if m["identifier_raw"] == "0x107e0200")
     dat = _raw_member(original, member)
     template = _decode_pixels(128, 128, 4, b"".join(dat[a:b] for a, b in _tile_rows(896, 512)))
-    generated = patch_dna_keypad(original, bodies, mapping, unown_form_index=form)
+    generated = patch_dna_keypad(original, bodies, mapping, unown_form_index=form,
+                                 deoxys_samples=deoxys)
     generated_dat = _raw_member(generated, next(m for m in parse_fsys(generated)["members"]
                                                if m["identifier_raw"] == "0x107e0200"))
     if generated_dat[0x7820:0x87820] != texture.data:
@@ -665,9 +732,13 @@ def _dna_variants(texture: _Texture, reference_iso: Path, context: Mapping | Non
             continue
         name = "body201" + unown_suffix(form) if species == 201 else f"body{species:03d}"
         name += "_c" if shiny else ""
-        donor = _body_donor(_raw_member(bodies, body_members[name]))
+        deoxys_form = deoxys.get(old, (None, 0))[1] if species == 410 else 0
+        donor = (_deoxys_body_origin(deoxys_form, shiny) if deoxys_form
+                 else _body_donor(_raw_member(bodies, body_members[name])))
         tiles.append({"position": position, "species": species, "shiny": shiny,
                       "number": number, "body": donor})
+        if old in deoxys:
+            tiles[-1]['deoxys_form'] = deoxys_form
         if species == 249:
             lugia.append((position, old, number))
     transform = {"type": "dna", "tiles": tiles}
@@ -808,6 +879,24 @@ def _dna_cell_variants(raw: bytes, layout_report: dict, reference_iso: Path, con
                                       "native_rgba_sha256": hashlib.sha256(body).hexdigest(),
                                       "native_art_rect": list(_CUSTOM_BODY_ART_RECT)} if variant < 2 else retail_lugia[variant - 2])
                 register(changed, selected, variant)
+        if tile and tile['species'] == 410 and 'deoxys_form' in tile:
+            from .engine.dna_deoxys_keypad import native_tile_variants
+            references = _disc_files(reference_iso, {'DNA_key.fsys', 'poke_body.fsys'})
+            old = cell['original_species']
+            appearance_map = {int(key): (row['species'], row['shiny']) for key, row in mapping.items()}
+            all_tiles = native_tile_variants(references.__getitem__, appearance_map, {old: None})[old]
+            bodies = references['poke_body.fsys']
+            members = {m['name']: m for m in parse_fsys(bodies)['members']}
+            for variant, encoded in enumerate(all_tiles):
+                changed = bytearray(samples)
+                for row in range(16):
+                    start = (cell['art_y'] // 8 + row) * cell['row_bytes'] + cell['art_x'] // 8 * 32
+                    changed[start:start + 512] = encoded[row * 512:(row + 1) * 512]
+                selected_form, shiny = variant // 2, bool(variant & 1)
+                donor = (_deoxys_body_origin(selected_form, shiny) if selected_form else
+                         _body_donor(_raw_member(bodies, members['body410_c' if shiny else 'body410'])))
+                register(changed, dict(tile, shiny=shiny, deoxys_form=selected_form, body=donor),
+                         variant=f'deoxys-{selected_form}-{int(shiny)}')
     if layout.get("spinda_diagram"):
         extra_textures, extra_recipes = _spinda_diagram_variants(raw, layout, reference_iso, cancel)
         textures.extend(extra_textures)
@@ -902,9 +991,18 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
               "limitations": [],
               "conditional_limitations": ["PID-specific Spinda DNA requires a registered HD spot-pattern recipe when selected."]}
     assets, dna_recipes, castform_game = {}, {}, None
+    context_forms = (asset_context or {}).get('deoxys_forms', {})
+    imported_deoxys = (not is_xd and isinstance(context_forms, Mapping)
+                       and context_forms.get('enabled') is True)
+    deoxys = None
     try:
         _checkpoint(cancel)
-        for archive_name, archive in _disc_archives(source, is_xd=is_xd):
+        if imported_deoxys:
+            deoxys = deoxys_hd_contract()
+            report['deoxys_forms'] = dict(deoxys)
+            report['required_packs'].append('xd')
+        extra = {'pkx_deoxys.fsys', 'pkx_rare_deoxys.fsys'} if imported_deoxys else None
+        for archive_name, archive in _disc_archives(source, is_xd=is_xd, extra_names=extra):
             _checkpoint(cancel)
             if progress:
                 progress(archive_name)
@@ -914,11 +1012,13 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                 role = _selected(archive_name, member, is_xd)
                 if role is None:
                     continue
+                if role in _DEOXYS_ROLES and deoxys is None:
+                    raise OverlayError('Imported Deoxys resources require their native/HD contract')
                 _checkpoint(cancel)
                 raw = _raw_member(archive, member)
-                if role in ("portrait", "retail_portrait", "retail_form", "castform_portrait"):
+                if role in ("portrait", "retail_portrait", "retail_form", "castform_portrait", "deoxys_portrait"):
                     textures = (_face(raw),)
-                elif role in ("battle", "castform_battle"):
+                elif role in ("battle", "castform_battle", "deoxys_battle"):
                     textures = _dat_textures(_pkx_dat(raw, is_xd))
                 elif role == "dna":
                     # The complete atlas preserves all nine full-body tiles,
@@ -956,11 +1056,16 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                             roles = assets[name].setdefault("castform_roles", [])
                             if role not in roles:
                                 roles.append(role)
+                        if role in _DEOXYS_ROLES:
+                            roles = assets[name].setdefault('deoxys_roles', [])
+                            if role not in roles:
+                                roles.append(role)
                         record["textures"].append(name)
                 report["resources"].append(record)
         _checkpoint(cancel)
         origins = _dark_origins()
-        wanted = {a["base_key"] for a in assets.values() if a["role"] == "field"} - origins.keys()
+        wanted = ({a["base_key"] for a in assets.values() if a["role"] == "field"} - origins.keys()
+                  - set(deoxys['material_keys'] if deoxys else []))
         field, failures = _field_origins(Path(reference_iso or source), is_xd, wanted, cancel, progress) if wanted else ({}, [])
         origins.update(field)
         report["origin_scan_failures"] = failures
@@ -978,6 +1083,13 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                 # also appeared in another captured resource earlier.
                 if "colosseum" not in report["required_packs"]:
                     report["required_packs"].append("colosseum")
+            elif deoxys and (asset.get('deoxys_roles') or base in deoxys['material_keys']):
+                native_image = _load_reference(target, asset['native'])
+                asset['hd'] = _deoxys_origin(asset, deoxys, bytes(native_image.constBits()))
+                if asset['hd'] is None:
+                    raise OverlayError('An imported Deoxys texture has no complete registered HD route')
+                if asset['role'] == 'field':
+                    asset.setdefault('deoxys_roles', []).append('deoxys_field')
             elif asset["role"] == "retail_form":
                 from .hd_extra_portraits import portrait_origin
                 asset["hd"] = portrait_origin(report["game"], base,
@@ -1025,7 +1137,7 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
             else:
                 asset["hd"] = None
                 report["missing_assets"].append({"file": asset["file"], "reason": "No registered pack-derived DNA composition"})
-            if not asset.get("castform_roles") and asset["role"] in ("field", "battle"):
+            if not asset.get("castform_roles") and not asset.get('deoxys_roles') and asset["role"] in ("field", "battle"):
                 native_image = _load_reference(target, asset["native"])
                 colors = bytes(native_image.constBits())
                 if colors == colors[:4] * (len(colors) // 4):
@@ -1039,7 +1151,7 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                     nested = transform["tiles"] if transform["type"] == "dna" else [transform["tile"]] if transform["tile"] else []
                     for tile in nested:
                         body = tile["body"]
-                        game = "xd" if body["kind"] == "rendered-dark-lugia" else body["game"]
+                        game = "xd" if body["kind"] in ('rendered-dark-lugia', 'rendered-deoxys') else body["game"]
                         if game not in report["required_packs"]:
                             report["required_packs"].append(game)
             report["assets"].append(asset)
@@ -1050,6 +1162,13 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                 "resources": sum(row["role"] in _CASTFORM_ROLES for row in report["resources"]),
                 "texture_keys": sorted(row["file"] for row in report["assets"] if row.get("castform_roles")),
                 "native_rgba_bound": True}
+        if deoxys:
+            from .deoxys_resources import MODEL_RESOURCES, FACE_RESOURCES
+            found = {int(row['resource'], 16) for row in report['resources'] if row['role'] in _DEOXYS_ROLES}
+            if found != set(MODEL_RESOURCES.values()) | set(FACE_RESOURCES.values()):
+                raise OverlayError('The imported Deoxys model/portrait resource set is incomplete')
+            report['deoxys_forms'].update(resources=len(found),
+                texture_keys=sorted(row['file'] for row in report['assets'] if row.get('deoxys_roles')))
         if any(row["role"] == "retail_form" for row in report["resources"]):
             from .hd_extra_portraits import portrait_coverage_report
             report["additional_portraits"] = {**portrait_coverage_report(),
@@ -1548,6 +1667,36 @@ def _rendered_portrait(transform: dict, native_root: Path):
                     "framing": "opaque square" if mask is None else "native round alpha, black interior; head fitted144 at12,36"}
 
 
+def _deoxys_body_origin(form, shiny):
+    from .deoxys_assets import asset_directory, body_pixels
+    from .engine.dna_artwork import outline_dna_body
+    from .engine.dna_keypad import _CUSTOM_BODY_ART_RECT
+    if type(form) is not int or form not in (1, 2, 3) or type(shiny) is not bool:
+        raise OverlayError('Invalid imported Deoxys DNA body')
+    native = outline_dna_body(body_pixels(('attack', 'defense', 'speed')[form - 1], shiny), 64)
+    return {'kind': 'rendered-deoxys', 'form': form, 'shiny': shiny,
+            'native_width': 64, 'native_height': 64,
+            'native_rgba_sha256': hashlib.sha256(native).hexdigest(),
+            'native_art_rect': list(_CUSTOM_BODY_ART_RECT),
+            'asset_registry_sha256': hashlib.sha256((asset_directory() / 'deoxys-assets.json').read_bytes()).hexdigest()}
+
+
+def _rendered_deoxys_body(source):
+    from PySide6.QtGui import QImage
+    from .deoxys_assets import body_pixels
+    from .engine.dna_artwork import outline_dna_body
+    expected = _deoxys_body_origin(source.get('form'), source.get('shiny'))
+    if any(source.get(key) != value for key, value in expected.items()):
+        raise _MissingHDAsset('The imported Deoxys DNA artwork registry changed; recreate this game folder.')
+    form = ('attack', 'defense', 'speed')[source['form'] - 1]
+    pixels = outline_dna_body(body_pixels(form, source['shiny'], hd=True), 256)
+    image = QImage(pixels, 256, 256, QImage.Format.Format_RGBA8888).copy()
+    return image, {'kind': 'registered-imported-deoxys-body', 'form': form, 'shiny': source['shiny'],
+                   'asset_registry_sha256': source['asset_registry_sha256'],
+                   'native_bitmap_upscaled_for_hd': False, 'output_scale': 4,
+                   'sha256': hashlib.sha256(pixels).hexdigest()}
+
+
 def _dna_hd(image, transform: dict, pack_roots: Mapping[str, Path]):
     from PySide6.QtCore import Qt, QRect
     from PySide6.QtGui import QImage, QPainter, QColor
@@ -1567,6 +1716,8 @@ def _dna_hd(image, transform: dict, pack_roots: Mapping[str, Path]):
             if (source.get("native_rgba_sha256") != hashlib.sha256(shadow_lugia_body_pixels(source["shiny"])).hexdigest()
                     or source.get("native_art_rect") != list(_CUSTOM_BODY_ART_RECT)):
                 raise _MissingHDAsset("The native DNA body uses an older pose or outline. Recreate this game folder to match native and HD artwork.")
+        elif source['kind'] == 'rendered-deoxys':
+            body, provenance = _rendered_deoxys_body(source)
         else:
             game = source["game"]
             if game not in pack_roots:
@@ -1611,7 +1762,7 @@ def _dna_hd(image, transform: dict, pack_roots: Mapping[str, Path]):
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         for rect in (QRect(0, 0, 512, 16), QRect(0, 496, 512, 16), QRect(0, 16, 16, 480), QRect(496, 16, 16, 480)):
             painter.drawImage(rect, template, rect)
-        left, top, size = _CUSTOM_BODY_ART_RECT if source["kind"] == "rendered-dark-lugia" else _BODY_ART_RECT
+        left, top, size = _CUSTOM_BODY_ART_RECT if source["kind"] in ('rendered-dark-lugia', 'rendered-deoxys') else _BODY_ART_RECT
         painter.drawImage(QRect(left * 4, top * 4, size * 4, size * 4), body)
         number = tile["number"]
         if number:
@@ -1653,11 +1804,16 @@ def prepare_hd_overlays(native_directory: Path, destination: Path, *, pack_roots
     report["files"], report["missing_assets"], report["inherited_stock"] = [], [], []
     report["limitations"] = _runtime_limitations(report["assets"])
     report["conditional_limitations"] = ["PID-specific Spinda DNA requires a registered HD spot-pattern recipe when selected."]
-    castform_roles = {}
+    castform_roles, deoxys_roles = {}, {}
     for resource in report.get("resources", []):
         if resource.get("role") in _CASTFORM_ROLES:
             for key in resource.get("textures", []):
                 castform_roles.setdefault(key, set()).add(resource["role"])
+        if resource.get('role') in _DEOXYS_ROLES:
+            for key in resource.get('textures', []):
+                deoxys_roles.setdefault(key, set()).add(resource['role'])
+    deoxys_generated = None
+    deoxys_error = None
     cache = {}
     for asset in report["assets"]:
         _checkpoint(cancel)
@@ -1671,6 +1827,53 @@ def prepare_hd_overlays(native_directory: Path, destination: Path, *, pack_roots
         custom_roles = set(asset.get("castform_roles", [])) | castform_roles.get(asset["file"], set())
         if asset.get("role") in _CASTFORM_ROLES:
             custom_roles.add(asset["role"])
+        imported_roles = set(asset.get('deoxys_roles', [])) | deoxys_roles.get(asset['file'], set())
+        if asset.get('role') in _DEOXYS_ROLES:
+            imported_roles.add(asset['role'])
+        if ((imported_roles and not custom_roles) or
+                origin.get('transform', {}).get('type') == 'imported-deoxys'):
+            try:
+                contract = report.get('deoxys_forms')
+                transform = origin.get('transform', {})
+                native_image = _load_reference(root, asset['native'])
+                if (not isinstance(contract, dict) or contract.get('enabled') is not True
+                        or report.get('game') != 'colosseum'
+                        or transform.get('type') != 'imported-deoxys'
+                        or transform.get('role') not in ('portrait', 'material')
+                        or transform.get('native_key') != asset['base_key']
+                        or transform.get('asset_registry_sha256') != contract.get('asset_registry_sha256')
+                        or transform.get('material_recipes_sha256') != contract.get('material_recipes_sha256')
+                        or transform.get('native_rgba_sha256') != hashlib.sha256(bytes(native_image.constBits())).hexdigest()
+                        or asset['base_key'] not in contract.get('portrait_keys' if transform.get('role') == 'portrait'
+                                                                else 'material_keys', [])):
+                    raise OverlayError('Imported Deoxys source/HD route is unqualified')
+                if deoxys_generated is None and deoxys_error is None:
+                    try:
+                        deoxys_generated = prepare_deoxys_hd(contract, pack_roots, target)
+                    except (OSError, ValueError) as error:
+                        deoxys_error = str(error)
+                if deoxys_error is not None:
+                    raise OverlayError(deoxys_error)
+                name = asset['base_key']
+                payload = (target / name).read_bytes()
+                if hashlib.sha256(payload).hexdigest() != deoxys_generated['files'].get(name):
+                    raise OverlayError('Prepared Deoxys HD file changed')
+                expected = asset['native']['width'] * 4, asset['native']['height'] * 4
+                image = QImage.fromData(payload, 'PNG')
+                if image.isNull() or (image.width(), image.height()) != expected:
+                    raise OverlayError('Prepared Deoxys HD image has invalid dimensions')
+                _write(target / asset['file'], payload)
+                report['files'].append({'file': asset['file'], 'sha256': hashlib.sha256(payload).hexdigest(),
+                    'width': expected[0], 'height': expected[1], 'bytes': len(payload),
+                    'native_format': asset['native_format'], 'hd_source': {
+                        'kind': 'registered-imported-deoxys', 'pack': PACKS['xd'].key,
+                        'source_scale': 4, 'output_scale': 4,
+                        'asset_registry_sha256': contract['asset_registry_sha256'],
+                        'material_recipes_sha256': contract['material_recipes_sha256'],
+                        'native_reference': asset['native'], 'transform': transform}})
+            except (OSError, ValueError) as error:
+                report['missing_assets'].append({'file': asset['file'], 'reason': str(error)})
+            continue
         if custom_roles:
             transform = origin.get("transform", {})
             expected_game = report.get("castform_shinies", {}).get("game_id", transform.get("game_id"))

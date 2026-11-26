@@ -52,7 +52,7 @@ from .xd_starter_progression import (
     patch_starter_progression, validate_starter_progression,
 )
 
-VERSION = "xd-first-battle-progression-v19"
+VERSION = "xd-saved-deoxys-forms-v21"
 DRAW_VERSION = "xd-story-sha256-v1"
 REGIONS = {
     "GXXP01": Region("GXXP01", "Europe",
@@ -691,6 +691,13 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         for row in summary["gifts"]:
             if row["key"] in GIFT_TRADE_REQUIREMENTS:
                 row["required_species"] = GIFT_TRADE_REQUIREMENTS[row["key"]]
+    from .xd_deoxys import reward_tokens, deck_tokens, merge_shadows, encounter_metadata
+    deoxys_rewards, deoxys_spots = reward_tokens(summary, seed) if has_changes else ({}, {})
+    deoxys_decks, deoxys_shadows = {}, {}
+    for row in summary['poke_spots']:
+        value = deoxys_spots.get((row['spot'], row['slot']))
+        if value is not None:
+            row['deoxys_form'] = value >> 30
     if options.randomize_poke_spots and options.poke_spots_full_pokedex:
         summary["poke_spot_actors"] = patch_poke_spot_actors(
             summary["poke_spots"], original_dol, rel, symbols[88]["offset"],
@@ -761,6 +768,16 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                 for shadow in deck_report["shadows"]:
                     shadow["level"] = levels.get(shadow["shadow_id"], shadow["level"])
             deck_pids = spinda_deck_pids(updated, shadow_slots, seed, name) if has_changes else {}
+            resource = int(members[deck_file]['identifier_raw'], 16)
+            form_tokens, shadow_forms, _ = (deck_tokens(deck, updated, shadow_slots, seed, resource, name)
+                                            if has_changes else ({}, {}, {}))
+            if form_tokens:
+                deoxys_decks[resource] = form_tokens
+            merge_shadows(deoxys_shadows, shadow_forms)
+            for row in deck_report['shadows']:
+                if row['shadow_id'] in shadow_forms:
+                    row['deoxys_form'] = shadow_forms[row['shadow_id']] >> 30
+            field_forms = {slot: value >> 30 for slot, value in form_tokens.items()}
             if deck_pids:
                 resource = int(members[deck_file]["identifier_raw"], 16)
                 spinda_trainers[resource] = deck_pids
@@ -785,17 +802,20 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
                 if updated != deck:
                     actor = patch_eagun_actor(deck, updated, rel, symbols[88]["offset"], species,
                                               original_dol, region.game_id, read_archive, gift_updates,
-                                              unown_form_index=unown_form_index, spinda_pids=deck_pids)
+                                              unown_form_index=unown_form_index, spinda_pids=deck_pids,
+                                              deoxys_forms=field_forms)
                     if actor is not None:
                         summary["eagun_field_partner"] = actor
                     dancers = patch_lighthouse_dancers(deck, updated, rel, symbols, species,
                                                         original_dol, region.game_id, read_archive, gift_updates,
-                                                        unown_form_index=unown_form_index, spinda_pids=deck_pids)
+                                                        unown_form_index=unown_form_index, spinda_pids=deck_pids,
+                                                        deoxys_forms=field_forms)
                     if dancers:
                         summary["miror_lighthouse_dancers"] = dancers
                     wakin = patch_wakin_partner(deck, updated, rel, symbols[88]["offset"], species,
                                                 original_dol, region.game_id, read_archive, gift_updates,
-                                                unown_form_index=unown_form_index, spinda_pids=deck_pids)
+                                                unown_form_index=unown_form_index, spinda_pids=deck_pids,
+                                                deoxys_forms=field_forms)
                     if wakin is not None:
                         summary["wakin_field_partner"] = wakin
                 shiny = shadow_status.get(str(GATEON_SHADOW), False)
@@ -874,6 +894,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             if row["species"] == SPINDA:
                 sid = row["shadow_id"]
                 spinda_shadows[sid] = spinda_pid_seed(seed, f"xd:shadow:{sid}")
+    form_generation = None
+    if has_changes:
+        from .xd_deoxys_generation import install_xd_deoxys_generation
+        dol, form_generation = install_xd_deoxys_generation(original_dol, dol, region.game_id,
+            rewards=deoxys_rewards, shadows=deoxys_shadows, decks=deoxys_decks, poke_spots=deoxys_spots)
     dol, spinda_hooks = apply_spinda_pids(original_dol, dol, region.game_id, spinda_rewards)
     dol, spinda_trainer_hooks = apply_spinda_trainer_pids(original_dol, dol, region.game_id, spinda_trainers)
     dol, summary["shadow_shinies"] = apply_shadow_shiny_rules(
@@ -901,10 +926,15 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             for row in deck["shadows"]:
                 row["shiny"] = shadow_status[str(row["shadow_id"])]
     dol, summary["battle_progression"] = apply_dol_battle_rules(original_dol, dol, region.game_id, options)
+    deoxys_display = None
     if has_changes:
+        from .deoxys_display import install_display_reader
+        dol, deoxys_display = install_display_reader(original_dol, dol, region.game_id)
         dol, summary["snag_list"] = apply_snag_list_identities(
             original_dol, dol, region.game_id,
-            custom_shadow_shinies=options.custom_shinies and options.custom_shadow_shinies)
+            custom_shadow_shinies=options.custom_shinies and options.custom_shadow_shinies,
+            deoxys_forms={sid: value >> 30 for sid, value in deoxys_shadows.items()},
+            deoxys_reader=deoxys_display['address'])
         dol, summary["shadow_lugia_model"] = install_shadow_lugia_model(
             original_dol, dol, region.game_id, read_archive, gift_updates,
             seed=seed, options=options)
@@ -916,6 +946,22 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         dol, summary["castform_weather"] = install_weather_appearances(
             original_dol, dol, region.game_id, read_archive, gift_updates)
         summary["castform_portraits"] = summary["castform_weather"]["portraits"]
+        from .deoxys_presentation import form_stat_tables
+        from .xd_deoxys_runtime import install_xd_deoxys_forms
+        from .xd_deoxys import annotate_summary
+        form_stats = form_stat_tables(seed, options, move_randomizer.species[410]['stats'])
+        dol, form_runtime = install_xd_deoxys_forms(original_dol, dol, region.game_id, base_stats=form_stats)
+        from .deoxys_meteorite import install_meteorite
+        dol, new_rel, meteorite = install_meteorite(original_dol, dol, region.game_id,
+            original_rel=rel, current_rel=new_rel)
+        replacements.setdefault('common.fsys', {})[rel_index] = new_rel
+        summary['deoxys_forms'] = {'enabled': True,
+            'encounters': encounter_metadata(deoxys_rewards, deoxys_shadows, deoxys_decks, deoxys_spots),
+            'base_stats': form_stats, 'models': form_runtime, 'generation': form_generation,
+            'display_reader': deoxys_display, 'native_and_hd': True,
+            'initial_form_source': 'versioned seed per encounter', 'required_hd_packs': []}
+        summary['deoxys_forms']['meteorite'] = meteorite
+        annotate_summary(summary)
     summary["starter_progression"] = {"version": STARTER_PROGRESSION_VERSION, "enabled": False}
     native_starter_progression = None
     if starter_progression_active(options):

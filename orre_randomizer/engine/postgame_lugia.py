@@ -131,10 +131,10 @@ def apply_postgame_lugia(original, current, options, *, seed="postgame-lugia"):
 
 
 def patch_postgame_lugia_archives(original_rel, read_archive, updates, options, *, shiny=None,
-                                 species=LUGIA, original_dol=None, seed="postgame-lugia"):
+                                 species=LUGIA, original_dol=None, seed="postgame-lugia", deoxys_form=0):
     """Add a distinct commander and localized event without replacing Eagun."""
     if not getattr(options, "postgame_shadow_lugia", False):
         return {"version": VERSION, "enabled": False}
     from .postgame_boss import patch_archives
     return patch_archives(original_rel, read_archive, updates, options, shiny=shiny,
-                          species=species, original_dol=original_dol, seed=seed)
+                          species=species, original_dol=original_dol, seed=seed, deoxys_form=deoxys_form)

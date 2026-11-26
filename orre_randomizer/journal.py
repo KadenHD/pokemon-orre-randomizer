@@ -31,6 +31,9 @@ def _table(headers, rows) -> str:
 def _sheet(details: dict, language: str) -> str:
     tr = lambda key, **params: detail_text(key, language, **params)
     title = display_name(details, language)
+    if 'deoxys_form' in details:
+        from .deoxys import form_label
+        title += ' · ' + form_label(details['deoxys_form'], language)
     if details.get('level') is not None:
         title += ' · ' + tr('level', level=details['level'])
     body = '<h3>' + _e(title) + '</h3>'
@@ -115,16 +118,23 @@ def _xd_spoilers(summary: dict, language: str) -> str:
     def name(index):
         return SPECIES_NAMES[language].get(national_ids.get(str(index)), str(index))
 
+    def encounter_name(row):
+        label = name(row['species'])
+        if 'deoxys_form' in row:
+            from .deoxys import form_label
+            label += ' · ' + form_label(row['deoxys_form'], language)
+        return label
+
     starter = summary.get('starter')
     if not starter:
         return ''
     body = _section(tr('starters'), _table([tr('details'), tr('level', level='')],
-                    [[name(starter['species']), starter['level']]]))
+                    [[encounter_name(starter), starter['level']]]))
     shadows = summary.get('decks', {}).get('Story', {}).get('shadows', ())
     if shadows:
         body += _section(tr('shadows') + f" · {len(shadows)}",
                          _table(['#', tr('details'), tr('level', level='')],
-                                [[row['shadow_id'], name(row['species']), row['level']] for row in shadows]))
+                                [[row['shadow_id'], encounter_name(row), row['level']] for row in shadows]))
     spots = summary.get('poke_spots', ())
     if spots:
         wild_shinies = summary.get('poke_spot_shinies', {})
@@ -135,7 +145,7 @@ def _xd_spoilers(summary: dict, language: str) -> str:
         body += _section(translate('Poké Places ({count})', language).format(count=len(spots)),
                          note + _table(['#', tr('details'), tr('level', level=''), '%'],
                                 [[translate(SPOT_LABELS.get(row['spot'], row['spot']), language) + f" · {row['slot']}",
-                                  name(row['species']) + (' ★' if row.get('shiny') else ''),
+                                  encounter_name(row) + (' ★' if row.get('shiny') else ''),
                                   '-'.join(map(str, row['levels'])), row['chance']]
                                  for row in spots]))
     gifts = summary.get('gifts', ())
@@ -144,7 +154,7 @@ def _xd_spoilers(summary: dict, language: str) -> str:
         trades, other_gifts = [], []
 
         def gift_label(row):
-            label = name(row['species'])
+            label = encounter_name(row)
             if row.get('required_species') is None:
                 return label
             pokemon = name(row['required_species'])
@@ -162,7 +172,7 @@ def _xd_spoilers(summary: dict, language: str) -> str:
                 continue
             trades.append([name(encounter['species']), translate(SPOT_LABELS[encounter['spot']], language),
                            translate('{chance} % des rencontres', language).format(chance=encounter['chance']),
-                           name(row['species']), row['level']])
+                           encounter_name(row), row['level']])
         if other_gifts:
             body += _section(tr('gifts') + f" · {len(other_gifts)}",
                              _table([tr('details'), tr('level', level='')], other_gifts))
@@ -206,7 +216,8 @@ def render_journal(report: dict, language: str = 'fr') -> str:
             status = _shiny(row, report, key=key)
             if catalog:
                 native = catalog.get('specials', {}).get(key, row)
-                sheet = encounter_details(catalog, row['species'], level=row.get('level'), moves=native.get('moves'))
+                sheet = encounter_details(catalog, row['species'], level=row.get('level'), moves=native.get('moves'),
+                    deoxys_form=native.get('deoxys_form'))
                 chunks.append(_sheet(sheet, language))
             else:
                 chunks.append('<h3>' + _e(display_name(row, language)) + '</h3>')
@@ -232,7 +243,7 @@ def render_journal(report: dict, language: str = 'fr') -> str:
         if catalog:
             encounter = catalog.get('shadows', {}).get(str(sid), {})
             content = _sheet(encounter_details(catalog, index, level=encounter.get('level'),
-                moves=encounter.get('moves'), shadow=True), language)
+                moves=encounter.get('moves'), shadow=True, deoxys_form=encounter.get('deoxys_form')), language)
         else:
             content = '<p>' + _e(display_name(row, language)) + '</p>'
         status = _shiny(row, report, sid=sid)
@@ -254,7 +265,11 @@ def render_journal(report: dict, language: str = 'fr') -> str:
                 details = catalog['species'][str(row['species'])]
                 moves = ', '.join(display_name(catalog['moves'].get(str(move), {
                     'names': {language: tr('move_marker', id=move)}}), language) for move in row['moves'] if move)
-                rows.append([display_name(details, language), row['level'],
+                name = display_name(details, language)
+                if 'deoxys_form' in row:
+                    from .deoxys import form_label
+                    name += ' · ' + form_label(row['deoxys_form'], language)
+                rows.append([name, row['level'],
                     tr('shadows') + f" {row['shadow_id']}" if row['shadow_id'] else '', moves])
             title = display_name(trainer, language) + f" · #{trainer['trainer_id']}"
             for battle in trainer.get('battle_ids', []):

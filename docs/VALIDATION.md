@@ -4,6 +4,36 @@ This index records the v1.0.0 foundation and subsequent validation follow-ups.
 Dated reports in `docs/` describe their named versions and scenarios; they are
 historical evidence rather than the current feature specification.
 
+## v2.1.4 Deoxys forms and Meteorite (2026-11-26)
+
+The local source campaign covered all 194 isolated test modules, with 1,830
+tests executed and no outstanding failures. Its whole-suite deadline required
+two bounded runs. Both directory-junction modules passed their complete
+filesystem-enabled reruns. After the final native fixes, all 117 Deoxys checks
+and 164 shared regression checks passed again. Production plans passed for
+both games, including their registered native/x4 assets and public packaging.
+
+Muted European Dolphin trials used private ROM and memory-card copies.
+Colosseum covered an initial seeded form, standard/shiny displays, the native
+Meteorite menu, a real save and cold reload, and the current owned form in the
+DNA hologram and keypad. XD covered all four menu choices, a native save and
+cold reload, Shadow form changes, purification and PC transfer. PID, original
+trainer, shiny status, HP and Shadow data were checked independently of the
+displayed model. All owned test processes stopped, and protected source ROMs
+and saves retained their hashes. Prerecorded opening videos stayed original.
+
+This is not a complete playthrough or an exhaustive animation test. A fresh
+Shadow Deoxys capture was not played through live, and the final XD
+purification was not followed by a second cold reload. External GBA transfer
+retention is unqualified. XD's Purify Chamber uses its native animated sprites;
+this feature adds no x4 replacements for those animations, and their actual
+HD upload path has not been qualified. Regional code contracts and resource
+checks do not extend the European runtime trials to every regional screen.
+See [Deoxys forms](DEOXYS_FORMS.md) for the supported behavior.
+
+Hosted release jobs separately validate the exact commit and final Windows
+executable, installer and downloadable archives.
+
 ## v2.1.3 launcher music and display checks (2026-11-25)
 
 After the version update, 135 targeted checks passed across display patches,

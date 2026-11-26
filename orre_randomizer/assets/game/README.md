@@ -38,6 +38,14 @@ an ordinary Lugia image. Sources, complete-silhouette bounds and hashes are in
 `models/fullbody-manifest.json`; the fitting script is
 `scripts/export_shadow_lugia_bodies.py`. The analyzer's original blue effect
 remains unchanged in the game.
+Deoxys's Attack, Defense and Speed forms use XD's original standard and rare
+PKX models. Their Colosseum containers preserve the geometry and DAT animation
+tracks. Native and x4 head/full-body images are separate GPU renders with
+reviewed matching framing; the extra DNA bodies receive the game's black
+outline during composition. The x4 materials use the pinned XD pack and
+reviewed form-material recipes. Sources, poses, hashes and transformations
+are recorded in `models/deoxys/deoxys-assets.json`. These game-derived assets
+are separate from the code's MIT license.
 Both release editions include
 this pack so the interface works before a ROM is selected, without downloading
 media at startup. The selected ROM is used only to create a new game.

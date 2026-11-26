@@ -91,14 +91,15 @@ def patch_poke_spot_actors(rows, original_dol, rel, species_offset, game_id, rea
             national = u16(rel, record + 0x0E)
             scale = companion_scale(national, 1.0)
             model_id = u16(rel, record + 0x2E)
+            form = row.get('deoxys_form', 0) if species == 410 else 0
             room_models[resource] = load_actor_model(original_dol, game_id, model_id, read_archive, scale=scale,
-                                                     unown_form_index=unown_form_index)
+                                                     unown_form_index=unown_form_index, deoxys_form=form)
             filter_index = spot_index * 3 + slot
             shiny_id = _FIRST_SHINY_MODEL + (filter_index << 16)
             shiny_models[shiny_id] = (
                 f"orre_spot_shiny_{filter_index + 1}",
                 load_actor_model(original_dol, game_id, model_id, read_archive, scale=scale, shiny=True,
-                                 unown_form_index=unown_form_index),
+                                 unown_form_index=unown_form_index, deoxys_form=form),
             )
             branches.append((old, species, resource, shiny_id, filter_index))
             report.append({"spot": spot, "species": species, "model_resource": resource,

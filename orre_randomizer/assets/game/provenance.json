@@ -269,8 +269,8 @@
       "sha256": "0a5b87a50dd4156bbb1c0ca845b29c21775d5740abf874c0c9669c2dbf05d53c"
     },
     "README.md": {
-      "bytes": 3412,
-      "sha256": "b8eedf3c4dd6024946ef5e3cb3b8bc94308266c45f10f9f84b0053a25ecbaae1"
+      "bytes": 3982,
+      "sha256": "7d1be66c4aacd2a19e6990ef09941fc7eac6e9c2e8ed213f8911e891a0fc28a1"
     },
     "interface/xd-logo-en.png": {
       "bytes": 3570,
@@ -2291,6 +2291,130 @@
     "menu-atlases/genius-sonority-vector-x4.png": {
       "bytes": 72838,
       "sha256": "d14732983fa50b0c3eb75ddddfd71c2c0d4e6fbcf277161e8b4a36a2a6809c4e"
+    },
+    "models/deoxys/head-attack-normal-native.png": {
+      "bytes": 3083,
+      "sha256": "4e37943d51308f8e413ac008ae8c5df56d08cc835934e3908c8509cfcd953a66"
+    },
+    "models/deoxys/head-attack-normal-hd.png": {
+      "bytes": 25038,
+      "sha256": "6254975c72a3199ca4f7a4ac5cc5da3e707b9ad6101824911b78941a4f0e9427"
+    },
+    "models/deoxys/body-attack-normal-native.png": {
+      "bytes": 3771,
+      "sha256": "e1f042a818ac1f06040a62a1a46c4efd6660789656ed1069afa6df51e88ae79c"
+    },
+    "models/deoxys/body-attack-normal-hd.png": {
+      "bytes": 28667,
+      "sha256": "564e13ac8bab980712f86cb4ba93f449bd830aa96b0851b7637d168de48e069d"
+    },
+    "models/deoxys/xd-attack-normal.pkx": {
+      "bytes": 423424,
+      "sha256": "db1eb60474497de09ba2c469780892bf0d3c1afdbe6cdfe8721c59865b4df995"
+    },
+    "models/deoxys/head-attack-shiny-native.png": {
+      "bytes": 3180,
+      "sha256": "1a6f84a5f8b63cde7d08e2f3e26e8de48ac812b438655481485a29b867f410ee"
+    },
+    "models/deoxys/head-attack-shiny-hd.png": {
+      "bytes": 25708,
+      "sha256": "ac8adb49cbb8d25baed956046e3a6c424525412c64c0100279d4368c24ad651b"
+    },
+    "models/deoxys/body-attack-shiny-native.png": {
+      "bytes": 3812,
+      "sha256": "ec205a5f7269a0920d6794587467c9d0f9f7da41d1d0acd162ac9018e16e260c"
+    },
+    "models/deoxys/body-attack-shiny-hd.png": {
+      "bytes": 29330,
+      "sha256": "ea2b3ca496cf5d4b0299a6020662ee78f4a52adc419f4bbcaecc7c48f480e1a6"
+    },
+    "models/deoxys/xd-attack-shiny.pkx": {
+      "bytes": 423424,
+      "sha256": "c9251713c4b1054a206aca5295bd4d0731186fd1b9debd28250da9e99e5fd440"
+    },
+    "models/deoxys/head-defense-normal-native.png": {
+      "bytes": 3448,
+      "sha256": "8185e8d034a20982c58f68a2307afcc245056e36fc89df094ad87c23811cead1"
+    },
+    "models/deoxys/head-defense-normal-hd.png": {
+      "bytes": 27227,
+      "sha256": "bfc1f2b8cabe0ea82ecdfceb5e6e86d00f22e12521288667f15d7ccf94fa6a86"
+    },
+    "models/deoxys/body-defense-normal-native.png": {
+      "bytes": 5829,
+      "sha256": "d382f47813dfeefc04f62aa2b25841715ce274f186e915b2de59ae13158b939b"
+    },
+    "models/deoxys/body-defense-normal-hd.png": {
+      "bytes": 47940,
+      "sha256": "74c24a69c5ed60dbb9ad12ca6d55069d382427499aa31a2b905c4946087037ed"
+    },
+    "models/deoxys/xd-defense-normal.pkx": {
+      "bytes": 311328,
+      "sha256": "7f5ee8b360639569fd7783b35c95671bb3ba7879953b16844b47ae6b838e7289"
+    },
+    "models/deoxys/head-defense-shiny-native.png": {
+      "bytes": 3320,
+      "sha256": "d5c433d4fbd237e5eddd31bc7e408e88bb792278c6673d881a91d67c2fe9d096"
+    },
+    "models/deoxys/head-defense-shiny-hd.png": {
+      "bytes": 31416,
+      "sha256": "94c855949715af1652fbe66f26f9fa944a622c6a0ff973c42d32220037d1521c"
+    },
+    "models/deoxys/body-defense-shiny-native.png": {
+      "bytes": 5965,
+      "sha256": "caca36e2b2467715eb9c57ad6f561364729d89e5cbc9cac40762e75fe283b0ff"
+    },
+    "models/deoxys/body-defense-shiny-hd.png": {
+      "bytes": 51183,
+      "sha256": "e0745889c33c0585f6d3254ca20b19a5863e515315bfa7d089de9db8c605f89a"
+    },
+    "models/deoxys/xd-defense-shiny.pkx": {
+      "bytes": 311360,
+      "sha256": "6775b88b7f34e12f94589d58adddf5e1351f318f43088407714395311ad7ef6a"
+    },
+    "models/deoxys/head-speed-normal-native.png": {
+      "bytes": 3443,
+      "sha256": "7393c82ce6257009b35ac23b9881f46952114f7f90256e84153595d8bb4d9153"
+    },
+    "models/deoxys/head-speed-normal-hd.png": {
+      "bytes": 29380,
+      "sha256": "ce96d10302bf8147b6d470b5e21455d18831f7ae055a8ed5c40784e3c99c1b4b"
+    },
+    "models/deoxys/body-speed-normal-native.png": {
+      "bytes": 4018,
+      "sha256": "908c3118e475cb4ae16dc8cb9e34f1e30d4b29fe5f6043d446698f6a29800f7c"
+    },
+    "models/deoxys/body-speed-normal-hd.png": {
+      "bytes": 34246,
+      "sha256": "2a15747cf918bad2e62dcd9079135ffb32082e407fa46989b266fb21c9f49421"
+    },
+    "models/deoxys/xd-speed-normal.pkx": {
+      "bytes": 267680,
+      "sha256": "73a24400dc550f83a6802c87b0446a9d3111c988692cbfa073f95ce45135c930"
+    },
+    "models/deoxys/head-speed-shiny-native.png": {
+      "bytes": 3510,
+      "sha256": "995ee3b52b3f5127dd2f88249832627657702a5c6915ce0417cfa815be3d0905"
+    },
+    "models/deoxys/head-speed-shiny-hd.png": {
+      "bytes": 30381,
+      "sha256": "3985256602fdf596f5895275cda2cdbe69bc355454fddd9505bbcfbf95ee4dcf"
+    },
+    "models/deoxys/body-speed-shiny-native.png": {
+      "bytes": 4110,
+      "sha256": "1d596bbf36d1b300eee2c34f93c8445e74feb527da89d715c13a96df1668b3fa"
+    },
+    "models/deoxys/body-speed-shiny-hd.png": {
+      "bytes": 35219,
+      "sha256": "0ffc528f473ec7525d6fed843b6ef690c146787a9340c754e22713bdcde9d14b"
+    },
+    "models/deoxys/xd-speed-shiny.pkx": {
+      "bytes": 267680,
+      "sha256": "6ab100ee5967635f49af2aeb0664e78c72e8c697cd1b0258feac92cbb69d6470"
+    },
+    "models/deoxys/deoxys-assets.json": {
+      "bytes": 162003,
+      "sha256": "5c9205bc7805335fd178501ff0f7437b1459094539ec0a8d672cc243b34d60d1"
     }
   },
   "additional_sources": [
@@ -2634,5 +2758,6 @@
       "Native90 here denotes a real source-material DCC model render, not the original composed Bingo bitmap.",
       "This art approval is distinct from a Dolphin menu runtime witness. GPU PNG bytes may vary across graphics drivers."
     ]
-  }
+  },
+  "deoxys_assets_metadata": "models/deoxys/deoxys-assets.json"
 }

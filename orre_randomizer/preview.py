@@ -262,6 +262,8 @@ def preview_starters(source: Path, seed: str, options: Options,
                 if len(chain) > 1:
                     row["evolution_portraits"] = {str(index): portraits[(index, shiny)] for index in chain
                                                    if (index, shiny) in portraits}
+                from .deoxys_presentation import decorate_encounter
+                decorate_encounter(row, summary.get('deoxys_forms', {}))
             if service.file_hash(source, cancel) != source_hash:
                 raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
     except BaseException:
@@ -369,6 +371,12 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
                 if row.get("shadow_id") and row.get("species") == 249:
                     from .resources import shadow_lugia_portrait
                     row["portrait_png"] = shadow_lugia_portrait(shiny=bool(row.get("shiny")), game="xd")
+            from .deoxys_presentation import decorate_encounter
+            if starter is not None:
+                starter.setdefault('key', 'starter')
+            for row in [starter, *shadows, *gifts, *poke_spots]:
+                if row is not None:
+                    decorate_encounter(row, summary.get('deoxys_forms', {}))
             if service.file_hash(source, cancel) != digest:
                 raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
     if on_prepared is not None and not _known_only:

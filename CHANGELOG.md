@@ -1,5 +1,21 @@
 # Changelog
 
+## 2.1.4 - 2026-11-26
+
+- Add Deoxys's Attack, Defense and Speed forms to Colosseum using XD's models
+  and animations, with normal and shiny native/x4 artwork.
+- Choose a newly randomized Deoxys's initial form from the seed in both games.
+  Store its form separately from its personality so changing form preserves its
+  shiny status and identity.
+- Add a reusable Meteorite to both games. Use it outside battle on a party
+  Deoxys, including a Shadow Deoxys, to choose any of its four forms.
+- Show the encounter's form and its corresponding base stats in previews,
+  Pokémon sheets and exported journals. Keep Colosseum's DNA displays tied to
+  the specimen's current form.
+- Follow the saved form in XD's Purify Chamber using its original animated
+  sprites, including shiny variants. Keep native uppercase item/form labels
+  and size the translated form menu to fit its choices.
+
 ## 2.1.3 - 2026-11-25
 
 - Keep **Keep music at 100%** enabled for new supported game folders and when
