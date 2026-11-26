@@ -25,6 +25,8 @@
   module watchdog and every test. Align source-audit and release-gate deadlines.
 - Retry brief Windows file locks when publishing an automatic save backup.
   Keep publication atomic and stop after the existing bounded retry window.
+- Keep the HD repair regression tied to the original pinned archive instead of
+  rebuilding a ZIP whose timestamp can change its checksum.
 
 ## 2.1.4 - 2026-11-26
 

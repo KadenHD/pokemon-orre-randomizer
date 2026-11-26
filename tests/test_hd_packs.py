@@ -213,7 +213,8 @@ class Packs(unittest.TestCase):
         old_view = self.store.texture_view(pack, "GC6P01", overlays)
         # Damage only the owned installation, then restore the same pinned archive.
         (self.store.location(pack) / "Textures/tex1_4x4_a_6.png").unlink()
-        pack, archive = self.archive(["tex1_4x4_a_6.png"])
+        # Recreating a ZIP can change its timestamp and therefore its pinned hash.
+        self.assertEqual(hashlib.sha256(archive.read_bytes()).hexdigest(), pack.parts[0].sha256)
         self.install(pack, archive, force=True)
         new_view = self.store.texture_view(pack, "GC6P01", overlays)
         self.assertNotEqual(old_view, new_view)
