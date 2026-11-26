@@ -41,6 +41,12 @@ fixed legendary encounters remain. Shadow Lugia, full-Pokédex
 Poké Spots and tutorial/Hordel controls have their own rules. Imports preserve
 saved values. Detailed behavior belongs in the [user guide](docs/USER_GUIDE.md).
 
+Both randomized presets also turn on Fairy rules in both games: updated
+typing for 18 existing species, Fairy matchups, and seven added moves with
+TM51-TM57 and natural learning. Keep Add the Fairy type separate from type
+randomization; players can turn it off in Advanced > Types. Copy mode and
+imported profiles retain their own values.
+
 Advanced settings use stable field identifiers and metadata, searchable in all
 six interface languages. Switching views does not reset settings. Preview and
 creation use the same patch plan off the interface thread. Creation verifies
@@ -112,6 +118,13 @@ Shadow Lugia uses XD's dark model in both games, including randomized Shadow
 slots, with a white/black shiny variant and matching portraits. A shared advanced
 option retains that appearance after purification. It is disabled by default,
 changes appearance only and never affects a Lugia without Shadow provenance.
+
+Both games support all four Deoxys forms, with a seeded initial form and a
+reusable Meteorite used outside battle on a party Deoxys. Changing form keeps
+its personality, shiny status, and purification progress. The saved form follows
+the Pokémon through party/PC movement and saving, with matching stats, models,
+native/x4 portraits, and supported field/DNA displays. Previews and sheets use
+the same form. Keep GBA transfer limits explicit in docs/DEOXYS_FORMS.md.
 
 Common wording and behavior follow the [interface parity contract](docs/INTERFACE_PARITY.md).
 Both games show pending rosters, multilingual encounter search, loading states,

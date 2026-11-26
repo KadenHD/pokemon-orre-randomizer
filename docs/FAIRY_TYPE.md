@@ -2,8 +2,10 @@
 
 Available from v2.1.5 in both games.
 
-In either game's **Advanced > Types**, select **Add the Fairy type**. The option
-is off in both randomized presets. It is separate from **Change types**.
+Starting with v2.1.6, both randomized presets turn on **Add the Fairy type**
+in both games. You can turn it off in **Advanced > Types**. Copy mode
+and imported profiles retain their saved values. It is separate from **Change
+types**. In v2.1.5, turn on the option manually.
 
 | Colosseum | XD |
 | --- | --- |

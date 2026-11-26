@@ -21,7 +21,7 @@ from orre_randomizer.xd_shops import STONE_PRICE, patch_stone_price
 
 def legacy_options(options):
     return {name: value for name, value in asdict(options).items()
-            if name not in {"keep_shadow_lugia_after_purification", "randomize_legendary_shadows", "shop_keep_capture_items", "randomize_preserved_properties"}}
+            if name not in {"keep_shadow_lugia_after_purification", "randomize_legendary_shadows", "shop_keep_capture_items", "randomize_preserved_properties", "enable_fairy_type"}}
 
 
 def boot_for(game_id):
@@ -35,7 +35,7 @@ class XDTests(unittest.TestCase):
     def test_v9_report_preserves_native_wild_shiny_odds(self):
         from dataclasses import asdict
         region = xd.REGIONS["GXXP01"]
-        options = xd.XDOptions.recommended()
+        options = replace(xd.XDOptions.recommended(), enable_fairy_type=False)
         data = {"engine_version": PREVIOUS_XD_FIELD_ENGINE, "game_id": region.game_id,
                 "revision": 0, "source_iso_sha256": region.iso_sha256, "seed": "old-wild",
                 "options": {k: v for k, v in legacy_options(options).items() if k not in XD_POKE_SPOT_SHINY_FIELDS}}
@@ -48,7 +48,7 @@ class XDTests(unittest.TestCase):
         from dataclasses import asdict
         from orre_randomizer.profiles import PREVIOUS_XD_FULL_SPOT_ENGINE
         region = xd.REGIONS["GXXP01"]
-        options = replace(xd.XDOptions.recommended(), custom_shadow_shinies=False)
+        options = replace(xd.XDOptions.recommended(), enable_fairy_type=False, custom_shadow_shinies=False)
         payload = {"engine_version": PREVIOUS_XD_FULL_SPOT_ENGINE, "game_id": region.game_id,
                    "revision": 0, "source_iso_sha256": region.iso_sha256,
                    "seed": "v7-full-pool", "options": legacy_options(options)}
@@ -65,7 +65,7 @@ class XDTests(unittest.TestCase):
         from dataclasses import asdict
         from orre_randomizer.profiles import PREVIOUS_XD_QOL_ENGINE
         region = xd.REGIONS["GXXP01"]
-        options = replace(xd.XDOptions.recommended(), poke_spots_full_pokedex=False, custom_shadow_shinies=False, randomize_hordel_gift=True,
+        options = replace(xd.XDOptions.recommended(), enable_fairy_type=False, poke_spots_full_pokedex=False, custom_shadow_shinies=False, randomize_hordel_gift=True,
                           experience_multiplier=1.5, purification_multiplier=3)
         data = {"engine_version": PREVIOUS_XD_QOL_ENGINE, "game_id": region.game_id,
                 "revision": 0, "source_iso_sha256": region.iso_sha256,
@@ -114,7 +114,7 @@ class XDTests(unittest.TestCase):
     def test_previous_lugia_profile_disables_new_rule_and_checks_its_signature(self):
         import hashlib
         from orre_randomizer.profiles import PREVIOUS_XD_LUGIA_ENGINE
-        options = xd.XDOptions.recommended()
+        options = replace(xd.XDOptions.recommended(), enable_fairy_type=False)
         with TemporaryDirectory() as directory:
             path = Path(directory) / "old-lugia-profile.json"
             payload = save_profile(path, "previous-xd-lugia", options)

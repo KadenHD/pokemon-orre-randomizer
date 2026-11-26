@@ -42,6 +42,7 @@ class PreservationOptionsTests(unittest.TestCase):
                     payload = save_profile(Path(folder) / 'profile.json', 'preservation', current)
                 self.assertEqual(parser(json.dumps(payload).encode()).options, current)
             payload['options'].pop('randomize_preserved_properties')
+            payload['options'].pop('enable_fairy_type')
             payload['engine_version'] = PREVIOUS_XD_PROPERTIES_ENGINE if xd else PREVIOUS_PROPERTIES_ENGINE
             payload.pop('configuration_sha256')
             payload['configuration_sha256'] = hashlib.sha256(json.dumps(payload, ensure_ascii=False,

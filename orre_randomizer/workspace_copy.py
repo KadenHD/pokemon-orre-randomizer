@@ -8,16 +8,16 @@ STEP_HELP = (
     "Vérifiez la destination, puis créez la ROM.",
 )
 PRESET_DESCRIPTIONS = (
-    "Randomise les Pokémon et leurs talents. Tous les stades d’évolution sont possibles, sans équilibrage de puissance.\nRandomise aussi les capacités, les apprentissages par niveau, les CT, les objets tenus et le contenu des coffres et des boutiques. Les objets protégés et les Balls d’origine en boutique sont conservés.",
-    "Randomise les Pokémon et leurs talents. Tous les stades d’évolution sont possibles, sans équilibrage de puissance.\nLes capacités de départ suivent l’espèce et le niveau du Pokémon. Les apprentissages par niveau, les CT et les objets restent inchangés. Les pierres d’évolution sont ajoutées en boutique.",
-    "Crée une nouvelle ROM sans modifier les données du jeu. Aucun Pokémon, aucune capacité ni aucun objet n’est randomisé.\nUtile pour copier le jeu ou convertir son format ISO/GCM/RVZ.",
+    "Pokémon et talents aléatoires, à tous les stades d'évolution et sans équilibrage.\nCapacités, apprentissages, CT, objets tenus, coffres et boutiques randomisés. Les Balls en boutique et les objets de progression restent disponibles.",
+    "Pokémon et talents aléatoires, à tous les stades d'évolution et sans équilibrage.\nCapacités de départ de l'espèce, adaptées au niveau. Aucun mélange des apprentissages, CT ou objets.",
+    "Conserve les données du jeu et crée une copie au format ISO, GCM ou RVZ.",
 )
 CUSTOM_PRESET = "Réglages personnalisés : vos options ne correspondent plus à un choix prédéfini. Ouvrez Avancé pour les voir ou les modifier. Choisir un des trois modes ci-dessus remplacera ces réglages."
-PRESET_EVOLUTIONS = "Les évolutions sont accessibles dans le jeu. Le tirage évite les familles en double entre starters, Pokémon obscurs et cadeaux quand les règles le permettent."
-PRESET_LEGENDARIES = "Les légendaires et fabuleux sont exclus des tirages. Les légendaires obscurs d’origine gardent leur espèce. Les Pokémon conservés gardent leurs propriétés d’origine, sauf leur statut chromatique. Les tirages se règlent en mode Avancé."
-PRESET_SHINIES = "Taux chromatique : 5 %, fixé par la seed. Le statut est conservé après capture et purification."
-COLOSSEUM_PRESET_NATIVE = "Les cadeaux événementiels et la quête bonus de Lugia obscur sont activés. L’équipe de Jakylla et son Lugia ne sont pas randomisés."
-XD_PRESET_NATIVE = "Poké Places : 5 % de chance d’être chromatique à chaque nouvelle rencontre, visible avant le combat. Les fréquences d’apparition des espèces sont conservées. Doking demande le Pokémon rare de chaque lieu."
+PRESET_EVOLUTIONS = "Évolutions accessibles et type Fée activé. Le tirage évite les familles en double entre starters, obscurs et cadeaux si possible."
+PRESET_LEGENDARIES = "Légendaires et fabuleux exclus des tirages. Les légendaires obscurs d'origine gardent leur espèce."
+PRESET_SHINIES = "Chromatiques : 5 %, avec un statut fixé par la seed et conservé après capture, évolution et purification."
+COLOSSEUM_PRESET_NATIVE = "Cadeaux événementiels et quête de Lugia obscur activés, avec l'équipe prévue pour Jakylla."
+XD_PRESET_NATIVE = "Poké Places : 5 % de chromatiques à chaque nouvelle rencontre, visibles avant le combat. Doking demande le Pokémon rare de chaque lieu."
 
 CATEGORY_HELP = {
     "Dresseurs": "Les obscurs sont réglés séparément des autres Pokémon.",

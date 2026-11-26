@@ -1,5 +1,5 @@
 {
-  "app_version": "2.1.5",
+  "app_version": "2.1.6",
   "language": "en",
   "description": "English application and gameplay captures. Each entry records its capture version; unchanged earlier gameplay images are retained.",
   "files": {
@@ -29,17 +29,17 @@
       "source": "Actual English application with private muted preferences. Verified original read-only; current production preview. No ISO output, emulator or save access."
     },
     "xd-settings.png": {
-      "bytes": 69816,
-      "sha256": "196cfef7b4d2a5edad8d21563e1d5f8e63f52c82517c2861dd4b06f19abe4dd3",
+      "bytes": 66685,
+      "sha256": "3a7f17c068fbb49ed57a2f8df0a9c978f4d59be349bf6bd3fbdf580f712600c2",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Simple preset and current shared protection rules.",
+      "description": "Simple presets with shared explanations and Fairy rules enabled.",
       "game": "xd",
       "seed": "orre-xd-showcase-3",
-      "captured_in_version": "1.2.24",
-      "source": "Actual application, English, private muted preferences and blocked update checking. No ROM read for this view.",
+      "captured_in_version": "2.1.6",
+      "source": "Actual English Qt widgets, private muted preferences and update checks disabled. No ROM, save or personal settings opened.",
       "preset": "Current recommended preset"
     },
     "shadow-pokemon.png": {
@@ -252,17 +252,17 @@
       "captured_in_version": "1.2.15"
     },
     "colosseum-simple.png": {
-      "bytes": 98901,
-      "sha256": "7990dd3d4d09fa2b43da6f917ebe75102ed4c903cebc085d32787a7b41457905",
+      "bytes": 95936,
+      "sha256": "a3e33ea5c9893be001bd7a0c510dc15d5ce9aa94311804bcee7cb22b2fc3a3a7",
       "kind": "application",
       "language": "en",
       "width": 1100,
       "height": 800,
-      "description": "Simple preset and current shared protection rules.",
+      "description": "Simple presets with shared explanations and Fairy rules enabled.",
       "game": "colosseum",
       "seed": "orre-showcase-5",
-      "captured_in_version": "1.2.24",
-      "source": "Actual application, English, private muted preferences and blocked update checking. No ROM read for this view.",
+      "captured_in_version": "2.1.6",
+      "source": "Actual English Qt widgets, private muted preferences and update checks disabled. No ROM, save or personal settings opened.",
       "preset": "Current recommended preset"
     },
     "xd-starter-preview.png": {

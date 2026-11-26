@@ -1,4 +1,4 @@
-"""Prepare opt-in Fairy content inside each generation/preview worker."""
+"""Prepare configured Fairy content inside each generation/preview worker."""
 from __future__ import annotations
 
 from functools import wraps

@@ -43,6 +43,9 @@ output is decoded and compared with the verified raw output before publication.
 family diversity and a custom 5% shiny chance where supported. Every evolution
 stage is eligible: starters do not need to be base forms or belong to three-stage
 families. Power matching is disabled. Only move, TM and item randomization differ.
+Both randomized presets also turn on [Fairy rules](FAIRY_TYPE.md) in both games;
+turn off **Add the Fairy type** under **Advanced > Types** to disable these
+additions. Profiles from v2.1.5 keep their saved Fairy choice.
 Pokémon only uses the new species' level-up moves at the
 encounter level. It does not shuffle learnsets or TMs. Under **Advanced > Moves**,
 trainers, starters and gifts each offer **Original encounter moves**, **Species

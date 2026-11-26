@@ -1,4 +1,4 @@
-"""Opt-in Fairy type lookups over qualified generation-III native engines.
+"""Optional Fairy type lookups over qualified generation-III native engines.
 
 Type 19 is separate from Mystery (9) and Shadow (18). New getters intercept
 only Fairy requests; every native request resumes the original instructions.

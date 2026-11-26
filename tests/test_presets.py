@@ -40,7 +40,7 @@ class PresetTests(unittest.TestCase):
             first, second = asdict(colosseum), asdict(xd)
             self.assertEqual({k: first[k] for k in first.keys() & second.keys()},
                              {k: second[k] for k in first.keys() & second.keys()})
-            for name in ("randomize_abilities", "diverse_story_families", "boss_team_variety", "custom_shinies"):
+            for name in ("randomize_abilities", "diverse_story_families", "boss_team_variety", "custom_shinies", "enable_fairy_type"):
                 self.assertTrue(first[name], name)
             self.assertFalse(first["balance_species"])
             self.assertEqual(first["starter_stage"], "any")

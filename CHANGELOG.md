@@ -1,5 +1,15 @@
 # Changelog
 
+## 2.1.6 - 2026-11-26
+
+- Enable Fairy rules by default in both randomized presets for Colosseum and
+  XD. Keep the advanced toggle, copy mode and imported profile values intact.
+- Shorten Simple mode's preset explanations in all six languages. Clarify
+  species-based starting moves, Fairy rules and each game's shiny behavior;
+  refresh the matching README screenshots.
+- Rewrite the README around the presets, previews and game content, retaining
+  the gameplay images, rights notices and setup instructions.
+
 ## 2.1.5 - 2026-11-26
 
 - Add an opt-in Fairy setting shared by Colosseum and XD, disabled in both

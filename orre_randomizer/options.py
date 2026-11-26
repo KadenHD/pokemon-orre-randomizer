@@ -122,7 +122,7 @@ class Options:
     def recommended(cls):
         return cls(randomize_trainer_moves=True, randomize_starter_moves=True,
                    randomize_gift_moves=True, randomize_learnsets=True, balance_species=False,
-                   randomize_abilities=True, randomize_held_items=True,
+                   randomize_abilities=True, randomize_held_items=True, enable_fairy_type=True,
                    moves_mode="chaos", ensure_stab_move=False,
                    randomize_tm_moves=True, tm_compatibility_mode="random",
                    randomize_field_items=True, randomize_shop_items=True, boss_team_variety=True,

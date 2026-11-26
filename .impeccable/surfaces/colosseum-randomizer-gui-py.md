@@ -34,7 +34,7 @@ unsupported system languages fall back to English.
 | Loading | Shared background worker, 115 ms cosmetic cycle, progress, cancellation and stale-result rejection |
 | Current preview | Final seeded results, up-to-date state and optional duplicate-family tab |
 | Pokémon sheets | Single-click access; shared Summary, Moves and Evolutions tabs, portraits and raised red shiny star |
-| Creation | Applied settings with values/units, ISO/RVZ output, shared DolphinTool path and original preservation |
+| Creation | Applied settings with values/units; ISO/GCM/RVZ inputs and outputs; integrated conversion without a DolphinTool field; original preservation |
 | Report import | Restores seed/rules without replacing paths and compares the selected original |
 | Progress and results | Shared creation-only Details disclosure, cancellation, stage log, output folder, JSON report and offline journal |
 
@@ -44,6 +44,17 @@ excluded from replacement draws; fixed legendary encounters remain. Original
 shop Balls are preserved. Pokémon only retains moves, TMs and ordinary items;
 Pokémon + moves randomizes those too. Accessible evolutions and family diversity
 are shared defaults.
+
+Both randomized presets turn on Add the Fairy type in both games. Keep it
+separate from Change types and allow players to turn it off in Advanced > Types.
+Sheets and previews use the matching Fairy badges, moves, and 57-TM catalogue;
+type badges keep native accessible names in all six languages. Copy mode and
+imported profiles retain their saved Fairy choice.
+
+Deoxys sheets and previews show the encounter's seeded or saved form, matching
+stats, and native/x4 portraits. The in-game Meteorite changes form outside battle
+while retaining shiny status and purification progress; interface copy must not
+imply that changing form rerolls either value.
 
 Retained species keep their native properties and protect their evolution
 families in shared tables. Advanced offers an unchecked property-randomization
@@ -59,6 +70,9 @@ keep saved values; selecting a preset applies the current defaults.
 Keep navigation visible at 680 × 540 and check 1040 × 800 as well. Scroll only
 the active form or result area. Common copy comes from workspace_copy.py,
 workspace_i18n.py and shared option metadata; do not introduce per-game synonyms.
+Simple preset summaries state the selected draw and shared defaults once, with
+one game-specific note. Describe species-based starting moves explicitly;
+do not imply that a replacement keeps the original encounter's moves.
 See docs/INTERFACE_PARITY.md for the shared behavior and intentional exceptions.
 
 Verification covers all six languages, both sizes, pending/loading/ready/error

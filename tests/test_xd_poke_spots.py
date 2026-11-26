@@ -137,7 +137,8 @@ class XDSpotTests(unittest.TestCase):
         self.assertEqual(outcomes, [True, True, False, False, True])
 
     def test_v6_reports_keep_native_shuffle_and_current_reports_require_explicit_pool(self):
-        options = asdict(replace(xd.XDOptions.recommended(), poke_spots_full_pokedex=False, custom_shadow_shinies=False))
+        options = asdict(replace(xd.XDOptions.recommended(), enable_fairy_type=False,
+                                 poke_spots_full_pokedex=False, custom_shadow_shinies=False))
         options.pop("keep_shadow_lugia_after_purification")
         options.pop("randomize_preserved_properties")
         options.pop("randomize_legendary_shadows")

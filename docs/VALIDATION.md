@@ -4,6 +4,26 @@ This index records the v1.0.0 foundation and subsequent validation follow-ups.
 Dated reports in `docs/` describe their named versions and scenarios; they are
 historical evidence rather than the current feature specification.
 
+## v2.1.6 preset defaults and interface copy (2026-11-26)
+
+Fairy rules are on in both randomized presets for both games. Copy mode and
+imported profiles retain their saved settings. The targeted regression campaign
+passed 406 tests across 36 isolated modules, covering preset selection, older
+profiles, preserved encounters and the Fairy pipeline. The shared interface's
+49 targeted tests passed again after the six-language preset copy changes.
+
+The source interface diagnostic rendered 474 states at 1040 x 800 and
+680 x 540, with 210 saved screenshots. The approved home screenshots remained
+byte-identical. Both English Simple-mode screenshots were refreshed and all
+58 documentation media files passed the manifest checks. Impeccable's project
+check reported no findings. These interface checks use private muted settings
+and open no ROM or personal save.
+
+The release workflow separately tests the exact commit on Linux and Windows,
+then rebuilds and audits the Windows app and installer before publication.
+The in-game Fairy checks recorded below cover the mechanics introduced in
+v2.1.5.
+
 ## v2.1.5 optional Fairy rules (2026-11-26)
 
 The local source campaign covered all 208 isolated modules and 1,975 tests,

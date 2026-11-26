@@ -197,7 +197,7 @@ def preset_buttons(window, layout, constructors, apply):
     row = QHBoxLayout()
     buttons = []
     labels = (("Pokémon + capacités", "CT et objets aussi"),
-              ("Pokémon seuls", "Capacités et CT conservées"),
+              ("Pokémon seuls", "Capacités de l'espèce"),
               ("Copie à l’identique", "Aucune randomisation"))
     for (title, subtitle), constructor in zip(labels, constructors, strict=True):
         button = window.button(title)

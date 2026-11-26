@@ -1,4 +1,4 @@
-"""Opt-in Fairy settings and signed historical-profile compatibility."""
+"""Fairy preset defaults and signed historical-profile compatibility."""
 from dataclasses import asdict, fields, replace
 import hashlib
 import json
@@ -8,6 +8,7 @@ import unittest
 from orre_randomizer.challenges import decode_challenge, encode_challenge
 from orre_randomizer.i18n import LANGUAGES, translate
 from orre_randomizer.options import Options
+from orre_randomizer.presets import recommended_preset, species_preset
 from orre_randomizer.profiles import configuration_data, parse_profile, parse_xd_profile
 from orre_randomizer.service import UserError
 from orre_randomizer.settings_presentation import (
@@ -28,10 +29,13 @@ def signed(payload):
 
 
 class FairyOptionTests(unittest.TestCase):
-    def test_both_games_keep_fairy_disabled_in_native_and_randomizing_presets(self):
-        for options in (Options(), Options.none(), Options.recommended(),
-                        XDOptions(), XDOptions.unchanged(), XDOptions.recommended(), XDOptions.species_only()):
+    def test_both_games_enable_fairy_in_randomizing_presets_and_keep_copy_unchanged(self):
+        for options in (Options(), Options.none(), XDOptions(), XDOptions.unchanged()):
             self.assertIs(options.enable_fairy_type, False)
+        for options in (Options.recommended(), recommended_preset(), species_preset(),
+                        XDOptions.recommended(), XDOptions.species_only()):
+            self.assertIs(options.enable_fairy_type, True)
+            self.assertIs(replace(options, enable_fairy_type=False).enable_fairy_type, False)
         self.assertFalse(Options.none().has_changes)
         self.assertTrue(replace(Options.none(), enable_fairy_type=True).has_changes)
 

@@ -103,7 +103,9 @@ class RegionalDataTests(unittest.TestCase):
                 self.assertEqual(len(shop_archive_names(original)), 5 if tag == "pal" else 1)
 
     def test_field_items_shops_and_tm_rules_on_each_region(self):
-        options = replace(Options.recommended(), randomize_field_items=True, randomize_shop_items=True,
+        # Exercise the original 50-TM archives without installing Fairy content.
+        options = replace(Options.recommended(), enable_fairy_type=False,
+                          randomize_field_items=True, randomize_shop_items=True,
                           randomize_tm_moves=True, tm_compatibility_mode="type")
         for tag, (_, original, shop, dol) in self.inputs.items():
             with self.subTest(region=tag):
@@ -124,7 +126,7 @@ class RegionalDataTests(unittest.TestCase):
     def test_mixed_region_inputs_are_rejected(self):
         _, original, shop, _ = self.inputs["usa"]
         japanese_dol = self.inputs["japan"][3]
-        options = replace(Options.recommended(), randomize_field_items=True, randomize_shop_items=True)
+        options = replace(Options.recommended(), enable_fairy_type=False, randomize_field_items=True, randomize_shop_items=True)
         with self.assertRaises(FormatError):
             apply_field_items(original, original, japanese_dol, "mixed", options)
         with self.assertRaises(FormatError):

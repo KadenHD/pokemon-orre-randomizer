@@ -32,7 +32,8 @@ def sign(payload):
 
 def profile_payload(is_xd, preserved):
     options = xd.XDOptions.recommended() if is_xd else Options.recommended()
-    options = replace(options, randomize_preserved_properties=preserved)
+    # These fixtures represent engines released before Fairy rules existed.
+    options = replace(options, enable_fairy_type=False, randomize_preserved_properties=preserved)
     with tempfile.TemporaryDirectory() as folder:
         return save_profile(Path(folder) / "profile.json", "Forecast-seed", options), options
 

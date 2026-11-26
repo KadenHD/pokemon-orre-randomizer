@@ -14,274 +14,114 @@
   <a href="CHANGELOG.md">Changelog</a>
 </p>
 
-Choose your game, supply a clean ISO, GCM or RVZ, and create a new adventure from a
-seed. Everything runs locally. Your original ROM is preserved, and the app
-writes a separate, verified image with a settings report and an offline journal.
-Version 2 adds a game folder with its own launcher, saves and Dolphin settings,
-plus optional shared HD texture packs.
-No ROM, save file, or emulator is included.
+Pick a seed, preview your Pokémon, and create a separate ISO, GCM, or RVZ.
+The Windows app runs locally and offers a Dolphin launcher for each run,
+optional HD packs, and added game content.
 
 ![Game selection: Colosseum and XD](docs/images/home.png)
 
 ## Download and play
 
-Download the **Windows setup EXE** from the
-[latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest)
-for Windows 10 or 11, 64-bit. Python and the Rust codec are included.
-For portable use, extract the **Windows ZIP** in full and open `OrreRandomizer.exe`
-beside its `_internal` folder.
-
-On Windows, **Update to…** appears on Home when a newer stable release is
-available. One click downloads and verifies the official package, updates the
-installed or portable app in place, and restarts it. No installer needs to be
-downloaded or opened by hand. The background GitHub check sends no ROMs, paths,
-seeds or saves, and the randomizer works normally offline.
-Update progress stays centered in a dedicated view. Navigation and other
-controls are locked until it finishes; downloading can be cancelled.
+Get the Windows setup EXE or portable ZIP from the
+[latest release](https://github.com/KadenHD/pokemon-orre-randomizer/releases/latest).
+Both support Windows 10 and 11, 64-bit, and include Python and the native
+conversion libraries. For portable use, extract the whole ZIP and open
+`OrreRandomizer.exe` beside its `_internal` folder. Install Dolphin separately.
 
 No ROMs or links to ROM downloads are provided. Use the randomizer only with game
 images you are legally entitled to use. You are responsible for how you obtain,
 use, and share those images. For the rights and sources of the game logos,
 artwork, and music, see the [game media notices](THIRD_PARTY_NOTICES.md#game-interface-pack).
 
-1. Choose **Colosseum** or **XD**, then select your original ROM in **ROM**.
-2. In **Settings**, choose a preset and a seed. Preview the starters, Shadow
-   Pokémon and gifts, or open **Advanced** to adjust individual rules.
-3. In **Create**, review **Applied settings**, choose a new game folder and select
-   your Dolphin executable. Pick ISO, GCM or RVZ, with Original or HD graphics.
-4. Open **Launcher.exe** in that folder and click **Play**. Start a new game to
-   match your preview. The launcher works after closing the randomizer.
+1. Choose Colosseum or XD, then select your unmodified ROM on the ROM page.
+2. Choose a preset and seed in Settings. Preview your Pokémon before creating the ROM.
+3. Review Applied settings on Create, choose an output, and select Dolphin if you want a game folder.
+4. Open `Launcher.exe` in the new folder, click Play, and start a new game.
 
-All three input formats offer all three output formats. The suggested output
-format matches your input. **RVZ conversion is built in**: the Windows app
-includes a Rust library and needs no DolphinTool installation or path.
-GCM is the same raw disc data as ISO, with a different extension. Conversion
-preserves game data; each created RVZ is decoded again and checked against the
-complete output ISO. Turn off **Create a game folder with a launcher** if you
-only want a ROM to open in your usual emulator setup.
+Every input format offers all three output formats. RVZ conversion is built in;
+the app checks the decoded output against the generated ISO. GCM contains the
+same disc data as ISO. Turn off Create a game folder with a launcher to produce
+only a ROM for your usual emulator setup.
 
 | Colosseum | XD |
 | --- | --- |
 | ![Create a Colosseum game folder](docs/images/colosseum-output-formats.png) | ![Create an XD game folder](docs/images/xd-output-formats.png) |
 
-### A launcher for each run
-
-Keep a run's ROM, memory card, save states and controls together. Dolphin is
-detected automatically when possible, or selected manually. The launcher uses
-that run's `DolphinUser/` profile; it never takes over your usual saves. All
-generated file and folder names stay in English. Dolphin itself is not bundled.
-
-Each launch starts at 100%. Choose a 100%, 200% or 300% fast-forward target:
-hold **Tab** to use it, or press **Ctrl + Tab** to toggle it on and off.
-**Shift + Tab** temporarily slows the game to 50%. Choose widened **16:9** or
-original **4:3** in borderless fullscreen. Keyboard and XInput controller
-presets can be remapped in Dolphin. See [launcher details](docs/GAME_FOLDERS.md)
-for speed transitions and display compatibility.
-
-Use **Update a launcher...** on Home to update an existing run's launcher
-explicitly. Its ROM, saves, controls and pinned HD packs stay unchanged; the
-previous launcher files are backed up. Opening a run alone retains its version.
-
-| Colosseum launcher | XD launcher |
-| --- | --- |
-| ![Colosseum game launcher](docs/images/colosseum-launcher.png) | ![XD game launcher](docs/images/xd-launcher.png) |
-
-**Keep music at 100%** is checked by default where supported, and your choice
-is saved for each run. The companion is available on Windows with verified
-Europe revision-0 images, the checked renderer recipe and the game's music
-bridge. It separates gameplay music from game speed; sound effects, cries
-and the complete picture/soundtrack of
-prerecorded movies follow the game. It uses the original audio, not a HQ music
-pack. Other configurations retain native audio. See the
-[supported audio configuration and validation](docs/reverse-engineering/NATIVE_MUSIC_HOST.md).
-
-### Shared HD packs
-
-Install the optional HD packs from Home or either launcher. Each Orre release
-pins specific upstream versions and SHA-256 hashes. Install once per game and
-version, then reuse the pack across your runs; existing game folders keep their
-recorded version. Downloads support cancellation and resuming.
-
-HD packs by **Sephie** ([Colosseum, published by u/Bun-bun45](https://www.reddit.com/r/DolphinEmulator/comments/sxzxi2/))
-and **mikeyX** ([XD/XG](https://forums.dolphin-emu.org/Thread-pokemon-xg-xd-hd-texture-pack-v1-0)).
-Their work remains separately credited; see [HD sources and rights](docs/HD_SOURCES.md).
-
-Custom x4 textures, portraits and whole-body artwork use the actual HD packs
-as their source, including Shadow Lugia and its shiny variant. Native custom
-models stay in the ROM. A model imported from the other game can require both
-packs; missing custom artwork blocks HD preparation instead of substituting
-an enlarged native image. These texture packs add no polygons or HQ audio.
-**Original** mode needs no pack download.
-
-HD mode adds localized type and status labels, battle controls, Pokémon sheets,
-title menus, European XD health notices and P-AD captions alongside the
-texture packs. XD's VS illustrations use the game's character models and
-authentic hardware photos. New game folders also
-support sharp vector lettering without changing dialogue layout.
-Coverage varies by region and language, and some artwork remains native;
-see [HD coverage and limitations](docs/HD_COVERAGE.md).
-Prerecorded movies keep their original resolution. HD mode is not a complete
-remaster of either game.
-
-XD's **HD mode requires both packs**: XD supplies the textures and Colosseum
-supplies HD portraits for all 386 base species and Unown forms, adapted to XD's
-round frames. Clicking **Install** for XD installs both missing packs, reusing
-any version already installed. Castform's weather forms and XD's additional
-Deoxys forms also have paired normal/shiny x4 portraits. Their 43 reviewed HD
-material textures now apply to the stock models too, with each game's native
-meshes and animations. Original mode uses native-resolution artwork.
-New randomized ROMs also update Castform's battle portrait to match its visible
-weather form, in both Original and HD modes. Castform keeps Forecast, and the
-ability is excluded from other species' randomized abilities.
-
-Shiny Castform also gains the modern Sunny, Rainy and Snowy colors, with
-matching native and x4 portraits. Each specimen's own shiny status selects the
-appearance throughout its weather changes. The original meshes and animations
-are retained; create a new randomized ROM to install these additional resources.
-
-| Colosseum | XD |
-| --- | --- |
-| ![Native and HD Castform weather appearances in Colosseum](docs/images/castform-colosseum-weather-shinies.png) | ![Native and HD Castform weather appearances in XD](docs/images/castform-xd-weather-shinies.png) |
-
-![Castform's sun, rain and hail battle portraits in Colosseum and XD](docs/images/castform-live-portraits.png)
-
-Custom Shadow Lugia portraits match its normal/shiny colors at both
-resolutions, with violet square frames in Colosseum and round frames in XD.
-The DNA lab uses separate whole-body artwork with matching native/HD poses
-and the keypad's black outline.
-
-![Original and HD portraits for both Shadow Lugia appearances](docs/images/hd-custom-lugia-portraits.png)
-
-![Shared, versioned HD texture packs](docs/images/hd-packs.png)
-
-New game folders keep text sharp alongside the x4 artwork, with consistent
-letter heights and the game's original spacing and line layout.
-
-| Colosseum | XD |
-| --- | --- |
-| ![Original and HD text in Colosseum](docs/images/hd-colosseum-text.png) | ![Original and HD text in XD](docs/images/hd-xd-text.png) |
-
-![XD's HD VS menu](docs/images/hd-xd-vs.png)
-
-The Colosseum pack downloads about **0.72 GB**, XD about **3.30 GB**. The shared
-cache also holds runtime and locally extracted music resources when supported.
-Moving a game folder to another PC requires locating Dolphin and reinstalling
-its shared resources. [Game-folder guide](docs/GAME_FOLDERS.md).
-
-## Manage your runs
-
-Keep existing runs in **My games**, with their seeds, launcher versions and
-direct access to Play, folders and card backups. The launcher can back up its
-memory cards before playing, with up to five copies and verified restoration.
-
-**Storage** shows where the space goes and offers reviewed cleanup of old,
-rebuildable texture views. **Challenge codes** share a seed and all randomizer
-rules without local paths, with engine compatibility checked before import.
-For a bug report, **Profiles > Export diagnostic...** lets you review a local
-JSON file with the failed attempt's settings and an optional seed. ROMs, saves,
-paths and raw logs stay out of the export; nothing is uploaded automatically.
-See the [run-management guide](docs/RUN_MANAGEMENT.md).
-
-![Review a local diagnostic before sharing it](docs/images/support-diagnostic.png)
-
-| My games | Save backups |
-| --- | --- |
-| ![Game library with demonstration runs](docs/images/run-library.png) | ![Memory-card backup history](docs/images/save-backups.png) |
+Home offers an in-place update when a newer stable app release is available.
+The update verifies the download, preserves your files and preferences, and
+restarts the app. You can cancel during download. The version check sends no
+ROMs, paths, seeds, or saves; you can use the randomizer offline.
 
 ## Choose what changes
 
-Natural starter moves stay natural, including empty slots and passive species.
-XD's first Snag-only encounter needs no attack. If you lose the first Chobin
-battle in a randomized run, return to him to continue Jovi's scene without
-another compulsory fight. Colosseum avoids automatically pairing two
-Teleport/Harden/Splash-only starters; explicit manual picks remain available.
-These safeguards preserve moves rather than adding an attack.
-
-| | Pokémon + moves | Pokémon only |
+| Setting | Pokémon + moves | Pokémon only |
 | --- | --- | --- |
-| Trainers, starters, Shadow Pokémon and ordinary gifts | Randomized | Randomized |
+| Trainers, starters, Shadow Pokémon, and ordinary gifts | Randomized | Randomized |
 | Original legendary Shadow species | Preserved | Preserved |
 | Legendary and Mythical Pokémon in random draws | Excluded | Excluded |
 | Abilities | Randomized | Randomized |
-| Evolution stages | All stages | All stages |
-| Similar-strength matching | Disabled | Disabled |
-| Family diversity | Enabled | Enabled |
-| Seeded 5% shiny chance for supported encounters | Enabled | Enabled |
-| XD Poké Spots: fresh 5% shiny chance per new wild encounter | Enabled | Enabled |
-| Accessible evolutions and evolution stones in shops | Enabled | Enabled |
+| Starter evolution stages | All stages | All stages |
+| Similar-strength matching | Off | Off |
+| Evolution-family diversity | On | On |
+| Seeded shiny chance for supported encounters | 5% | 5% |
+| XD Poké Spots: a new shiny roll for every wild encounter | 5% | 5% |
+| Accessible evolutions and evolution stones in shops | On | On |
 | Encounter starting moves | Randomized | Species level-up moves |
 | Level-up learnsets and TMs | Randomized | Preserved |
-| Eligible treasure and shop items (original shop Poké Balls stay available) | Randomized | Preserved |
-| Items already held by opponents, including Shadow Pokémon | Randomized | Preserved |
-| Colosseum's bonus quest | Enabled; fixed team and Shadow Lugia | Enabled; fixed team and Shadow Lugia |
+| Eligible treasure and shop items | Randomized | Preserved |
+| Items already held by opponents | Randomized | Preserved |
+| Colosseum's bonus quest | On, with its authored team | On, with its authored team |
 
-Both presets retain native opponent levels, battle EXP, purification speed and
-catch rates. Starters can be unevolved, evolved or from a single-stage family;
-neither preset requires a three-stage family. Colosseum's two starters keep
-distinct families, without a power or shared-type constraint. XD has one starter. Its custom rate covers
-the starter, ordinary gifts and Shadow Pokémon; the Shadow unlock can be
-disabled separately. XD's Poké Spots roll a fresh **5% shiny chance for every
-new wild encounter**, even for repeated encounters with the same species.
-The field model shows its shiny appearance before battle. Set a separate
-wild rate under **Advanced → Poké Spots**.
-Family diversity is best effort when fixed Pokémon or strict filters
-leave no alternative.
-Original legendary Shadow Pokémon keep their species by default in both games.
-Enable **Randomize legendary Shadow Pokémon** in Advanced to replace them;
-XD001 remains protected for XD's story. Colosseum's bonus encounter has separate
-controls for its team and final Shadow Pokémon.
+Both presets keep the original levels, battle EXP, purification speed, and
+catch rates. They preserve shop Poké Balls and seek different evolution
+families for obtainable Pokémon; fixed encounters and strict filters can limit
+that choice. Starters can come from any evolution stage, without power or type
+matching. Colosseum's two starters have different families.
 
-All random replacements exclude Legendary and Mythical Pokémon, including
-starters, Shadows, gifts and XD's Poké Spots. Enable **Legendary and Mythical
-Pokémon** under **Advanced > Allowed Pokémon** to include them in random draws.
-This filter does not remove fixed story encounters or Colosseum's bonus Lugia.
+Pokémon only gives each replacement its species' level-up moves at the encounter
+level. Empty slots stay empty when a species knows fewer moves. Pokémon + moves
+draws moves without matching power, type, or physical/special stats, randomizes
+TM compatibility, and keeps an attacking move. You can change the default
+self-destruct and one-hit-KO exclusions in Advanced.
 
-**Pokémon only** gives each replacement the moves its
-species learns by its encounter level, rather than inheriting the previous
-species' trainer slots. Advanced settings offer three choices for trainers,
-starters and gifts: **Original encounter moves**, **Species level-up moves**
-or **Random moves**. Original mode retains the game's native encounter behavior,
-including fixed trainer slots and native gift routines. Shadow moves and special
-slots remain protected. A species with fewer learned moves may have empty slots;
-Beldum, Metang and Magikarp can be starters without enabling random moves.
-**Pokémon + moves** continues to randomize starting moves in both games.
+Advanced offers Original encounter moves, Species level-up moves, and Random
+moves separately for trainers, starters, and gifts. Shadow moves and special
+slots keep their own rules. Beldum, Metang, and Magikarp can be starters without
+random moves. XD keeps its guaranteed Snag-only first capture, and a loss against
+Chobin doesn't force another fight before Jovi's scene. Colosseum avoids drawing
+two Teleport/Harden/Splash-only starters together; manual choices remain available.
 
-**Unchanged copy** preserves game data and can convert between ISO, GCM and RVZ. Imported
-profiles keep their saved settings, including defaults from older versions.
-Selecting a preset applies the current defaults.
-Older Colosseum profiles with unlinked custom shinies now use their seed for
-that rate, so previews, battles and supported story models can agree.
+Turn on Legendary and Mythical Pokémon under Advanced > Allowed Pokémon to
+include them in random draws. Randomize legendary Shadow Pokémon controls
+replacement of the original Shadow legends; XD001 keeps its story role.
+The bonus Colosseum battle has separate controls for its team and final target.
 
-The full preset draws moves without matching power, physical/special stats or
-the Pokémon's type. TM compatibility is randomized as well. It keeps an
-attacking move and avoids duplicate moves; the self-destruct and one-hit-KO
-exclusions are enabled by default and can be changed in Advanced.
+The full preset randomizes ordinary Ball treasures, while story items, Time
+Flutes, and guaranteed evolution stones stay available. Both presets keep every
+Poké Ball originally sold in shops. Turn off Keep original Poké Balls in shops
+to randomize those slots too. Pokémon without held items stay empty-handed.
+See the [item and move rules](docs/USER_GUIDE.md) for shop coverage and exclusions.
 
-The full preset also randomizes ordinary Ball treasures. Key items, Time Flutes,
-guaranteed Evolution stones and other progression rewards remain protected.
-Both presets keep every Poké Ball originally sold in shops. Turn off **Keep
-original Poké Balls in shops** in Advanced to randomize those slots too; this
-shop-only setting never protects Ball treasures.
-Colosseum includes all nine regular cash shop inventories, including the three
-type-2 shop lists. Herbalists, vending machines and coupon shops stay unchanged.
-Pokémon without a held item stay empty-handed.
-Treasure replacements draw across eligible item categories and prices; enable
-similar-value matching in Advanced to constrain the pool.
+Trade evolutions and other unavailable routes work within the selected game.
+Evolution stones appear in Phenac and Pyrite shops in Colosseum and Gateon Port
+in XD. Each Pokémon sheet lists the final evolution requirements.
 
-Trade evolutions and other unavailable routes are adapted so you can finish
-your team in the game you're playing. Evolution stones are added to shops in
-Phenac and Pyrite in Colosseum, and Gateon Port in XD. Each Pokémon's sheet
-lists its final evolution requirements, with normal or shiny portraits.
-
-| Colosseum · Simple settings | XD · Simple settings |
+| Colosseum settings | XD settings |
 | --- | --- |
 | ![Simple settings in Colosseum](docs/images/colosseum-simple.png) | ![Simple settings in XD](docs/images/xd-settings.png) |
 
+Unchanged copy preserves game data and converts between the supported formats.
+Imported profiles keep their saved choices; selecting a preset applies the
+current defaults. Older Colosseum profiles with unlinked custom shinies use
+their seed so previews and supported in-game appearances agree.
+
 ### Optional Fairy rules
 
-Add Fairy matchups, updated species typings and seven moves with TMs and natural
-learning in both games. Enable **Add the Fairy type** in **Advanced > Types**;
-it stays off in both presets. See the [Fairy rules and validation](docs/FAIRY_TYPE.md).
+Add Fairy matchups, updated types for 18 species, and seven moves with
+TM51-TM57 and natural learning. Both randomized presets turn this option on in
+both games. You can turn off Add the Fairy type under Advanced > Types.
+The [Fairy guide](docs/FAIRY_TYPE.md) lists
+the moves, learning rules, animations, and GBA transfer restriction.
 
 | Colosseum | XD |
 | --- | --- |
@@ -289,30 +129,25 @@ it stays off in both presets. See the [Fairy rules and validation](docs/FAIRY_TY
 
 ### Preview your run
 
-Check your starters, gifts and Shadow Pokémon before creating the ROM. Both
-games show the full Shadow roster, with 48 entries in Colosseum and 83 in XD.
-With an original ROM selected, Pokémon kept by your settings load automatically,
-including their sheets and seeded shiny appearance. Randomized replacements
-are calculated only when you click **Calculate preview**. Loading the preview
-page does not draw those replacements or prepare the complete ROM.
+Browse all 48 original Shadow Pokémon in Colosseum or 83 in XD, plus starters
+and gifts. Kept Pokémon load automatically with their sheets and known shiny
+status; click Calculate preview to draw randomized replacements.
 
-Pokémon whose species is kept by your settings retain their native abilities,
-moves, TM moves, types and base stats; your shiny settings still apply. Enable
-**Randomize preserved Pokémon’s properties** in **Advanced > Allowed Pokémon**
-to apply the selected property rules to them too. Species tables are shared:
-retaining a species protects its evolution family and every copy of those
-species. Evolution accessibility rules still apply.
+Kept species retain their own abilities, moves, TM compatibility, types, and
+stats. Advanced > Allowed Pokémon offers Randomize preserved Pokémon's properties
+to apply your selected property rules to them too. Species share their data
+tables, so preservation also protects their evolution families. Evolution and
+Fairy rules still apply.
 
-The fixed-encounter examples below use a 100% shiny rate.
+These fixed-encounter examples use a 100% shiny rate:
 
-| Colosseum - fixed encounters | XD - fixed encounters |
+| Colosseum: kept Pokémon | XD: kept Pokémon |
 | --- | --- |
 | ![Fixed Colosseum encounters before the full preview](docs/images/colosseum-fixed-preview.png) | ![Fixed XD encounters before the full preview](docs/images/xd-fixed-preview.png) |
 
-Colosseum's **Events** tab lets you preview or disable the
-[Shadow Lugia quest](#a-new-postgame-battle-in-colosseum), including the boss's team.
-Click a Shadow Pokémon or gift to open its Pokémon sheet. In XD you can also
-check Poké Spot encounters and see what Duking wants in each trade.
+Click a row to open the replacement's Pokémon sheet. Gifts show their
+requirements beside the Pokémon; XD's Poké Spots show the location and encounter
+rate. Duking's trade requests follow the new rare encounters.
 
 | Colosseum | XD |
 | --- | --- |
@@ -320,22 +155,18 @@ check Poké Spot encounters and see what Duking wants in each trade.
 | ![Colosseum Shadow Pokémon preview](docs/images/shadow-pokemon.png) | ![XD Shadow Pokémon preview](docs/images/xd-shadow-pokemon.png) |
 | ![Colosseum gift preview](docs/images/colosseum-gifts.png) | ![XD gift and trade preview](docs/images/xd-gifts.png) |
 
-Gift requirements have their own column, including Plusle's story reward,
-Ho-Oh's Mt. Battle requirements and the purification rewards. XD's Poké Spot
-preview groups each location and encounter rate beside the replacement.
+![XD Poké Spot locations, encounter rates, and randomized Pokémon](docs/images/xd-pokespot-preview.png)
 
-![XD Poké Spot locations, encounter rates and randomized Pokémon](docs/images/xd-pokespot-preview.png)
-
-Colosseum's event gifts no longer need a distribution disc. With **Make event
-gifts obtainable** enabled, Eagun offers the Pikachu gift after 10 purifications
-and the Celebi gift after 25 at the Relic Stone. Both can be randomized, and
-you can change their thresholds and levels. His original story conversations,
-contact exchange and Master Ball handoff keep priority over the added rewards.
+Colosseum's event gifts work without a distribution disc. With Make event gifts
+obtainable on, Eagun offers Pikachu after 10 purifications and Celebi after 25
+at the Relic Stone. You can randomize the gifts and change their thresholds and
+levels. His story dialogue, contact exchange, and Master Ball handoff take
+priority. The Events tab also previews the
+[postgame battle](#a-new-postgame-battle-in-colosseum).
 
 ## In game
 
-Start a new game with a different team in either Colosseum or XD. Your starters,
-opponents and snag targets follow the settings you chose.
+Your replacements appear in battles and supported story scenes in both games.
 
 | Pokémon Colosseum | Pokémon XD |
 | --- | --- |
@@ -343,49 +174,43 @@ opponents and snag targets follow the settings you chose.
 
 ### Randomized Pokémon in story scenes
 
-Your randomized Pokémon can show up outside battle, too. In supported scenes,
-the models and dialogue follow your run, from the starters riding in the
-sidecar at Outskirt Stand to the Pokémon Duking gives you in Pyrite. Miror B.'s
-dancers also change with his team in Pyrite Cave and at Gateon Port's lighthouse.
-Trainer dialogue follows randomized teams, including references to their
-Pokémon's types and moves. XD's Battle Simulator lessons also follow their
-new rental teams.
-
-Unown's letter comes from the seed in both games. Spinda's spots follow its
-in-game personality value, and the Pokémon sheet shows the exact pattern when
-it can be determined before play. See [forms and shiny rules](docs/SHINIES.md)
-and the [six-disc shiny model audit](docs/SHINY_MODEL_COVERAGE.md).
+The starters at Outskirt Stand, Duking's gift in Pyrite, and Miror B.'s dancers
+use your replacements in supported scenes. Dialogue follows the changed teams,
+including references to types and moves. XD's Battle Simulator lessons follow
+their new rental teams too. The prerecorded opening movies stay original.
 
 ![Treecko and Totodile arriving by motorcycle at Outskirt Stand](docs/images/colosseum-motorcycle-arrival.gif)
 
-[View the motorcycle still](docs/images/colosseum-motorcycle-starters.png)
+[Motorcycle still](docs/images/colosseum-motorcycle-starters.png)
 
 ![Duking and Poliwhirl in the randomized Plusle gift scene](docs/images/colosseum-plusle-gift.png)
 
-| Colosseum · Pyrite Cave | XD · Gateon Port Lighthouse |
+| Colosseum: Pyrite Cave | XD: Gateon Port Lighthouse |
 | --- | --- |
 | ![Miror B. dancing with his randomized Pokémon in Pyrite Cave](docs/images/colosseum-pyrite-dancers.gif) | ![Randomized dancers on Gateon Port's lighthouse roof](docs/images/xd-lighthouse-dancers.png) |
 
-[View the Pyrite Cave still](docs/images/colosseum-pyrite-dancers.png)
+[Pyrite Cave still](docs/images/colosseum-pyrite-dancers.png)
 
-At XD's Poké Spots, you can spot a shiny in the field before you battle it.
+Unown's letter comes from the seed; Spinda's spots follow its personality value.
+The Pokémon sheet shows the pattern when the app can determine it before play.
+See [story-scene support](docs/reverse-engineering/STORY_GIFT_SCENES.md),
+[form rules](docs/SHINIES.md), and the [shiny model audit](docs/SHINY_MODEL_COVERAGE.md).
+[Capture seeds and versions](docs/images/manifest.json) accompany the gallery.
+
+At XD's Poké Spots, a shiny appears in the field before battle:
 
 | Cave Poké Spot | Wild battle |
 | --- | --- |
 | ![Shiny Marill on the field at the Cave Poké Spot](docs/images/xd-pokespot-shiny-field.png) | ![The same shiny Marill in battle](docs/images/xd-pokespot-shiny-battle.png) |
 
-[Story-scene support](docs/reverse-engineering/STORY_GIFT_SCENES.md) ·
-[Showcase seeds](docs/images/manifest.json)
-
 ### Deoxys forms
 
-All four Deoxys forms are available in Colosseum, with a reusable
-**METEORITE** to both games. Each randomized Deoxys starts with a form chosen
-by the seed. Use the item from your Bag to change it whenever you want outside
-battle, including a Shadow Deoxys. Its shiny status and Shadow progress stay
-intact, and the item is not consumed. Models and portraits support Original
-and HD play folders.
-[How forms and the Meteorite work](docs/DEOXYS_FORMS.md)
+Both games support all four Deoxys forms. A reusable METEORITE in the field
+Bag changes a party Deoxys's form, including a Shadow Deoxys, without changing
+its shiny status or purification progress. Each randomized Deoxys starts with
+a seeded form and keeps its saved form through party/PC transfers and saving.
+Models and portraits support Original and HD modes.
+[Deoxys and Meteorite guide](docs/DEOXYS_FORMS.md).
 
 | Pokémon Colosseum | Pokémon XD |
 | --- | --- |
@@ -393,125 +218,220 @@ and HD play folders.
 
 ### Choose your shiny odds
 
-Both randomizing presets start at **5%** for supported encounters. Set your
-own rate from 0% to 100% in Advanced, including XD's normally shiny-locked
-Shadow Pokémon. The seed fixes their result, and a shiny stays shiny after
-you snag it, evolve it or purify it. XD's wild Poké Spot rate is a separate
-setting, also enabled at 5% by default. It rolls again for every new encounter;
-the same Pokémon keeps its shiny status on the field, in battle and after capture.
+Set a rate from 0% to 100% in Advanced, including XD's normally shiny-locked
+Shadow Pokémon. The seed fixes the shiny result for supported starters, gifts,
+and trainer/Shadow encounters. A shiny stays shiny after capture, evolution,
+and purification. XD's wild Poké Spots use a separate rate and roll again for
+each new encounter; the result stays the same on the field, in battle, and after capture.
 
-Shadow Lugia uses its dark XD model in both games, with a custom white-and-black
-shiny variant and matching portraits. Purification normally restores its
-ordinary appearance, pink when shiny. Enable **Keep Lugia's Shadow appearance**
-to keep the dark model after purification instead. This appearance-only
-option is off by default; Lugia that were never Shadow Pokémon keep their
-ordinary models. [Shiny and form rules](docs/SHINIES.md)
+Shadow Lugia uses XD's dark model in both games, with a custom white-and-black
+shiny variant. Purification restores its ordinary appearance, pink when shiny.
+Turn on Keep Lugia's Shadow appearance to retain the dark model instead.
+The option starts off and changes appearance only; ordinary Lugia keep their
+usual models. [Shiny rules](docs/SHINIES.md).
 
-| Shiny settings | Purified Lugia with its Shadow appearance kept |
+| Shiny settings | Purified Lugia keeping its Shadow appearance |
 | --- | --- |
 | ![English shiny settings with a 5% rate and the optional Shadow appearance setting](docs/images/colosseum-shiny-settings.png) | ![Non-shiny Lugia keeping its dark Shadow appearance after purification in XD](docs/images/xd-purified-shadow-lugia.png) |
 
-**Custom shiny Shadow Lugia (XD001) model**
-
-![The custom white-and-black Shadow Lugia model retained after purification in XD](docs/images/xd-shiny-shadow-lugia.png)
+![Custom white-and-black Shadow Lugia retained after purification in XD](docs/images/xd-shiny-shadow-lugia.png)
 
 ### A new postgame battle in Colosseum
 
-Cipher has one last plan for the Relic Stone. After you snag and purify all
-48 original Shadow Pokémon, a motorcycle trip to another area brings a P★DA
-warning from Eagun. Return to Agate to face Nascour and **level-70 Shadow
-Lugia** in a new scene with your partner and Eagun.
+After you snag and purify the original 48 Shadow Pokémon, Eagun sends a P★DA
+warning on your next motorcycle trip to another area. Return to Agate's Relic
+Stone to face Nascour and level-70 Shadow Lugia in a scene with your partner
+and Eagun.
 
 | Cipher's last stand | After the capture |
 | --- | --- |
 | ![Nascour threatens the Relic Stone with a non-shiny Shadow Lugia](docs/images/colosseum-shadow-lugia-event.gif) | ![Eagun and both heroes after the final battle](docs/images/colosseum-shadow-lugia-aftermath.png) |
 
-Both randomizing presets enable this quest with its intended six-Pokémon team
-at levels 65-70 and Shadow Lugia as the final target. Under **Advanced → Starters
-and gifts**, independently enable **Randomize Nascour's team** to replace his
-first five Pokémon or **Randomize the bonus battle's Lugia** to replace the
-final Shadow Pokémon. Both switches are off by default. The scene model,
-dialogue and encounter follow the final replacement.
-Miss the capture and you can challenge him again. Snag the final Shadow Pokémon
-and Nascour leaves the shrine for good. Eagun resumes his purification rewards.
-The new Shadow Pokémon can then be purified normally;
-the original Ho-Oh requirements still count the original 48. Use **Pokémon
-preview → Events** to inspect the team or disable the quest.
-[Quest guide](docs/USER_GUIDE.md#colosseums-optional-shadow-lugia-event)
+Both presets turn on the quest with its authored six-Pokémon team at levels
+65-70. Miss the capture and you can challenge Nascour again. Snag the final
+Shadow Pokémon and he leaves the shrine; Eagun resumes his purification rewards.
+You can purify the new Pokémon normally. Ho-Oh's requirements still count the
+original 48.
 
-## What you can customize
+Advanced > Starters and gifts offers separate switches to randomize Nascour's
+first five Pokémon and the final Shadow target. Both start off, and the scene
+follows the replacement if you turn them on. Use Pokémon preview > Events to
+inspect the team or turn off the quest.
+[Quest guide](docs/USER_GUIDE.md#colosseums-optional-shadow-lugia-event).
 
-- **Pokémon:** species, evolution stages, generations, legendary restrictions,
-  excluded species and types, similar strength, and evolution-family diversity.
-- **Battle data:** moves, learnsets, TMs, compatibility, abilities, types, base
-  stats, held items, trainer themes, boss teams and opponent level scaling.
-- **Progression:** obtainable evolutions, evolution stones, battle EXP,
-  purification speed, catch rates, treasure and shop stock.
-- **Your run:** reproducible seeds, profile import/export, encounter previews,
-  Pokémon sheets, verification reports and an offline HTML journal.
+## A launcher for each run
 
-Both games use the same three-page layout and Pokémon sheets, with their own
-logos, backgrounds and title music. The included interface pack works before
-you select a ROM. **Music** and **Sounds** have separate saved preferences.
+Keep a run's ROM, cards, save states, controls, and Dolphin profile in one folder.
+The app detects Dolphin when possible or lets you select it. `Launcher.exe`
+reopens the run after you close the randomizer and uses its own `DolphinUser/`
+profile. Generated filenames stay in English.
 
-| Game-specific behavior | Colosseum | XD |
-| --- | --- | --- |
-| Starters | Two, originally Umbreon and Espeon | One, originally Eevee |
-| Shadow roster | 48 synchronized Shadow groups; original legendaries preserved by default | 83 Shadow encounters; original legendaries preserved by default, XD001 always protected |
-| Gifts and trades | Plusle, Ho-Oh, Pikachu and Celebi | Duking's trades, Hordel's trade and Mt. Battle prizes |
-| Special encounters | Event gifts can be earned from Eagun after purification milestones | Tutorial Teddiursa and Hordel's Shadow Togepi are randomized by default; each can be disabled separately |
-| Poké Spots | — | Draw from the full supported Pokédex, subject to filters and power matching; Duking's requests follow the new rare slots |
+Every launch starts at 100%. Choose a 100%, 200%, or 300% fast-forward target:
+hold Tab to use it, Ctrl + Tab to toggle it, or Shift + Tab to slow to 50%.
+Choose corrected 16:9 or original 4:3 in borderless fullscreen, and remap the
+keyboard or XInput controller presets in Dolphin.
+[Launcher controls and display support](docs/GAME_FOLDERS.md).
 
-The [user guide](docs/USER_GUIDE.md) explains these rules and their limits.
-Pokémon sheets read the final patched game data, including evolution routes,
-moves and TM compatibility. The Summary and Moves tabs show the original ability
-and move descriptions in your interface language.
+| Colosseum launcher | XD launcher |
+| --- | --- |
+| ![Colosseum game launcher](docs/images/colosseum-launcher.png) | ![XD game launcher](docs/images/xd-launcher.png) |
+
+Keep music at 100% starts on where supported: Windows, verified Europe
+revision-0 images, and the checked music bridge/renderer. Gameplay music stays
+at normal speed while effects, cries, and prerecorded movies follow game speed.
+Other configurations use native audio.
+[Audio requirements and validation](docs/reverse-engineering/NATIVE_MUSIC_HOST.md).
+
+Home's Update a launcher command updates an existing run's launcher and backs up
+the previous files. Opening a run alone keeps its recorded version; the update
+leaves its ROM, saves, controls, and pack versions unchanged.
+
+## Shared HD packs
+
+Install the optional packs from Home or either launcher. Each app release pins
+reviewed pack versions and checks their hashes. Runs share each installed pack;
+existing folders keep their recorded version. Downloads support cancellation
+and resuming. Original mode needs no pack download.
+
+The packs come from Sephie
+([Colosseum, published by u/Bun-bun45](https://www.reddit.com/r/DolphinEmulator/comments/sxzxi2/))
+and mikeyX ([XD/XG](https://forums.dolphin-emu.org/Thread-pokemon-xg-xd-hd-texture-pack-v1-0)).
+See [pack sources and rights](docs/HD_SOURCES.md).
+
+![Shared, versioned HD texture packs](docs/images/hd-packs.png)
+
+The Colosseum download is about 0.72 GB; the XD pack is about 3.30 GB. XD needs
+both packs because it uses Colosseum's HD portraits for all 386 base species and
+Unown forms, adapted to round frames. Installing XD retrieves both missing packs.
+Imported models can also require the other game's pack.
+
+Custom x4 textures and artwork use the pinned HD packs as donors, while native
+models stay in the ROM. Missing custom artwork stops HD preparation. The packs
+add no polygons or HQ audio, and prerecorded movies keep their original resolution.
+Menu and text coverage varies by region and language; some artwork stays native.
+See [HD coverage](docs/HD_COVERAGE.md) before choosing a pack.
+
+Castform's battle portrait follows its weather form. Shiny Sunny, Rainy, and
+Snowy forms have matching native and x4 artwork using their modern colors.
+Castform keeps Forecast, which other species can't receive through randomization.
+Weather forms and Deoxys's additional forms use HD materials with the games'
+native meshes and animations. Create a new ROM to add the custom resources.
 
 | Colosseum | XD |
 | --- | --- |
-| ![Treecko’s evolution sheet in Colosseum](docs/images/pokemon-sheet.png) | ![Torchic’s evolution sheet in XD](docs/images/xd-pokemon-sheet.png) |
-| ![Houndour’s move sheet with Shadow Rush and its description](docs/images/colosseum-shadow-moves.png) | ![Shiny Venonat’s move sheet with Shadow moves and type badges](docs/images/xd-shadow-moves.png) |
+| ![Native and HD Castform weather appearances in Colosseum](docs/images/castform-colosseum-weather-shinies.png) | ![Native and HD Castform weather appearances in XD](docs/images/castform-xd-weather-shinies.png) |
+
+![Castform's weather-form battle portraits in Colosseum and XD](docs/images/castform-live-portraits.png)
+
+Shadow Lugia's normal/shiny portraits use violet square frames in Colosseum and
+round frames in XD. The DNA lab uses separate whole-body artwork with matching
+native/HD poses and a black outline.
+
+![Original and HD portraits for both Shadow Lugia appearances](docs/images/hd-custom-lugia-portraits.png)
+
+HD menus include localized type/status labels, battle controls, title menus,
+European XD health notices, and P-AD captions. New game folders support vector
+lettering with the original spacing and dialogue layout. XD's VS illustrations
+combine game character models with authentic hardware photos.
+
+| Colosseum | XD |
+| --- | --- |
+| ![Original and HD text in Colosseum](docs/images/hd-colosseum-text.png) | ![Original and HD text in XD](docs/images/hd-xd-text.png) |
+
+![XD's HD VS menu](docs/images/hd-xd-vs.png)
+
+The shared cache also stores runtimes and extracted music when supported.
+Moving a run to another PC requires locating Dolphin and reinstalling its
+shared resources. [Game-folder guide](docs/GAME_FOLDERS.md).
+
+## What you can customize
+
+| Settings | Controls |
+| --- | --- |
+| Pokémon | Species, stages, generations, exclusions, power matching, family diversity |
+| Battles | Moves, learnsets, TMs, abilities, types, stats, held items, trainer themes, boss teams, levels |
+| Progression | Evolutions, stones, EXP, purification, capture rates, treasure, shops |
+| Run | Seed, profiles, previews, sheets, reports, offline HTML journal |
+
+Both games share the three-page layout and Pokémon sheets, with their own logos,
+backgrounds, and title music. The included interface pack works before you select
+a ROM. Music and Sounds have separate saved preferences.
+
+| Game feature | Colosseum | XD |
+| --- | --- | --- |
+| Starters | Two, originally Umbreon and Espeon | One, originally Eevee |
+| Original Shadow roster | 48 groups | 83 encounters |
+| Gifts and trades | Plusle, Ho-Oh, Pikachu, Celebi | Duking's trades, Hordel's trade, Mt. Battle prizes |
+| Special encounters | Eagun's purification rewards | Tutorial Teddiursa and Hordel's Shadow Togepi, both randomized by default |
+| Poké Spots | Not available | Full supported Pokédex, subject to filters; Duking's requests follow the rare slots |
+
+Sheets read the final patched data and show evolution routes, TM compatibility,
+and localized ability/move descriptions. Evolution portraits follow the Pokémon's
+known shiny status.
+
+| Colosseum | XD |
+| --- | --- |
+| ![Treecko's evolution sheet in Colosseum](docs/images/pokemon-sheet.png) | ![Torchic's evolution sheet in XD](docs/images/xd-pokemon-sheet.png) |
+| ![Houndour's moves and Shadow Rush description](docs/images/colosseum-shadow-moves.png) | ![Shiny Venonat's Shadow moves and type badges](docs/images/xd-shadow-moves.png) |
 
 ### Advanced settings
 
-Choose a category or search for an option. Each category can be reset on its
-own. Switch to Advanced whenever you want more control over the preset.
+Search for an option or choose a category. Reset a category on its own, or switch
+between Simple and Advanced without losing your choices. The
+[user guide](docs/USER_GUIDE.md) covers each rule and its limits.
 
-| Colosseum · Move settings | XD · Move settings |
+| Colosseum move settings | XD move settings |
 | --- | --- |
 | ![Colosseum advanced move settings](docs/images/colosseum-advanced.png) | ![XD advanced move settings](docs/images/xd-advanced.png) |
 
+## Manage your runs
+
+My games lists your runs with seeds, launcher versions, and links to Play,
+folders, and card backups. The launcher can back up cards before play, keeping
+up to five copies with verified restoration. Storage offers cleanup of old,
+rebuildable texture views.
+
+| My games | Save backups |
+| --- | --- |
+| ![Game library with demonstration runs](docs/images/run-library.png) | ![Memory-card backup history](docs/images/save-backups.png) |
+
+Challenge codes share a seed and settings without local paths and check engine
+compatibility on import. For a bug report, Profiles > Export diagnostic lets you
+review a local JSON file with the failed attempt's settings and an optional seed.
+The export omits ROMs, saves, paths, and raw logs, and uploads nothing.
+[Run-management guide](docs/RUN_MANAGEMENT.md).
+
+![Review a local diagnostic before sharing it](docs/images/support-diagnostic.png)
+
 ## Compatibility and languages
 
-Supported originals are **revision 0** of both games in **Europe, USA and Japan**:
+Use revision 0 of either game from Europe, USA, or Japan:
 
 | Game | Europe | USA | Japan |
 | --- | --- | --- | --- |
 | Colosseum | `GC6P01` | `GC6E01` | `GC6J01` |
 | XD | `GXXP01` | `GXXE01` | `GXXJ01` |
 
-The full decoded ISO hash must match a supported original. Modified images and
-unknown revisions are rejected. See [exact hashes and compatibility](docs/COMPATIBILITY.md).
+The decoded ISO must match a [supported original hash](docs/COMPATIBILITY.md).
+The app rejects modified images and unknown revisions.
 
-The interface supports **English, French, German, Spanish, Italian and Japanese**.
-It follows your system language, falls back to English, and can be changed at
-any time. This does not change the ROM's language. In-game names and patched
-dialogue follow the languages supported by that ROM.
+The interface supports English, French, German, Spanish, Italian, and Japanese.
+It follows your system language, falls back to English, and lets you change
+language at any time. In-game names and dialogue follow the ROM's languages,
+independently of the app.
 
 ## Reproducing a run
 
-Keep the output's `.json` report or export a profile from **Profiles**.
-The same original image, seed, settings and engine version produce the same
-decoded disc. RVZ compression bytes can also depend on the bundled converter
-version, which is recorded in the creation report.
-Seeds are exact text: case and spaces matter. Existing saves can retain
-Pokémon already generated by the game, so use a new game to match the preview.
+Keep the output's JSON report or export a profile from Profiles. The same
+original image, exact seed text, settings, and engine version produce the same
+decoded disc. RVZ bytes can also depend on the converter version recorded in
+the report. Start a new game to match the preview; existing saves retain Pokémon
+the game has already generated.
 
 Automated checks cover both engines, six interface languages, packaging,
-profile compatibility and isolated Windows application startup. Selected
-scenarios have also been checked in Dolphin. These are not full playthroughs
-of every region or seed; [validation scope and evidence](docs/VALIDATION.md)
-describe what was tested.
+profiles, and isolated Windows startup. Dolphin checks cover selected scenarios,
+not full playthroughs of every region or seed. Read the
+[validation reports](docs/VALIDATION.md) for the tested scope.
 
 ## Run from source
 
@@ -524,13 +444,13 @@ python -m pip install -e .
 python -m orre_randomizer
 ```
 
-Raw ISO/GCM processing works with the Python LZSS codec. To enable RVZ conversion
-and the LZSS accelerator in a source checkout, install Rust and a C/C++ toolchain
-(MSVC on Windows), then run `python scripts/build_native.py`. This fetches pinned
-build dependencies once. The distributed Windows app includes both libraries
-and converts offline. Both LZSS codecs produce the same bytes.
+ISO/GCM processing works with the Python LZSS codec. For RVZ conversion and
+LZSS acceleration in a source checkout, install Rust and a C/C++ toolchain
+(MSVC on Windows), then run `python scripts/build_native.py`. The build fetches
+pinned dependencies once. The Windows release includes both libraries for
+offline conversion; the Python and Rust LZSS codecs produce the same bytes.
 
-The CLI uses the same engines. A profile reproduces the GUI's exact settings:
+Use a profile to reproduce the GUI's settings through the CLI:
 
 ```powershell
 python -m orre_randomizer.cli original.iso new-game.iso --profile my-run.json
@@ -540,9 +460,9 @@ python -X utf8 scripts/run_tests.py
 ```
 
 See [Contributing](CONTRIBUTING.md), the [release guide](docs/RELEASE.md), and
-[research notes](RESEARCH.md). Report issues with the version, game, region,
-seed and relevant settings. Review reports for local paths before sharing them.
+[research notes](RESEARCH.md). Include the version, game, region, seed, and
+settings in bug reports. Check reports for local paths before sharing them.
 
-The application code and original Orre branding are [MIT licensed](LICENSE).
-The bundled game interface media and third-party libraries have separate
-rights and provenance; see [third-party notices](THIRD_PARTY_NOTICES.md).
+The application code and original Orre branding use the [MIT license](LICENSE).
+Game media and third-party libraries have separate rights and provenance in the
+[third-party notices](THIRD_PARTY_NOTICES.md).

@@ -88,6 +88,7 @@ def archived_v015_payload():
 
 def remove_shadow_policy_fields(payload):
     """Reconstruct the complete option bundle before the legendary policy existed."""
+    payload["options"].pop("enable_fairy_type")
     for name in SHADOW_POLICY_FIELDS:
         payload["options"].pop(name)
     payload["options"].pop("shop_keep_capture_items")
@@ -100,7 +101,8 @@ def remove_shadow_policy_fields(payload):
 
 
 def legacy_policy_options(options):
-    return replace(options, randomize_preserved_properties=True, randomize_legendary_shadows=True,
+    return replace(options, enable_fairy_type=False,
+                   randomize_preserved_properties=True, randomize_legendary_shadows=True,
                    shop_keep_capture_items=False, legacy_shop_scope=True,
                    postgame_randomize_team=options.randomize_trainers,
                    postgame_randomize_lugia=False)
