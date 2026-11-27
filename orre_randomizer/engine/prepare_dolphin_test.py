@@ -24,6 +24,7 @@ def prepare(output: Path, source_profile: Path, *, copy_saves: bool = True) -> d
                              for p in sorted(selected.rglob("*")) if p.is_file())
     (output / "Config").mkdir(parents=True)
     (output / "GC").mkdir()
+    (output / "Logs").mkdir()
     copied = []
     for relative in ("GC/MemoryCardA.EUR.raw", "GC/SRAM.raw"):
         source = source_profile / relative
@@ -47,10 +48,18 @@ def prepare(output: Path, source_profile: Path, *, copy_saves: bool = True) -> d
                "D-Pad/Up = UP\nD-Pad/Down = DOWN\nD-Pad/Left = LEFT\nD-Pad/Right = RIGHT\n"
                "Triggers/L = Q\nTriggers/R = E\n")
     (output / "Config/GCPadNew.ini").write_text(pad_ini, encoding="utf-8")
+    # Retain the filesystem error and its actual paths before a startup modal.
+    # This logger belongs only to the fresh QA profile, never the source profile.
+    logger_ini = ("[Options]\nWriteToFile = True\nWriteToConsole = False\n"
+                  "WriteToWindow = False\nVerbosity = 2\n"
+                  "[Logs]\nCOMMON = True\nIOS_FS = True\n")
+    (output / "Config/Logger.ini").write_text(logger_ini, encoding="utf-8")
     result = {"source_profile": str(source_profile), "isolated_profile": str(output),
               "source_originals": originals, "copied_save_files": copied,
               "save_mode": "copied originals" if copy_saves else "fresh empty card, no originals imported",
               "cheats_enabled": False, "language": "French",
+              "diagnostic_logging": {"level": "error", "categories": ["COMMON", "IOS_FS"],
+                                     "file": str(output / "Logs/dolphin.log")},
               "keyboard": {"A": "X", "B": "Z", "Start": "Return", "stick": "WASD", "dpad": "arrows"}}
     write_json(output.parent / (output.name + "-preparation.json"), result)
     print(json.dumps({k: v for k, v in result.items() if k != "source_originals"}, indent=2))

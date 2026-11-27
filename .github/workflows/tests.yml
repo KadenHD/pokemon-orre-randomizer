@@ -35,7 +35,30 @@ jobs:
         run: python -c "from PySide6.QtWidgets import QApplication; app = QApplication([])"
       - name: Check portable HD authoring
         run: python -X utf8 -m unittest tests.test_hd_menu_svg tests.test_hd_menu_atlases
+      - name: Identify the Rust toolchain and runner image
+        id: native-cache
+        shell: bash
+        run: |
+          python -c "import hashlib, os, subprocess; from pathlib import Path; identity = [subprocess.check_output(['rustc', '-vV'], text=True), subprocess.check_output(['cargo', '-V'], text=True), str(Path.cwd()), str(Path.home())] + [os.environ.get(name, '') for name in ('ImageOS', 'ImageVersion', 'RUSTFLAGS', 'CARGO_ENCODED_RUSTFLAGS', 'CARGO_BUILD_TARGET', 'CC', 'CXX', 'CFLAGS', 'CXXFLAGS')]; print('fingerprint=' + hashlib.sha256(repr(identity).encode()).hexdigest())" >> "$GITHUB_OUTPUT"
+      # Cache build intermediates, never the final runtime DLLs or audit output.
+      # cargo test/build --locked still validate all crates on every run.
+      - uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+            native/target
+            native/disc/target
+            native/launcher/target
+          key: native-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.native-cache.outputs.fingerprint }}-${{ hashFiles('native/**/Cargo.lock', 'native/**/Cargo.toml', 'native/**/*.rs', 'scripts/build_native.py') }}
       - run: python scripts/build_native.py
-      - run: python -X utf8 scripts/run_tests.py
+      - run: python -X utf8 scripts/run_tests.py --jobs 2 --timings build/test-module-timings.json
+      - name: Upload module timings
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: test-module-timings-${{ runner.os }}
+          path: build/test-module-timings.json
+          if-no-files-found: ignore
       - run: python scripts/build_desktop.py --edition public --source-only
       - run: python scripts/verify_release.py --edition public

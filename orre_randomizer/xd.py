@@ -969,6 +969,10 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
         from .xd_deoxys import annotate_summary
         form_stats = form_stat_tables(seed, options, move_randomizer.species[410]['stats'])
         dol, form_runtime = install_xd_deoxys_forms(original_dol, dol, region.game_id, base_stats=form_stats)
+        from .xd_chamber_lugia import install_chamber_lugia
+        dol, summary['chamber_lugia'] = install_chamber_lugia(
+            original_dol, dol, region.game_id, read_archive, gift_updates,
+            keep_after_purification=options.keep_shadow_lugia_after_purification)
         from .deoxys_meteorite import install_meteorite
         dol, new_rel, meteorite = install_meteorite(original_dol, dol, region.game_id,
             original_rel=rel, current_rel=new_rel)

@@ -27,9 +27,17 @@ The older scripts delegate to the same engine. The CLI and GUI both call
 `service.randomize` directly with the disc image, seed, and settings.
 
 The test runner isolates each module in a fresh process to keep Qt state and
-worker threads from leaking between modules. It reports failures and timeouts,
-with a 120-second module limit and a 15-minute suite limit. GUI tests run
+worker threads from leaking between modules. It runs at most two modules at
+once, reducing that default on hosts with limited CPU or memory. The
+120-second module limit and 15-minute suite limit still apply. GUI tests run
 offscreen with sound and music disabled.
+
+Use `--jobs 1` for a sequential diagnostic run, or `--module test_name.py` to
+rerun a module with the same process isolation and deadlines. Repeat `--module`
+to select several files. The default command discovers every module; an
+explicit selection is reported as a partial run. Add `--timings build/tests.json`
+to save module durations, failures and completion counts. A partial run does
+not replace the full suite before release.
 
 Format and safety tests run without a ROM. Integration tests that need a dump or
 a regional image declare the prerequisite and skip when it is unavailable.

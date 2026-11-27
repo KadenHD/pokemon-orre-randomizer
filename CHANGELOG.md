@@ -1,5 +1,16 @@
 # Changelog
 
+## 2.1.7 - 2026-11-28
+
+- Show shiny Shadow Lugia with its own animated sprite in XD's PC and Purify
+  Chamber. Create a new randomized ROM to include the change.
+- Cache repeated Castform weather palette preparation and keep reports
+  independent between runs.
+- Add checks for Deoxys persistence, Fairy battle interactions and XD
+  widescreen transitions.
+- Run isolated test modules in parallel and upload timing reports from CI.
+  Reuse Rust build intermediates for matching source and toolchain inputs.
+
 ## 2.1.6 - 2026-11-26
 
 - Enable Fairy rules by default in both randomized presets for Colosseum and

@@ -35,7 +35,7 @@ class WrapperMachine:
         self.reg = [0x12340000 + i for i in range(32)]
         self.reg[1] = 0x81700000
         self.pc, self.lr = ADDRESS, RETURN
-        self.cr = [False] * 4
+        self.cr = [False] * 32
         self.callbacks, self.calls, self.reads = {}, [], []
 
     def store(self, address, value, width):
@@ -71,7 +71,7 @@ class WrapperMachine:
             elif op == 13:
                 value = (self.reg[ra] + signed) & MASK
                 self.reg[rd] = value
-                self.cr = [bool(value & 0x80000000), 0 < value < 0x80000000, value == 0, False]
+                self.cr[:4] = [bool(value & 0x80000000), 0 < value < 0x80000000, value == 0, False]
             elif op == 24:
                 self.reg[ra] = self.reg[rd] | immediate
             elif op == 25:
@@ -83,7 +83,7 @@ class WrapperMachine:
                 if op == 11 and left & 0x80000000:
                     left -= 0x100000000
                 right = immediate if op == 10 else signed
-                self.cr = [left < right, left > right, left == right, False]
+                self.cr[:4] = [left < right, left > right, left == right, False]
             elif op in (32, 34, 40):
                 width = {32: 4, 34: 1, 40: 2}[op]
                 self.reg[rd] = self.load(((self.reg[ra] if ra else 0) + signed) & MASK, width)
@@ -104,13 +104,22 @@ class WrapperMachine:
                 self.reg[ra] = value & mask
             elif op == 31 and xo == 444:
                 self.reg[ra] = self.reg[rd] | self.reg[rb]
+            elif op == 31 and xo == 19:
+                self.reg[rd] = sum(int(value) << (31 - i) for i, value in enumerate(self.cr))
+            elif op == 31 and xo == 144:
+                mask = word >> 12 & 0xFF
+                for field in range(8):
+                    if mask & (0x80 >> field):
+                        for bit in range(4):
+                            index = field * 4 + bit
+                            self.cr[index] = bool(self.reg[rd] & (1 << (31 - index)))
             elif op == 31 and xo == 316:
                 self.reg[ra] = self.reg[rd] ^ self.reg[rb]
             elif op == 31 and xo == 266:
                 self.reg[rd] = (self.reg[ra] + self.reg[rb]) & MASK
             elif op == 31 and xo == 32:
                 left, right = self.reg[ra], self.reg[rb]
-                self.cr = [left < right, left > right, left == right, False]
+                self.cr[:4] = [left < right, left > right, left == right, False]
             elif op == 31 and xo == 87:
                 self.reg[rd] = self.load(((self.reg[ra] if ra else 0) + self.reg[rb]) & MASK, 1)
             elif op == 31 and xo in (339, 467):
@@ -123,7 +132,7 @@ class WrapperMachine:
                     self.lr = self.reg[rd]
             elif op == 16:
                 bo, bi = word >> 21 & 31, word >> 16 & 31
-                if bo not in (4, 12) or bi >= 4:
+                if bo not in (4, 12):
                     raise AssertionError(f'Unsupported condition {word:08x}')
                 if self.cr[bi] == (bo == 12):
                     offset = word & 0xFFFC

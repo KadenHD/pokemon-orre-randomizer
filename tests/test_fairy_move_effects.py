@@ -20,7 +20,7 @@ class EffectMachine(ItemMachine):
     def run(self, stop=None):
         stop = self.lr if stop is None else stop
         carry = 0
-        for _ in range(10000):
+        for _ in range(getattr(self, 'max_steps', 10000)):
             if self.pc == stop: return
             w = self.code[self.pc]; pc = self.pc; self.pc += 4
             op, rs, ra, rb = w >> 26, w >> 21 & 31, w >> 16 & 31, w >> 11 & 31
@@ -29,6 +29,10 @@ class EffectMachine(ItemMachine):
             result_register = None
             if w == 0x7C0802A6: self.reg[0] = self.lr
             elif w == 0x7C0803A6: self.lr = self.reg[0]
+            elif w == 0x7C0102A6: self.reg[0] = getattr(self, 'xer', 0)
+            elif w == 0x7C0103A6: self.xer = self.reg[0]
+            elif w == 0x7C0902A6: self.reg[0] = getattr(self, 'ctr', 0)
+            elif w == 0x7C0903A6: self.ctr = self.reg[0]
             elif w == 0x4E800020: self.pc = self.lr
             elif op in (14, 15): self.reg[rs] = ((self.reg[ra] if ra else 0) + (signed << (16 if op == 15 else 0))) & MASK
             elif op == 7: self.reg[rs] = self.reg[ra] * signed & MASK
@@ -61,6 +65,7 @@ class EffectMachine(ItemMachine):
             elif op == 31 and xo == 266: self.reg[rs] = (self.reg[ra] + self.reg[rb]) & MASK; result_register=rs
             elif op == 31 and xo == 151: self.write((self.reg[ra] + self.reg[rb]) & MASK, self.reg[rs])
             elif op == 31 and xo == 23: self.reg[rs] = self.read((self.reg[ra] + self.reg[rb]) & MASK)
+            elif op == 31 and xo == 279: self.reg[rs] = self.read((self.reg[ra] + self.reg[rb]) & MASK, 2)
             elif op == 31 and xo == 183:
                 address = (self.reg[ra] + self.reg[rb]) & MASK
                 self.write(address, self.reg[rs])

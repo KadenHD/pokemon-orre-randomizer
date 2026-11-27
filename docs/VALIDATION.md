@@ -4,6 +4,26 @@ This index records the v1.0.0 foundation and subsequent validation follow-ups.
 Dated reports in `docs/` describe their named versions and scenarios; they are
 historical evidence rather than the current feature specification.
 
+## v2.1.7 gameplay and CI follow-up
+
+- In both European games, copied saves passed a fresh Shadow Deoxys capture,
+  Meteorite form change, native purification, native save and cold reload.
+  The saved and loaded Pokémon records matched byte for byte.
+- Fairy diagnostics covered 3,639 cases across the six regional executables.
+  Muted European Dolphin runs reached the installed battle code for 602
+  Colosseum cases and 611 XD cases. A separate XD play test checked the Purify
+  Chamber types, tempo and flow.
+- The European XD ONBS route covered the field menu, battle entry, command HUD,
+  battle exit and elevator in both graphics modes, with cold 4:3 references.
+  The 16:9 HD exit used a recorded victory state.
+- A separate European XD test covered twelve PC cases for ordinary, Shadow and
+  purified Lugia across both palettes and both values of the setting that keeps
+  the Shadow appearance. The Purify Chamber test checked the uploaded texture
+  key. The native animated sprite uses the original frame timing.
+- The local eight-module benchmark ran 96 tests in each trial. Its median fell
+  from 70.4 seconds with one worker to 47.4 seconds with two. The CI workflow
+  records timings separately for its Windows and Linux jobs.
+
 ## v2.1.6 preset defaults and interface copy (2026-11-26)
 
 Fairy rules are on in both randomized presets for both games. Copy mode and

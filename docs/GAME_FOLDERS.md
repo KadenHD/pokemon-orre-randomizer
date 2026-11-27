@@ -138,6 +138,9 @@ projection to preserve the proportions of 2D elements. **4:3** keeps the native
 projection with side bars on a wider monitor. The generic widescreen hack and
 cropping are disabled. Neither choice edits the ROM or replaces its movies.
 Changes take effect on the next launch, not during a running game.
+After changing the aspect ratio, start from the game's memory-card save.
+A Dolphin state recorded in the other mode can restore cached menu geometry
+from that mode.
 The camera hook follows Ralf's codes distributed in Dolphin's
 [GameSettings](https://github.com/dolphin-emu/dolphin/tree/master/Data/Sys/GameSettings);
 regional addresses and the separate 2D correction are checked against the six

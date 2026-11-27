@@ -69,6 +69,13 @@ class WeatherShinyPaletteTests(unittest.TestCase):
                     self.assertIn('tex1_64x64_365396ccc950f84d_14.png', keys)
                     self.assertIn('tex1_32x32_fca892c7108cd8b2_2.png', keys)
                 self.assertTrue(report['geometry_animation_uv_footer_unchanged'])
+                expected_key = report['materials'][0]['shiny_native_key']
+                report['materials'][0]['shiny_native_key'] = 'modified by another patch plan'
+                report['palette']['head'] = (0, 0, 0)
+                repeated_output, repeated_report = make_weather_shiny_pkx(source, game=game, form=form)
+                self.assertEqual(repeated_output, output)
+                self.assertEqual(repeated_report['materials'][0]['shiny_native_key'], expected_key)
+                self.assertEqual(repeated_report['palette']['head'], PALETTES[form]['head'])
                 self.assertEqual(hashlib.sha256(path.read_bytes()).hexdigest(), SOURCE_PKX[game, form])
                 with self.assertRaises(FormatError):
                     make_weather_shiny_pkx(output, game=game, form=form)

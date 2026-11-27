@@ -3,6 +3,8 @@ from __future__ import annotations
 import hashlib
 import struct
 import math
+from copy import deepcopy
+from functools import lru_cache
 from .engine.analyze_game import FormatError, u32
 from .engine.actor_palette import _walk_materials, _cmpr_endpoints
 from .hd_overlays import _pkx_dat, _Texture, _pixels, _size, _texture_key, _dat_textures
@@ -111,6 +113,26 @@ def texture_roles(original_dat, form):
     return result,solid
 
 def make_weather_shiny_pkx(original, *, game, form):
+    """Reuse authenticated colour variants across previews and patch plans.
+
+    Payloads are immutable. Return an independent report so callers cannot
+    alter later plans through cached nested material or palette metadata.
+    """
+    if game not in ('xd', 'colosseum') or form not in PALETTES:
+        raise FormatError('Unknown weather model')
+    original = bytes(original)
+    expected = SOURCE_PKX.get((game, form))
+    if expected is None:
+        raise FormatError('Weather source identity not installed')
+    if hashlib.sha256(original).hexdigest() != expected:
+        raise FormatError('Weather model source changed')
+    recipe = tuple(sorted(PALETTES[form].items()))
+    output, report = _cached_weather_shiny_pkx(original, game, form, recipe)
+    return output, deepcopy(report)
+
+
+@lru_cache(maxsize=6)
+def _cached_weather_shiny_pkx(original, game, form, recipe):
     if game not in ('colosseum','xd') or form not in PALETTES:raise FormatError('Unknown weather model')
     expected=SOURCE_PKX.get((game,form))
     if expected is None:raise FormatError('Weather source identity not installed')
@@ -152,15 +174,16 @@ def make_weather_shiny_pkx(original, *, game, form):
     if len(before)!=len(after):raise FormatError('Weather descriptor count changed')
     all_textures=[]
     for a,b in zip(before,after):
-        if (a.width,a.height,a.fmt)!=(b.width,b.height,b.fmt) or _pixels(a)[3::4]!=_pixels(b)[3::4]:
+        original_pixels, authored_pixels = _pixels(a), _pixels(b)
+        if (a.width,a.height,a.fmt)!=(b.width,b.height,b.fmt) or original_pixels[3::4]!=authored_pixels[3::4]:
             raise FormatError('Weather texture dimensions or opacity changed')
         for row in edits:
             if row.get('native_key')==_texture_key(a):
                 row['shiny_native_key']=_texture_key(b)
-                row['shiny_native_rgba_sha256']=hashlib.sha256(_pixels(b)).hexdigest()
+                row['shiny_native_rgba_sha256']=hashlib.sha256(authored_pixels).hexdigest()
         texture_row={'original_native_key':_texture_key(a),'native_key':_texture_key(b),
             'native_dimensions':[b.width,b.height],'format':b.fmt,
-            'native_rgba_sha256':hashlib.sha256(_pixels(b)).hexdigest()}
+            'native_rgba_sha256':hashlib.sha256(authored_pixels).hexdigest()}
         if texture_row not in all_textures:all_textures.append(texture_row)
     ranges=[]
     for at in changed:

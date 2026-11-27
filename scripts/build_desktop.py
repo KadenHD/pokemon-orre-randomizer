@@ -39,7 +39,7 @@ REQUIRED_RUNTIME_MODULES = frozenset((
     "orre_randomizer.hd_text_layout",
     "orre_randomizer.hd_spinda_face", "orre_randomizer.engine.dna_spinda_face_hd",
     "orre_randomizer.hd_extra_portraits", "orre_randomizer.hd_extra_portrait_catalog",
-    "orre_randomizer.hd_form_materials",
+    "orre_randomizer.hd_form_materials", "orre_randomizer.xd_chamber_lugia",
     "orre_randomizer.castform_weather", "orre_randomizer.castform_resources",
     "orre_randomizer.castform_portraits", "orre_randomizer.castform_shiny_models",
     "orre_randomizer.castform_shiny_palette", "orre_randomizer.hd_castform_shinies",

@@ -1,3 +1,4 @@
+import configparser
 import json
 from pathlib import Path
 import struct
@@ -76,6 +77,31 @@ class StoryRandomizerTests(unittest.TestCase):
 
 
 class EmptyProfileTests(unittest.TestCase):
+    def test_filesystem_errors_are_logged_only_in_the_fresh_profile(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory).resolve()
+            original = root / "original"
+            (original / "Config").mkdir(parents=True)
+            source_logger = original / "Config/Logger.ini"
+            source_settings = b"[Options]\nWriteToFile = False\n[Logs]\nAudio = True\n"
+            source_logger.write_bytes(source_settings)
+            output = root / "build/isolated-profile"
+
+            report = prepare(output, original, copy_saves=False)
+
+            logger = configparser.ConfigParser()
+            logger.read(output / "Config/Logger.ini", encoding="utf-8")
+            self.assertTrue(logger.getboolean("Options", "WriteToFile"))
+            self.assertFalse(logger.getboolean("Options", "WriteToConsole"))
+            self.assertFalse(logger.getboolean("Options", "WriteToWindow"))
+            self.assertEqual(logger.getint("Options", "Verbosity"), 2)
+            self.assertEqual(set(logger["Logs"]), {"common", "ios_fs"})
+            self.assertTrue(all(logger.getboolean("Logs", key) for key in logger["Logs"]))
+            self.assertEqual(Path(report["diagnostic_logging"]["file"]), output / "Logs/dolphin.log")
+            self.assertTrue((output / "Logs").is_dir())
+            self.assertEqual(source_logger.read_bytes(), source_settings)
+            self.assertFalse((original / "Logs").exists())
+
     def test_empty_profile_preserves_original_and_imports_no_save(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory).resolve()
