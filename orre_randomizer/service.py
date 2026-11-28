@@ -544,17 +544,24 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         if options.gift_hooh or options.custom_shinies:
             dol, rel, summary["hooh_reward_scene"] = patch_hooh_reward_scene(
                 original_dol, dol, original, rel, sync_native_gift=options.custom_shinies)
-        lab_appearances = dna_appearances(original, rel, options, shiny_report)
+        from .legendary_shadow_assets import PACK as LEGENDARY_PACK, SPECIES as LEGENDARY_SPECIES
+        from .engine.dna_lab import dna_shadow_model_samples
+        legendary_enabled = options.has_changes and LEGENDARY_PACK.is_file()
+        lab_appearances = dna_appearances(original, rel, options, shiny_report, include_legendary=legendary_enabled)
         samples = {}
         lugia_samples = dna_shadow_lugia_samples(original, rel, lab_appearances)
+        legendary_samples = (dna_shadow_model_samples(original, rel, lab_appearances, LEGENDARY_SPECIES.keys() - {410})
+                             if legendary_enabled else {})
         from .engine.dna_lab import dna_deoxys_samples
         deoxys_samples = dna_deoxys_samples(original, rel, lab_appearances, deoxys_encounters)
         if lab_appearances:
             samples = dna_spinda_samples(original, rel, lab_appearances, options, shiny_report)
             dol = patch_dna_analyzer(original_dol, dol, lab_appearances, spinda_samples=samples,
                                      spinda_pid=shiny_report.get("spinda_pid"),
-                                     shadow_lugia_samples=lugia_samples, deoxys_samples=deoxys_samples,
-                                     deoxys_reader=deoxys_display['address'] if deoxys_display else None)
+                                     shadow_lugia_samples=lugia_samples, legendary_samples=legendary_samples,
+                                     deoxys_samples=deoxys_samples,
+                                     deoxys_reader=deoxys_display['address'] if deoxys_display else None,
+                                     legendary_deoxys=legendary_enabled)
         form = unown_form(seed)
         if options.has_changes:
             dol = patch_unown_form(original_dol, dol, form)
@@ -569,14 +576,15 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
                                         deoxys_forms=deoxys_encounters)
         if arrival and any(row.get("spinda_live_pid") for row in arrival[1]):
             dol = apply_colo_spinda_starters(original_dol, dol, shiny_report["spinda_pid"]["resolver"], archive)
-        if samples or lugia_samples:
+        if samples or lugia_samples or legendary_samples:
             dol = apply_dna_keypad_runtime(original_dol, dol, archive, samples, shiny_report.get("spinda_pid"),
-                shadow_lugia_samples=lugia_samples, appearances=lab_appearances,
+                shadow_lugia_samples=lugia_samples, legendary_samples=legendary_samples, appearances=lab_appearances,
                 keep_after_purification=options.keep_shadow_lugia_after_purification)
         if deoxys_samples:
             from .engine.dna_deoxys_keypad import apply_deoxys_keypad_runtime
             dol, deoxys_keypad = apply_deoxys_keypad_runtime(original_dol, dol, archive,
-                deoxys_samples, lab_appearances, deoxys_reader=deoxys_display['address'])
+                deoxys_samples, lab_appearances, deoxys_reader=deoxys_display['address'],
+                legendary_shadow=legendary_enabled, keep=options.keep_shadow_lugia_after_purification)
             summary['dna_deoxys_keypad'] = deoxys_keypad
         summary = final_report_summary(original, base_rel, rel, original_dol, dol, seed, options, summary)
         if lab_appearances:
@@ -586,6 +594,8 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             }
         if deoxys_samples:
             summary['dna_deoxys_samples'] = {str(old): [sid, form] for old, (sid, form) in deoxys_samples.items()}
+        if legendary_samples or legendary_enabled and deoxys_samples:
+            summary['dna_legendary_shadow_samples'] = sorted(set(legendary_samples) | set(deoxys_samples))
         if options.diverse_story_families:
             families = evolution_families(original, layout(original)[0])[0]
             members = {}
@@ -647,6 +657,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
             summary['deoxys_forms']['dna_samples'] = {str(old): {'shadow_id': sid, 'initial_form': form}
                                                        for old, (sid, form) in deoxys_samples.items()}
             annotate_catalog(summary['detail_catalog'], summary['deoxys_forms'])
+            from .legendary_shadow_rom import install_appearances
+            dol, summary['legendary_shadow_appearances'] = install_appearances(
+                original_dol, dol, region.game_id, archive, lugia_models,
+                (row['species'] for row in summary['detail_catalog']['shadows'].values()),
+                keep=options.keep_shadow_lugia_after_purification, cancel=lambda: checkpoint(cancel))
         progress(25, "Compression des données du jeu…")
         new_common = repack_fsys(common, common_replacements)[0] if common_replacements else common
         fairy_archives = {}
@@ -686,7 +701,7 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: Options,
         cursor = align(common_offset + len(new_common) if relocated else sys_end, 0x8000)
         scene_updates = (dna_room_updates(original, region.game_id, archive, lab_appearances,
                                           unown_form_index=form, spinda_samples=samples,
-                                          shadow_lugia_samples=lugia_samples,
+                                          shadow_lugia_samples=lugia_samples, legendary_samples=legendary_samples,
                                           deoxys_samples=deoxys_samples) if lab_appearances else {})
         scene_updates.update(lugia_models)
         scene_updates.update(fairy_archives)

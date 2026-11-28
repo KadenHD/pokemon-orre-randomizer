@@ -342,6 +342,13 @@ def _raw_member(archive: bytes, member: dict) -> bytes:
 
 def _selected(name: str, member: dict, is_xd: bool) -> str | None:
     ident = int(member["identifier_raw"], 16)
+    from .legendary_shadow_assets import STEMS
+    from .legendary_shadow_rom import FIRST_RESOURCE
+    if FIRST_RESOURCE <= ident >> 16 < FIRST_RESOURCE + 2 * len(STEMS):
+        if name == 'poke_face.fsys' and ident & 0xFFFF == 0x1200 and member['name'].startswith('orre_face_'):
+            return 'legendary_shadow_face'
+        if name.startswith('pkx_') and ident & 0xFFFF == 0x1E00 and member['name'].startswith('orre_'):
+            return 'legendary_shadow_model'
     if name == 'common.fsys' and member['name'].startswith('orre_fairy_'):
         from .fairy_badges import LARGE_RESOURCES, SMALL_RESOURCES
         resources = set(LARGE_RESOURCES.values()) | (set(SMALL_RESOURCES.values()) if is_xd else set())
@@ -729,12 +736,13 @@ def _dna_variants(texture: _Texture, reference_iso: Path, context: Mapping | Non
         return [texture], {}
     body_members = {m["name"]: m for m in parse_fsys(bodies)["members"]}
     counts = Counter(species for species, _ in mapping.values())
+    legendary_samples = set(context.get('dna_legendary_shadow_samples', ()))
     tiles = []
     lugia = []
     for position, old in enumerate(DNA_KEYPAD_SPECIES):
         species, shiny = mapping[old]
         number = position + 1 if counts[species] > 1 else 0
-        if species == old and not shiny and not number:
+        if species == old and not shiny and not number and old not in legendary_samples:
             continue
         name = "body201" + unown_suffix(form) if species == 201 else f"body{species:03d}"
         name += "_c" if shiny else ""
@@ -814,6 +822,16 @@ def _dna_cell_variants(raw: bytes, layout_report: dict, reference_iso: Path, con
     if base_recipe is None and mapping:
         raise OverlayError("Independent DNA cells lack an exact native composition recipe.")
     tiles = base_recipe["transform"]["tiles"] if base_recipe else []
+    legendary_samples = set(context.get('dna_legendary_shadow_samples', ()))
+    legendary_tiles = {}
+    if legendary_samples and any(mapping[str(old)]['species'] != 410 for old in legendary_samples):
+        from .engine.dna_keypad_runtime import _shadow_model_tiles
+        references = _disc_files(reference_iso, {'DNA_key.fsys', 'poke_body.fsys'})
+        appearances = {int(old): (row['species'], row['shiny']) for old, row in mapping.items()}
+        legendary_tiles = _shadow_model_tiles(references.__getitem__, appearances,
+            {old: None for old in legendary_samples if appearances[old][0] != 410})
+        original_bodies = references['poke_body.fsys']
+        body_members = {row['name']: row for row in parse_fsys(original_bodies)['members']}
     native_lugia_variants = template = None
     if any(tile["species"] == 249 for tile in tiles):
         files = _disc_files(reference_iso, {"DNA_key.fsys", "poke_body.fsys"})
@@ -854,6 +872,26 @@ def _dna_cell_variants(raw: bytes, layout_report: dict, reference_iso: Path, con
                                 "transform": transform}
 
         register(samples, tile)
+        def register_body(encoded, body, variant, **overrides):
+            changed = bytearray(samples)
+            for row in range(16):
+                start = (cell['art_y'] // 8 + row) * cell['row_bytes'] + cell['art_x'] // 8 * 32
+                changed[start:start + 512] = encoded[row * 512:(row + 1) * 512]
+            register(changed, dict(tile, body=body, **overrides), variant)
+
+        old = cell['original_species']
+        if tile and old in legendary_tiles:
+            from .legendary_shadow_assets import stem_for
+            species = tile['species']
+            for variant, encoded in enumerate(legendary_tiles[old]):
+                shiny = bool(variant & 1)
+                if variant < 2:
+                    donor = {'kind': 'rendered-legendary-shadow', 'stem': stem_for(species),
+                             'shiny': shiny, 'game': 'colosseum'}
+                else:
+                    name = f'body{species:03d}' + ('_c' if shiny else '')
+                    donor = _body_donor(_raw_member(original_bodies, body_members[name]))
+                register_body(encoded, donor, f'legendary-{variant}', shiny=shiny)
         if tile and tile["species"] == SPINDA and layout.get("spinda_diagram"):
             from .engine.dna_spinda_hd import body_variants
             selected_cell = next((row for row in layout["spinda_diagram"]["cells"]
@@ -890,19 +928,21 @@ def _dna_cell_variants(raw: bytes, layout_report: dict, reference_iso: Path, con
             references = _disc_files(reference_iso, {'DNA_key.fsys', 'poke_body.fsys'})
             old = cell['original_species']
             appearance_map = {int(key): (row['species'], row['shiny']) for key, row in mapping.items()}
-            all_tiles = native_tile_variants(references.__getitem__, appearance_map, {old: None})[old]
+            all_tiles = native_tile_variants(references.__getitem__, appearance_map, {old: None},
+                                              legendary_shadow=old in legendary_samples)[old]
             bodies = references['poke_body.fsys']
             members = {m['name']: m for m in parse_fsys(bodies)['members']}
             for variant, encoded in enumerate(all_tiles):
-                changed = bytearray(samples)
-                for row in range(16):
-                    start = (cell['art_y'] // 8 + row) * cell['row_bytes'] + cell['art_x'] // 8 * 32
-                    changed[start:start + 512] = encoded[row * 512:(row + 1) * 512]
-                selected_form, shiny = variant // 2, bool(variant & 1)
-                donor = (_deoxys_body_origin(selected_form, shiny) if selected_form else
-                         _body_donor(_raw_member(bodies, members['body410_c' if shiny else 'body410'])))
-                register(changed, dict(tile, shiny=shiny, deoxys_form=selected_form, body=donor),
-                         variant=f'deoxys-{selected_form}-{int(shiny)}')
+                selected_form, shiny = variant % 8 // 2, bool(variant & 1)
+                if variant >= 8:
+                    from .legendary_shadow_assets import stem_for
+                    donor = {'kind': 'rendered-legendary-shadow', 'stem': stem_for(410, selected_form),
+                             'shiny': shiny, 'game': 'colosseum'}
+                else:
+                    donor = (_deoxys_body_origin(selected_form, shiny) if selected_form else
+                             _body_donor(_raw_member(bodies, members['body410_c' if shiny else 'body410'])))
+                label = ('shadow-' if variant >= 8 else '') + f'deoxys-{selected_form}-{int(shiny)}'
+                register_body(encoded, donor, label, shiny=shiny, deoxys_form=selected_form)
     if layout.get("spinda_diagram"):
         extra_textures, extra_recipes = _spinda_diagram_variants(raw, layout, reference_iso, cancel)
         textures.extend(extra_textures)
@@ -998,6 +1038,7 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
               "conditional_limitations": ["PID-specific Spinda DNA requires a registered HD spot-pattern recipe when selected."]}
     assets, dna_recipes, castform_game = {}, {}, None
     context_forms = (asset_context or {}).get('deoxys_forms', {})
+    legendary_archives = set((asset_context or {}).get('legendary_shadow_appearances', {}).get('model_archives', ()))
     imported_deoxys = (not is_xd and isinstance(context_forms, Mapping)
                        and context_forms.get('enabled') is True)
     deoxys = None
@@ -1008,6 +1049,7 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
             report['deoxys_forms'] = dict(deoxys)
             report['required_packs'].append('xd')
         extra = {'pkx_deoxys.fsys', 'pkx_rare_deoxys.fsys'} if imported_deoxys else set()
+        extra.update(legendary_archives)
         if (asset_context or {}).get('fairy', {}).get('enabled'):
             extra.add('common.fsys')
         for archive_name, archive in _disc_archives(source, is_xd=is_xd, extra_names=extra):
@@ -1034,9 +1076,9 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                         raise OverlayError('The added Fairy badge differs from its native/HD contract')
                     width, height = texture_dimensions(small=small)
                     textures = (_Texture(width, height, 6, raw[128:]),)
-                elif role in ("portrait", "retail_portrait", "retail_form", "castform_portrait", "deoxys_portrait"):
+                elif role in ("portrait", "retail_portrait", "retail_form", "castform_portrait", "deoxys_portrait", 'legendary_shadow_face'):
                     textures = (_face(raw),)
-                elif role in ("battle", "castform_battle", "deoxys_battle"):
+                elif role in ("battle", "castform_battle", "deoxys_battle", 'legendary_shadow_model'):
                     textures = _dat_textures(_pkx_dat(raw, is_xd))
                 elif role == "dna":
                     # The complete atlas preserves all nine full-body tiles,
@@ -1057,6 +1099,8 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                           "source_sha256": hashlib.sha256(raw).hexdigest(), "textures": []}
                 for texture in textures:
                     _checkpoint(cancel)
+                    if role == 'legendary_shadow_model' and texture.fmt in (0, 1, 2, 3):
+                        continue  # The material recipe leaves these masks byte-identical.
                     pixels = _pixels(texture)
                     reference = _native_reference(target, pixels, texture.width, texture.height)
                     for mipmaps in ((False, True) if texture.mipmaps else (False,)):
@@ -1078,6 +1122,10 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
                             roles = assets[name].setdefault('deoxys_roles', [])
                             if role not in roles:
                                 roles.append(role)
+                        if role == 'legendary_shadow_face':
+                            from .legendary_shadow_rom import FIRST_RESOURCE
+                            index = (int(member['identifier_raw'], 16) >> 16) - FIRST_RESOURCE
+                            assets[name]['legendary_face_index'] = index
                         record["textures"].append(name)
                 report["resources"].append(record)
         _checkpoint(cancel)
@@ -1088,11 +1136,17 @@ def capture_native_assets(iso: Path, destination: Path, *, is_xd: bool = False,
         origins.update(field)
         report["origin_scan_failures"] = failures
         from .artwork import _png_pixels
+        from .legendary_shadow_assets import hd_materials
         bundle = Path(__file__).resolve().parent / "assets/game/models/dark-lugia.png"
         portrait_reference = None
         for asset in assets.values():
             base = asset["base_key"]
-            if asset['role'] == 'fairy_badge':
+            if 'legendary_face_index' in asset or base in hd_materials(report['game']):
+                transform = {'type': 'legendary-shadow-artwork', 'game': report['game'], 'native_key': base}
+                if 'legendary_face_index' in asset:
+                    transform['face_index'] = asset['legendary_face_index']
+                asset['hd'] = {'game': report['game'], 'transform': transform}
+            elif asset['role'] == 'fairy_badge':
                 from .fairy_badges import hd_overrides
                 if base.removesuffix('.png') not in hd_overrides(report['game']):
                     raise OverlayError('The added Fairy badge has no registered x4 artwork')
@@ -1749,6 +1803,14 @@ def _dna_hd(image, transform: dict, pack_roots: Mapping[str, Path]):
                 raise _MissingHDAsset("The native DNA body uses an older pose or outline. Recreate this game folder to match native and HD artwork.")
         elif source['kind'] == 'rendered-deoxys':
             body, provenance = _rendered_deoxys_body(source)
+        elif source['kind'] == 'rendered-legendary-shadow':
+            from .legendary_shadow_assets import dna
+            png = dna(source['stem'], source['shiny'], hd=True)
+            body = QImage.fromData(png, 'PNG')
+            if (body.width(), body.height()) != (256, 256):
+                raise OverlayError('Invalid legendary Shadow DNA render')
+            provenance = {'kind': source['kind'], 'stem': source['stem'],
+                          'sha256': hashlib.sha256(png).hexdigest(), 'output_scale': 4}
         else:
             game = source["game"]
             if game not in pack_roots:
@@ -1793,7 +1855,8 @@ def _dna_hd(image, transform: dict, pack_roots: Mapping[str, Path]):
         painter.setRenderHint(QPainter.RenderHint.SmoothPixmapTransform)
         for rect in (QRect(0, 0, 512, 16), QRect(0, 496, 512, 16), QRect(0, 16, 16, 480), QRect(496, 16, 16, 480)):
             painter.drawImage(rect, template, rect)
-        left, top, size = _CUSTOM_BODY_ART_RECT if source["kind"] in ('rendered-dark-lugia', 'rendered-deoxys') else _BODY_ART_RECT
+        left, top, size = (_CUSTOM_BODY_ART_RECT if source['kind'] in (
+            'rendered-dark-lugia', 'rendered-deoxys', 'rendered-legendary-shadow') else _BODY_ART_RECT)
         painter.drawImage(QRect(left * 4, top * 4, size * 4, size * 4), body)
         number = tile["number"]
         if number:
@@ -1854,6 +1917,39 @@ def prepare_hd_overlays(native_directory: Path, destination: Path, *, pack_roots
         origin = asset.get("hd")
         if not origin:
             report["missing_assets"].append({"file": asset["file"], "reason": "No registered pack-derived HD asset"})
+            continue
+        if origin.get('transform', {}).get('type') == 'legendary-shadow-artwork':
+            from .legendary_shadow_assets import STEMS, hd_material, portrait
+            from PySide6.QtGui import QImage, QPainter
+            transform = origin['transform']
+            game = report['game']
+            if transform.get('game') != game or transform.get('native_key') != asset['base_key']:
+                raise OverlayError('Invalid legendary Shadow artwork binding')
+            expected = asset['native']['width'] * 4, asset['native']['height'] * 4
+            source = {}
+            if 'face_index' in transform:
+                index = transform['face_index']
+                if type(index) is not int or not 0 <= index < len(STEMS) * 2 or expected != (168, 336):
+                    raise OverlayError('Invalid legendary Shadow face dimensions')
+                stem, shiny = STEMS[index // 2], bool(index & 1)
+                image = QImage(*expected, QImage.Format.Format_RGBA8888)
+                image.fill(0)
+                painter = QPainter(image)
+                for frame, rare in enumerate((shiny, shiny) if game == 'xd' else (False, True)):
+                    painter.drawImage(0, frame * 168, QImage.fromData(portrait(game, stem, rare, hd=True), 'PNG'))
+                painter.end()
+                png = _png(expected, bytes(image.constBits()))
+            else:
+                png, source = hd_material(game, asset['base_key'])
+                if struct.unpack_from('>II', png, 16) != expected:
+                    raise OverlayError('Invalid legendary Shadow material dimensions')
+            target.mkdir(parents=True, exist_ok=True)
+            _write(target / asset['file'], png)
+            report['files'].append({'file': asset['file'], 'sha256': hashlib.sha256(png).hexdigest(),
+                'width': expected[0], 'height': expected[1], 'bytes': len(png),
+                'native_format': asset['native_format'], 'hd_source': {
+                    'kind': 'reviewed-legendary-shadow-artwork', 'source_scale': 4, 'output_scale': 4,
+                    'native_reference': asset['native'], 'transform': transform, **source}})
             continue
         if origin.get('transform', {}).get('type') == 'fairy-badge':
             from .fairy_badges import hd_overrides

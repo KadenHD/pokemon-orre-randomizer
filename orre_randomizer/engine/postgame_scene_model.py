@@ -43,7 +43,12 @@ def append_field_model(source, original_common, *, shiny, species=249, original_
             raise FormatError("missing native model data for the bonus Shadow replacement")
         national = catalog[species]["national_dex"]
         scale = companion_scale(national, 0.65)
-        field = load_actor_model(original_dol, region_for_rel(original_common).game_id, species,
+        game_id = region_for_rel(original_common).game_id
+        from ..legendary_shadow_rom import field_model
+        field = field_model(original_dol, game_id, read_archive, species, deoxys_form,
+                            shiny=bool(shiny), scale=scale)
+        if field is None:
+            field = load_actor_model(original_dol, game_id, species,
                                  read_archive, scale=scale, shiny=bool(shiny),
                                  unown_form_index=unown_form(seed), deoxys_form=deoxys_form if species == 410 else 0)
         idle, source_hash = None, None

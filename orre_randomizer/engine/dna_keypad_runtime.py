@@ -279,9 +279,10 @@ def _apply_spinda_keypad_runtime(original, current, read_archive, samples, pid):
     return bytes(output)
 
 
-def _lugia_tiles(read_archive, appearances, samples):
+def _shadow_model_tiles(read_archive, appearances, samples):
     """Encode the four native appearance states without changing puzzle keys."""
-    from ..artwork import _decode_pixels
+    from ..artwork import _decode_pixels, _png_pixels
+    from ..legendary_shadow_assets import dna, stem_for
     from .dna_keypad import _body_pixels, _tile_art, _tile_rows
     from .shadow_lugia_body import shadow_lugia_body_pixels
     keypad = read_archive("DNA_key.fsys")
@@ -291,12 +292,15 @@ def _lugia_tiles(read_archive, appearances, samples):
     template = _decode_pixels(128, 128, 4, b"".join(dat[a:b] for a, b in _tile_rows(896, 512)))
     bodies = read_archive("poke_body.fsys")
     members = {row["name"]: row for row in parse_fsys(bodies)["members"]}
-    variants = (shadow_lugia_body_pixels(False), shadow_lugia_body_pixels(True),
-                _body_pixels(bodies, members, 249, False), _body_pixels(bodies, members, 249, True))
     counts = Counter(species for species, _ in appearances.values())
     result = {}
     for old in samples:
-        number = DNA_KEYPAD_SPECIES.index(old) + 1 if counts[249] > 1 else 0
+        species = appearances[old][0]
+        stem = stem_for(species)
+        shadow = (tuple(shadow_lugia_body_pixels(shiny) for shiny in (False, True)) if species == 249 else
+                  tuple(_png_pixels(dna(stem, shiny), (64, 64)) for shiny in (False, True)))
+        variants = shadow + tuple(_body_pixels(bodies, members, species, shiny) for shiny in (False, True))
+        number = DNA_KEYPAD_SPECIES.index(old) + 1 if counts[species] > 1 else 0
         result[old] = tuple(_tile_art(template, pixels, 64, 64, number,
             rect=_CUSTOM_BODY_ART_RECT if variant < 2 else _BODY_ART_RECT)
             for variant, pixels in enumerate(variants))
@@ -425,7 +429,7 @@ def _apply_lugia_keypad_runtime(original, current, read_archive, samples, appear
         if not region.section_ram + 32 <= chained < end:
             raise FormatError("existing Lugia keypad parser hook outside its reservation")
     payload = _lugia_keypad_hook(end, parser, chained, flush, invalidate, region, samples,
-        appearances, _lugia_tiles(read_archive, appearances, samples),
+        appearances, _shadow_model_tiles(read_archive, appearances, samples),
         keep_after_purification=keep_after_purification)
     if end + len(payload) >= 0x81700000:
         raise FormatError("Lugia keypad hook exceeds the native arena")
@@ -439,15 +443,18 @@ def _apply_lugia_keypad_runtime(original, current, read_archive, samples, appear
 
 def apply_dna_keypad_runtime(original, current, read_archive, samples, pid, *,
                               shadow_lugia_samples=None, appearances=None,
-                              keep_after_purification=False):
+                              legendary_samples=None, keep_after_purification=False):
     """Paint only known specimen tiles, preserving all native keypad answers."""
     output = _apply_spinda_keypad_runtime(original, current, read_archive, samples, pid)
-    if shadow_lugia_samples:
+    model_samples = (shadow_lugia_samples or {}) | (legendary_samples or {})
+    if model_samples:
+        from ..legendary_shadow_assets import SPECIES
         if (type(keep_after_purification) is not bool or not appearances
                 or any(old not in DNA_KEYPAD_SPECIES or old not in appearances
-                       or appearances[old][0] != 249 or type(sid) is not int or not 1 <= sid <= 96
-                       for old, sid in shadow_lugia_samples.items())):
+                       or appearances[old][0] not in ({249} | (SPECIES.keys() - {410}))
+                       or type(sid) is not int or not 1 <= sid <= 96
+                       for old, sid in model_samples.items())):
             raise FormatError("invalid Lugia keypad specimen metadata")
         output = _apply_lugia_keypad_runtime(original, output, read_archive,
-            shadow_lugia_samples, appearances, keep_after_purification=keep_after_purification)
+            model_samples, appearances, keep_after_purification=keep_after_purification)
     return output

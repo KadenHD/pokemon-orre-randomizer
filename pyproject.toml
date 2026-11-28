@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "pokemon-orre-randomizer"
-version = "2.1.7"
+version = "2.1.8"
 description = "Offline randomizer for Pokémon Colosseum and Pokémon XD"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -31,6 +31,6 @@ include = ["orre_randomizer*"]
 include-package-data = false
 
 [tool.setuptools.package-data]
-orre_randomizer = ["windows_update.ps1", "_native/*.dll", "_native/*.json", "_native/OrreLauncher.exe", "_native/*.so", "_native/*.dylib", "_native/OrreLauncher", "assets/app/*.ico", "assets/app/*.png", "assets/app/*.json", "assets/app/*.md", "assets/game/*/*.png", "assets/game/*/*.wav", "assets/game/*/*.json", "assets/game/models/dark-lugia-colosseum-v1.pkx", "assets/game/models/extra-portraits/*.png", "assets/game/models/extra-portraits/*.json", "assets/game/models/deoxys/*.png", "assets/game/models/deoxys/*.pkx", "assets/game/models/deoxys/*.json", "assets/game/fonts/*.ttf", "assets/game/fonts/*.txt", "assets/game/*.json", "assets/game/*.md", "assets/rules/fairy/*.json", "assets/rules/fairy/*.txt", "assets/rules/fairy/*.md"]
+orre_randomizer = ["windows_update.ps1", "_native/*.dll", "_native/*.json", "_native/OrreLauncher.exe", "_native/*.so", "_native/*.dylib", "_native/OrreLauncher", "assets/app/*.ico", "assets/app/*.png", "assets/app/*.json", "assets/app/*.md", "assets/game/*/*.png", "assets/game/*/*.wav", "assets/game/*/*.json", "assets/game/models/dark-lugia-colosseum-v1.pkx", "assets/game/models/legendary-shadow.orreassets", "assets/game/models/extra-portraits/*.png", "assets/game/models/extra-portraits/*.json", "assets/game/models/deoxys/*.png", "assets/game/models/deoxys/*.pkx", "assets/game/models/deoxys/*.json", "assets/game/fonts/*.ttf", "assets/game/fonts/*.txt", "assets/game/*.json", "assets/game/*.md", "assets/rules/fairy/*.json", "assets/rules/fairy/*.txt", "assets/rules/fairy/*.md"]
 
 

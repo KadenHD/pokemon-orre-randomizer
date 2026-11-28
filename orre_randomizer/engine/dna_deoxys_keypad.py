@@ -30,7 +30,7 @@ def native_body_variants(bodies_archive):
     return tuple(result)
 
 
-def native_tile_variants(read_archive, appearances, samples):
+def native_tile_variants(read_archive, appearances, samples, *, legendary_shadow=False):
     """Finite per-cell keys: four forms by two palettes, no cross products."""
     source = read_archive('DNA_key.fsys')
     matches = [row for row in parse_fsys(source)['members'] if row['identifier_raw'] == '0x107e0200']
@@ -41,6 +41,11 @@ def native_tile_variants(read_archive, appearances, samples):
         raise FormatError('Unexpected Deoxys DNA keypad template')
     template = _decode_pixels(128, 128, 4, b''.join(dat[a:b] for a, b in _tile_rows(896, 512)))
     bodies = native_body_variants(read_archive('poke_body.fsys'))
+    if legendary_shadow:
+        from ..artwork import _png_pixels
+        from ..legendary_shadow_assets import dna
+        bodies += tuple(_png_pixels(dna(stem, shiny), (64, 64))
+                        for stem in ('386', '386-attack', '386-defense', '386-speed') for shiny in (False, True))
     counts = Counter(species for species, _ in appearances.values())
     return {old: tuple(_tile_art(template, pixels, 64, 64,
                 DNA_KEYPAD_SPECIES.index(old) + 1 if counts[410] > 1 else 0,
@@ -49,12 +54,13 @@ def native_tile_variants(read_archive, appearances, samples):
 
 
 def _keypad_hook(address, parser, chained, flush, invalidate, region, samples,
-                 appearances, tiles, reader):
+                 appearances, tiles, reader, *, legendary_shadow=False, keep=False):
     """Use a temporary full CK3 for the shared read-only saved-form resolver."""
-    if set(tiles) != set(samples) or any(len(row) != 8 or any(len(tile) != 8192 for tile in row)
+    variants_per_cell = 16 if legendary_shadow else 8
+    if set(tiles) != set(samples) or any(len(row) != variants_per_cell or any(len(tile) != 8192 for tile in row)
                                         for row in tiles.values()):
         raise FormatError('Invalid Deoxys DNA keypad tile set')
-    saved, generated, _ = _SAVED_IDENTITIES[region.game_id]
+    saved, generated, purified = _SAVED_IDENTITIES[region.game_id]
     readers = {'stored_shadow_pid': saved, 'shadow_generated': generated}
     code = _Code(address)
     code.emit(0x28030000)
@@ -95,13 +101,25 @@ def _keypad_hook(address, parser, chained, flush, invalidate, region, samples,
         code.label(f'color_{old}')
         code.emit(0x90A1001C)
         code.label(f'identity_{old}')
+        if legendary_shadow:
+            code.emit(0x38000008, 0x90010020)
+            if not keep:
+                code.emit(0x38600000 | sid)
+                code.call(purified)
+                code.emit(0x5460063E, 0x28000001)
+                code.conditional(0x40820000, f'palette_ready_{old}')
+                code.emit(0x38000000, 0x90010020)
+                code.label(f'palette_ready_{old}')
         code.emit(0x80610008)
         code.call(reader)
         code.emit(0x28030003)
         code.conditional(0x40810000, f'bounded_{old}')  # ble
         code.emit(0x38600000 | initial_form)
         code.label(f'bounded_{old}')
-        code.emit(0x5460083C, 0x80A1001C, 0x7C002A14, 0x54006824)
+        code.emit(0x5460083C, 0x80A1001C, 0x7C002A14)
+        if legendary_shadow:
+            code.emit(0x80A10020, 0x7C002A14)
+        code.emit(0x54006824)
         source_loads.append((len(code.words), old))
         code.emit(0, 0, 0x7C840214)
         _load_constant(code, 12, _atlas_block_offset(*_TILE_ORIGINS[DNA_KEYPAD_SPECIES.index(old)]))
@@ -122,7 +140,7 @@ def _keypad_hook(address, parser, chained, flush, invalidate, region, samples,
     writer_code = _lugia_tile_copy(writer)
     data = (writer + len(writer_code) + 31) & ~31
     for index, old in source_loads:
-        pointer = data + list(samples).index(old) * 8 * 8192
+        pointer = data + list(samples).index(old) * variants_per_cell * 8192
         code.words[index:index + 2] = (0x3C800000 | pointer >> 16, 0x60840000 | pointer & 65535)
     for index in calls:
         code.words[index] = branch(address + index * 4, writer, link=True)
@@ -131,7 +149,8 @@ def _keypad_hook(address, parser, chained, flush, invalidate, region, samples,
     return result + bytes(-len(result) % 32)
 
 
-def apply_deoxys_keypad_runtime(original, current, read_archive, samples, appearances, *, deoxys_reader):
+def apply_deoxys_keypad_runtime(original, current, read_archive, samples, appearances, *, deoxys_reader,
+                                legendary_shadow=False, keep=False):
     """Chain before the independent-cell bridge; never write player records."""
     if not samples:
         return current, {'active': False, 'samples': 0}
@@ -165,9 +184,9 @@ def apply_deoxys_keypad_runtime(original, current, read_archive, samples, appear
         chained = parser + displacement - ((1 << 26) if displacement & (1 << 25) else 0)
         if not region.section_ram + 32 <= chained < end:
             raise FormatError('Previous DNA parser is outside the reserved arena')
-    tiles = native_tile_variants(read_archive, appearances, samples)
+    tiles = native_tile_variants(read_archive, appearances, samples, legendary_shadow=legendary_shadow)
     payload = _keypad_hook(end, parser, chained, flush, invalidate, region,
-                           samples, appearances, tiles, deoxys_reader)
+                           samples, appearances, tiles, deoxys_reader, legendary_shadow=legendary_shadow, keep=keep)
     if end + len(payload) >= 0x81700000:
         raise FormatError('Deoxys DNA keypad variants exceed the native arena')
     output = bytearray(current)
@@ -175,7 +194,7 @@ def apply_deoxys_keypad_runtime(original, current, read_archive, samples, appear
     output[section:section + 32] = _arena_guard(end + len(payload), region.arena_lo_store)
     struct.pack_into('>I', output, 0x98, size + len(payload))
     struct.pack_into('>I', output, at, branch(parser, end))
-    return bytes(output), {'active': True, 'samples': len(samples), 'variants_per_cell': 8,
+    return bytes(output), {'active': True, 'samples': len(samples), 'variants_per_cell': 16 if legendary_shadow else 8,
         'bytes': len(payload), 'reader': deoxys_reader, 'saved_data_written': False,
         'forms': 'latest owned form, otherwise initial seeded form',
         'shiny': 'saved specimen PID and owner, otherwise seeded hint'}

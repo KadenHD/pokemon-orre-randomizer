@@ -51,6 +51,8 @@ REQUIRED_RUNTIME_MODULES = frozenset((
     "orre_randomizer.deoxys_resources", "orre_randomizer.deoxys_runtime", "orre_randomizer.deoxys_portraits",
     "orre_randomizer.engine.deoxys_generation", "orre_randomizer.engine.dna_deoxys_keypad",
     "orre_randomizer.xd_deoxys", "orre_randomizer.xd_deoxys_runtime", "orre_randomizer.xd_deoxys_generation",
+    "orre_randomizer.legendary_shadow_assets", "orre_randomizer.legendary_shadow_rom",
+    "orre_randomizer.legendary_shadow_runtime",
     "orre_randomizer.fairy_data", "orre_randomizer.fairy_gameplay", "orre_randomizer.fairy_content",
     "orre_randomizer.fairy_integration", "orre_randomizer.fairy_runtime", "orre_randomizer.fairy_tms",
     "orre_randomizer.fairy_messages", "orre_randomizer.fairy_badges", "orre_randomizer.fairy_evolution",

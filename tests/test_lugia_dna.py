@@ -169,7 +169,7 @@ class LugiaKeypadTests(unittest.TestCase):
 class RegionalLugiaDnaTests(unittest.TestCase):
     def test_three_native_dols_and_rel_sample_ids_compose_with_both_retention_policies(self):
         from orre_randomizer.engine.dna_lab import patch_dna_analyzer
-        from orre_randomizer.engine.dna_keypad_runtime import apply_dna_keypad_runtime, _lugia_tiles
+        from orre_randomizer.engine.dna_keypad_runtime import apply_dna_keypad_runtime, _shadow_model_tiles
         from orre_randomizer.engine.randomize_trainers import layout
         from orre_randomizer.engine.inspect_tables import u16
         from orre_randomizer.engine.dol_regions import dol_layout
@@ -184,7 +184,7 @@ class RegionalLugiaDnaTests(unittest.TestCase):
             self.skipTest('requires local three-region executable/REL extracts and original keypad resources')
         read = lambda name: (root / 'game/files' / name).read_bytes()
         appearances = {old: (249 if old == 153 else old, True) for old in _SAMPLE_SPECIES}
-        tiles = _lugia_tiles(read, appearances, {153: 1})
+        tiles = _shadow_model_tiles(read, appearances, {153: 1})
         self.assertEqual(len({hashlib.sha256(image).digest() for image in tiles[153]}), 4)
         for tag, path in sources:
             original = path.read_bytes()

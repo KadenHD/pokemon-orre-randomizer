@@ -1188,6 +1188,10 @@
       "bytes": 396032,
       "sha256": "8c2aefb914ea1aee9407418495edf318f21a52fe443d1b84b9de5dae69401364"
     },
+    "models/legendary-shadow.orreassets": {
+      "bytes": 43023829,
+      "sha256": "0721060a3f3a104af9c354628b7b235893d3b84d83a7fd66e29acbf1119a84d3"
+    },
     "models/manifest.json": {
       "bytes": 3663,
       "sha256": "8e7c530efb2fda0c067f65f043f1f78c942cefc37aa1c5eed12facac2832067c"

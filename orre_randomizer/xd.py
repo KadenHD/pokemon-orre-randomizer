@@ -984,6 +984,11 @@ def build_patches(iso: Path, boot: bytes, seed: str, options: XDOptions, progres
             'initial_form_source': 'versioned seed per encounter', 'required_hd_packs': []}
         summary['deoxys_forms']['meteorite'] = meteorite
         annotate_summary(summary)
+        from .legendary_shadow_rom import install_appearances
+        dol, summary['legendary_shadow_appearances'] = install_appearances(
+            original_dol, dol, region.game_id, read_archive, gift_updates,
+            (row['species'] for deck in summary['decks'].values() for row in deck['shadows']),
+            keep=options.keep_shadow_lugia_after_purification, cancel=lambda: checkpoint(cancel))
     summary["starter_progression"] = {"version": STARTER_PROGRESSION_VERSION, "enabled": False}
     native_starter_progression = None
     if starter_progression_active(options):

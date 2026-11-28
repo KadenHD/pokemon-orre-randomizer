@@ -65,11 +65,11 @@ The application's previews and Pokémon sheets use the selected game's format,
 including both Shadow Lugia variants. The baked purple disc is removed from
 both derived variants.
 The native outer Shadow frame stays intact. Purified Lugia normally uses its
-ordinary portrait. In both games, **Advanced → Shinies → Keep Lugia's Shadow
-appearance** retains the dark model and portrait after purification, including
-the custom shiny variant. This optional setting is disabled by default and
-does not change purification or the saved PID. A Lugia that was never a Shadow
-Pokémon always uses its ordinary model and portrait, even with the option on.
+ordinary portrait. In both games, turn on **Keep legendary Shadow appearances**
+in Advanced > Shinies to retain the Shadow model and portrait after purification.
+The option starts off and applies to Legendary and Mythical Pokémon, including
+shiny variants and all four Deoxys Formes. Purification and the saved PID follow
+the usual rules.
 The display policy applies to randomized Shadow Lugia as well as XD001 and
 Colosseum's optional bonus encounter.
 A small red superscript star follows a shiny's name.

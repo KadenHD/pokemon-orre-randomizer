@@ -13,6 +13,7 @@ from .engine.colo_spinda import ORDINARY_SPINDA_OT, colo_spinda_gift_pid, colo_s
 from .engine.spinda import SPINDA
 from .engine.species_rules import LEGENDARY_NATIONAL
 from . import service, disc_images
+from .legendary_shadow_assets import PACK as LEGENDARY_PACK, STEMS as LEGENDARY_STEMS, decorate_preview
 from .xd import VERSION as XD_VERSION, XDOptions
 from .options import Options, SPECIAL_OPTIONS
 from .gift_presentation import order_purification_gifts
@@ -156,6 +157,8 @@ def preview_starters(source: Path, seed: str, options: Options,
                 patches, summary = [], colosseum_known(iso, boot, seed, options, cancel)
             else:
                 patches, summary = service.build_patches(iso, boot, seed, options, progress, cancel)
+            legendary_stems = (LEGENDARY_STEMS if _known_only and options.has_changes and LEGENDARY_PACK.is_file()
+                               else summary.get('legendary_shadow_appearances', {}).get('stems', ()))
             service.checkpoint(cancel)
             final = {row["key"]: row for row in summary["special_gameplay"]["specials"]}
             def special(key):
@@ -264,6 +267,7 @@ def preview_starters(source: Path, seed: str, options: Options,
                                                    if (index, shiny) in portraits}
                 from .deoxys_presentation import decorate_encounter
                 decorate_encounter(row, summary.get('deoxys_forms', {}))
+                decorate_preview(row, 'colosseum', legendary_stems)
             if service.file_hash(source, cancel) != source_hash:
                 raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
     except BaseException:
@@ -325,6 +329,10 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
             else:
                 patches, summary = service.build_xd_patches(image.iso, boot, seed, xd_options, progress, cancel,
                                                           include_details=True)
+            from .xd import effective_xd_setting_names
+            legendary_stems = (LEGENDARY_STEMS if _known_only and effective_xd_setting_names(xd_options)
+                               and LEGENDARY_PACK.is_file()
+                               else summary.get('legendary_shadow_appearances', {}).get('stems', ()))
             prepared = None if _known_only else service.PreparedPatches(source=source, source_sha256=digest, iso_sha256=image.iso_hash,
                 seed=seed, options=xd_options, patches=tuple(patches),
                 summary=deepcopy({key: value for key, value in summary.items() if key != 'detail_catalog'}))
@@ -377,6 +385,7 @@ def preview_xd(source: Path, seed: str, xd_options: XDOptions,
             for row in [starter, *shadows, *gifts, *poke_spots]:
                 if row is not None:
                     decorate_encounter(row, summary.get('deoxys_forms', {}))
+                    decorate_preview(row, 'xd', legendary_stems)
             if service.file_hash(source, cancel) != digest:
                 raise service.UserError("La ROM a changé pendant l’aperçu. Relancez-le avec une copie intacte.")
     if on_prepared is not None and not _known_only:

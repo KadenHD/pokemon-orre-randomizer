@@ -282,13 +282,17 @@ def install_shadow_lugia_model(original, current, game_id, read_archive, updates
     status = shadow_statuses(seed, options).get(str(SHADOW_ID), False)
     field_source = updates[FIELD_ARCHIVE] if FIELD_ARCHIVE in updates else read_archive(FIELD_ARCHIVE)
     field_members = parse_fsys(field_source)["members"]
-    from .xd_field_actors import GATEON_LUGIA_SHINY_RESOURCE, GATEON_SHADOW, _ZANGOOSE_RESOURCE
+    from .xd_field_actors import (GATEON_LEGENDARY_SHINY_RESOURCE, GATEON_LUGIA_SHINY_RESOURCE,
+                                 GATEON_SHADOW, _ZANGOOSE_RESOURCE)
     choices = [(source, target, SHADOW_ID, status) for source, target in FIELD_RESOURCES]
-    gateon = [m for m in field_members if int(m["identifier_raw"], 16) == GATEON_LUGIA_SHINY_RESOURCE]
+    aliases = {GATEON_LUGIA_SHINY_RESOURCE: 'orre_gateon_lugia_shiny',
+               GATEON_LEGENDARY_SHINY_RESOURCE: 'orre_gateon_legendary_shiny'}
+    gateon = [m for m in field_members if int(m["identifier_raw"], 16) in aliases]
     if gateon:
-        if len(gateon) != 1 or gateon[0]["name"] != "orre_gateon_lugia_shiny":
-            raise FormatError("unexpected Gateon Shadow Lugia field alias")
-        choices.append((int(_ZANGOOSE_RESOURCE, 16), GATEON_LUGIA_SHINY_RESOURCE,
+        target = int(gateon[0]['identifier_raw'], 16)
+        if len(gateon) != 1 or gateon[0]['name'] != aliases[target]:
+            raise FormatError('unexpected Gateon Shadow field alias')
+        choices.append((int(_ZANGOOSE_RESOURCE, 16), target,
                         GATEON_SHADOW, shadow_statuses(seed, options).get(str(GATEON_SHADOW), False)))
     field_models, field_report = {}, []
     for source_id, target_id in FIELD_RESOURCES:

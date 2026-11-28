@@ -100,6 +100,11 @@ from the code's MIT license, as do their native-resolution counterparts.
 The matching `models/dark-lugia-head-x4.png` and shiny head are crops of those
 same pack-textured GPU captures; their parent hashes and crop are in that manifest.
 
+The Legendary and Mythical Shadow appearance archive contains material patches,
+portraits, Colosseum DNA artwork and recolored maps derived from the pinned HD
+packs credited above. The patch verifies the matching game model before applying
+the materials. The underlying artwork remains separate from the MIT code license.
+
 ## Qt for Python / Qt / Shiboken
 
 The desktop application uses unmodified PySide6 Essentials and Shiboken 6.11.2,

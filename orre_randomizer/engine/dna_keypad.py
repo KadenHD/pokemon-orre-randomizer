@@ -163,7 +163,7 @@ def _tile_art(template: bytes, body: bytes, width: int, height: int, number: int
 
 def patch_dna_keypad(source: bytes, bodies_archive: bytes,
                      mapping: Mapping[int, tuple[int, bool]], *, unown_form_index: int = 0,
-                     spinda_samples=(), shadow_lugia_samples=(), deoxys_samples=()) -> bytes:
+                     spinda_samples=(), shadow_lugia_samples=(), legendary_samples=(), deoxys_samples=()) -> bytes:
     """Update the tiles' images while retaining their native comparison keys."""
     if set(mapping) != set(DNA_KEYPAD_SPECIES):
         raise FormatError("unexpected DNA keypad species mapping")
@@ -174,7 +174,7 @@ def patch_dna_keypad(source: bytes, bodies_archive: bytes,
         for species, shiny in (mapping[original],)
         if species != original or shiny or counts[species] > 1
     ]
-    if not changes:
+    if not changes and not (spinda_samples or shadow_lugia_samples or legendary_samples or deoxys_samples):
         return source
 
     members = parse_fsys(source)["members"]
@@ -185,7 +185,7 @@ def patch_dna_keypad(source: bytes, bodies_archive: bytes,
     if sha256(original_dat) != _DAT_SHA256:
         raise FormatError("unexpected original DNA keypad model")
     updated = bytearray(original_dat)
-    if spinda_samples or shadow_lugia_samples or deoxys_samples:
+    if spinda_samples or shadow_lugia_samples or legendary_samples or deoxys_samples:
         if (len(original_dat) != _KEYPAD_DAT_SIZE or any(original_dat[0x18:0x20])
                 or struct.unpack_from(">III", original_dat, _ATLAS_DESCRIPTOR) != _ATLAS_SIGNATURE):
             raise FormatError("unexpected DNA keypad atlas")

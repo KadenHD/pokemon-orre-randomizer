@@ -30,6 +30,7 @@ _ZANGOOSE = 380
 _ZANGOOSE_RESOURCE = "0x18490400"
 GATEON_SPINDA_SHINY_RESOURCE = 0x23090400  # follows the nine Poké Spot aliases
 GATEON_LUGIA_SHINY_RESOURCE = 0x7DF90400
+GATEON_LEGENDARY_SHINY_RESOURCE = 0x7CF00400
 _ZANGOOSE_CRY = bytes.fromhex("02010000 0000017c 1101fff6 09250010")
 
 WAKIN_TRAINER = 144
@@ -160,18 +161,35 @@ def patch_gateon_shadow(shadow, rel, species_table, species, dol, game_id, read_
     if chosen == _ZANGOOSE and not shiny:
         return None
     shadow_lugia = chosen == 249
-    dynamic_palette = shadow_lugia or chosen == SPINDA and use_saved_spinda_palette
+    from .legendary_shadow_rom import field_model
+    model, legendary_model = None, None
+    form = shadow.get('deoxys_form', 0)
+    national = species[chosen][0]
+    height = u16(rel, species_table + 0x124 * chosen + 8)
+    if height:
+        scale = min(companion_scale(national, 0.8), 7.2 / height)
+        model = field_model(dol, game_id, read_archive, chosen, form, shiny=False, scale=scale)
+        if model is not None:
+            legendary_model = field_model(dol, game_id, read_archive, chosen, form, shiny=True, scale=scale)
+    dynamic_palette = shadow_lugia or legendary_model is not None or chosen == SPINDA and use_saved_spinda_palette
     # The low camera sits close to Barry's partner. Preserve the scene's
     # framing by limiting large replacements to a 7.2-decimeter field model.
-    model, report = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
+    if legendary_model is None:
+        model, report = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
                                  shiny=shiny and not dynamic_palette, height_limit=7.2,
                                  unown_form_index=unown_form_index, shadow_lugia=shadow_lugia,
-                                 deoxys_form=shadow.get('deoxys_form', 0))
+                                 deoxys_form=form)
+    else:
+        report = {'species': chosen, 'national_dex': national, 'scale': scale, 'legendary_shadow': True}
     # Both the room actor and the scripted model request resolve this shared
     # resource. Its stock references belong to this one Gateon scene.
     source = updates[_SHARED_ACTORS] if _SHARED_ACTORS in updates else read_archive(_SHARED_ACTORS)
     updated = patch_actor(source, model, identifier=_ZANGOOSE_RESOURCE, name="zangoose")
-    if dynamic_palette:
+    if legendary_model is not None:
+        updated = append_actor_models(updated, {}, source, int(_ZANGOOSE_RESOURCE, 16), {
+            GATEON_LEGENDARY_SHINY_RESOURCE: ('orre_gateon_legendary_shiny', legendary_model),
+        })
+    elif dynamic_palette:
         shiny_model, _ = _field_model(rel, species_table, species, dol, game_id, read_archive, chosen, 0.8,
                                       shiny=True, height_limit=7.2, unown_form_index=unown_form_index,
                                       shadow_lugia=shadow_lugia)

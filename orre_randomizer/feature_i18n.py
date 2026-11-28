@@ -213,12 +213,12 @@ OPTION_ROWS.update({
          "Sostituisce Lugia con un Pokémon consentito estratto tramite il seed. Il modello nella scena, i dialoghi e l'incontro per la cattura seguono il risultato. I requisiti della missione non cambiano.",
          "シードで抽選した使用可能なポケモンにルギアを置き換えます。シーンのモデル、会話、スナッチする相手も抽選結果に合わせて変わります。イベントの解放条件は変わりません。")),
     "keep_shadow_lugia_after_purification": (
-        ("Keep Lugia's Shadow appearance", "Lugias Crypto-Aussehen behalten", "Conservar el aspecto oscuro de Lugia", "Mantieni l'aspetto Ombra di Lugia", "ルギアのダークの姿を残す"),
-        ("After purification, former Shadow Lugia keep their Shadow model and portrait, shiny or not. This only changes their appearance. Lugia that were never Shadow Pokémon keep their normal appearance.",
-         "Nach der Erlösung behalten ehemalige Crypto-Lugia ihr Crypto-Modell und Porträt, auch wenn sie schillernd sind. Nur das Aussehen ändert sich. Lugia, die nie Crypto-Pokémon waren, behalten ihr normales Aussehen.",
-         "Tras la purificación, los Lugia que eran oscuros conservan su modelo y retrato oscuros, sean variocolor o no. Solo cambia su aspecto. Los Lugia que nunca fueron oscuros conservan su aspecto normal.",
-         "Dopo la purificazione, i Lugia che erano Ombra mantengono il modello e il ritratto Ombra, cromatici o meno. Cambia solo l'aspetto. I Lugia che non sono mai stati Ombra mantengono l'aspetto normale.",
-         "リライブ後も、ダークポケモンだったルギアはダークのモデルとアイコンを使います。色違いにも対応し、見た目だけが変わります。一度もダークポケモンになっていないルギアの姿は変わりません。")),
+        ("Keep legendary Shadow appearances", "Crypto-Aussehen bei Legendären behalten", "Conservar el aspecto oscuro de los legendarios", "Mantieni l’aspetto Ombra dei leggendari", "伝説・幻のポケモンのダークの姿を残す"),
+        ("After purification, Legendary and Mythical Pokémon keep their Shadow appearance, including shiny variants.",
+         "Nach der Erlösung behalten Legendäre und Mysteriöse Pokémon ihr Crypto-Aussehen. Das gilt auch für schillernde Exemplare.",
+         "Tras la purificación, los Pokémon legendarios y singulares conservan su aspecto oscuro, incluidas sus variantes variocolor.",
+         "Dopo la purificazione, i Pokémon leggendari e misteriosi mantengono il loro aspetto Ombra, anche nelle varianti cromatiche.",
+         "リライブ後も、伝説・幻のポケモンはダークの姿を保ちます。色違いにも対応しています。")),
     "custom_shinies": (
         ("Customize shinies", "Schillernde Pokémon anpassen", "Personalizar variocolor", "Personalizza i cromatici", "色違いをカスタマイズ"),
         ("Applies the chosen chance to newly generated trainer Pokémon, Shadows, starters and supported gifts. The seed fixes their status, shown in the preview. Off: original behavior. Previously generated Pokémon keep their status.",

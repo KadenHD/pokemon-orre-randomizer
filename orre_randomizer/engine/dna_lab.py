@@ -28,8 +28,8 @@ _DNA_MODEL = 0x2000
 _DNA_SHINY = 0x4000
 
 
-def dna_appearances(original_rel, current_rel, options, shiny_report):
-    if not (options.randomize_shadows or options.custom_shinies):
+def dna_appearances(original_rel, current_rel, options, shiny_report, *, include_legendary=False):
+    if not (options.randomize_shadows or options.custom_shinies or include_legendary):
         return {}
     shadow_shinies = shiny_report.get("seeded_decisions", {}).get("shadows", {})
     guaranteed = options.custom_shinies and options.shiny_chance_percent == 100
@@ -46,7 +46,7 @@ def dna_appearances(original_rel, current_rel, options, shiny_report):
         appearances[old] = (u16(current_rel, position), shadow_shinies.get(str(shadow_id), guaranteed))
     if appearances.keys() != set(_SAMPLE_SPECIES):
         raise FormatError("missing original Shadow encounter for a DNA sample")
-    return appearances if options.custom_shinies or any(
+    return appearances if include_legendary or options.custom_shinies or any(
         old != new for old, (new, _) in appearances.items()) else {}
 
 
@@ -71,13 +71,18 @@ def dna_spinda_samples(original_rel, current_rel, appearances, options, shiny_re
 
 def dna_shadow_lugia_samples(original_rel, current_rel, appearances):
     """Return the real Shadow ID behind each Lugia DNA sample, never a guess."""
+    return dna_shadow_model_samples(original_rel, current_rel, appearances, {249})
+
+
+def dna_shadow_model_samples(original_rel, current_rel, appearances, species):
+    """Bind each selected appearance to its exact captured Shadow ID."""
     shadow = layout(original_rel)[0]["shadow"]
     samples = {}
     for shadow_id in range(1, shadow["count"]):
         position = shadow["offset"] + shadow_id * shadow["stride"] + 2
         old = u16(original_rel, position)
         if (old in appearances and old != _MIGHTYENA
-                and appearances[old][0] == 249 and u16(current_rel, position) == 249):
+                and appearances[old][0] in species and u16(current_rel, position) == appearances[old][0]):
             if old in samples:
                 raise FormatError("ambiguous Lugia DNA sample identity")
             samples[old] = shadow_id
@@ -145,19 +150,21 @@ def _emit_spinda_samples(code, region, samples, pid):
     code.jump("return")
 
 
-def _emit_lugia_samples(code, region, samples):
+def _emit_shadow_model_samples(code, region, samples):
     from .postgame_lugia_model import _SAVED_IDENTITIES
     saved, generated, purified = _SAVED_IDENTITIES[region.game_id]
     readers = {"stored_shadow_pid": saved, "shadow_generated": generated}
-    code.emit(0x548005FE, 0x280000F9)
-    code.conditional(0x40820000, "other_samples")
     code.emit(0x5484BF3E)
-    for old in samples:
+    for old, (_, species) in samples.items():
         index = _SAMPLE_SPECIES.index(old) + 1
         code.emit(0x28040000 | index)
+        code.conditional(0x40820000, f'next_model_sample_{old}')
+        code.emit(0x8001000C, 0x540005FE, 0x28000000 | species)
         code.conditional(0x41820000, f"lugia_{old}")
+        code.jump('other_samples')
+        code.label(f'next_model_sample_{old}')
     code.jump("other_samples")
-    for old, sid in samples.items():
+    for old, (sid, _) in samples.items():
         code.label(f"lugia_{old}")
         # Only the analyzer's temporary CK3 is tagged. Never alter a saved
         # Pokemon or a species-wide model/portrait resource.
@@ -175,10 +182,10 @@ def _emit_lugia_samples(code, region, samples):
     code.emit(0x8081000C)
 
 
-def _emit_deoxys_samples(code, region, samples):
+def _emit_deoxys_samples(code, region, samples, *, shadow_models=False):
     from ..deoxys_identity import FORM_TAG
     from .postgame_lugia_model import _SAVED_IDENTITIES
-    saved, generated, _ = _SAVED_IDENTITIES[region.game_id]
+    saved, generated, purified = _SAVED_IDENTITIES[region.game_id]
     readers = {'stored_shadow_pid': saved, 'shadow_generated': generated}
     code.emit(0x548005FE, 0x2800019A)
     code.conditional(0x40820000, 'other_deoxys_samples')
@@ -191,6 +198,13 @@ def _emit_deoxys_samples(code, region, samples):
         code.label(f'deoxys_{old}')
         code.emit(0x80C10008, 0x38000000 | sid, 0xB00600D8,
                   0x38000000 | FORM_TAG | form, 0xB00600D2)
+        if shadow_models:
+            code.emit(0x3800000A, 0x900600DC, 0x38600000 | sid)
+            code.call(purified)
+            code.emit(0x5460063E, 0x28000001)
+            code.conditional(0x40820000, f'deoxys_identity_{old}')
+            code.emit(0x80C10008, 0x3800FF9C, 0x900600DC)
+            code.label(f'deoxys_identity_{old}')
         _emit_sample_pid(code, region, old, (sid, None, None, None), readers, 'palette')
         code.emit(0x80C10008, 0x90660004, 0x90E60014)
         code.jump('return')
@@ -199,7 +213,7 @@ def _emit_deoxys_samples(code, region, samples):
 
 
 def _model_constructor(address, region, samples, pid, *, shadow_lugia_samples=None,
-                       deoxys_samples=None, deoxys_reader=None):
+                       legendary_samples=None, deoxys_samples=None, deoxys_reader=None, legendary_deoxys=False):
     native = region.native_constructor
     code = _Code(address)
     # Unmarked calls retain the native constructor. The marker is used only
@@ -212,10 +226,11 @@ def _model_constructor(address, region, samples, pid, *, shadow_lugia_samples=No
               0x9081000C, 0x548405FE)  # save the marker and retain only the actual species
     code.call(native)
     code.emit(0x90610010, 0x8081000C)
-    if shadow_lugia_samples:
-        _emit_lugia_samples(code, region, shadow_lugia_samples)
+    if shadow_lugia_samples or legendary_samples:
+        _emit_shadow_model_samples(code, region,
+            {old: (sid, 249) for old, sid in (shadow_lugia_samples or {}).items()} | (legendary_samples or {}))
     if deoxys_samples:
-        _emit_deoxys_samples(code, region, deoxys_samples)
+        _emit_deoxys_samples(code, region, deoxys_samples, shadow_models=legendary_deoxys)
     if samples:
         _emit_spinda_samples(code, region, samples, pid)
     code.label("palette")
@@ -242,7 +257,8 @@ def _model_constructor(address, region, samples, pid, *, shadow_lugia_samples=No
 
 
 def patch_dna_analyzer(original, current, appearances, *, spinda_samples=None, spinda_pid=None,
-                       shadow_lugia_samples=None, deoxys_samples=None, deoxys_reader=None):
+                       shadow_lugia_samples=None, legendary_samples=None, deoxys_samples=None, deoxys_reader=None,
+                       legendary_deoxys=False):
     """Change the analyzer only. Sample IDs and keypad comparisons stay native."""
     region = dol_layout(original)
     analyzer, menu = _ANALYZER[region.game_id]
@@ -279,6 +295,7 @@ def patch_dna_analyzer(original, current, appearances, *, spinda_samples=None, s
     stub = region.section_ram + len(code)
     samples = spinda_samples or {}
     lugia_samples = shadow_lugia_samples or {}
+    legendary_samples = legendary_samples or {}
     deoxys_samples = deoxys_samples or {}
     if deoxys_samples and (type(deoxys_reader) is not int or any(
             old not in appearances or appearances[old][0] != 410 or type(sid) is not int or not 1 <= sid <= 96
@@ -287,9 +304,15 @@ def patch_dna_analyzer(original, current, appearances, *, spinda_samples=None, s
     if any(old not in appearances or appearances[old][0] != 249 or type(sid) is not int
            or not 1 <= sid <= 96 for old, sid in lugia_samples.items()):
         raise FormatError("invalid Lugia DNA sample identity")
+    from ..legendary_shadow_assets import SPECIES
+    if any(old not in appearances or appearances[old][0] not in SPECIES or appearances[old][0] == 410
+           or type(sid) is not int or not 1 <= sid <= 96 for old, sid in legendary_samples.items()):
+        raise FormatError('invalid legendary Shadow DNA sample identity')
     code.extend(_model_constructor(stub, region, samples, spinda_pid,
                                    shadow_lugia_samples=lugia_samples,
-                                   deoxys_samples=deoxys_samples, deoxys_reader=deoxys_reader))
+                                   legendary_samples={old: (sid, appearances[old][0]) for old, sid in legendary_samples.items()},
+                                   deoxys_samples=deoxys_samples, deoxys_reader=deoxys_reader,
+                                   legendary_deoxys=legendary_deoxys))
     code.extend(bytes(-len(code) % 32))
     end = region.section_ram + len(code)
     header = parse_dol(original)
@@ -309,7 +332,8 @@ def patch_dna_analyzer(original, current, appearances, *, spinda_samples=None, s
         new, shiny = appearances[old]
         if not 0 < new < (1 << 9):
             raise FormatError("invalid DNA sample species")
-        sample = (index + 1) << 9 if old in samples or old in lugia_samples or old in deoxys_samples else 0
+        sample = (index + 1) << 9 if any(old in group for group in (
+            samples, lugia_samples, legendary_samples, deoxys_samples)) else 0
         edits[analyzer + 0x48 + index * 8 - TEXT_TO_RAM] = (
             0x3BE00000 | new | sample | _DNA_MODEL | (_DNA_SHINY if shiny else 0))
     for pos, word in edits.items():
@@ -330,11 +354,12 @@ def _sample_description(_source, *, name, language, tile):
 
 
 def dna_room_updates(original_rel, game_id, read_archive, appearances, *, unown_form_index=0,
-                     spinda_samples=(), shadow_lugia_samples=(), deoxys_samples=()):
+                     spinda_samples=(), shadow_lugia_samples=(), legendary_samples=(), deoxys_samples=()):
     keypad = read_archive("DNA_key.fsys")
     updated_keypad = patch_dna_keypad(keypad, read_archive("poke_body.fsys"), appearances,
                                      unown_form_index=unown_form_index, spinda_samples=spinda_samples,
-                                     shadow_lugia_samples=shadow_lugia_samples, deoxys_samples=deoxys_samples)
+                                     shadow_lugia_samples=shadow_lugia_samples, legendary_samples=legendary_samples,
+                                     deoxys_samples=deoxys_samples)
     updates = {"DNA_key.fsys": updated_keypad} if updated_keypad != keypad else {}
     tables, symbols = layout(original_rel)
     species = tables["species"]

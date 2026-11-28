@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.8 - 2026-11-28
+
+- Give all 21 Legendary and Mythical Pokémon Shadow and shiny Shadow appearances
+  in both games, including the four Deoxys forms. Add matching portraits and
+  Colosseum DNA keypad artwork with native and HD versions.
+- Extend the advanced appearance setting beyond Lugia. Enable it to keep these
+  Shadow appearances after purification. Both randomized presets leave it off.
+
 ## 2.1.7 - 2026-11-28
 
 - Show shiny Shadow Lugia with its own animated sprite in XD's PC and Purify

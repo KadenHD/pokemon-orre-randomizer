@@ -224,17 +224,20 @@ and trainer/Shadow encounters. A shiny stays shiny after capture, evolution,
 and purification. XD's wild Poké Spots use a separate rate and roll again for
 each new encounter; the result stays the same on the field, in battle, and after capture.
 
-Shadow Lugia uses XD's dark model in both games, with a custom white-and-black
-shiny variant. Purification restores its ordinary appearance, pink when shiny.
-Turn on Keep Lugia's Shadow appearance to retain the dark model instead.
-The option starts off and changes appearance only; ordinary Lugia keep their
-usual models. [Shiny rules](docs/SHINIES.md).
+### Shadow forms for Legendary and Mythical Pokémon
 
-| Shiny settings | Purified Lugia keeping its Shadow appearance |
+All 21 Legendary and Mythical Pokémon have Shadow and shiny Shadow models in
+both games, including all four Deoxys Formes. The randomizer preview uses the
+same portraits as the game. The HD packs add 4× textures and portraits.
+
+Purification restores each Pokémon's usual appearance and keeps its shiny
+status. Turn on **Keep legendary Shadow appearances** in Advanced > Shinies
+to retain the Shadow model and portrait. The option starts off and applies
+only to former Shadow Pokémon. [Shiny rules](docs/SHINIES.md).
+
+| Colosseum | XD |
 | --- | --- |
-| ![English shiny settings with a 5% rate and the optional Shadow appearance setting](docs/images/colosseum-shiny-settings.png) | ![Non-shiny Lugia keeping its dark Shadow appearance after purification in XD](docs/images/xd-purified-shadow-lugia.png) |
-
-![Custom white-and-black Shadow Lugia retained after purification in XD](docs/images/xd-shiny-shadow-lugia.png)
+| ![Shadow Articuno, Moltres and Mew in their standard and shiny colors in Colosseum](docs/images/colosseum-legendary-shadow-party.png) | ![Shadow Articuno, Moltres and Mew in their standard and shiny colors in XD](docs/images/xd-legendary-shadow-party.png) |
 
 ### A new postgame battle in Colosseum
 

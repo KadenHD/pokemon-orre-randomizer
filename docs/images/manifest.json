@@ -3,6 +3,30 @@
   "language": "en",
   "description": "English application and gameplay captures. Each entry records its capture version; unchanged earlier gameplay images are retained.",
   "files": {
+    "colosseum-legendary-shadow-party.png": {
+      "bytes": 185032,
+      "sha256": "efd309d8c456e651c8c281b37af1f57849d2a1b685f2669230bc73a854942686",
+      "kind": "gameplay",
+      "language": "en",
+      "game": "colosseum",
+      "width": 722,
+      "height": 528,
+      "captured_in_version": "2.1.7+development",
+      "description": "The new Shadow Articuno, Moltres and Mew party portraits, including their shiny variants.",
+      "source": "Muted Dolphin capture from a separate European test copy."
+    },
+    "xd-legendary-shadow-party.png": {
+      "bytes": 315184,
+      "sha256": "a459f6a36c5bfd41e2dc5c3931670f965d53a732459fc5c202f963992968923b",
+      "kind": "gameplay",
+      "language": "en",
+      "game": "xd",
+      "width": 722,
+      "height": 528,
+      "captured_in_version": "2.1.7+development",
+      "description": "The new round Shadow Articuno, Moltres and Mew party portraits, including their shiny variants.",
+      "source": "Muted Dolphin capture from a separate European test copy."
+    },
     "home.png": {
       "bytes": 157202,
       "sha256": "31a6ef2aa9958c045049e235a040c40aef1dc45fdad2729261828d04162dfb9b",
